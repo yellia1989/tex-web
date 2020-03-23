@@ -10,29 +10,23 @@
 <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
 	    <div class="layui-form-item">
-		    <div class="layui-inline">
-		    	<label class="layui-form-label">渠道</label>
-		    	<div class="layui-input-inline">
-		    		<input type="text" name="iChannel" placeholder="请输入渠道id" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
-		    	</div>
+		  	<label class="layui-form-label">渠道</label>
+		   	<div class="layui-input-block">
+		   		<input type="text" name="sChannel" placeholder="请输入渠道名称" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		   	</div>
+		</div>
+
+	    <div class="layui-form-item">
+		    <label class="layui-form-label">exe更新地址</label>
+		    <div class="layui-input-block">
+		    	<input type="text" name="sAddress" placeholder="请输入exe更新地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
 		    </div>
 		</div>
 
 	    <div class="layui-form-item">
-		    <div class="layui-inline">
-		    	<label class="layui-form-label">exe更新地址</label>
-		    	<div class="layui-input-inline">
-		    		<input type="text" name="sExe" placeholder="请输入exe更新地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
-		    	</div>
-		    </div>
-		</div>
-
-	    <div class="layui-form-item">
-		    <div class="layui-inline">
-		    	<label class="layui-form-label">res更新地址</label>
-		    	<div class="layui-input-inline">
-		    		<input type="text" name="sRes" placeholder="请输入资源更新地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
-		    	</div>
+		    <label class="layui-form-label">res更新地址</label>
+		    <div class="layui-input-block">
+		    	<input type="text" name="sRes" placeholder="请输入资源更新地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
 		    </div>
 		</div>
 

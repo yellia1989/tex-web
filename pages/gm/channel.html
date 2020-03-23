@@ -23,19 +23,19 @@
 		let channelTable = table.render({
 			elem: "#tableId",
             data: [
-                {"iChannel": 1, "sExe": '11', "sRes": 'http://192.168.0.130/local_doc/and/'}
-                ,{"iChannel": 2, "sExe": '11', "sRes": 'http://192.168.0.130/local_doc/ios/'}
+                {"sChannel": 1, "sAddress": '11', "sRes": 'http://192.168.0.130/local_doc/and/'}
+                ,{"sChannel": 2, "sAddress": '11', "sRes": 'http://192.168.0.130/local_doc/ios/'}
             ],
             text: {
                 none: '暂无相关数据',
             },
-			limit: 30,
+			limit: 10,
 			page: true,
 			toolbar: "#toolbarTpl",
 			cols: [[
 				{type: "checkbox", title: "序号", fixed: 'left'},
-				{field: "iChannel", title: "渠道", width: 90, fixed: 'left'},
-				{field: "sExe", title: "exe更新地址"},
+				{field: "sChannel", title: "渠道", width: 90, fixed: 'left'},
+				{field: "sAddress", title: "exe更新地址"},
 				{field: "sRes", title: "res更新地址"},
 				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
 			]],
@@ -56,10 +56,10 @@
 			let data = obj.data;
 			switch (obj.event) {
 				case "edit":
-					edit(data.id);
+					edit(data.sChannel);
 					break;
 				case "del":
-					del(data.id);
+					del(data.sChannel);
 					break;
 			}
 		});

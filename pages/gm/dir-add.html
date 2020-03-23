@@ -87,25 +87,25 @@
             <div class="layui-inline">
 			    <label class="layui-form-label">IOS客户端版本</label>
 			    <div class="layui-input-inline">
-				    <input type="text" name="sClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+				    <input type="text" name="sClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
             </div>
             <div class="layui-inline">
 			    <label class="layui-form-label">IOS强制更新版本</label>
 			    <div class="layui-input-inline">
-				    <input type="text" name="sForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+				    <input type="text" name="sForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
             </div>
             <div class="layui-inline">
 			    <label class="layui-form-label">AND客户端版本</label>
 			    <div class="layui-input-inline">
-				    <input type="text" name="sAndClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+				    <input type="text" name="sAndClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
             </div>
             <div class="layui-inline">
 			    <label class="layui-form-label">AND强制更新版本</label>
 			    <div class="layui-input-inline">
-				    <input type="text" name="sAndForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+				    <input type="text" name="sAndForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
             </div>
         </div>
@@ -125,6 +125,20 @@
 	  var laydate = layui.laydate;
 
       laydate.render({elem: "#iPublishTime", type: "datetime"});
+
+      //数据校验
+      form.verify({
+        "version": function(value, item) {
+            var v = value.split('.');
+            var l = 5;
+            if (item.name.indexOf('Force') != -1) {
+                l = 3;
+            }
+            if (v.length != l) {
+                return '版本号格式不对';
+            }
+        }
+      });
 
       //监听提交
       form.on('submit(add)', function(data){
