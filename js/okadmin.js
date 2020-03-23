@@ -24,6 +24,12 @@ var tabData = [
         "icon": "&#xe654;",
         "isCheck": true,
       },
+      {
+        "title": "渠道管理",
+        "href": "pages/gm/channel.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
     ],
   },
   {
