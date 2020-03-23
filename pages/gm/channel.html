@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>渠道管理</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+	<table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "table", "okLayer", "okUtils"], function () {
+		let table = layui.table;
+		let okLayer = layui.okLayer;
+		let okUtils = layui.okUtils;
+		okLoading.close();
+
+		let channelTable = table.render({
+			elem: "#tableId",
+            data: [
+                {"sChannel": 1, "sAddress": '11', "sRes": 'http://192.168.0.130/local_doc/and/'}
+                ,{"sChannel": 2, "sAddress": '11', "sRes": 'http://192.168.0.130/local_doc/ios/'}
+            ],
+            text: {
+                none: '暂无相关数据',
+            },
+			limit: 10,
+			page: true,
+			toolbar: "#toolbarTpl",
+			cols: [[
+				{type: "checkbox", title: "序号", fixed: 'left'},
+				{field: "sChannel", title: "渠道", width: 90, fixed: 'left'},
+				{field: "sAddress", title: "exe更新地址"},
+				{field: "sRes", title: "res更新地址"},
+				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
+			]],
+		});
+
+		table.on("toolbar(tableFilter)", function (obj) {
+			switch (obj.event) {
+				case "add":
+					add();
+					break;
+				case "batchDel":
+					batchDel();
+					break;
+			}
+		});
+
+		table.on("tool(tableFilter)", function (obj) {
+			let data = obj.data;
+			switch (obj.event) {
+				case "edit":
+					edit(data.sChannel);
+					break;
+				case "del":
+					del(data.sChannel);
+					break;
+			}
+		});
+
+		function add() {
+			okLayer.open("添加渠道", "channel-add.html", "90%", "90%", null, function () {
+				channelTable.reload();
+			})
+		}
+
+		function batchDel() {
+			okLayer.confirm("确定要批量删除吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/gm/channel/deleteChannel", "delete", {idsStr: idsStr}, true).done(function (response) {
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function edit(id) {
+			okLayer.open("编辑渠道", "dir-edit.html?id=" + id, "90%", "90%", null, function () {
+				dirTable.reload();
+			})
+		}
+
+		function del(id) {
+			okLayer.confirm("确定要删除吗？", function () {
+				okUtils.ajax("/gm/dir/deleteDir", "delete", {idsStr: id}, true).done(function (response) {
+					okUtils.tableSuccessMsg(response.msg);
+				}).fail(function (error) {
+					console.log(error)
+				});
+			})
+		}
+	})
+</script>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+	</div>
+</script>
+
+<script type="text/html" id="operationTpl">
+	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+</html>

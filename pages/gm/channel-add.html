@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增渠道</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+	    <div class="layui-form-item">
+		  	<label class="layui-form-label">渠道</label>
+		   	<div class="layui-input-block">
+		   		<input type="text" name="sChannel" placeholder="请输入渠道名称" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		   	</div>
+		</div>
+
+	    <div class="layui-form-item">
+		    <label class="layui-form-label">exe更新地址</label>
+		    <div class="layui-input-block">
+		    	<input type="text" name="sAddress" placeholder="请输入exe更新地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		    </div>
+		</div>
+
+	    <div class="layui-form-item">
+		    <label class="layui-form-label">res更新地址</label>
+		    <div class="layui-input-block">
+		    	<input type="text" name="sRes" placeholder="请输入资源更新地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		    </div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script>
+    layui.use(['form', 'laydate'], function(){
+      var form = layui.form;
+	  var laydate = layui.laydate;
+
+      laydate.render({elem: "#laydate.data", type: "datetime"});
+
+      //监听提交
+      form.on('submit(add)', function(data){
+        layer.msg(JSON.stringify(data.field));
+        return false;
+      });
+    });
+</script>
+</body>
+</html>
