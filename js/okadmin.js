@@ -9,6 +9,7 @@ var tabData = [
     "title": "GM工具",
     "fontFamily": "ok-icon",
     "icon": "&#xe68a;",
+    "spread": true,
     "children": [
       {
         "title": "GM",
@@ -20,7 +21,8 @@ var tabData = [
         "title": "分区管理",
         "href": "pages/gm/dir.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;"
+        "icon": "&#xe654;",
+        "isCheck": true,
       },
     ],
   },
@@ -110,13 +112,11 @@ var tabData = [
     "title": "图表管理",
     "href": "",
     "icon": "&#xe62c;",
-    "spread": true,
     "children": [
       {
         "title": "数据图",
         "fontFamily": "ok-icon",
         "icon": "ok-icon-shuju1",
-        "spread": true,
         "children": [
           {
             "title": "统计图",
