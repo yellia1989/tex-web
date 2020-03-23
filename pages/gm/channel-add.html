@@ -46,12 +46,11 @@
 </div>
 <script src="../../lib/layui/layui.js"></script>
 <script>
-    // https://www.layui.com/doc/modules/form.html
     layui.use(['form', 'laydate'], function(){
       var form = layui.form;
 	  var laydate = layui.laydate;
 
-      laydate.render({elem: "#iPublishTime", type: "datetime"});
+      laydate.render({elem: "#laydate.data", type: "datetime"});
 
       //监听提交
       form.on('submit(add)', function(data){
