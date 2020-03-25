@@ -1,7 +1,7 @@
 var tabData = [
   {
     "title": "控制台",
-    "href": "pages/console.html",
+    "href": "console.html",
     "fontFamily": "ok-icon",
     "icon": "&#xe654;"
   },
@@ -13,20 +13,20 @@ var tabData = [
     "children": [
       {
         "title": "GM",
-        "href": "pages/gm/gm.html",
+        "href": "gm/gm.html",
         "fontFamily": "ok-icon",
         "icon": "&#xe654;"
       },
       {
         "title": "分区管理",
-        "href": "pages/gm/dir.html",
+        "href": "gm/dir.html",
         "fontFamily": "ok-icon",
         "icon": "&#xe654;",
         "isCheck": true,
       },
       {
         "title": "渠道管理",
-        "href": "pages/gm/channel.html",
+        "href": "gm/channel.html",
         "fontFamily": "ok-icon",
         "icon": "&#xe654;"
       },
@@ -39,49 +39,49 @@ var tabData = [
     "children": [
       {
         "title": "字体图标",
-        "href": "pages/help/ok_font.html",
+        "href": "help/ok_font.html",
         "icon": "&#xe62e;",
         "spread": false,
       },
       {
         "title": "插件目录",
-        "href": "pages/help/plug_directory.html",
+        "href": "help/plug_directory.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "内部添加导航",
-        "href": "pages/help/nav_operate.html",
+        "href": "help/nav_operate.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "导航的图标",
-        "href": "pages/help/nav_icon.html",
+        "href": "help/nav_icon.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "导航的参数",
-        "href": "pages/help/nav_parameter.html",
+        "href": "help/nav_parameter.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "okUtils",
-        "href": "pages/help/okUtils.html",
+        "href": "help/okUtils.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "okLayer",
-        "href": "pages/help/okLayer.html",
+        "href": "help/okLayer.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "okFly",
-        "href": "pages/help/okFly.html",
+        "href": "help/okFly.html",
         "icon": "&#xe62e;",
         "spread": false
       }
@@ -95,20 +95,20 @@ var tabData = [
     "children": [
       {
         "title": "用户列表",
-        "href": "pages/member/user.html",
+        "href": "member/user.html",
         "fontFamily": "layui-icon",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "角色列表",
-        "href": "pages/member/role.html",
+        "href": "member/role.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "权限列表",
-        "href": "pages/member/permission.html",
+        "href": "member/permission.html",
         "icon": "&#xe62e;",
         "spread": false
       }
@@ -126,31 +126,31 @@ var tabData = [
         "children": [
           {
             "title": "统计图",
-            "href": "pages/chart/chart1.html",
+            "href": "chart/chart1.html",
             "icon": "&#xe62e;",
             "spread": false,
           },
           {
             "title": "折线图",
-            "href": "pages/chart/chart2.html",
+            "href": "chart/chart2.html",
             "icon": "&#xe62e;",
             "spread": false
           },
           {
             "title": "馅饼图",
-            "href": "pages/chart/chart4.html",
+            "href": "chart/chart4.html",
             "icon": "&#xe62e;",
             "spread": false
           },
           {
             "title": "圆形图",
-            "href": "pages/chart/chart5.html",
+            "href": "chart/chart5.html",
             "icon": "&#xe62e;",
             "spread": false
           },
           {
             "title": "指数图",
-            "href": "pages/chart/chart6.html",
+            "href": "chart/chart6.html",
             "icon": "&#xe62e;",
             "spread": false
           }
@@ -167,32 +167,32 @@ var tabData = [
     "children": [
       {
         "title": "系统设置",
-        "href": "pages/system/setup.html",
+        "href": "system/setup.html",
         "icon": "&#xe62e;",
         "spread": false
       },
       {
         "title": "登录页面",
-        "href": "pages/login.html",
+        "href": "login.html",
         "icon": "&#xe609;",
         "spread": false,
         "target": "_blank"
       },
       {
         "title": "403页面",
-        "href": "pages/system/403.html",
+        "href": "system/403.html",
         "icon": "&#xe61c;",
         "spread": false
       },
       {
         "title": "404页面",
-        "href": "pages/system/404.html",
+        "href": "system/404.html",
         "icon": "&#xe61c;",
         "spread": false
       },
       {
         "title": "500页面",
-        "href": "pages/system/500.html",
+        "href": "system/500.html",
         "icon": "&#xe61c;",
         "spread": false
       }
@@ -204,43 +204,43 @@ var tabData = [
     "children": [
       {
         "title": "jquery.okQrcode.js",
-        "href": "pages/tripartite/qrcode.html"
+        "href": "tripartite/qrcode.html"
       },
       {
         "title": "jquery.okCountup.js",
-        "href": "pages/tripartite/countup.html"
+        "href": "tripartite/countup.html"
       },
       {
         "title": "okCookie",
-        "href": "pages/tripartite/okCookie.html"
+        "href": "tripartite/okCookie.html"
       },
       {
         "title": "okToastr",
-        "href": "pages/tripartite/okToastr.html"
+        "href": "tripartite/okToastr.html"
       },
       {
         "title": "okMd5",
-        "href": "pages/tripartite/okMd5.html"
+        "href": "tripartite/okMd5.html"
       },
       {
         "title": "okBarcode",
-        "href": "pages/tripartite/okBarcode.html"
+        "href": "tripartite/okBarcode.html"
       },
       {
         "title": "okNprogress",
-        "href": "pages/tripartite/okNprogress.html"
+        "href": "tripartite/okNprogress.html"
       },
       {
         "title": "okSweetAlert2",
-        "href": "pages/tripartite/okSweetAlert2.html"
+        "href": "tripartite/okSweetAlert2.html"
       },
       {
         "title": "okAnimate",
-        "href": "pages/tripartite/okAnimate.html"
+        "href": "tripartite/okAnimate.html"
       },
       {
         "title": "okLayx",
-        "href": "pages/tripartite/okLayx.html"
+        "href": "tripartite/okLayx.html"
       }
     ]
   }
@@ -402,7 +402,7 @@ layui.use(["element", "layer", "okUtils", "okTab", "okLayer", "okContextMenu", "
 		okLayer.confirm("确定要退出吗？", function (index) {
 			okTab.removeTabStorage(function (res) {
 				okTab.removeTabStorage();
-				window.location = "pages/login.html";
+				window.location = "login.html";
 			});
 		});
 	});

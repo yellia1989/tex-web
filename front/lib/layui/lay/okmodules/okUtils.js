@@ -3,14 +3,6 @@ layui.define(["layer"], function (exprots) {
     var $ = layui.jquery;
     var okUtils = {
         /**
-         * 是否前后端分离
-         */
-        isFrontendBackendSeparate: true,
-        /**
-         * 服务器地址
-         */
-        baseUrl: "http://rap2api.taobao.org/app/mock/233041",
-        /**
          * 获取body的总宽度
          */
         getBodyWidth: function () {
@@ -42,7 +34,7 @@ layui.define(["layer"], function (exprots) {
             var deferred = $.Deferred();
             var loadIndex;
             $.ajax({
-                url: okUtils.isFrontendBackendSeparate ? okUtils.baseUrl + url : url,
+                url: url,
                 type: type || "get",
                 data: params || {},
                 dataType: "json",
