@@ -247,7 +247,7 @@ var tabData = [
 ];
 
 var objOkTab = "";
-layui.use(["element", "layer", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday"], function () {
+layui.use(["element", "layer", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday", "okCookie"], function () {
 	var okUtils = layui.okUtils;
 	var $ = layui.jquery;
 	var layer = layui.layer;
@@ -402,6 +402,7 @@ layui.use(["element", "layer", "okUtils", "okTab", "okLayer", "okContextMenu", "
 		okLayer.confirm("确定要退出吗？", function (index) {
 			okTab.removeTabStorage(function (res) {
 				okTab.removeTabStorage();
+                $.removeCookie("textoken");
 				window.location = "login.html";
 			});
 		});

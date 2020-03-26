@@ -49,7 +49,11 @@ func RequireLogin() echo.MiddlewareFunc {
                     // api需要特殊处理
                     switch path {
                     case "/api/login":
-                        return true
+                        // 上传了cookie的话需要处理
+                        if _, err := c.Cookie("textoken"); err != nil {
+                            return true
+                        }
+                        return false
                     default:
                         return false
                     }
@@ -154,7 +158,7 @@ func (ctx *Context) SendError(code int, msg interface{}) error {
 func Login(c echo.Context) error {
     ctx := c.(*Context)
     if ctx.GetUserId() != 0 {
-        return ctx.Redirect(http.StatusMovedPermanently, "/index.html")
+        return ctx.SendError(-1, "已经登陆不用重新登录")
     }
 
     //username := ctx.FormValue("username")
