@@ -66,7 +66,7 @@ func RequireLogin() echo.MiddlewareFunc {
     })
 }
 
-func GetUserId(c echo.Context) int {
+func GetUserId(c echo.Context) uint32 {
     v := c.Get("user")
     if v == nil {
         return 0
@@ -77,14 +77,14 @@ func GetUserId(c echo.Context) int {
     if err != nil || time.Now().Unix() > exp {
         return 0
     }
-    id, err := strconv.Atoi(claims["id"].(string))
+    id, err := strconv.ParseUint(claims["id"].(string), 10, 32)
     if err != nil {
         return 0
     }
-    return id
+    return uint32(id)
 }
 
-func (ctx *Context) GetUserId() int {
+func (ctx *Context) GetUserId() uint32 {
     return GetUserId(ctx)
 }
 

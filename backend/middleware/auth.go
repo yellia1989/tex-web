@@ -1,6 +1,7 @@
 package middleware
 
 import (
+    "net/http"
     "github.com/labstack/echo"
     "github.com/casbin/casbin"
     "github.com/yellia1989/tex-web/backend/model"
@@ -29,14 +30,17 @@ func RequireAuth() echo.MiddlewareFunc {
     }
 }
 
-func checkAuth(userid int, ctx *Context) error {
+func checkAuth(userid uint32, ctx *Context) error {
     if ce == nil {
         return nil
     }
 
-    user, err := findUser(userid)
-    if err != nil {
-        return err
+    user := model.GetUser(userid)
+    if user == nil {
+        return &echo.HTTPError{
+            Code:    http.StatusInternalServerError,
+            Message: "invalid userid",
+        }
     }
 
     method := ctx.Request().Method
@@ -49,8 +53,4 @@ func checkAuth(userid int, ctx *Context) error {
         return echo.ErrForbidden
     }
     return nil
-}
-
-func findUser(userid int) (*model.User, error) {
-    return nil, nil
 }
