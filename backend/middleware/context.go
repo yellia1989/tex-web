@@ -1,4 +1,4 @@
-package context
+package middleware
 
 import (
     "time"
@@ -66,60 +66,7 @@ func RequireLogin() echo.MiddlewareFunc {
     })
 }
 
-func HTTPErrorHandler(err error, c echo.Context) {
-    he, ok := err.(*echo.HTTPError)
-    if ok {
-        if he.Internal != nil {
-            if herr, ok := he.Internal.(*echo.HTTPError); ok {
-                he = herr
-            }
-        }
-    } else {
-        he = &echo.HTTPError{
-            Code:    http.StatusInternalServerError,
-            Message: http.StatusText(http.StatusInternalServerError),
-        }
-    }
-
-    code := he.Code
-    message := he.Message
-
-    c.Logger().Error("error:"+he.Error())
-
-    // Send response
-    if !c.Response().Committed {
-        if c.Request().Method == http.MethodHead { // Issue #608
-            err = c.NoContent(he.Code)
-        } else {
-            // 格式化错误消息
-            path := c.Request().URL.Path
-            if strings.HasPrefix(path, "/api") {
-                err = c.JSON(http.StatusOK, map[string]interface{}{
-                    "code": code,
-                    "msg": message,
-                })
-            } else {
-                // 没有登陆的话重定位到登陆
-                c.Logger().Error(c.Request())
-                if getUserId(c) == 0 {
-                    err = c.Redirect(http.StatusMovedPermanently, "/login.html")
-                } else {
-                    redirect := "/500.html"
-                    switch code {
-                    case http.StatusForbidden:redirect = "/403.html"
-                    case http.StatusNotFound:redirect = "/404.html"
-                    }
-                    err = c.Redirect(http.StatusMovedPermanently, redirect)
-                }
-            }
-        }
-        if err != nil {
-            c.Logger().Error(err)
-        }
-    }
-}
-
-func getUserId(c echo.Context) int {
+func GetUserId(c echo.Context) int {
     v := c.Get("user")
     if v == nil {
         return 0
@@ -138,7 +85,7 @@ func getUserId(c echo.Context) int {
 }
 
 func (ctx *Context) GetUserId() int {
-    return getUserId(ctx)
+    return GetUserId(ctx)
 }
 
 func (ctx *Context) SendResponse(data interface{}) error {
