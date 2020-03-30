@@ -1,34 +1,42 @@
 package model
 
 import (
-    "sync"
-    "sync/atomic"
-    "sort"
     "encoding/json"
     "github.com/casbin/casbin"
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/util"
+    cm "github.com/yellia1989/tex-web/backend/common"
 )
 
 var ce *casbin.Enforcer
-var users userMap
-var uid uint32
+var users *cm.Map
 
 func init() {
-    var err error
-    ce, err = casbin.NewEnforcer("data/auth_model.conf", "data/auth_policy.csv")
-    _ = err
+    ce, _ = casbin.NewEnforcer("data/auth_model.conf", "data/auth_policy.csv")
+    bs, _ := util.LoadFromFile("data/users.json")
+    items := make([]*User,0)
+    json.Unmarshal(bs, &items)
 
-    users.init("data/users.json")
+    items2 := make([]cm.Item,0)
+    for _, item := range items {
+        items2 = append(items2, item)
+    }
+    users = cm.NewMap("data/users.json", items2)
 }
 
 type User struct {
-    Id uint32            `json:"id"`
+    Id uint32           `json:"id"`
     Name string         `json:"name"`
     UserName string     `json:"username"`
     Password string     `json:"password"`
 }
 
+func (u *User) GetId() uint32 {
+    return u.Id
+}
+func (u *User) SetId(id uint32) {
+    u.Id = id
+}
 func (u *User) CheckPermission(path string, method string) error {
     if ce == nil {
         return nil
@@ -44,171 +52,113 @@ func (u *User) CheckPermission(path string, method string) error {
     return nil
 }
 
-type userMap struct {
-    users sync.Map
-    path string
-}
-
-func (um *userMap) getUser(id uint32) *User {
-    v, ok := um.users.Load(id)
-    if !ok {
-        return nil
-    }
-    // 复制一个防止返回的user被修改
-    u := *(v.(*User))
-    return &u
-}
-
-func (um *userMap) getUserByUserName(username string) *User {
-    var user *User
-    um.users.Range(func (key, v interface{}) bool {
-        u := v.(*User)
-        if u.UserName == username {
-            user = u
-            return false
-        }
-        return true
-    })
-
-    if user == nil {
-        return nil
-    }
-
-    // 复制一个防止返回的user被修改
-    u := *user
-    return &u
-}
-
-type userById []*User
-func (a userById) Len() int           { return len(a) }
-func (a userById) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a userById) Less(i, j int) bool { return a[i].Id < a[j].Id }
-
-func (um *userMap) getUsers() []*User {
-    us := make([]*User,0)
-    um.users.Range(func (key, v interface{}) bool {
-        // 复制一个防止返回的user被修改
-        u := *(v.(*User))
-        us = append(us, &u)
-        return true
-    })
-
-    sort.Sort(userById(us))
-    return us
-}
-
-func (um *userMap) addUser(u User) bool {
-    // id不能相同
-    if um.getUser(u.Id) != nil {
-        return false
-    }
-
-    um.users.Store(u.Id, &u)
-    return um.save() == nil
-}
-
-func (um *userMap) delUser(u *User) bool {
-    _, ok := um.users.Load(u.Id)
-    if !ok {
-        return false
-    }
-    um.users.Delete(u.Id)
-    return um.save() == nil
-}
-
-func (um *userMap) delAllUser() bool {
-    ids := make([]uint32,0)
-    um.users.Range(func (key, v interface{}) bool {
-        ids = append(ids, key.(uint32))
-        return true
-    })
-
-    for _, id := range ids {
-        um.users.Delete(id)
-    }
-    return um.save() == nil
-}
-
-func (um *userMap) updateUser(u User) bool {
-    if um.getUser(u.Id) == nil {
-        return false
-    }
-    um.users.Store(u.Id, &u)
-    return um.save() == nil
-}
-
-func (um *userMap) save() error {
-    us := um.getUsers()
-
-    bs, err := json.MarshalIndent(us, "", "  ")
-    if err != nil {
-        return err
-    }
-    return util.SaveToFile(um.path, bs, false)
-}
-
-func (um *userMap) init(path string) error {
-    um.path = path
-    bs, err := util.LoadFromFile(path)
-    if err != nil {
-        return err
-    }
-    users := make([]*User,0)
-    err = json.Unmarshal(bs, &users)
-    if err != nil {
-        return err
-    }
-    for _, u := range users {
-        um.users.Store(u.Id, u)
-        if u.Id > uid {
-            uid = u.Id
-        }
-    }
-    return nil
-}
-
 func GetUser(id uint32) *User {
-    return users.getUser(id)
+    if users == nil {
+        return nil
+    }
+
+    u := users.GetItem(id)
+    if u == nil {
+        return nil
+    }
+    // 复制一份防止原始值被修改
+    u2 := *(u.(*User))
+    return &u2
 }
 
 func GetUserByUserName(username string) *User {
+    if users == nil {
+        return nil
+    }
+
     // username不能为空
     if len(username) == 0 {
         return nil
     }
 
-    return users.getUserByUserName(username)
+    items := users.GetItems(func (key, v interface{})bool{
+        u := v.(*User)
+        return u.UserName == username
+    })
+    if len(items) == 0 {
+        return nil
+    }
+    if len(items) != 1 {
+        panic("username duplicate")
+    }
+
+    // 复制一份防止原始值被修改
+    u2 := *(items[0].(*User))
+    return &u2
 }
 
 func GetUsers() []*User {
-    return users.getUsers()
+    if users == nil {
+        return nil
+    }
+
+    items := users.GetItems(func (key, v interface{})bool{
+        return true
+    })
+
+    if len(items) == 0 {
+        return nil
+    }
+
+    us := make([]*User,0)
+    for _, item := range items {
+        // 复制一份防止原始值被修改
+        u := *(item.(*User))
+        us = append(us, &u)
+    }
+    return us
 }
 
 func AddUser(name string, username string, password string) *User {
+    if users == nil {
+        return nil
+    }
+
     // username,password不能为空
     if len(username) == 0 || len(password) == 0 {
         return nil
     }
     // username不能相同
-    if users.getUserByUserName(username) != nil {
+    if GetUserByUserName(username) != nil {
         return nil
     }
 
-    u := &User{Id: atomic.AddUint32(&uid, 1), Name: name, UserName: username, Password: password}
-    if !users.addUser(*u) {
+    u := &User{Name: name, UserName: username, Password: password}
+    if !users.AddItem(u) {
         return nil
     }
-    return u
+
+    // 复制一份防止原始值被修改
+    u2 := *u
+    return &u2
 }
 
 func DelUser(u *User) bool {
-    return users.delUser(u)
+    if users == nil {
+        return false
+    }
+
+    return users.DelItem(u)
 }
 
 func UpdateUser(u *User) bool {
-    return users.updateUser(*u)
+    if users == nil {
+        return false
+    }
+
+    u2 := *u
+    return users.UpdateItem(&u2)
 }
 
 func DelAllUser() bool {
-    return users.delAllUser()
+    if users == nil {
+        return false
+    }
+
+    return users.DelAllItem()
 }

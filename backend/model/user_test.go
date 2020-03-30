@@ -43,7 +43,7 @@ func TestAddUser(t *testing.T) {
         t.Fatal("UpdateUser success, should failed")
     }
 
-    /*if ret := DelAllUser(); ret == false {
+    if ret := DelAllUser(); ret == false {
         t.Fatal("DelAllUser failed, should success")
-    }*/
+    }
 }
