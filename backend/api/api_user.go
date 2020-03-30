@@ -1,4 +1,4 @@
-package user
+package api
 
 import (
     "time"
@@ -9,7 +9,7 @@ import (
     "github.com/yellia1989/tex-web/backend/model"
 )
 
-func Login(c echo.Context) error {
+func UserLogin(c echo.Context) error {
     ctx := c.(*mid.Context)
     if ctx.GetUserId() != 0 {
         return ctx.SendError(-1, "已经登陆不用重新登录")
