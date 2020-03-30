@@ -69,7 +69,14 @@ func (um *userMap) getUserByUserName(username string) *User {
         }
         return true
     })
-    return user
+
+    if user == nil {
+        return nil
+    }
+
+    // 复制一个防止返回的user被修改
+    u := *user
+    return &u
 }
 
 type userById []*User
@@ -80,7 +87,9 @@ func (a userById) Less(i, j int) bool { return a[i].Id < a[j].Id }
 func (um *userMap) getUsers() []*User {
     us := make([]*User,0)
     um.users.Range(func (key, v interface{}) bool {
-        us = append(us, v.(*User))
+        // 复制一个防止返回的user被修改
+        u := *(v.(*User))
+        us = append(us, &u)
         return true
     })
 
@@ -88,13 +97,13 @@ func (um *userMap) getUsers() []*User {
     return us
 }
 
-func (um *userMap) addUser(u *User) bool {
+func (um *userMap) addUser(u User) bool {
     // id不能相同
     if um.getUser(u.Id) != nil {
         return false
     }
 
-    um.users.Store(u.Id, u)
+    um.users.Store(u.Id, &u)
     return um.save() == nil
 }
 
@@ -108,25 +117,30 @@ func (um *userMap) delUser(u *User) bool {
 }
 
 func (um *userMap) delAllUser() bool {
-    us := um.getUsers()
-    for _, u := range us {
-        um.users.Delete(u.Id)
+    ids := make([]uint32,0)
+    um.users.Range(func (key, v interface{}) bool {
+        ids = append(ids, key.(uint32))
+        return true
+    })
+
+    for _, id := range ids {
+        um.users.Delete(id)
     }
     return um.save() == nil
 }
 
-func (um *userMap) updateUser(u *User) bool {
+func (um *userMap) updateUser(u User) bool {
     if um.getUser(u.Id) == nil {
         return false
     }
-    um.users.Store(u.Id, u)
+    um.users.Store(u.Id, &u)
     return um.save() == nil
 }
 
 func (um *userMap) save() error {
     us := um.getUsers()
 
-    bs, err := json.Marshal(us)
+    bs, err := json.MarshalIndent(us, "", "  ")
     if err != nil {
         return err
     }
@@ -158,6 +172,11 @@ func GetUser(id uint32) *User {
 }
 
 func GetUserByUserName(username string) *User {
+    // username不能为空
+    if len(username) == 0 {
+        return nil
+    }
+
     return users.getUserByUserName(username)
 }
 
@@ -166,13 +185,17 @@ func GetUsers() []*User {
 }
 
 func AddUser(name string, username string, password string) *User {
+    // username,password不能为空
+    if len(username) == 0 || len(password) == 0 {
+        return nil
+    }
     // username不能相同
     if users.getUserByUserName(username) != nil {
         return nil
     }
 
     u := &User{Id: atomic.AddUint32(&uid, 1), Name: name, UserName: username, Password: password}
-    if !users.addUser(u) {
+    if !users.addUser(*u) {
         return nil
     }
     return u
@@ -183,7 +206,7 @@ func DelUser(u *User) bool {
 }
 
 func UpdateUser(u *User) bool {
-    return users.updateUser(u)
+    return users.updateUser(*u)
 }
 
 func DelAllUser() bool {

@@ -9,29 +9,38 @@ import (
 func RequireAuth() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
-            ctx := c.(*Context)
-            // 验证权限
-            userid := ctx.GetUserId()
-            if userid == 0 {
-                // 只处理登陆的情况
+            if pathIgnore(c) {
                 return next(c)
             }
-            return checkAuth(userid, ctx)
+
+            // 验证权限
+            ctx := c.(*Context)
+            userid := ctx.GetUserId()
+            user := model.GetUser(userid)
+            if user == nil {
+                return &echo.HTTPError{
+                    Code:    http.StatusForbidden,
+                    Message: "invalid userid",
+                }
+            }
+            method := ctx.Request().Method
+            path := ctx.Request().URL.Path
+            // 对已经登陆还调用/api/login做特殊处理
+            if path == "/api/login" {
+                return next(c)
+            }
+
+            err := user.CheckPermission(path, method)
+            pass := "pass"
+            if err != nil {
+                pass = "failed"
+            }
+            ctx.Logger().Error("username:"+user.UserName+",path:"+path+",method:"+method+",pass:"+pass)
+            if err != nil {
+                return err
+            }
+
+            return next(c)
         }
     }
-}
-
-func checkAuth(userid uint32, ctx *Context) error {
-    user := model.GetUser(userid)
-    if user == nil {
-        return &echo.HTTPError{
-            Code:    http.StatusInternalServerError,
-            Message: "invalid userid",
-        }
-    }
-
-    method := ctx.Request().Method
-    path := ctx.Request().URL.Path
-
-    return user.CheckPermission(path, method)
 }

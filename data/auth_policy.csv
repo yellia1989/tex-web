@@ -1,8 +1,6 @@
-p, alice, /dataset1/*, GET
-p, alice, /dataset1/resource1, POST
-p, bob, /dataset2/resource1, *
-p, bob, /dataset2/resource2, GET
-p, bob, /dataset2/folder1/*, POST
-p, dataset1_admin, /dataset1/*, *
+# base角色对/*.html都有GET权限
+p, base, /*.html, GET
+p, base, /gm/*.html, GET
 
-g, cathy, dataset1_admin
+# 角色列表
+g, yellia, base
