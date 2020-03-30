@@ -5,14 +5,43 @@ import (
     "sync/atomic"
     "sort"
     "encoding/json"
+    "github.com/casbin/casbin"
+    "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/util"
 )
+
+var ce *casbin.Enforcer
+var users userMap
+var uid uint32
+
+func init() {
+    var err error
+    ce, err = casbin.NewEnforcer("data/auth_model.conf", "data/auth_policy.csv")
+    _ = err
+
+    users.init("data/users.json")
+}
 
 type User struct {
     Id uint32            `json:"id"`
     Name string         `json:"name"`
     UserName string     `json:"username"`
     Password string     `json:"password"`
+}
+
+func (u *User) CheckPermission(path string, method string) error {
+    if ce == nil {
+        return nil
+    }
+
+    pass, err := ce.Enforce(u.UserName, path, method)
+    if err != nil {
+        return err
+    }
+    if !pass {
+        return echo.ErrForbidden
+    }
+    return nil
 }
 
 type userMap struct {
@@ -25,7 +54,9 @@ func (um *userMap) getUser(id uint32) *User {
     if !ok {
         return nil
     }
-    return v.(*User)
+    // 复制一个防止返回的user被修改
+    u := *(v.(*User))
+    return &u
 }
 
 func (um *userMap) getUserByUserName(username string) *User {
@@ -120,12 +151,6 @@ func (um *userMap) init(path string) error {
         }
     }
     return nil
-}
-
-var users userMap
-var uid uint32
-func init() {
-    users.init("data/users.json")
 }
 
 func GetUser(id uint32) *User {

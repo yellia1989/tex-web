@@ -3,17 +3,8 @@ package middleware
 import (
     "net/http"
     "github.com/labstack/echo"
-    "github.com/casbin/casbin"
     "github.com/yellia1989/tex-web/backend/model"
 )
-
-var ce *casbin.Enforcer
-
-func init() {
-    var err error
-    ce, err = casbin.NewEnforcer("data/auth_model.conf", "data/auth_policy.csv")
-    _ = err
-}
 
 func RequireAuth() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -31,10 +22,6 @@ func RequireAuth() echo.MiddlewareFunc {
 }
 
 func checkAuth(userid uint32, ctx *Context) error {
-    if ce == nil {
-        return nil
-    }
-
     user := model.GetUser(userid)
     if user == nil {
         return &echo.HTTPError{
@@ -45,12 +32,6 @@ func checkAuth(userid uint32, ctx *Context) error {
 
     method := ctx.Request().Method
     path := ctx.Request().URL.Path
-    pass, err := ce.Enforce(user.Name, path, method)
-    if err != nil {
-        return err
-    }
-    if !pass {
-        return echo.ErrForbidden
-    }
-    return nil
+
+    return user.CheckPermission(path, method)
 }
