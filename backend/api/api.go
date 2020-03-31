@@ -7,6 +7,8 @@ import (
 func RegisterHandler(group *echo.Group) {
     group.POST("/login", UserLogin)        // 登陆
 
+    group.GET("/menu/list", MenuList)       // 菜单列表
+
     /*api.GET("/user/list", api.UserList)     // 用户列表
     api.POST("/user/add", api.UserAdd)      // 用户增加
     api.POST("/user/edit", api.UserEdit)    // 用户编辑

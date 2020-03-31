@@ -1,6 +1,7 @@
 package model
 
 import (
+    "fmt"
     "encoding/json"
     "github.com/yellia1989/tex-go/tools/util"
     cm "github.com/yellia1989/tex-web/backend/common"
@@ -8,9 +9,15 @@ import (
 
 var menus *cm.Map
 func init() {
-    bs, _ := util.LoadFromFile("data/menu.json")
+    bs, err := util.LoadFromFile("data/menu.json")
+    if err != nil {
+        fmt.Printf("menu init failed, %s", err.Error())
+    }
     items := make([]*Menu,0)
-    json.Unmarshal(bs, &items)
+    err = json.Unmarshal(bs, &items)
+    if err != nil {
+        fmt.Printf("menu init failed, %s", err.Error())
+    }
 
     items2 := make([]cm.Item,0)
     for _, item := range items {
@@ -27,7 +34,7 @@ type Menu struct {
     Icon    string          `json:"icon"`
     Spread bool             `json:"spread"`
     IsCheck bool            `json:"isCheck"`
-    Children []*Menu        `json:"children"`
+    Children []*Menu         `json:"children"`
 }
 func (m *Menu) GetId() uint32 {
     return m.Id
@@ -35,13 +42,38 @@ func (m *Menu) GetId() uint32 {
 func (m *Menu) SetId(id uint32) {
     m.Id = id
 }
+func (m *Menu) copy() *Menu {
+    // 深拷贝
+    n := &Menu{
+        Id: m.Id,
+        Title: m.Title,
+        Href: m.Href,
+        FontFamily: m.FontFamily,
+        Icon: m.Icon,
+        Spread: m.Spread,
+        IsCheck: m.IsCheck,
+    }
+    if len(m.Children) != 0 {
+        n.Children = make([]*Menu, len(m.Children))
+        for i, v := range m.Children {
+            n.Children[i] = v.copy()
+        }
+    }
+    return n
+}
 func (m *Menu) addMenu(child *Menu) bool {
     // 同一级目录title不能相同
     if checkDuplicate(m, child) {
         return false
     }
-    // 子菜单的id和它加入时子菜单个数有关
-    child.Id = uint32(len(m.Children)+1)
+    // id依次递增
+    maxid := m.Id*100
+    for _, c := range m.Children {
+        if c.Id > maxid {
+            maxid = c.Id
+        }
+    }
+    child.Id = maxid + 1
     // 默认放在最后
     m.Children = append(m.Children, child)
     return true
@@ -61,12 +93,36 @@ func (m *Menu) delMenu(id uint32) bool {
     return true
 }
 func (m *Menu) getMenu(id uint32) *Menu {
+    oid := id
+    // 先找到孩子节点
+    for ; id > (m.Id*100+100); id /= 100 {
+    }
+
+    var child *Menu
     for _, v := range m.Children {
         if v.Id == id {
-            return v
+            child = v
+            break
         }
     }
-    return nil
+    if child == nil {
+        return nil
+    }
+    if oid == id {
+        return child
+    }
+    return child.getMenu(oid)
+}
+func (m *Menu) updateMenu(update *Menu) {
+    if m.Id != update.Id {
+        panic("not a same menu")
+    }
+    m.Title = update.Title
+    m.Href = update.Href
+    m.FontFamily = update.FontFamily
+    m.Icon = update.Icon
+    m.Spread = update.Spread
+    m.IsCheck = update.IsCheck
 }
 
 func GetMenus()[]*Menu {
@@ -83,8 +139,7 @@ func GetMenus()[]*Menu {
 
     ms := make([]*Menu, 0)
     for _, m := range items {
-        m2 := *(m.(*Menu))
-        ms = append(ms, &m2)
+        ms = append(ms, m.(*Menu).copy())
     }
     return ms
 }
@@ -107,49 +162,71 @@ func checkDuplicate(parent *Menu, m *Menu) bool {
 }
 
 func AddMenu(m *Menu, pid uint32) bool {
-    if menus == nil {
+    if menus == nil || m.Id != 0 {
         return false
     }
 
-    // 复制一份
-    m2 := *m
     if pid == 0 {
         // 同一级目录title不能相同
         if checkDuplicate(nil, m) {
             return false
         }
-        return menus.AddItem(&m2)
+        return menus.AddItem(m)
     }
 
-    item := menus.GetItem(pid)
-    if item == nil {
-        // 没有对应的父元素
+    // 先找到顶级菜单
+    top := getTopMenu(pid)
+    if top == nil {
         return false
     }
-    // 复制一份
-    pm := *(item.(*Menu))
-    if !pm.addMenu(&m2) {
+    topp := top.copy()
+    // 找到父节点
+    parent := topp
+    if pid > 100 {
+        parent = topp.getMenu(pid)
+    }
+
+    if parent == nil || !parent.addMenu(m) {
         return false
     }
-    return menus.UpdateItem(&pm)
+
+    return menus.UpdateItem(topp)
 }
 
-func GetMenu(id uint32, pid uint32) *Menu {
-    if pid == 0 {
-        item := menus.GetItem(id)
-        if item == nil {
-            return nil
-        }
-        m := *(item.(*Menu))
-        return &m
+func getTopMenu(id uint32) *Menu {
+    for ; id > 100; id /= 100 {
     }
-
-    item := menus.GetItem(pid)
+    item := menus.GetItem(id)
     if item == nil {
         return nil
     }
-    m := *(item.(*Menu))
-    return m.getMenu(id)
+    return item.(*Menu)
+}
+
+func GetTopMenu(id uint32) *Menu {
+    top := getTopMenu(id)
+    if top == nil {
+        return nil
+    }
+    return top.copy()
+}
+
+func GetMenu(id uint32) *Menu {
+    // 先找到顶级菜单
+    top := getTopMenu(id)
+    if top == nil {
+        return nil
+    }
+
+    if id <= 100 {
+        return top.copy()
+    }
+
+    m := top.getMenu(id)
+    if m == nil {
+        return nil
+    }
+    return m.copy()
 }
 
 func UpdateMenu(m *Menu) bool {
@@ -157,34 +234,52 @@ func UpdateMenu(m *Menu) bool {
         return false
     }
 
-    m2 := *m
-    return menus.UpdateItem(&m2)
+    // 先找到顶级菜单
+    top := getTopMenu(m.Id)
+    if top == nil {
+        return false
+    }
+
+    if m.Id <= 100 {
+        topp := top.copy()
+        topp.updateMenu(m)
+        return menus.UpdateItem(topp)
+    }
+
+    topp := top.copy()
+    old := topp.getMenu(m.Id)
+    if old == nil {
+        return false
+    }
+    old.updateMenu(m)
+    return menus.UpdateItem(topp)
 }
 
-func DelMenu(id uint32, pid uint32) bool {
+func DelMenu(id uint32) bool {
     if menus == nil {
         return false
     }
 
-    if pid == 0 {
-        item := menus.GetItem(id)
-        if item == nil {
-            return false
-        }
-
-        return menus.DelItem(item)
-    }
-
-    item := menus.GetItem(pid)
-    if item == nil {
+    // 获取顶级菜单
+    top := getTopMenu(id)
+    if top == nil {
         return false
     }
-    // 复制一份
-    parent := *(item.(*Menu))
+
+    if id <= 100 {
+        return menus.DelItem(top)
+    }
+
+    topp := top.copy()
+    parent := topp
+    if id/100 > 100 {
+        pid := id/100*100
+        parent = topp.getMenu(pid)
+    }
     if !parent.delMenu(id) {
         return false
     }
-    return menus.UpdateItem(&parent)
+    return menus.UpdateItem(topp)
 }
 
 func ClearMenu() bool {

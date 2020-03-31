@@ -1,0 +1,243 @@
+[
+  {
+    "id": 1,
+    "title": "控制台",
+    "href": "console.html",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe654;"
+  },
+  {
+    "id": 2,
+    "title": "GM工具",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe68a;",
+    "spread": true,
+    "children": [
+      {
+        "id": 201,
+        "title": "GM",
+        "href": "gm/gm.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "id": 202,
+        "title": "分区管理",
+        "href": "gm/dir.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "isCheck": true
+      },
+      {
+        "id": 203,
+        "title": "渠道管理",
+        "href": "gm/channel.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "框架使用",
+    "fontFamily": "ok-icon",
+    "icon": "ok-icon-yooxi",
+    "children": [
+      {
+        "id": 301,
+        "title": "字体图标",
+        "href": "help/ok_font.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 302,
+        "title": "插件目录",
+        "href": "help/plug_directory.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 303,
+        "title": "内部添加导航",
+        "href": "help/nav_operate.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 304,
+        "title": "导航的图标",
+        "href": "help/nav_icon.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 305,
+        "title": "导航的参数",
+        "href": "help/nav_parameter.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 306,
+        "title": "okUtils",
+        "href": "help/okUtils.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 307,
+        "title": "okLayer",
+        "href": "help/okLayer.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 308,
+        "title": "okFly",
+        "href": "help/okFly.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "会员管理",
+    "href": "",
+    "icon": "&#xe66f;",
+    "spread": false,
+    "children": [
+      {
+        "id": 401,
+        "title": "用户列表",
+        "href": "member/user.html",
+        "fontFamily": "layui-icon",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 402,
+        "title": "角色列表",
+        "href": "member/role.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      },
+      {
+        "id": 403,
+        "title": "权限列表",
+        "href": "member/permission.html",
+        "icon": "&#xe62e;",
+        "spread": false
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "图表管理",
+    "href": "",
+    "icon": "&#xe62c;",
+    "children": [
+      {
+        "id": 501,
+        "title": "数据图",
+        "fontFamily": "ok-icon",
+        "icon": "ok-icon-shuju1",
+        "children": [
+          {
+            "id": 50101,
+            "title": "统计图",
+            "href": "chart/chart1.html",
+            "icon": "&#xe62e;",
+            "spread": false
+          },
+          {
+            "id": 50102,
+            "title": "折线图",
+            "href": "chart/chart2.html",
+            "icon": "&#xe62e;",
+            "spread": false
+          },
+          {
+            "id": 50103,
+            "title": "馅饼图",
+            "href": "chart/chart4.html",
+            "icon": "&#xe62e;",
+            "spread": false
+          },
+          {
+            "id": 50104,
+            "title": "圆形图",
+            "href": "chart/chart5.html",
+            "icon": "&#xe62e;",
+            "spread": false
+          },
+          {
+            "id": 50105,
+            "title": "指数图",
+            "href": "chart/chart6.html",
+            "icon": "&#xe62e;",
+            "spread": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "第三方库",
+    "icon": "&#xe674;",
+    "children": [
+      {
+        "id": 601,
+        "title": "jquery.okQrcode.js",
+        "href": "tripartite/qrcode.html"
+      },
+      {
+        "id": 602,
+        "title": "jquery.okCountup.js",
+        "href": "tripartite/countup.html"
+      },
+      {
+        "id": 603,
+        "title": "okCookie",
+        "href": "tripartite/okCookie.html"
+      },
+      {
+        "id": 604,
+        "title": "okToastr",
+        "href": "tripartite/okToastr.html"
+      },
+      {
+        "id": 605,
+        "title": "okMd5",
+        "href": "tripartite/okMd5.html"
+      },
+      {
+        "id": 606,
+        "title": "okBarcode",
+        "href": "tripartite/okBarcode.html"
+      },
+      {
+        "id": 607,
+        "title": "okNprogress",
+        "href": "tripartite/okNprogress.html"
+      },
+      {
+        "id": 608,
+        "title": "okSweetAlert2",
+        "href": "tripartite/okSweetAlert2.html"
+      },
+      {
+        "id": 609,
+        "title": "okAnimate",
+        "href": "tripartite/okAnimate.html"
+      },
+      {
+        "id": 610,
+        "title": "okLayx",
+        "href": "tripartite/okLayx.html"
+      }
+    ]
+  }
+]
