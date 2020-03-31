@@ -26,7 +26,7 @@
         "href": "gm/dir.html",
         "fontFamily": "ok-icon",
         "icon": "&#xe654;",
-        "isCheck": true
+        "checked": true
       },
       {
         "id": 203,

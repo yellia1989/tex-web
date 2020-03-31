@@ -33,7 +33,7 @@ type Menu struct {
     FontFamily string       `json:"fontFamily"`
     Icon    string          `json:"icon"`
     Spread bool             `json:"spread"`
-    IsCheck bool            `json:"isCheck"`
+    Checked bool            `json:"checked"`
     Children []*Menu         `json:"children"`
 }
 func (m *Menu) GetId() uint32 {
@@ -51,7 +51,7 @@ func (m *Menu) copy() *Menu {
         FontFamily: m.FontFamily,
         Icon: m.Icon,
         Spread: m.Spread,
-        IsCheck: m.IsCheck,
+        Checked: m.Checked,
     }
     if len(m.Children) != 0 {
         n.Children = make([]*Menu, len(m.Children))
@@ -122,7 +122,7 @@ func (m *Menu) updateMenu(update *Menu) {
     m.FontFamily = update.FontFamily
     m.Icon = update.Icon
     m.Spread = update.Spread
-    m.IsCheck = update.IsCheck
+    m.Checked = update.Checked
 }
 
 func GetMenus()[]*Menu {

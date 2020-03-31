@@ -89,7 +89,7 @@ layui.define(["element", "jquery"], function (exports) {
 		}
 		var ulItem = '';
 		for (var i = 0; i < data.length; i++) {
-			if (data[i].isCheck) {
+			if (data[i].checked) {
 				ulItem += '<li class="layui-nav-item layui-this">';
 			} else if (data[i].spread) {
 				ulItem += '<li class="layui-nav-item layui-nav-itemed">';
@@ -134,7 +134,7 @@ layui.define(["element", "jquery"], function (exports) {
 				temp += '<dd>';
                 if (data.children[i].spread) {
                     temp += '<dd class="layui-nav-itemed">';
-                } else if (data.children[i].isCheck) {
+                } else if (data.children[i].checked) {
                     temp += '<dd class="layui-this">';
                 }
 				var lay_id = tabID + "-" + (i + 1);

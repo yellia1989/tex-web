@@ -54,7 +54,7 @@
 		laydate.render({elem: '#endTime', type: "datetime"});
 
 		function initPermissionTree() {
-			okUtils.ajax("/permission/tree", "get", null, true).done(function (response) {
+			okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
 				tree.render({
 					elem: '#permissionTree',
 					data: response.data,

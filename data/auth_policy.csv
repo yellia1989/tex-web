@@ -1,6 +1,7 @@
 # base角色对/*.html都有GET权限
 p, base, /*.html, GET
 p, base, /gm/*.html, GET
+p, base, /member/*.html, GET
 p, base, /api/menu/list, GET
 
 # 角色列表
