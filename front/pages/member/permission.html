@@ -58,9 +58,9 @@
 				tree.render({
 					elem: '#permissionTree',
 					data: response.data,
+                    edit: ['add', 'del'],
 					showCheckbox: true,
 					id: 'demoId1',
-					isJump: true,
 					click: function (obj) {
 						var data = obj.data;
 						layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));

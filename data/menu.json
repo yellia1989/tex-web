@@ -239,5 +239,20 @@
         "href": "tripartite/okLayx.html"
       }
     ]
+  },
+  {
+    "id": 7,
+    "title": "系统管理",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe68a;",
+    "children": [
+      {
+        "id": 701,
+        "title": "菜单管理",
+        "href": "system/menu.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      }
+    ]
   }
 ]

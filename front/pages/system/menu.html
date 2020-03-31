@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>菜单管理</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+	<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+</head>
+<body class="ok-body-scroll">
+<div class="ok-body">
+	<div class="layui-row">
+		<div class="layui-col-md3">
+			<div id="menuTree"></div>
+		</div>
+		<div class="layui-col-md4">
+            <form class="layui-form layui-form-pane ok-form">
+	            <div class="layui-form-item">
+	        	  	<label class="layui-form-label">标题</label>
+	        	   	<div class="layui-input-block">
+	        	   		<input type="text" name="sTitle" class="layui-input" disabled>
+	        	   	</div>
+	        	</div>
+	            <div class="layui-form-item">
+	        	  	<label class="layui-form-label">角色列表</label>
+	        	   	<div class="layui-input-block">
+                        <div id="demo1"></div>
+                    </div>
+	        	</div>
+	        	<div class="layui-form-item">
+	        	    <button class="layui-btn" lay-submit lay-filter="update">更新</button>
+	        	</div>
+	        </form>
+		</div>
+	</div>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "tree", "form", "okUtils"], function () {
+		let tree = layui.tree;
+		let okUtils = layui.okUtils;
+		okLoading.close();
+
+		function initMenuTree() {
+			okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
+				tree.render({
+					elem: '#menuTree',
+					data: response.data,
+					showCheckbox: true,
+					id: 'menu',
+					click: function (obj) {
+						var data = obj.data;
+						layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+					}
+				});
+			}).fail(function (error) {
+				console.log(error)
+			});
+		}
+
+		initMenuTree();
+
+        xmSelect.render({
+            // 这里绑定css选择器
+            el: '#demo1',
+            autoRow: true,
+            // 渲染的数据
+            data: [
+                {name: '水果', value: 1, selected: true, disabled: true},
+                {name: '蔬菜', value: 2, selected: true},
+                {name: '桌子', value: 3, disabled: true},
+                {name: '北京', value: 4},
+                {name: '北京', value: 5},
+                {name: '北京', value: 6},
+                {name: '北京', value: 7},
+                {name: '北京', value: 8}
+            ]
+        });
+	});
+</script>
+</body>
+</html>
