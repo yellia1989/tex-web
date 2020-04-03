@@ -38,3 +38,9 @@ func UserLogin(c echo.Context) error {
 
     return ctx.SendResponse(map[string]interface{}{"token":t, "day":1, "name": u.Name})
 }
+
+func UserList(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    us := model.GetUsers()
+    return ctx.SendResponse(us)
+}

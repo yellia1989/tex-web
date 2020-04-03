@@ -10,9 +10,9 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/menu/list", MenuList)       // 菜单列表
     group.POST("/menu/update", MenuUpdate)  // 更新菜单
     group.GET("/role/list", RoleList)       // 角色列表
+    group.GET("/user/list", UserList)       // 用户列表
 
-    /*api.GET("/user/list", api.UserList)     // 用户列表
-    api.POST("/user/add", api.UserAdd)      // 用户增加
+    /*api.POST("/user/add", api.UserAdd)      // 用户增加
     api.POST("/user/edit", api.UserEdit)    // 用户编辑
     api.POST("/user/del", api.UserDel)      // 用户删除
     api.POST("/role/add", api.RoleAdd)      // 角色增加

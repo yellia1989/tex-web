@@ -428,6 +428,45 @@
         "role": [
           2
         ]
+      },
+      {
+        "id": 702,
+        "title": "用户管理",
+        "href": "system/user.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 703,
+        "title": "角色管理",
+        "href": "system/role.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 704,
+        "title": "权限管理",
+        "href": "system/permission.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
       }
     ],
     "role": [
