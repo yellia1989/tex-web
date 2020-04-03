@@ -46,7 +46,7 @@
                 okUtils.ajax("/api/login", "post", data.field, true).done(function (response) {
                     // 保存token到cookie中供以后使用
                     $.cookie("textoken", response.data.token, {expires:response.data.day})
-                    localStorage.setItem("name", response.data.name);
+                    localStorage.setItem("username", response.data.username);
                     okLayer.greenTickMsg("登陆成功", function () {
                         window.location = "/index.html";
                     })

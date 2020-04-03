@@ -23,7 +23,6 @@ func init() {
 
 type User struct {
     Id uint32           `json:"id"`
-    Name string         `json:"name"`
     UserName string     `json:"username"`
     Password string     `json:"password"`
     Role uint32         `json:"role"`
@@ -104,7 +103,7 @@ func GetUsers() []*User {
     return us
 }
 
-func AddUser(name string, username string, password string) *User {
+func AddUser(username string, password string) *User {
     if users == nil {
         return nil
     }
@@ -118,7 +117,7 @@ func AddUser(name string, username string, password string) *User {
         return nil
     }
 
-    u := &User{Name: name, UserName: username, Password: password}
+    u := &User{UserName: username, Password: password}
     if !users.AddItem(u) {
         return nil
     }

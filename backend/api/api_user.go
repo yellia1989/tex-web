@@ -36,7 +36,7 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, err.Error())
     }
 
-    return ctx.SendResponse(map[string]interface{}{"token":t, "day":1, "name": u.Name})
+    return ctx.SendResponse(map[string]interface{}{"token":t, "day":1, "username": u.UserName})
 }
 
 func UserList(c echo.Context) error {
