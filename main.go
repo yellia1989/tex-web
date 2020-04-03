@@ -20,7 +20,7 @@ func httpErrorHandler(err error, c echo.Context) {
     } else {
         he = &echo.HTTPError{
             Code:    http.StatusInternalServerError,
-            Message: http.StatusText(http.StatusInternalServerError),
+            Message: err.Error(),
         }
     }
 

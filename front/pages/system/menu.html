@@ -6,7 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
-	<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 </head>
 <body class="ok-body-scroll">
 <div class="ok-body">
@@ -14,22 +13,23 @@
 		<div class="layui-col-md3">
 			<div id="menuTree"></div>
 		</div>
-		<div class="layui-col-md4">
+		<div class="layui-col-md6">
             <form class="layui-form layui-form-pane ok-form">
 	            <div class="layui-form-item">
 	        	  	<label class="layui-form-label">标题</label>
 	        	   	<div class="layui-input-block">
-	        	   		<input type="text" name="sTitle" class="layui-input" disabled>
+	        	   		<input type="text" id="menuId" class="layui-hide">
+	        	   		<input type="text" id="menuTitle" class="layui-input" lay-verify="required" lay-verType="tips" lay-reqText="请先选择一个菜单" disabled>
 	        	   	</div>
 	        	</div>
 	            <div class="layui-form-item">
 	        	  	<label class="layui-form-label">角色列表</label>
 	        	   	<div class="layui-input-block">
-                        <div id="demo1"></div>
+                        <div id="roleSelect"></div>
                     </div>
 	        	</div>
 	        	<div class="layui-form-item">
-	        	    <button class="layui-btn" lay-submit lay-filter="update">更新</button>
+	        	    <button class="layui-btn" lay-submit lay-filter="edit">更新</button>
 	        	</div>
 	        </form>
 		</div>
@@ -37,47 +37,58 @@
 </div>
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
 	layui.use(["element", "tree", "form", "okUtils"], function () {
+        let $ = layui.jquery;
 		let tree = layui.tree;
+        let form = layui.form;
 		let okUtils = layui.okUtils;
+        let xmSelect = layui.xmSelect;
 		okLoading.close();
 
-		function initMenuTree() {
-			okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
-				tree.render({
-					elem: '#menuTree',
-					data: response.data,
-					showCheckbox: true,
-					id: 'menu',
-					click: function (obj) {
-						var data = obj.data;
-						layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
-					}
-				});
-			}).fail(function (error) {
-				console.log(error)
-			});
-		}
-
-		initMenuTree();
-
-        xmSelect.render({
-            // 这里绑定css选择器
-            el: '#demo1',
+        // 加载角色列表
+        let roleSelect = xmSelect.render({
+            el: '#roleSelect',
+            name: 'role',
             autoRow: true,
-            // 渲染的数据
-            data: [
-                {name: '水果', value: 1, selected: true, disabled: true},
-                {name: '蔬菜', value: 2, selected: true},
-                {name: '桌子', value: 3, disabled: true},
-                {name: '北京', value: 4},
-                {name: '北京', value: 5},
-                {name: '北京', value: 6},
-                {name: '北京', value: 7},
-                {name: '北京', value: 8}
-            ]
         });
+        okUtils.ajax("/api/role/list", "get", null, true).done(function (response) {
+            roleSelect.update({
+                data: response.data
+            });
+        });
+
+        // 加载菜单
+        okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
+		    tree.render({
+				elem: '#menuTree',
+				data: response.data,
+				showCheckbox: true,
+                onlyIconControl: true,
+				id: 'menu',
+				click: function (obj) {
+					var data = obj.data;
+                    $("#menuId").val(data.id);
+                    $("#menuTitle").val(data.title);
+                    roleSelect.setValue(data.role ? data.role : []);
+				}
+			});
+		});
+
+        // 表单提交
+        form.on('submit(edit)', function (data) {
+            param = {
+                id: $("#menuId").val(),
+                role: roleSelect.getValue('valueStr')
+            };
+            okUtils.ajax("/api/menu/update", "post", param, true).done(function (response) {
+                layer.msg("授权成功！", {icon: 6, time: 1000, anim: 4}, function () {
+			    	parent.layer.close(parent.layer.getFrameIndex(window.name));
+			    });
+		    });
+			return false;
+		});
 	});
 </script>
 </body>

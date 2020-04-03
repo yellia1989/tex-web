@@ -3,6 +3,8 @@ p, base, /*.html, GET
 p, base, /gm/*.html, GET
 p, base, /member/*.html, GET
 p, base, /api/menu/list, GET
+p, base, /api/menu/update, POST
+p, base, /api/role/list, GET
 
 # 角色列表
 g, yellia, base

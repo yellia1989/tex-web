@@ -4,255 +4,431 @@
     "title": "控制台",
     "href": "console.html",
     "fontFamily": "ok-icon",
-    "icon": "&#xe654;"
+    "icon": "\u0026#xe654;",
+    "spread": false,
+    "checked": false,
+    "children": null,
+    "role": null
   },
   {
     "id": 2,
     "title": "GM工具",
+    "href": "",
     "fontFamily": "ok-icon",
-    "icon": "&#xe68a;",
+    "icon": "\u0026#xe68a;",
     "spread": true,
+    "checked": false,
     "children": [
       {
         "id": 201,
         "title": "GM",
         "href": "gm/gm.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;"
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1,
+          2
+        ]
       },
       {
         "id": 202,
         "title": "分区管理",
         "href": "gm/dir.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
-        "checked": true
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": true,
+        "children": null,
+        "role": [
+          1
+        ]
       },
       {
         "id": 203,
         "title": "渠道管理",
         "href": "gm/channel.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;"
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
       }
-    ]
+    ],
+    "role": null
   },
   {
     "id": 3,
     "title": "框架使用",
+    "href": "",
     "fontFamily": "ok-icon",
     "icon": "ok-icon-yooxi",
+    "spread": false,
+    "checked": false,
     "children": [
       {
         "id": 301,
         "title": "字体图标",
         "href": "help/ok_font.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 302,
         "title": "插件目录",
         "href": "help/plug_directory.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 303,
         "title": "内部添加导航",
         "href": "help/nav_operate.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 304,
         "title": "导航的图标",
         "href": "help/nav_icon.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 305,
         "title": "导航的参数",
         "href": "help/nav_parameter.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 306,
         "title": "okUtils",
         "href": "help/okUtils.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 307,
         "title": "okLayer",
         "href": "help/okLayer.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 308,
         "title": "okFly",
         "href": "help/okFly.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       }
-    ]
+    ],
+    "role": null
   },
   {
     "id": 4,
     "title": "会员管理",
     "href": "",
-    "icon": "&#xe66f;",
+    "fontFamily": "",
+    "icon": "\u0026#xe66f;",
     "spread": false,
+    "checked": false,
     "children": [
       {
         "id": 401,
         "title": "用户列表",
         "href": "member/user.html",
         "fontFamily": "layui-icon",
-        "icon": "&#xe62e;",
-        "spread": false
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 402,
         "title": "角色列表",
         "href": "member/role.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 403,
         "title": "权限列表",
         "href": "member/permission.html",
-        "icon": "&#xe62e;",
-        "spread": false
+        "fontFamily": "",
+        "icon": "\u0026#xe62e;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       }
-    ]
+    ],
+    "role": null
   },
   {
     "id": 5,
     "title": "图表管理",
     "href": "",
-    "icon": "&#xe62c;",
+    "fontFamily": "",
+    "icon": "\u0026#xe62c;",
+    "spread": false,
+    "checked": false,
     "children": [
       {
         "id": 501,
         "title": "数据图",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "ok-icon-shuju1",
+        "spread": false,
+        "checked": false,
         "children": [
           {
             "id": 50101,
             "title": "统计图",
             "href": "chart/chart1.html",
-            "icon": "&#xe62e;",
-            "spread": false
+            "fontFamily": "",
+            "icon": "\u0026#xe62e;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": null
           },
           {
             "id": 50102,
             "title": "折线图",
             "href": "chart/chart2.html",
-            "icon": "&#xe62e;",
-            "spread": false
+            "fontFamily": "",
+            "icon": "\u0026#xe62e;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": null
           },
           {
             "id": 50103,
             "title": "馅饼图",
             "href": "chart/chart4.html",
-            "icon": "&#xe62e;",
-            "spread": false
+            "fontFamily": "",
+            "icon": "\u0026#xe62e;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": null
           },
           {
             "id": 50104,
             "title": "圆形图",
             "href": "chart/chart5.html",
-            "icon": "&#xe62e;",
-            "spread": false
+            "fontFamily": "",
+            "icon": "\u0026#xe62e;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": null
           },
           {
             "id": 50105,
             "title": "指数图",
             "href": "chart/chart6.html",
-            "icon": "&#xe62e;",
-            "spread": false
+            "fontFamily": "",
+            "icon": "\u0026#xe62e;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": null
           }
-        ]
+        ],
+        "role": null
       }
-    ]
+    ],
+    "role": null
   },
   {
     "id": 6,
     "title": "第三方库",
-    "icon": "&#xe674;",
+    "href": "",
+    "fontFamily": "",
+    "icon": "\u0026#xe674;",
+    "spread": false,
+    "checked": false,
     "children": [
       {
         "id": 601,
         "title": "jquery.okQrcode.js",
-        "href": "tripartite/qrcode.html"
+        "href": "tripartite/qrcode.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 602,
         "title": "jquery.okCountup.js",
-        "href": "tripartite/countup.html"
+        "href": "tripartite/countup.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 603,
         "title": "okCookie",
-        "href": "tripartite/okCookie.html"
+        "href": "tripartite/okCookie.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 604,
         "title": "okToastr",
-        "href": "tripartite/okToastr.html"
+        "href": "tripartite/okToastr.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 605,
         "title": "okMd5",
-        "href": "tripartite/okMd5.html"
+        "href": "tripartite/okMd5.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 606,
         "title": "okBarcode",
-        "href": "tripartite/okBarcode.html"
+        "href": "tripartite/okBarcode.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 607,
         "title": "okNprogress",
-        "href": "tripartite/okNprogress.html"
+        "href": "tripartite/okNprogress.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 608,
         "title": "okSweetAlert2",
-        "href": "tripartite/okSweetAlert2.html"
+        "href": "tripartite/okSweetAlert2.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 609,
         "title": "okAnimate",
-        "href": "tripartite/okAnimate.html"
+        "href": "tripartite/okAnimate.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       },
       {
         "id": 610,
         "title": "okLayx",
-        "href": "tripartite/okLayx.html"
+        "href": "tripartite/okLayx.html",
+        "fontFamily": "",
+        "icon": "",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       }
-    ]
+    ],
+    "role": null
   },
   {
     "id": 7,
     "title": "系统管理",
+    "href": "",
     "fontFamily": "ok-icon",
-    "icon": "&#xe68a;",
+    "icon": "\u0026#xe68a;",
+    "spread": false,
+    "checked": false,
     "children": [
       {
         "id": 701,
         "title": "菜单管理",
         "href": "system/menu.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;"
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": null
       }
-    ]
+    ],
+    "role": null
   }
 ]

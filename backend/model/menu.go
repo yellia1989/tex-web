@@ -35,6 +35,7 @@ type Menu struct {
     Spread bool             `json:"spread"`
     Checked bool            `json:"checked"`
     Children []*Menu         `json:"children"`
+    Role []uint32           `json:"role"`
 }
 func (m *Menu) GetId() uint32 {
     return m.Id
@@ -58,6 +59,10 @@ func (m *Menu) copy() *Menu {
         for i, v := range m.Children {
             n.Children[i] = v.copy()
         }
+    }
+    if len(m.Role) != 0 {
+        n.Role = make([]uint32,len(m.Role))
+        copy(n.Role, m.Role)
     }
     return n
 }
@@ -123,6 +128,11 @@ func (m *Menu) updateMenu(update *Menu) {
     m.Icon = update.Icon
     m.Spread = update.Spread
     m.Checked = update.Checked
+    m.Role = nil
+    if len(update.Role) != 0 {
+        m.Role = make([]uint32,len(update.Role))
+        copy(m.Role,update.Role)
+    }
 }
 
 func GetMenus()[]*Menu {
