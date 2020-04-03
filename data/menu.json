@@ -54,7 +54,10 @@
         "spread": false,
         "checked": false,
         "children": null,
-        "role": null
+        "role": [
+          2,
+          3
+        ]
       }
     ],
     "role": [

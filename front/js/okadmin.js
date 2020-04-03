@@ -8,7 +8,7 @@ layui.use(["element", "layer", "okUtils", "okTab", "okLayer", "okContextMenu", "
 
 	var okTab = layui.okTab({
 		// 菜单请求路径
-        url: "/api/menu/list",
+    url: "/api/menu/list",
 		// 允许同时选项卡的个数
 		openTabNum: 30,
 		// 如果返回的结果和navs.json中的数据结构一致可省略这个方法
@@ -153,9 +153,8 @@ layui.use(["element", "layer", "okUtils", "okTab", "okLayer", "okContextMenu", "
 	$("#logout").click(function () {
 		okLayer.confirm("确定要退出吗？", function (index) {
 			okTab.removeTabStorage(function (res) {
-				okTab.removeTabStorage();
         $.removeCookie("textoken");
-        localStorage.removeItem("name");
+        localStorage.removeItem("username");
 				window.location = "login.html";
 			});
 		});

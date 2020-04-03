@@ -79,38 +79,16 @@ layui.define(["layer"], function (exports) {
          * @returns {string}
          */
         skinChoose: function () {
-            let storage = window.localStorage;
-            let skin = storage.getItem("skin");
-            if (skin == 1) {
-                // 灰白色
-                return "";
-            } else if (skin == 2) {
-                // 墨绿色
-                return "layui-layer-molv";
-            } else if (skin == 3) {
-                // 蓝色
-                return "layui-layer-lan";
-            } else if (!skin || skin == 4) {
-                // 随机颜色
-                var skinArray = ["", "layui-layer-molv", "layui-layer-lan"];
-                return skinArray[Math.floor(Math.random() * skinArray.length)];
-            }
+          // 灰白色
+          return "";
         },
         /**
          * 动画选择
          * @returns {number}
          */
         animChoose: function () {
-            let storage = window.localStorage;
-            let anim = storage.getItem("anim");
-            let animArray = ["0", "1", "2", "3", "4", "5", "6"];
-            if (animArray.indexOf(anim) > -1) {
-                // 用户选择的动画
-                return anim;
-            } else if (!anim || anim == 7) {
-                // 随机动画
-                return Math.floor(Math.random() * animArray.length);
-            }
+          // 平滑放大
+          return "0";
         }
     }
 

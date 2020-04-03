@@ -56,7 +56,7 @@ layui.define(["element", "jquery"], function (exports) {
 	var layui = parent.layui || layui;
 	$ = layui.jquery;
 	var element = layui.element,
-		layer = layui.layer;
+	layer = layui.layer;
 	okTab = function () {
 		this.tabConfig = {
 			openTabNum: 30, //最大可打开窗口数量默认30
@@ -536,7 +536,4 @@ layui.define(["element", "jquery"], function (exports) {
 			return new okTab().init(option);
 		}
 	});
-
-
 });
-
