@@ -426,11 +426,12 @@
         "checked": false,
         "children": null,
         "role": [
-          1,
           2
         ]
       }
     ],
-    "role": null
+    "role": [
+      2
+    ]
   }
 ]
