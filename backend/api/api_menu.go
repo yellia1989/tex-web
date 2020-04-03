@@ -25,14 +25,16 @@ func MenuUpdate(c echo.Context) error {
         return errors.New("菜单不存在")
     }
 
-    roles := strings.Split(role, ",")
     ids := make([]uint32,0)
-    for _, rid := range roles {
-        id, _ := strconv.ParseUint(rid, 10, 32)
-        if model.GetRole(uint32(id)) == nil {
-            return errors.New("角色不存在,id:"+rid)
+    if role != "" {
+        roles := strings.Split(role, ",")
+        for _, rid := range roles {
+            id, _ := strconv.ParseUint(rid, 10, 32)
+            if model.GetRole(uint32(id)) == nil {
+                return errors.New("角色不存在,id:"+rid)
+            }
+            ids = append(ids, uint32(id))
         }
-        ids = append(ids, uint32(id))
     }
     m.Role = ids[:]
     if !model.UpdateMenu(m) {

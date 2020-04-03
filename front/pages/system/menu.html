@@ -60,21 +60,23 @@
         });
 
         // 加载菜单
-        okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
-		    tree.render({
-				elem: '#menuTree',
-				data: response.data,
-				showCheckbox: true,
-                onlyIconControl: true,
-				id: 'menu',
-				click: function (obj) {
-					var data = obj.data;
-                    $("#menuId").val(data.id);
-                    $("#menuTitle").val(data.title);
-                    roleSelect.setValue(data.role ? data.role : []);
-				}
-			});
-		});
+        function refreshMenuTree() {
+            okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
+		        tree.render({
+		        	elem: '#menuTree',
+                    data: response.data,
+		        	showCheckbox: true,
+                    onlyIconControl: true,
+		        	id: 'menu',
+		        	click: function (obj) {
+		        		var data = obj.data;
+                        $("#menuId").val(data.id);
+                        $("#menuTitle").val(data.title);
+                        roleSelect.setValue(data.role ? data.role : []);
+		        	}
+		        });
+		    });
+        }
 
         // 表单提交
         form.on('submit(edit)', function (data) {
@@ -86,9 +88,12 @@
                 layer.msg("授权成功！", {icon: 6, time: 1000, anim: 4}, function () {
 			    	parent.layer.close(parent.layer.getFrameIndex(window.name));
 			    });
+                refreshMenuTree();
 		    });
 			return false;
 		});
+
+        refreshMenuTree();
 	});
 </script>
 </body>

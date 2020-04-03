@@ -42,9 +42,7 @@
         "spread": false,
         "checked": true,
         "children": null,
-        "role": [
-          1
-        ]
+        "role": null
       },
       {
         "id": 203,
@@ -55,9 +53,7 @@
         "spread": false,
         "checked": false,
         "children": null,
-        "role": [
-          1
-        ]
+        "role": null
       }
     ],
     "role": null
