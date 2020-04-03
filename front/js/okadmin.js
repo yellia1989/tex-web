@@ -155,8 +155,14 @@ layui.use(["element", "layer", "okUtils", "okTab", "okLayer", "okContextMenu", "
 			okTab.removeTabStorage(function (res) {
 				okTab.removeTabStorage();
                 $.removeCookie("textoken");
+                localStorage.removeItem("name");
 				window.location = "login.html";
 			});
 		});
 	});
+
+    /**
+     * 设置用户名字
+     */
+    $("#uname").html(localStorage.getItem("name"));
 });

@@ -1,14 +1,23 @@
 [
   {
     "id": 1001,
-    "name": "hello",
+    "name": "管理员",
     "username": "admin",
-    "password": "admin"
+    "password": "admin",
+    "role": 1
   },
   {
     "id": 1002,
-    "name": "hello",
-    "username": "yellia",
-    "password": "yellia"
+    "name": "开发人员",
+    "username": "dev",
+    "password": "dev",
+    "role": 2
+  },
+  {
+    "id": 1003,
+    "name": "测试人员",
+    "username": "test",
+    "password": "test",
+    "role": 3
   }
 ]

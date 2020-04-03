@@ -16,7 +16,7 @@
 		<div class="layui-col-md6">
             <form class="layui-form layui-form-pane ok-form">
 	            <div class="layui-form-item">
-	        	  	<label class="layui-form-label">标题</label>
+	        	  	<label class="layui-form-label">菜单名称</label>
 	        	   	<div class="layui-input-block">
 	        	   		<input type="text" id="menuId" class="layui-hide">
 	        	   		<input type="text" id="menuTitle" class="layui-input" lay-verify="required" lay-verType="tips" lay-reqText="请先选择一个菜单" disabled>
@@ -65,7 +65,6 @@
 		        tree.render({
 		        	elem: '#menuTree',
                     data: response.data,
-		        	showCheckbox: true,
                     onlyIconControl: true,
 		        	id: 'menu',
 		        	click: function (obj) {

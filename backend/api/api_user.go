@@ -28,7 +28,7 @@ func UserLogin(c echo.Context) error {
     // Set claims
     claims := token.Claims.(jwt.MapClaims)
     claims["id"] = strconv.FormatUint(uint64(u.Id), 10)
-    claims["exp"] = strconv.FormatInt(time.Now().Add(time.Hour * 72).Unix(), 10)
+    claims["exp"] = strconv.FormatInt(time.Now().Add(time.Hour * 24).Unix(), 10)
 
     // Generate encoded token and send it as response.
     t, err := token.SignedString([]byte(mid.UserKey))
@@ -36,5 +36,5 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, err.Error())
     }
 
-    return ctx.SendResponse(map[string]interface{}{"token":t, "day":1})
+    return ctx.SendResponse(map[string]interface{}{"token":t, "day":1, "name": u.Name})
 }

@@ -7,4 +7,4 @@ p, base, /api/menu/update, POST
 p, base, /api/role/list, GET
 
 # 角色列表
-g, yellia, base
+g, dev, base

@@ -1,10 +1,14 @@
 [
   {
     "value": 1,
-    "name": "base"
+    "name": "admin"
   },
   {
     "value": 2,
-    "name": "admin"
+    "name": "dev"
+  },
+  {
+    "value": 3,
+    "name": "test"
   }
 ]

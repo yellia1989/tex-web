@@ -7,6 +7,7 @@ import (
     "github.com/labstack/echo"
     "github.com/dgrijalva/jwt-go"
     "github.com/labstack/echo/middleware"
+    "github.com/yellia1989/tex-web/backend/model"
 )
 
 const (
@@ -56,6 +57,14 @@ func GetUserId(c echo.Context) uint32 {
 
 func (ctx *Context) GetUserId() uint32 {
     return GetUserId(ctx)
+}
+
+func (ctx *Context) GetUser() *model.User {
+    uid := ctx.GetUserId()
+    if uid == 0 {
+        return nil
+    }
+    return model.GetUser(uid)
 }
 
 func (ctx *Context) SendResponse(data interface{}) error {

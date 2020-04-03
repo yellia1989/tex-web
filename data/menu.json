@@ -29,7 +29,6 @@
         "checked": false,
         "children": null,
         "role": [
-          1,
           2
         ]
       },
@@ -42,7 +41,9 @@
         "spread": false,
         "checked": true,
         "children": null,
-        "role": null
+        "role": [
+          2
+        ]
       },
       {
         "id": 203,
@@ -56,7 +57,9 @@
         "role": null
       }
     ],
-    "role": null
+    "role": [
+      2
+    ]
   },
   {
     "id": 3,
@@ -422,7 +425,10 @@
         "spread": false,
         "checked": false,
         "children": null,
-        "role": null
+        "role": [
+          1,
+          2
+        ]
       }
     ],
     "role": null

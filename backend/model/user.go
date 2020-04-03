@@ -2,17 +2,14 @@ package model
 
 import (
     "encoding/json"
-    "github.com/casbin/casbin"
-    "github.com/labstack/echo"
+    _ "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/util"
     cm "github.com/yellia1989/tex-web/backend/common"
 )
 
-var ce *casbin.Enforcer
 var users *cm.Map
 
 func init() {
-    ce, _ = casbin.NewEnforcer("data/auth_model.conf", "data/auth_policy.csv")
     bs, _ := util.LoadFromFile("data/users.json")
     items := make([]*User,0)
     json.Unmarshal(bs, &items)
@@ -29,6 +26,7 @@ type User struct {
     Name string         `json:"name"`
     UserName string     `json:"username"`
     Password string     `json:"password"`
+    Role uint32         `json:"role"`
 }
 
 func (u *User) GetId() uint32 {
@@ -37,18 +35,10 @@ func (u *User) GetId() uint32 {
 func (u *User) SetId(id uint32) {
     u.Id = id
 }
+func (u *User) IsAdmin() bool {
+    return u.Role == 1
+}
 func (u *User) CheckPermission(path string, method string) error {
-    if ce == nil {
-        return nil
-    }
-
-    pass, err := ce.Enforce(u.UserName, path, method)
-    if err != nil {
-        return err
-    }
-    if !pass {
-        return echo.ErrForbidden
-    }
     return nil
 }
 
