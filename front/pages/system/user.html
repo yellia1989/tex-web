@@ -13,6 +13,7 @@
 </div>
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
   var roles;
   var userdata;
@@ -20,6 +21,7 @@
 		let table = layui.table;
 		let okLayer = layui.okLayer;
 		let okUtils = layui.okUtils;
+    let xmSelect = layui.xmSelect;
 		okLoading.close();
 
     okUtils.ajax("/api/role/list", "get", null, false).done(function (response) {
@@ -38,21 +40,48 @@
 			page: true,
 			toolbar: "#toolbarTpl",
 			cols: [[
-				{type: "checkbox", title: "序号", fixed: 'left'},
-				{field: "id", title: "用户ID", width: 90, fixed: 'left'},
+				{type: "checkbox", title: "序号"},
+				{field: "id", title: "用户ID", width: 90},
 				{field: "username", title: "用户名"},
         {field: "role", title: "角色", templet: function(d) {
-          let rname = '';
-          for (var i = 0; i < roles.length; ++i) {
-            if (roles[i].value == d.role) {
-              rname = roles[i].name;
-              break;
-            }
-          }
-          return rname;
+          return '<div id="XM-' + d.id + '" ></div>';
         }},
 				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
 			]],
+      done: function(res){
+        //修改一些css样式, 这里虽然能够使用, 但是还是不太友好, 努力中...
+        var cells = document.querySelectorAll('div[lay-id="tableId"] .layui-table-cell');
+        for(var i = 0 ; i < cells.length ; i++ ){
+          cells[i].style.overflow = 'unset';
+          cells[i].style.height = 'auto';
+        }
+        //渲染多选
+        res.data.forEach(item => {
+          let xm = xmSelect.render({
+            el: '#XM-' + item.id,
+            radio: true,
+            clickClose: true,
+            data: roles,
+            model: {
+              label: {
+                type: 'block',
+                block: {
+                  //是否显示删除图标
+                  showIcon: false,
+                }
+              }
+            },
+            on: function(d) {
+              // 快捷修改当前玩家的角色
+              okUtils.ajax("/api/user/updaterole", "post", {id: item.id, role:d.arr[0].value}, false).fail(function (error) {
+				      	console.log(error);
+				      });
+            }
+          })
+          xm.setValue([item.role]);
+          item.__xm = xm;
+        })
+      }
 		});
 
 		table.on("toolbar(tableFilter)", function (obj) {

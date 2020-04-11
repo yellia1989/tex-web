@@ -64,14 +64,14 @@
         okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
 		    tree.render({
 		    	elem: '#menuTree',
-                data: response.data,
-                onlyIconControl: true,
+          data: response.data,
+          onlyIconControl: true,
 		    	id: 'menu',
 		    	click: function (obj) {
 		    		var data = obj.data;
-                    $("#menuId").val(data.id);
-                    $("#menuTitle").val(data.title);
-                    roleSelect.setValue(data.role ? data.role : []);
+            $("#menuId").val(data.id);
+            $("#menuTitle").val(data.title);
+            roleSelect.setValue(data.role ? data.role : []);
 		    	}
 		    });
 		});
