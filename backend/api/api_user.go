@@ -42,5 +42,9 @@ func UserLogin(c echo.Context) error {
 func UserList(c echo.Context) error {
     ctx := c.(*mid.Context)
     us := model.GetUsers()
+    // 隐藏密码
+    for _, v := range us {
+        v.Password = ""
+    }
     return ctx.SendResponse(us)
 }

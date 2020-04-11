@@ -30,7 +30,7 @@
 	  <div class="layui-form-item">
 			  <label class="layui-form-label">角色</label>
 			  <div class="layui-input-block">
-          <div id="userRole"></div>
+          <div id="roleSelect"></div>
 			  </div>
 		</div>
 		<div class="layui-form-item">
@@ -42,6 +42,7 @@
 	</form>
 </div>
 <script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
   // https://www.layui.com/doc/modules/form.html
   layui.use(['form', 'okUtils', 'okLayer'], function(){
@@ -49,6 +50,15 @@
     let okUtil = layui.okUtil;
     let okLayer = layui.okLayer;
     let $ = layui.jquery;
+    let xmSelect = layui.xmSelect;
+
+    // 加载角色列表
+    let roleSelect = xmSelect.render({
+        el: '#roleSelect',
+        name: 'role',
+        autoRow: true,
+        data: parent.roles
+    });
 
     form.verify({
       username: function(value, item) {

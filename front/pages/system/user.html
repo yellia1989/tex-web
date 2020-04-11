@@ -14,18 +14,25 @@
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
 <script>
+  var roles;
 	layui.use(["element", "table", "okLayer", "okUtils"], function () {
 		let table = layui.table;
 		let okLayer = layui.okLayer;
 		let okUtils = layui.okUtils;
 		okLoading.close();
 
+    okUtils.ajax("/api/role/list", "get", null, false).done(function (response) {
+      roles = response.data;
+    }).fail(function (error) {
+      console.log(error);
+    });
+
 		let userTable = table.render({
 			elem: "#tableId",
-            url: "/api/user/list",
-            text: {
-                none: '暂无相关数据',
-            },
+      url: "/api/user/list",
+      text: {
+        none: '暂无相关数据',
+      },
 			limit: 30,
 			page: true,
 			toolbar: "#toolbarTpl",
@@ -33,7 +40,16 @@
 				{type: "checkbox", title: "序号", fixed: 'left'},
 				{field: "id", title: "用户ID", width: 90, fixed: 'left'},
 				{field: "username", title: "用户名"},
-        {field: "role", title: "角色"},
+        {field: "role", title: "角色", templet: function(d) {
+          let rname = '';
+          for (var i = 0; i < roles.length; ++i) {
+            if (roles[i].value == d.role) {
+              rname = roles[i].name;
+              break;
+            }
+          }
+          return rname;
+        }},
 				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
 			]],
 		});
