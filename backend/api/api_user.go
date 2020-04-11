@@ -3,6 +3,7 @@ package api
 import (
     "time"
     "strconv"
+    "strings"
     "github.com/labstack/echo"
     "github.com/dgrijalva/jwt-go"
     mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -47,4 +48,38 @@ func UserList(c echo.Context) error {
         v.Password = ""
     }
     return ctx.SendResponse(us)
+}
+
+func UserAdd(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    username := ctx.FormValue("username")
+    password := ctx.FormValue("password")
+    role, _ := strconv.ParseUint(ctx.FormValue("role"), 10, 32)
+
+    u := model.AddUser(username, password, uint32(role))
+    if u == nil {
+        return ctx.SendError(-1, "invalid param")
+    }
+
+    return ctx.SendResponse("添加用户成功")
+}
+
+func UserDel(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    ids := strings.Split(ctx.FormValue("idsStr"), ",")
+    if len(ids) == 0 {
+        return ctx.SendError(-1, "用户不存在")
+    }
+
+    for _, id := range ids {
+        id, _ := strconv.ParseUint(id, 10, 32)
+        u := model.GetUser(uint32(id)) 
+        if u == nil {
+            return ctx.SendError(-1, "用户不存在")
+        }
+        if model.DelUser(u) == false {
+            return ctx.SendError(-1, "删除用户失败")
+        }
+    }
+    return ctx.SendResponse("删除用户成功")
 }

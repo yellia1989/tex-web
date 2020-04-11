@@ -15,6 +15,7 @@
 <script src="/lib/layui/layui.js"></script>
 <script>
   var roles;
+  var userdata;
 	layui.use(["element", "table", "okLayer", "okUtils"], function () {
 		let table = layui.table;
 		let okLayer = layui.okLayer;
@@ -89,7 +90,7 @@
 				let idsStr = okUtils.tableBatchCheck(table);
 				if (idsStr) {
 					okUtils.ajax("/api/user/del", "post", {idsStr: idsStr}, true).done(function (response) {
-						okUtils.tableSuccessMsg(response.msg);
+						okUtils.tableSuccessMsg(response.data);
 					}).fail(function (error) {
 						console.log(error)
 					});
@@ -106,7 +107,7 @@
 		function del(id) {
 			okLayer.confirm("确定要删除吗？", function () {
 				okUtils.ajax("/api/user/del", "post", {idsStr: id}, true).done(function (response) {
-					okUtils.tableSuccessMsg(response.msg);
+					okUtils.tableSuccessMsg(response.data);
 				}).fail(function (error) {
 					console.log(error)
 				});

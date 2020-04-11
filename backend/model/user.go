@@ -103,7 +103,7 @@ func GetUsers() []*User {
     return us
 }
 
-func AddUser(username string, password string) *User {
+func AddUser(username string, password string, role uint32) *User {
     if users == nil {
         return nil
     }
@@ -112,12 +112,16 @@ func AddUser(username string, password string) *User {
     if len(username) == 0 || len(password) == 0 {
         return nil
     }
+    // role必须存在
+    if GetRole(role) == nil {
+        return nil
+    }
     // username不能相同
     if GetUserByUserName(username) != nil {
         return nil
     }
 
-    u := &User{UserName: username, Password: password}
+    u := &User{UserName: username, Password: password, Role: role}
     if !users.AddItem(u) {
         return nil
     }

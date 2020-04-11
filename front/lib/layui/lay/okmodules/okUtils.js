@@ -77,7 +77,10 @@ layui.define(["layer"], function (exprots) {
             if (rows > 0) {
                 var idsStr = "";
                 for (var i = 0; i < checkStatus.data.length; i++) {
-                    idsStr += checkStatus.data[i].id + ",";
+                    idsStr += checkStatus.data[i].id;
+                    if (i != checkStatus.data.length-1) {
+                      idsStr += ",";
+                    }
                 }
                 return idsStr;
             } else {
