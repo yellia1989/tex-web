@@ -1,0 +1,14 @@
+[
+  {
+    "value": 1,
+    "name": "admin"
+  },
+  {
+    "value": 2,
+    "name": "dev"
+  },
+  {
+    "value": 3,
+    "name": "test"
+  }
+]

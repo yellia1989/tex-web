@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>菜单管理</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body class="ok-body-scroll">
+<div class="ok-body">
+	<div class="layui-row">
+		<div class="layui-col-md3">
+			<div id="menuTree"></div>
+		</div>
+		<div class="layui-col-md6">
+            <form class="layui-form layui-form-pane ok-form">
+	            <div class="layui-form-item">
+	        	  	<label class="layui-form-label">菜单名称</label>
+	        	   	<div class="layui-input-block">
+	        	   		<input type="text" id="menuId" class="layui-hide">
+	        	   		<input type="text" id="menuTitle" class="layui-input" lay-verify="required" lay-verType="tips" lay-reqText="请先选择一个菜单" disabled>
+	        	   	</div>
+	        	</div>
+	            <div class="layui-form-item">
+	        	  	<label class="layui-form-label">角色列表</label>
+	        	   	<div class="layui-input-block">
+                  <div id="roleSelect"></div>
+                </div>
+	        	</div>
+	        	<div class="layui-form-item">
+	        	    <button class="layui-btn" lay-submit lay-filter="edit">更新</button>
+	        	</div>
+	        </form>
+		</div>
+	</div>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+	layui.use(["element", "tree", "form", "okUtils"], function () {
+    let $ = layui.jquery;
+		let tree = layui.tree;
+    let form = layui.form;
+		let okUtils = layui.okUtils;
+    let xmSelect = layui.xmSelect;
+		okLoading.close();
+
+    // 加载角色列表
+    let roleSelect = xmSelect.render({
+        el: '#roleSelect',
+        name: 'role',
+        autoRow: true,
+    });
+    okUtils.ajax("/api/role/list", "get", null, true).done(function (response) {
+        roleSelect.update({
+            data: response.data
+        });
+    });
+
+    // 加载菜单
+    function refreshMenuTree() {
+        okUtils.ajax("/api/menu/list", "get", null, true).done(function (response) {
+		    tree.render({
+		    	elem: '#menuTree',
+          data: response.data,
+          onlyIconControl: true,
+		    	id: 'menu',
+		    	click: function (obj) {
+		    		var data = obj.data;
+            $("#menuId").val(data.id);
+            $("#menuTitle").val(data.title);
+            roleSelect.setValue(data.role ? data.role : []);
+		    	}
+		    });
+		});
+    }
+
+    // 表单提交
+    form.on('submit(edit)', function (data) {
+        param = {
+            id: $("#menuId").val(),
+            role: roleSelect.getValue('valueStr')
+        };
+        okUtils.ajax("/api/menu/update", "post", param, true).done(function (response) {
+            layer.msg("授权成功！", {icon: 6, time: 1000, anim: 4}, function () {
+		      	  parent.layer.close(parent.layer.getFrameIndex(window.name));
+		        });
+          refreshMenuTree();
+		    });
+		  return false;
+		});
+
+    refreshMenuTree();
+	});
+</script>
+</body>
+</html>
