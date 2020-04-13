@@ -73,7 +73,9 @@
             },
             on: function(d) {
               // 快捷修改当前玩家的角色
-              okUtils.ajax("/api/user/updaterole", "post", {id: item.id, role:d.arr[0].value}, false).fail(function (error) {
+              okUtils.ajax("/api/user/update/role", "post", {id: item.id, role:d.arr[0].value}, false).done(function (res) {
+                userTable.reload();
+              }).fail(function (error) {
 				      	console.log(error);
 				      });
             }
@@ -99,6 +101,7 @@
 			let data = obj.data;
 			switch (obj.event) {
 				case "edit":
+          userdata = data;
 					edit(data.id);
 					break;
 				case "del":
@@ -128,7 +131,7 @@
 		}
 
 		function edit(id) {
-			okLayer.open("编辑用户", "user-edit.html", "90%", "90%", null, function () {
+			okLayer.open("编辑用户", "/system/user-edit.html", "90%", "90%", null, function () {
 				userTable.reload();
 			})
 		}

@@ -13,6 +13,8 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/user/list", UserList)       // 用户列表
     group.POST("/user/add", UserAdd)        // 用户增加
     group.POST("/user/del", UserDel)        // 用户删除
+    group.POST("/user/update/role", UserUpdateRole)    // 用户角色变更
+    group.POST("/user/update", UserUpdate)    // 用户更新
 
     /*api.POST("/role/add", api.RoleAdd)      // 角色增加
     api.POST("/role/del", api.RoleDel)      // 角色删除

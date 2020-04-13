@@ -83,3 +83,53 @@ func UserDel(c echo.Context) error {
     }
     return ctx.SendResponse("删除用户成功")
 }
+
+func UserUpdateRole(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    userid, _ := strconv.ParseUint(ctx.FormValue("id"), 10, 32)
+    role, _ := strconv.ParseUint(ctx.FormValue("role"), 10, 32)
+
+    u := model.GetUser(uint32(userid))
+    if u == nil {
+        return ctx.SendError(-1, "用户不存在")
+    }
+
+    r := model.GetRole(uint32(role))
+    if r == nil {
+        return ctx.SendError(-1, "角色不存在")
+    }
+
+    u.Role = uint32(role)
+    if !model.UpdateUser(u) {
+        return ctx.SendError(-1, "更新用户角色失败")
+    }
+    return ctx.SendResponse("更新用户角色成功")
+}
+
+func UserUpdate(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    userid, _ := strconv.ParseUint(ctx.FormValue("id"), 10, 32)
+    role, _ := strconv.ParseUint(ctx.FormValue("role"), 10, 32)
+    password := ctx.FormValue("password")
+
+    u := model.GetUser(uint32(userid))
+    if u == nil {
+        return ctx.SendError(-1, "用户不存在")
+    }
+
+    r := model.GetRole(uint32(role))
+    if r == nil {
+        return ctx.SendError(-1, "角色不存在")
+    }
+
+    if password == "" {
+        return ctx.SendError(-1, "密码不能为空");
+    }
+
+    u.Role = uint32(role)
+    u.Password = password
+    if !model.UpdateUser(u) {
+        return ctx.SendError(-1, "更新用户失败")
+    }
+    return ctx.SendResponse("更新用户成功")
+}

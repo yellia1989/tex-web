@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-	<title>新增用户</title>
+	<title>编辑用户</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -12,7 +12,8 @@
     <div class="layui-form-item">
 		  <label class="layui-form-label">用户名</label>
 		  <div class="layui-input-block">
-	    	<input type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input" lay-verify="username|required" lay-verType="tips">
+	    	<input type="text" name="id" class="layui-hide">
+	    	<input type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input" lay-verify="username|required" lay-verType="tips" disabled>
 			  </div>
     </div>
 	  <div class="layui-form-item">
@@ -35,7 +36,7 @@
 		</div>
 		<div class="layui-form-item">
 			<div class="layui-input-block">
-				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
+				<button class="layui-btn" lay-submit lay-filter="add">修改</button>
 				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 			</div>
 		</div>
@@ -60,6 +61,10 @@
         clickClose: true,
         data: parent.roles
     });
+
+    roleSelect.setValue([parent.userdata.role]);
+    $('input[name=id]').val(parent.userdata.id);
+    $('input[name=username]').val(parent.userdata.username);
 
     form.verify({
       username: function(value, item) {
@@ -86,7 +91,7 @@
 
     //监听提交
     form.on('submit(add)', function(data){
-      okUtils.ajax("/api/user/add", "post", data.field, true).done(function (response) {
+      okUtils.ajax("/api/user/update", "post", data.field, true).done(function (response) {
         okLayer.greenTickMsg(response.data, function () {
 					parent.layer.close(parent.layer.getFrameIndex(window.name));
 				});
