@@ -15,13 +15,13 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/user/del", UserDel)        // 用户删除
     group.POST("/user/update/role", UserUpdateRole)    // 用户角色变更
     group.POST("/user/update", UserUpdate)    // 用户更新
+    group.GET("/perm/list", PermList)         // 权限列表
+    group.POST("/perm/add", PermAdd)          // 权限增加
+    group.POST("/perm/del", PermDel)          // 权限删除
+    group.POST("/perm/update", PermUpdate)    // 权限编辑
 
     /*api.POST("/role/add", api.RoleAdd)      // 角色增加
     api.POST("/role/del", api.RoleDel)      // 角色删除
     api.POST("/role/edit", api.RoleEdit)    // 角色编辑
-    api.GET("/permission/list", api.PermissionList)     // 权限列表
-    api.POST("/permission/add", api.PermissionAdd)      // 权限增加
-    api.POST("/permission/del", api.PermissionDel)      // 权限删除
-    api.POST("/permission/edit", api.PermissionEdit)    // 权限编辑
     */
 }

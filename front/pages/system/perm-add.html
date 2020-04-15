@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+	<title>新增权限</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form layui-form-pane ok-form">
+    <div class="layui-form-item">
+		  <label class="layui-form-label">权限名称</label>
+		  <div class="layui-input-block">
+	    	<input type="text" name="name" placeholder="请输入权限名称" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+			  </div>
+    </div>
+	  <div class="layui-form-item">
+			  <label class="layui-form-label">路径</label>
+			  <div class="layui-input-block">
+			  	<textarea name="paths" placeholder="请输入路径" class="layui-textarea" lay-verify="paths|required" lay-verType="tips"></textarea>
+			  </div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/lib/layui/layui.js"></script>
+<script>
+  // https://www.layui.com/doc/modules/form.html
+  layui.use(['form', 'okUtils', 'okLayer'], function(){
+    let form = layui.form;
+    let okUtils = layui.okUtils;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+
+    form.verify({
+      paths: function(value, item) {
+      }
+    });
+
+    //监听提交
+    form.on('submit(add)', function(data){
+      okUtils.ajax("/api/perm/add", "post", data.field, true).done(function (response) {
+        okLayer.greenTickMsg(response.data, function () {
+					parent.layer.close(parent.layer.getFrameIndex(window.name));
+				});
+		  }).fail(function (error) {
+          console.log(error);
+      });
+		  return false;
+    });
+  });
+</script>
+</body>
+</html>

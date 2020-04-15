@@ -1,7 +1,6 @@
 package model
 
 import (
-    "fmt"
     "encoding/json"
     "github.com/yellia1989/tex-go/tools/util"
     cm "github.com/yellia1989/tex-web/backend/common"
@@ -9,15 +8,9 @@ import (
 
 var roles *cm.Map
 func init() {
-    bs, err := util.LoadFromFile("data/roles.json")
-    if err != nil {
-        fmt.Printf("roles init failed, %s", err.Error())
-    }
+    bs, _ := util.LoadFromFile("data/roles.json")
     items := make([]*Role,0)
-    err = json.Unmarshal(bs, &items)
-    if err != nil {
-        fmt.Printf("roles init failed, %s", err.Error())
-    }
+    json.Unmarshal(bs, &items)
 
     items2 := make([]cm.Item,0)
     for _, item := range items {

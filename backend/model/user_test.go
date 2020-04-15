@@ -5,7 +5,7 @@ import (
 )
 
 func TestAddUser(t *testing.T) {
-    u := AddUser("yellia", "yellia", "pwd")
+    u := AddUser("yellia", "pwd", 0)
     if u == nil || u.Id != 1 {
         t.Fatal("add user failed, should success")
     }
@@ -20,7 +20,7 @@ func TestAddUser(t *testing.T) {
         t.Fatal("GetUser failed")
     }
 
-    if ret := AddUser("yellia", "yellia", "pwd"); ret != nil {
+    if ret := AddUser("yellia", "pwd", 0); ret != nil {
         t.Fatal("add user success, should failed")
     }
 
@@ -28,14 +28,9 @@ func TestAddUser(t *testing.T) {
         t.Fatal("DelUser failed, should success")
     }
 
-    u = AddUser("yellia", "yellia", "pwd")
+    u = AddUser("yellia", "pwd", 0)
     if u == nil || u.Id != 2 {
         t.Fatal("add user failed, should success")
-    }
-
-    u.Name = "hello"
-    if ret := UpdateUser(u); ret == false {
-        t.Fatal("UpdateUser failed, should success")
     }
 
     u.Id = 10
