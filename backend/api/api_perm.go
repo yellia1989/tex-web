@@ -2,6 +2,7 @@ package api
 
 import (
     "strings"
+    "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
@@ -31,7 +32,23 @@ func PermAdd(c echo.Context) error {
 }
 
 func PermDel(c echo.Context) error {
-    return nil
+    ctx := c.(*mid.Context)
+    ids := strings.Split(ctx.FormValue("idsStr"), ",")
+    if len(ids) == 0 {
+        return ctx.SendError(-1, "权限不存在")
+    }
+
+    for _, id := range ids {
+        id, _ := strconv.ParseUint(id, 10, 32)
+        p := model.GetPerm(uint32(id)) 
+        if p == nil {
+            return ctx.SendError(-1, "权限不存在")
+        }
+        if model.DelPerm(p) == false {
+            return ctx.SendError(-1, "删除权限失败")
+        }
+    }
+    return ctx.SendResponse("删除权限成功")
 }
 
 func PermUpdate(c echo.Context) error {

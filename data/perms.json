@@ -1,18 +1,23 @@
 [
   {
-    "id": 1,
+    "id": 7,
     "name": "所有权限",
     "paths": [
-      "GET|POST /api/*",
-      "GET /api/menu/*",
-      "GET /api/menu/*"
+      "ALL /api/*"
     ]
   },
   {
-    "id": 2,
-    "name": "test",
+    "id": 8,
+    "name": "只读权限",
     "paths": [
-      "get http://192.168.0.16:8080/index.html"
+      "GET /api/*"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "只写权限",
+    "paths": [
+      "POST /api/*"
     ]
   }
 ]

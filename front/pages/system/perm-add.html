@@ -40,6 +40,21 @@
 
     form.verify({
       paths: function(value, item) {
+        let paths = value.split('\n');
+        for (i = 0; i < paths.length; ++i) {
+          let path = paths[i].replace(/(^\s*)|(\s*$)/g,'').split(' ');
+          if (path.length != 2) {
+            return '路径格式不对action+path';
+          }
+          let action = path[0];
+          let p = path[1];
+          if (action != 'GET' && action != 'POST' && action != 'ALL') {
+            return 'action 只能是GET|POST|ALL';
+          }
+          if (p[0] != '/') {
+            return 'path必须以/开头';
+          }
+        }
       }
     });
 

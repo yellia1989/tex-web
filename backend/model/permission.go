@@ -1,7 +1,6 @@
 package model
 
 import (
-    "fmt"
     "strings"
     "encoding/json"
     "github.com/yellia1989/tex-go/tools/util"
@@ -69,7 +68,7 @@ func GetPerm(id uint32) *Permission {
         return nil
     }
 
-    p := users.GetItem(id)
+    p := perms.GetItem(id)
     if p == nil {
         return nil
     }
@@ -88,7 +87,6 @@ func AddPerm(name string, paths []string) *Permission {
 
     // 对path进行格式化
     for i,_ := range paths {
-        fmt.Printf("%x\n", paths[i])
         tmp := strings.Fields(paths[i])
         if len(tmp) != 2 {
             return nil
