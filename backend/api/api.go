@@ -9,7 +9,6 @@ func RegisterHandler(group *echo.Group) {
 
     group.GET("/menu/list", MenuList)       // 菜单列表
     group.POST("/menu/update", MenuUpdate)  // 更新菜单
-    group.GET("/role/list", RoleList)       // 角色列表
     group.GET("/user/list", UserList)       // 用户列表
     group.POST("/user/add", UserAdd)        // 用户增加
     group.POST("/user/del", UserDel)        // 用户删除
@@ -20,8 +19,8 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/perm/del", PermDel)          // 权限删除
     group.POST("/perm/update", PermUpdate)    // 权限编辑
 
-    /*api.POST("/role/add", api.RoleAdd)      // 角色增加
-    api.POST("/role/del", api.RoleDel)      // 角色删除
-    api.POST("/role/edit", api.RoleEdit)    // 角色编辑
-    */
+    group.GET("/role/list", RoleList)       // 角色列表
+    group.POST("/role/add", RoleAdd)      // 角色增加
+    group.POST("/role/del", RoleDel)      // 角色删除
+    group.POST("/role/update", RoleUpdate)    // 角色更新
 }

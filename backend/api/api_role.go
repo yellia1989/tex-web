@@ -11,3 +11,15 @@ func RoleList(c echo.Context) error {
     rs := model.GetRoles()
     return ctx.SendResponse(rs)
 }
+
+func RoleAdd(c echo.Context) error {
+    return nil
+}
+
+func RoleDel(c echo.Context) error {
+    return nil
+}
+
+func RoleUpdate(c echo.Context) error {
+    return nil
+}
