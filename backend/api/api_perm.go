@@ -52,5 +52,26 @@ func PermDel(c echo.Context) error {
 }
 
 func PermUpdate(c echo.Context) error {
-    return nil
+    ctx := c.(*mid.Context)
+    id, _ := strconv.ParseUint(ctx.FormValue("id"), 10, 32)
+    name := ctx.FormValue("name")
+    path := ctx.FormValue("paths")
+
+    if name == "" || path == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    paths := strings.Split(path, "\n")
+    p := model.GetPerm(uint32(id))
+    if p == nil {
+        return ctx.SendError(-1, "权限不存在")
+    }
+
+    p.Name = name
+    p.Paths = paths[:]
+    if !model.UpdatePerm(p) {
+        return ctx.SendError(-1, "更新权限失败")
+    }
+
+    return ctx.SendResponse("更新权限成功")
 }
