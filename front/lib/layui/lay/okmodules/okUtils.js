@@ -50,7 +50,7 @@ layui.define(["layer"], function (exprots) {
                     } else {
                         // 业务异常
                         layer.msg(data.msg, {icon: 7, time: 2000});
-                        deferred.reject("okUtils.ajax warn: " + data.msg);
+                        deferred.reject(data);
                     }
                 },
                 complete: function () {

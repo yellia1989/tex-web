@@ -50,8 +50,10 @@
                     okLayer.greenTickMsg("登陆成功", function () {
                         window.location = "/index.html";
                     })
-                }).fail(function (error) {
-                    console.log(error)
+                }).fail(function (data) {
+                    if (data.code == -2) {
+                        window.location = "/index.html";
+                    }
                 });
                 return false;
             });

@@ -13,7 +13,7 @@ import (
 func UserLogin(c echo.Context) error {
     ctx := c.(*mid.Context)
     if ctx.GetUserId() != 0 {
-        return ctx.SendError(-1, "已经登陆不用重新登录")
+        return ctx.SendError(-2, "已经登陆不用重新登录")
     }
 
     username := ctx.FormValue("username")
