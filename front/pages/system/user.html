@@ -76,7 +76,7 @@
             },
             on: function(d) {
               // 快捷修改当前玩家的角色
-              okUtils.ajax("/api/user/update/role", "post", {id: item.id, role:d.arr[0].value}, false).done(function (res) {
+              okUtils.ajax("/api/user/update/role", "post", {id: item.id, role:d.arr[0].id}, false).done(function (res) {
                 userTable.reload();
               }).fail(function (error) {
 				      	console.log(error);

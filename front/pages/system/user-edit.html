@@ -59,12 +59,15 @@
         name: 'role',
         radio: true,
         clickClose: true,
+        prop: {
+          value: 'id',
+        },
         data: parent.roles
     });
 
-    roleSelect.setValue([parent.userdata.role]);
     $('input[name=id]').val(parent.userdata.id);
     $('input[name=username]').val(parent.userdata.username);
+    roleSelect.setValue([parent.userdata.role]);
 
     form.verify({
       username: function(value, item) {
