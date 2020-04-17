@@ -2,10 +2,16 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>用户管理</title>
+	<title>角色管理</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <style>
+    /* layui-table 表格内容允许换行 */
+    .layui-table-cell {
+      height: auto;
+    }
+  </style>
 </head>
 <body>
 <div class="ok-body">
@@ -15,24 +21,23 @@
 <script src="/lib/layui/layui.js"></script>
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
-  var roles;
-  var userdata;
+  var perms;
+  var roledata;
 	layui.use(["element", "table", "okLayer", "okUtils"], function () {
 		let table = layui.table;
 		let okLayer = layui.okLayer;
 		let okUtils = layui.okUtils;
-    let xmSelect = layui.xmSelect;
 		okLoading.close();
 
-    okUtils.ajax("/api/role/list", "get", null, false).done(function (response) {
-      roles = response.data;
+    okUtils.ajax("/api/perm/list", "get", null, false).done(function (response) {
+      perms = response.data;
     }).fail(function (error) {
       console.log(error);
     });
 
-		let userTable = table.render({
+		let roleTable = table.render({
 			elem: "#tableId",
-      url: "/api/user/list",
+      url: "/api/role/list",
       text: {
         none: '暂无相关数据',
       },
@@ -41,53 +46,23 @@
 			toolbar: "#toolbarTpl",
 			cols: [[
 				{type: "checkbox", title: "序号"},
-				{field: "id", title: "用户ID", width: 90},
-				{field: "username", title: "用户名"},
-        {field: "role", title: "角色", templet: function(d) {
-          return '<div id="XM-' + d.id + '" ></div>';
+				{field: "id", title: "角色ID", width: 90},
+				{field: "name", title: "角色名"},
+        {field: "perms", title: "权限列表", templet: function(d) {
+          let ret = '';
+          for (i = 0; i < d.perms.length; ++i) {
+            p = perms.find(function(v) {
+              return v.id == d.perms[i];
+            });
+            if (p) {
+            ret += '<span class="layui-btn layui-btn-xs">'+p.name+'</span>';
+            }
+          }
+          return ret;
         }},
 				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
-			]],
-      done: function(res){
-        //修改一些css样式, 这里虽然能够使用, 但是还是不太友好, 努力中...
-        var cells = document.querySelectorAll('div[lay-id="tableId"] .layui-table-cell');
-        for(var i = 0 ; i < cells.length ; i++ ){
-          cells[i].style.overflow = 'unset';
-          cells[i].style.height = 'auto';
-        }
-        //渲染多选
-        res.data.forEach(item => {
-          let xm = xmSelect.render({
-            el: '#XM-' + item.id,
-            radio: true,
-            clickClose: true,
-            data: roles,
-            model: {
-              label: {
-                type: 'block',
-                block: {
-                  //是否显示删除图标
-                  showIcon: false,
-                }
-              }
-            },
-            prop: {
-              value: 'id',
-            },
-            on: function(d) {
-              // 快捷修改当前玩家的角色
-              okUtils.ajax("/api/user/update/role", "post", {id: item.id, role:d.arr[0].value}, false).done(function (res) {
-                userTable.reload();
-              }).fail(function (error) {
-				      	console.log(error);
-				      });
-            }
-          })
-          xm.setValue([item.role]);
-          item.__xm = xm;
-        })
-      }
-		});
+			]]
+    });
 
 		table.on("toolbar(tableFilter)", function (obj) {
 			switch (obj.event) {
@@ -104,7 +79,7 @@
 			let data = obj.data;
 			switch (obj.event) {
 				case "edit":
-          userdata = data;
+          roledata = data;
 					edit(data.id);
 					break;
 				case "del":
@@ -114,8 +89,8 @@
 		});
 
 		function add() {
-			okLayer.open("添加用户", "/system/user-add.html", "90%", "90%", null, function () {
-				userTable.reload();
+			okLayer.open("添加角色", "/system/role-add.html", "90%", "90%", null, function () {
+				roleTable.reload();
 			})
 		}
 
@@ -124,7 +99,7 @@
 				layer.close(index);
 				let idsStr = okUtils.tableBatchCheck(table);
 				if (idsStr) {
-					okUtils.ajax("/api/user/del", "post", {idsStr: idsStr}, true).done(function (response) {
+					okUtils.ajax("/api/role/del", "post", {idsStr: idsStr}, true).done(function (response) {
 						okUtils.tableSuccessMsg(response.data);
 					}).fail(function (error) {
 						console.log(error)
@@ -134,14 +109,14 @@
 		}
 
 		function edit(id) {
-			okLayer.open("编辑用户", "/system/user-edit.html", "90%", "90%", null, function () {
-				userTable.reload();
+			okLayer.open("编辑角色", "/system/role-edit.html", "90%", "90%", null, function () {
+				roleTable.reload();
 			})
 		}
 
 		function del(id) {
 			okLayer.confirm("确定要删除吗？", function () {
-				okUtils.ajax("/api/user/del", "post", {idsStr: id}, true).done(function (response) {
+				okUtils.ajax("/api/role/del", "post", {idsStr: id}, true).done(function (response) {
 					okUtils.tableSuccessMsg(response.data);
 				}).fail(function (error) {
 					console.log(error)

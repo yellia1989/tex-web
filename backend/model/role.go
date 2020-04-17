@@ -20,7 +20,7 @@ func init() {
 }
 
 type Role struct {
-    Id  uint32              `json:"value"`
+    Id  uint32              `json:"id"`
     Name string             `json:"name"`
     Perms []uint32          `json:"perms"`
 }

@@ -1,14 +1,17 @@
 [
   {
-    "value": 1,
-    "name": "admin"
+    "id": 1,
+    "name": "admin",
+    "perms": [
+      7
+    ]
   },
   {
-    "value": 2,
-    "name": "dev"
-  },
-  {
-    "value": 3,
-    "name": "test"
+    "id": 2,
+    "name": "dev",
+    "perms": [
+      8,
+      9
+    ]
   }
 ]
