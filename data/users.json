@@ -9,12 +9,6 @@
     "id": 1002,
     "username": "dev",
     "password": "dev",
-    "role": 2
-  },
-  {
-    "id": 1003,
-    "username": "test",
-    "password": "123456",
-    "role": 2
+    "role": 3
   }
 ]

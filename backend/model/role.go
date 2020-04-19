@@ -117,3 +117,26 @@ func UpdateRole(r *Role) bool {
     r2 := r.copy()
     return roles.UpdateItem(r2)
 }
+
+func DelRolePerm(perms []uint32) {
+    items := roles.GetItems(func (key, v interface{})bool{
+        r := v.(*Role)
+        for _, p := range r.Perms {
+            if util.Contain(perms, p) {
+                return true
+            }
+        }
+        return false
+    })
+
+    if len(items) == 0 {
+        return
+    }
+    for _, item := range items {
+        r := item.(*Role).copy()
+        for _, id := range perms {
+            util.SliceRemoveUint32(&r.Perms, id)
+        }
+        roles.UpdateItem(r)
+    }
+}

@@ -155,3 +155,22 @@ func DelAllUser() bool {
 
     return users.DelAllItem()
 }
+
+func DelUserRole(roles []uint32) {
+    items := users.GetItems(func (key, v interface{})bool{
+        u := v.(*User)
+        if util.Contain(roles, u.Role) {
+            return true
+        }
+        return false
+    })
+
+    if len(items) == 0 {
+        return
+    }
+    for _, item := range items {
+        u := *(item.(*User))
+        u.Role = 0
+        users.UpdateItem(&u)
+    }
+}

@@ -51,6 +51,7 @@ func RoleDel(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    uids := make([]uint32,0)
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)
         r := model.GetRole(uint32(id)) 
@@ -60,7 +61,11 @@ func RoleDel(c echo.Context) error {
         if model.DelRole(r) == false {
             return ctx.SendError(-1, "删除角色失败")
         }
+        uids = append(uids, uint32(id))
     }
+    //更新用户角色
+    model.DelUserRole(uids)
+
     return ctx.SendResponse("删除角色成功")
 }
 

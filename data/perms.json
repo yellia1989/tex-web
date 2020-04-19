@@ -19,12 +19,5 @@
     "paths": [
       "POST /api/*"
     ]
-  },
-  {
-    "id": 10,
-    "name": "test",
-    "paths": [
-      "ALL /"
-    ]
   }
 ]

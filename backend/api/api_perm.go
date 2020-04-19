@@ -38,6 +38,7 @@ func PermDel(c echo.Context) error {
         return ctx.SendError(-1, "权限不存在")
     }
 
+    uids := make([]uint32,0)
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)
         p := model.GetPerm(uint32(id)) 
@@ -47,7 +48,11 @@ func PermDel(c echo.Context) error {
         if model.DelPerm(p) == false {
             return ctx.SendError(-1, "删除权限失败")
         }
+        uids = append(uids, uint32(id))
     }
+    //更新角色权限
+    model.DelRolePerm(uids)
+
     return ctx.SendResponse("删除权限成功")
 }
 
