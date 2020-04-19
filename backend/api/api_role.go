@@ -58,6 +58,10 @@ func RoleDel(c echo.Context) error {
         if r == nil {
             return ctx.SendError(-1, "角色不存在")
         }
+        // 管理员不能删除
+        if r.GetId() == 1 {
+            return ctx.SendError(-1, "管理员不能删除")
+        }
         if model.DelRole(r) == false {
             return ctx.SendError(-1, "删除角色失败")
         }

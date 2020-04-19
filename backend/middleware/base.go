@@ -17,7 +17,7 @@ func pathIgnore(c echo.Context) bool {
         default:
             return false
         }
-    case "css","js","jpg","png","gif","ico","woff2":
+    case "css","js","jpg","png","gif","ico","woff2","woff","ttf":
         // 资源不需要验证
         return true
     default:

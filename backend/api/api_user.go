@@ -77,6 +77,10 @@ func UserDel(c echo.Context) error {
         if u == nil {
             return ctx.SendError(-1, "用户不存在")
         }
+        // 不能删除超级管理员
+        if u.GetId() == 1001 {
+            return ctx.SendError(-1, "不能删除超级管理员")
+        }
         if model.DelUser(u) == false {
             return ctx.SendError(-1, "删除用户失败")
         }
