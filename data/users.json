@@ -2,13 +2,13 @@
   {
     "id": 1001,
     "username": "admin",
-    "password": "admin",
+    "password": "$2a$10$u07TlgSexlmKmsPeG/bAyuEttA0YSYBtDMKoTgqRfCJ5cdiowZ.wS",
     "role": 1
   },
   {
     "id": 1002,
     "username": "dev",
-    "password": "dev",
+    "password": "$2a$10$0ESbzbPRid53ILgZhb1yp.69suy3qRQyCZwAAektF2rIJwOnWE2SG",
     "role": 3
   }
 ]

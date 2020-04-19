@@ -4,6 +4,7 @@ import (
     "net/http"
     "encoding/json"
     "github.com/labstack/echo"
+    "golang.org/x/crypto/bcrypt"
     "github.com/yellia1989/tex-go/tools/util"
     cm "github.com/yellia1989/tex-web/backend/common"
 )
@@ -69,6 +70,19 @@ func (u *User) CheckPermission(path string, method string) error {
         Code:   http.StatusForbidden,
         Message: "没有对应的权限",
     }
+}
+func (u *User) ComparePwd(password string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+    return err == nil
+}
+func (u *User) EncodePwd(password string) bool {
+    hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    if err != nil {
+        return false
+    }
+
+    u.Password = string(hash)
+    return true
 }
 
 func GetUser(id uint32) *User {
@@ -151,7 +165,10 @@ func AddUser(username string, password string, role uint32) *User {
         return nil
     }
 
-    u := &User{UserName: username, Password: password, Role: role}
+    u := &User{UserName: username, Role: role}
+    if !u.EncodePwd(password) {
+        return nil
+    }
     if !users.AddItem(u) {
         return nil
     }

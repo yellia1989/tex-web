@@ -19,7 +19,7 @@ func UserLogin(c echo.Context) error {
     username := ctx.FormValue("username")
     password := ctx.FormValue("password")
     u := model.GetUserByUserName(username)
-    if u == nil || u.Password != password {
+    if u == nil || !u.ComparePwd(password) {
         return ctx.SendError(-1, "用户名或密码输入错误")
     }
 
@@ -129,9 +129,11 @@ func UserUpdate(c echo.Context) error {
     if password == "" {
         return ctx.SendError(-1, "密码不能为空");
     }
+    if !u.EncodePwd(password) {
+        return ctx.SendError(-1, "更新密码失败")
+    }
 
     u.Role = uint32(role)
-    u.Password = password
     if !model.UpdateUser(u) {
         return ctx.SendError(-1, "更新用户失败")
     }
