@@ -1,8 +1,9 @@
 package model
 
 import (
+    "net/http"
     "encoding/json"
-    _ "github.com/labstack/echo"
+    "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/util"
     cm "github.com/yellia1989/tex-web/backend/common"
 )
@@ -38,7 +39,36 @@ func (u *User) IsAdmin() bool {
     return u.Role == 1
 }
 func (u *User) CheckPermission(path string, method string) error {
-    return nil
+    if u.IsAdmin() {
+        return nil
+    }
+
+    r := GetRole(u.Role)
+    if r == nil {
+        return &echo.HTTPError{
+            Code:   http.StatusForbidden,
+            Message: "请给用户指定一个角色",
+        }
+    }
+
+    for _, p := range r.Perms {
+        perm := GetPerm(p)
+        if perm == nil {
+            return &echo.HTTPError{
+                Code:   http.StatusForbidden,
+                Message: "用户的角色不存在",
+            }
+        }
+
+        if perm.checkPermission(method, path) {
+            return nil
+        }
+    }
+
+    return &echo.HTTPError{
+        Code:   http.StatusForbidden,
+        Message: "没有对应的权限",
+    }
 }
 
 func GetUser(id uint32) *User {

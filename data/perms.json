@@ -1,23 +1,17 @@
 [
   {
     "id": 7,
-    "name": "所有权限",
+    "name": "所有api权限",
     "paths": [
-      "ALL /api/*"
+      "ALL /api/*/*",
+      "ALL /api/*/*/*"
     ]
   },
   {
     "id": 8,
-    "name": "只读权限",
+    "name": "所有访问页面权限",
     "paths": [
-      "GET /api/*"
-    ]
-  },
-  {
-    "id": 9,
-    "name": "只写权限",
-    "paths": [
-      "POST /api/*"
+      "GET /*/*"
     ]
   }
 ]

@@ -52,6 +52,9 @@
         el: '#roleSelect',
         name: 'role',
         autoRow: true,
+        prop: {
+          value: 'id',
+        }
     });
     okUtils.ajax("/api/role/list", "get", null, true).done(function (response) {
         roleSelect.update({

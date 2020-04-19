@@ -1,6 +1,8 @@
 package model
 
 import (
+    "fmt"
+    "path"
     "strings"
     "encoding/json"
     "github.com/yellia1989/tex-go/tools/util"
@@ -39,6 +41,25 @@ func (p *Permission) copy() *Permission {
     }
     copy(p2.Paths, p.Paths)
     return p2
+}
+func (perm *Permission) checkPermission(method string, spath string) bool {
+    // /index.html特殊处理
+    if spath == "/index.html" || spath == "/" {
+        return true
+    }
+
+    for _, p := range perm.Paths {
+        pp := strings.Split(p, " ")
+        if pp[0] != "ALL" && pp[0] != method {
+            continue
+        }
+
+        fmt.Printf("%s:%s\n", pp[0], pp[1])
+        if matched, _ := path.Match(pp[1], spath); matched {
+            return true
+        }
+    }
+    return false
 }
 
 func GetPerms() []*Permission {
