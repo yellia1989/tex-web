@@ -10,5 +10,11 @@
     "username": "dev",
     "password": "$2a$10$0ESbzbPRid53ILgZhb1yp.69suy3qRQyCZwAAektF2rIJwOnWE2SG",
     "role": 3
+  },
+  {
+    "id": 1003,
+    "username": "test",
+    "password": "$2a$10$g4/lCIMzMWb705KIpLQxQeTto0w5r/jqUmwbGUaOR7chGjFtZUVbS",
+    "role": 3
   }
 ]
