@@ -7,6 +7,7 @@ import (
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 func httpErrorHandler(err error, c echo.Context) {
@@ -81,6 +82,10 @@ func main() {
 
     api.RegisterHandler(e.Group("/api"))
 
+    log.SetFrameworkLevel(log.DEBUG)
+
     // Start server
     e.Logger.Fatal(e.Start(":8080"))
+
+    log.FlushLogger()
 }

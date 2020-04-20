@@ -4,7 +4,8 @@
 	<meta charset="UTF-8">
 	<title>GM</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="../../css/oksub.css">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 <body>
 <div class="ok-body">
@@ -12,7 +13,7 @@
         <div class="layui-form-item" style="margin:0px">
             <div class="layui-inline" style="margin:0px">
                 <div class="layui-input-inline">
-                <select name="zoneid" lay-verify="">
+                <select name="zoneid" lay-verify="required" lay-verType="tips">
                     <option value="">请选择服务器</option>
                     <option value="1">一服</option>
                     <option value="2">二服</option>
@@ -24,7 +25,7 @@
             </div>
         </div>
         <div class="layui-form-item" style="margin:0px">
-            <textarea name="cmd" placeholder="help" class="layui-textarea" rows="5"></textarea>
+            <textarea name="cmd" placeholder="help" lay-verify="required" lay-verType="tips" class="layui-textarea" rows="5"></textarea>
         </div>
         <div class="layui-form-item" style="margin:0px">
             <textarea name="result" class="layui-textarea" rows="25" disabled></textarea>
@@ -32,13 +33,24 @@
     </form>
 </div>
 <!--js逻辑-->
-<script src="../../lib/layui/layui.js"></script>
+<script src="/lib/layui/layui.js"></script>
 <script>
-    layui.use('form', function(){
-      var form = layui.form;
-      //监听提交
+    layui.use(['form', 'okUtils'], function(){
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let $ = layui.jquery;
+		  okLoading.close();
+
       form.on('submit(gm)', function(data){
-        layer.msg(JSON.stringify(data.field));
+        console.log(data.field);
+
+        let zoneid = 2;
+        let cmd = $("textarea[name='cmd']").val();
+        okUtils.ajax("/api/gm/cmd", "post", {zoneid: zoneid, cmd: cmd}, true).done(function (response) {
+          $("textarea[name=result]").val(response.data);
+		    }).fail(function (error) {
+          $("textarea[name=result]").val(error.msg);
+        });
         return false;
       });
     });

@@ -2,6 +2,7 @@ package api
 
 import (
     "github.com/labstack/echo"
+    "github.com/yellia1989/tex-web/backend/api/gm"
 )
 
 func RegisterHandler(group *echo.Group) {
@@ -19,9 +20,10 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/perm/add", PermAdd)          // 权限增加
     group.POST("/perm/del", PermDel)          // 权限删除
     group.POST("/perm/update", PermUpdate)    // 权限编辑
-
     group.GET("/role/list", RoleList)       // 角色列表
     group.POST("/role/add", RoleAdd)      // 角色增加
     group.POST("/role/del", RoleDel)      // 角色删除
     group.POST("/role/update", RoleUpdate)    // 角色更新
+
+    group.POST("/gm/cmd", gm.GameCmd)
 }
