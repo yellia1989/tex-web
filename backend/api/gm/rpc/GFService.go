@@ -12,17 +12,17 @@ import (
 	"time"
 )
 
-type GameService struct {
+type GFService struct {
 	proxy model.ServicePrxImpl
 }
 
-func (s *GameService) SetPrxImpl(impl model.ServicePrxImpl) {
+func (s *GFService) SetPrxImpl(impl model.ServicePrxImpl) {
 	s.proxy = impl
 }
-func (s *GameService) SetTimeout(timeout time.Duration) {
+func (s *GFService) SetTimeout(timeout time.Duration) {
 	s.proxy.SetTimeout(timeout)
 }
-func (s *GameService) DoGmCmd(sOperatorName string, sReqCmd string, sResp *string) (int32, error) {
+func (s *GFService) DoGmCmd(sOperatorName string, sReqCmd string, sResp *string) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
 	var err error
@@ -61,14 +61,14 @@ func (s *GameService) DoGmCmd(sOperatorName string, sReqCmd string, sResp *strin
 	return ret, nil
 }
 
-type _GameServiceImpl interface {
+type _GFServiceImpl interface {
 	DoGmCmd(ctx context.Context, sOperatorName string, sReqCmd string, sResp *string) (int32, error)
 }
 
-func _GameServiceDoGmCmdImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _GFServiceDoGmCmdImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length int
-	impl := serviceImpl.(_GameServiceImpl)
+	impl := serviceImpl.(_GFServiceImpl)
 	var p1 string
 	err = up.ReadString(&p1, 1, true)
 	if err != nil {
@@ -101,7 +101,7 @@ func _GameServiceDoGmCmdImpl(ctx context.Context, serviceImpl interface{}, up *c
 	return nil
 }
 
-func (s *GameService) Dispatch(ctx context.Context, serviceImpl interface{}, req *protocol.RequestPacket) {
+func (s *GFService) Dispatch(ctx context.Context, serviceImpl interface{}, req *protocol.RequestPacket) {
 	current := net.ContextGetCurrent(ctx)
 
 	log.FDebugf("handle tex request, peer: %s:%d, obj: %s, func: %s, reqid: %d", current.IP, current.Port, req.SServiceName, req.SFuncName, req.IRequestId)
@@ -113,7 +113,7 @@ func (s *GameService) Dispatch(ctx context.Context, serviceImpl interface{}, req
 	var err error
 	switch req.SFuncName {
 	case "doGmCmd":
-		err = _GameServiceDoGmCmdImpl(ctx, serviceImpl, up, p)
+		err = _GFServiceDoGmCmdImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

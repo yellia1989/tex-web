@@ -797,7 +797,7 @@ type _DirServiceImpl interface {
 	GetAllZone(ctx context.Context, vZoneInfo *[]ZoneInfo) (int32, error)
 }
 
-func _CreateZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _DirServiceCreateZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length int
 	impl := serviceImpl.(_DirServiceImpl)
@@ -820,7 +820,7 @@ func _CreateZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnP
 	_ = length
 	return nil
 }
-func _ModifyZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _DirServiceModifyZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length int
 	impl := serviceImpl.(_DirServiceImpl)
@@ -848,7 +848,7 @@ func _ModifyZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnP
 	_ = length
 	return nil
 }
-func _DeleteZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _DirServiceDeleteZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length int
 	impl := serviceImpl.(_DirServiceImpl)
@@ -871,7 +871,7 @@ func _DeleteZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnP
 	_ = length
 	return nil
 }
-func _ReportZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _DirServiceReportZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length int
 	impl := serviceImpl.(_DirServiceImpl)
@@ -899,7 +899,7 @@ func _ReportZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnP
 	_ = length
 	return nil
 }
-func _GetZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _DirServiceGetZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length int
 	impl := serviceImpl.(_DirServiceImpl)
@@ -927,7 +927,7 @@ func _GetZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPack
 	_ = length
 	return nil
 }
-func _GetAllZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _DirServiceGetAllZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length int
 	impl := serviceImpl.(_DirServiceImpl)
@@ -977,37 +977,37 @@ func (s *DirService) Dispatch(ctx context.Context, serviceImpl interface{}, req 
 	var err error
 	switch req.SFuncName {
 	case "createZone":
-		err = _CreateZoneImpl(ctx, serviceImpl, up, p)
+		err = _DirServiceCreateZoneImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
 	case "modifyZone":
-		err = _ModifyZoneImpl(ctx, serviceImpl, up, p)
+		err = _DirServiceModifyZoneImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
 	case "deleteZone":
-		err = _DeleteZoneImpl(ctx, serviceImpl, up, p)
+		err = _DirServiceDeleteZoneImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
 	case "reportZone":
-		err = _ReportZoneImpl(ctx, serviceImpl, up, p)
+		err = _DirServiceReportZoneImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
 	case "getZone":
-		err = _GetZoneImpl(ctx, serviceImpl, up, p)
+		err = _DirServiceGetZoneImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
 	case "getAllZone":
-		err = _GetAllZoneImpl(ctx, serviceImpl, up, p)
+		err = _DirServiceGetAllZoneImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

@@ -25,6 +25,10 @@ func GameCmd(c echo.Context) error {
 
     gamePrx := new(rpc.GameService)
     comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
+
+    gfPrx := new(rpc.GFService)
+    comm.StringToProxy("aqua.GFServer.GFServiceObj", gfPrx)
+
     u := ctx.GetUser()
 
     buff := bytes.Buffer{}
@@ -33,7 +37,13 @@ func GameCmd(c echo.Context) error {
         cmd := strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
 
         result := ""
-        ret, err := gamePrx.DoGmCmd(u.UserName, cmd, &result)
+        var ret int32
+        var err error
+        if zoneid != "0" {
+            ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+        } else {
+            ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
+        }
         if ret != 0 || err != nil {
             result = fmt.Sprintf("ret:%d, err:%s", ret, err.Error())
         }
