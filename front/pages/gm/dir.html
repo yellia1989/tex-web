@@ -32,6 +32,7 @@
         return "<font color='"+versionMap.chooseColour(data)+"'>"+data+"</font>";
     }
 
+  var zonedata;
 	layui.use(["element", "table", "okLayer", "okUtils"], function () {
 		let table = layui.table;
 		let okLayer = layui.okLayer;
@@ -136,6 +137,7 @@
 			let data = obj.data;
 			switch (obj.event) {
 				case "edit":
+          zonedata = data;
 					edit(data.id);
 					break;
 				case "del":
