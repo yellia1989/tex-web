@@ -1,7 +1,6 @@
 package model
 
 import (
-    "fmt"
     "path"
     "strings"
     "encoding/json"
@@ -54,7 +53,6 @@ func (perm *Permission) checkPermission(method string, spath string) bool {
             continue
         }
 
-        fmt.Printf("%s:%s\n", pp[0], pp[1])
         if matched, _ := path.Match(pp[1], spath); matched {
             return true
         }
