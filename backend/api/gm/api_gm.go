@@ -24,10 +24,12 @@ func GameCmd(c echo.Context) error {
     }
 
     gamePrx := new(rpc.GameService)
-    comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
-
     gfPrx := new(rpc.GFService)
-    comm.StringToProxy("aqua.GFServer.GFServiceObj", gfPrx)
+    if zoneid != "0" {
+        comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
+    } else {
+        comm.StringToProxy("aqua.GFServer.GFServiceObj", gfPrx)
+    }
 
     u := ctx.GetUser()
 
