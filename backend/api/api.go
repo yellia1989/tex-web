@@ -28,4 +28,7 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/game/cmd", gm.GameCmd)              // 执行gm命令
     group.GET("/gm/zone/simplelist", gm.ZoneSimpleList) // 获取分区列表
     group.GET("/gm/zone/list", gm.ZoneList)             // 获取分区列表
+    group.POST("/gm/zone/add", gm.ZoneAdd)              // 增加新分区
+    group.POST("/gm/zone/del", gm.ZoneDel)              // 删除分区
+    group.POST("/gm/zone/update", gm.ZoneUpdate)        // 更新分区
 }

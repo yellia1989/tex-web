@@ -113,6 +113,12 @@
 				{field: "sAndForceUpdateVersion", title: "AND强制下线版本", width: 120, fixed: 'right'},
 				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
 			]],
+      parseData: function(res) {
+        for (i = 0; i < res.data.length; ++i) {
+          res.data[i].id = res.data[i].iZoneId;
+        }
+        return res;
+      }
 		});
 
 		table.on("toolbar(tableFilter)", function (obj) {
@@ -149,8 +155,8 @@
 				layer.close(index);
 				let idsStr = okUtils.tableBatchCheck(table);
 				if (idsStr) {
-					okUtils.ajax("/api/gm/dir/delete", "delete", {idsStr: idsStr}, true).done(function (response) {
-						okUtils.tableSuccessMsg(response.msg);
+					okUtils.ajax("/api/gm/zone/del", "post", {idsStr: idsStr}, true).done(function (response) {
+						okUtils.tableSuccessMsg(response.data);
 					}).fail(function (error) {
 						console.log(error)
 					});
@@ -166,8 +172,8 @@
 
 		function del(id) {
 			okLayer.confirm("确定要删除吗？", function () {
-				okUtils.ajax("/gm/api/dir/delete", "delete", {idsStr: id}, true).done(function (response) {
-					okUtils.tableSuccessMsg(response.msg);
+				okUtils.ajax("/api/gm/zone/del", "post", {idsStr: id}, true).done(function (response) {
+					okUtils.tableSuccessMsg(response.data);
 				}).fail(function (error) {
 					console.log(error)
 				});

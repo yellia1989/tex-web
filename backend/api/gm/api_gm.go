@@ -47,7 +47,11 @@ func GameCmd(c echo.Context) error {
             ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
         }
         if ret != 0 || err != nil {
-            result = fmt.Sprintf("ret:%d, err:%s", ret, err.Error())
+            serr := ""
+            if err != nil {
+                serr = err.Error()
+            }
+            result = fmt.Sprintf("ret:%d, err:%s", ret, serr)
         }
         buff.WriteString(result+"\n")
     }
