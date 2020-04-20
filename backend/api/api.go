@@ -14,6 +14,7 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/user/del", UserDel)        // 用户删除
     group.POST("/user/update/role", UserUpdateRole)    // 用户角色变更
     group.POST("/user/update", UserUpdate)    // 用户更新
+    group.POST("/user/pwd", UserPwd)    // 用户改密码
     group.GET("/perm/list", PermList)         // 权限列表
     group.POST("/perm/add", PermAdd)          // 权限增加
     group.POST("/perm/del", PermDel)          // 权限删除

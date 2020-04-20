@@ -139,3 +139,29 @@ func UserUpdate(c echo.Context) error {
     }
     return ctx.SendResponse("更新用户成功")
 }
+
+func UserPwd(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    username := ctx.FormValue("username")
+    oldpassword := ctx.FormValue("oldpassword")
+    password := ctx.FormValue("password")
+
+    if username == "" || oldpassword == "" || password == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    u := model.GetUserByUserName(username)
+    if u == nil {
+        return ctx.SendError(-1, "用户不存在")
+    }
+
+    if !u.ComparePwd(oldpassword) {
+        return ctx.SendError(-1, "原始密码不对")
+    }
+
+    if !u.EncodePwd(password) || !model.UpdateUser(u) {
+        return ctx.SendError(-1, "修改密码失败")
+    }
+
+    return ctx.SendResponse("修改密码成功")
+}

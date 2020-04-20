@@ -42,9 +42,11 @@
 </form>
 <script type="text/javascript" src="/lib/layui/layui.js"></script>
 <script type="text/javascript">
-  layui.use(['form', 'layer'], function () {
-  	var form = layui.form,
+  layui.use(['form', 'layer', 'okLayer', 'okUtils'], function () {
+  	let form = layui.form,
   		layer = layui.layer,
+      okLayer = layui.okLayer,
+      okUtils = layui.okUtils,
   		$ = layui.jquery,
   		$form = $('form');
   	okLoading.close();
@@ -65,7 +67,13 @@
   
   	//修改密码
   	form.on("submit(changePwd)", function (data) {
-      console.log(data.field);
+      okUtils.ajax("/api/user/pwd", "post", data.field, true).done(function (response) {
+        okLayer.greenTickMsg(response.data, function () {
+					parent.layer.close(parent.layer.getFrameIndex(window.name));
+				});
+		  }).fail(function (error) {
+          console.log(error);
+      });
   		return false;
   	})
   });
