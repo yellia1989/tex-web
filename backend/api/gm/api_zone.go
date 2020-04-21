@@ -11,7 +11,11 @@ import (
 
 func checkRet(ret int32, err error, c echo.Context) bool {
     if ret != 0 || err != nil {
-        c.Error(fmt.Errorf("get zone list failed, ret:%d, err:%s", ret, err.Error()))
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        c.Error(fmt.Errorf("opt zone failed, ret:%d, err:%s", ret, serr))
         return false
     }
 
@@ -88,5 +92,17 @@ func ZoneDel(c echo.Context) error {
 func ZoneUpdate(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    return ctx.SendError(-1, "暂未实现")
+    zone := rpc.ZoneInfo{}
+    if err := ctx.Bind(&zone); err != nil {
+        return err
+    }
+
+    dirPrx := new(rpc.DirService)
+    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+    ret, err := dirPrx.ModifyZone(zone, rpc.ZoneModifyInfo{})
+    if !checkRet(ret, err, c) {
+        return ctx.SendError(-1, "修改分区失败")
+    }
+
+    return ctx.SendResponse("修改分区成功")
 }

@@ -33,6 +33,7 @@
     }
 
   var zonedata;
+  var zoneids;
 	layui.use(["element", "table", "okLayer", "okUtils"], function () {
 		let table = layui.table;
 		let okLayer = layui.okLayer;
@@ -130,6 +131,9 @@
 				case "batchDel":
 					batchDel();
 					break;
+        case "batchVersion":
+          batchVersion();
+          break;
 			}
 		});
 
@@ -166,6 +170,16 @@
 			});
 		}
 
+    function batchVersion() {
+		  let idsStr = okUtils.tableBatchCheck(table);
+      if (idsStr) {
+        zoneids = idsStr;
+        okLayer.open("批量修改分区版本号", "dir-version.html", "90%", "90%", null, function () {
+			  	dirTable.reload();
+			  })
+      }
+    }
+
 		function edit(id) {
 			okLayer.open("编辑分区", "dir-edit.html", "90%", "90%", null, function () {
 				dirTable.reload();
@@ -188,6 +202,7 @@
 	<div class="layui-btn-container">
 		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
 		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+		<div class="layui-inline" lay-event="batchVersion"><i class="layui-icon layui-icon-edit"></i></div>
 	</div>
 </script>
 <script type="text/html" id="operationTpl">

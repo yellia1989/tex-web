@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>批量修改分区版本</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <style>
+    //css调整部分
+    xm-select .scroll-body{
+      padding-left: 10px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+<div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+	    <div class="layui-form-item">
+		    <div class="layui-block">
+		    	<label class="layui-form-label">分区ID</label>
+		    	<div class="layui-input-block">
+            <div id="zoneSelect"></div>
+		    	</div>
+		    </div>
+      </div>
+		  <div class="layui-form-item">
+        <div class="layui-inline">
+			    <label class="layui-form-label">IOS客户端版本</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
+			    </div>
+        </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">IOS强制更新版本</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
+			    </div>
+        </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">AND客户端版本</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sAndClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
+			    </div>
+        </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">AND强制更新版本</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sAndForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
+			    </div>
+        </div>
+    </div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="add">更新版本号</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+    // https://www.layui.com/doc/modules/form.html
+    layui.use(['form', 'laydate', 'okUtils', 'okLayer', "transfer"], function(){
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let transfer = layui.transfer;
+      let $ = layui.jquery;
+		  okLoading.close();
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'zoneid',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择至少一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        content: "<div id='transfer'></div>",
+        height: 'auto',
+        autoRow: true,
+        on: function(data){
+          if(!data.isAdd){
+            transfer.reload('transfer', {
+              value: zoneSelect.getValue('value')
+            })
+          }
+        }
+      });
+
+      transfer.render({
+        id: 'transfer',
+        elem: '#transfer',
+        title: ['分区列表', '已选分区'],
+        parseData: function(res){
+          res.value = res.iZoneId;
+          res.title = res.sZoneName;
+          if (res.iZoneId == 8888 || res.iZoneId == 9999 || res.iZoneId == 0) {
+            res.disabled = true;
+          }
+          return res;
+        },
+        onchange: function(data, index){
+          if (index == 0) {
+            zoneSelect.append(data)
+          } else {
+            zoneSelect.delete(data)
+          }
+        }
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect.update({
+          data: response.data,
+          initValue: parent.zoneids.split(","),
+        });
+
+        transfer.reload('transfer', {
+          data: response.data,
+          value: zoneSelect.getValue('value'),
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      //数据校验
+      form.verify({
+        "version": function(value, item) {
+          let v = value.split('.');
+          let l = 5;
+          if (item.name.indexOf('Force') != -1) {
+              l = 3;
+          }
+          if (v.length != l) {
+              return '版本号格式不对';
+          }
+        }
+      });
+
+      //监听提交
+      form.on('submit(add)', function(data){
+        let param = {
+          idStr: zoneSelect.getValue('valueStr'),
+          sClientVersion: data.field.sClientVersion,
+          sForceUpdateVersion: data.field.sForceUpdateVersion,
+          sAndClientVersion: data.field.sAndClientVersion,
+          sAndForceUpdateVersion: data.field.sAndForceUpdateVersion,
+        };
+        okUtils.ajax("/api/gm/zone/version", "post", param, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+			  		parent.layer.close(parent.layer.getFrameIndex(window.name));
+			  	});
+		    }).fail(function (error) {
+            console.log(error);
+        });
+        return false;
+      });
+    });
+</script>
+</body>
+</html>
