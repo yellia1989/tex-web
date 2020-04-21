@@ -36,78 +36,78 @@
 			</div>
 		</div>
 	    <div class="layui-form-item">
-            <div class="layui-inline">
+        <div class="layui-inline">
 			    <label class="layui-form-label">分区标识</label>
 			    <div class="layui-input-inline">
-                    <select name="iZoneFlag">
-                        <option value="1" selected>正常</option>
-                        <option value="2">新区</option>
-                        <option value="3">关闭</option>
-                        <option value="4">审核</option>
-                    </select>
+            <select name="iZoneFlag">
+              <option value="1">正常</option>
+              <option value="2">新区</option>
+              <option value="3">关闭</option>
+              <option value="4">审核</option>
+            </select>
 			    </div>
-            </div>
-	        <div class="layui-inline">
+        </div>
+	      <div class="layui-inline">
 			    <label class="layui-form-label">是否手动</label>
 			    <div class="layui-input-inline">
-                    <select name="iIsManual">
-                        <option value="0">否</option>
-                        <option value="1" selected>是</option>
-                    </select>
+            <select name="iIsManual">
+              <option value="0">否</option>
+              <option value="1">是</option>
+            </select>
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">手动状态</label>
 			    <div class="layui-input-inline">
-                    <select name="iManualZoneStatus">
-                        <option value="1" selected>畅通</option>
-                        <option value="2">拥挤</option>
-                        <option value="3">繁忙</option>
-                        <option value="4">维护</option>
-                    </select>
+            <select name="iManualZoneStatus">
+              <option value="1">畅通</option>
+              <option value="2">拥挤</option>
+              <option value="3">繁忙</option>
+              <option value="4">维护</option>
+            </select>
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">最大人数</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
 			    </div>
-            </div>
-	        <div class="layui-inline">
+        </div>
+	      <div class="layui-inline">
 			    <label class="layui-form-label">是否强制下线</label>
 			    <div class="layui-input-inline">
-                    <select name="iIsKick">
-                        <option value="0">否</option>
-                        <option value="1" selected>是</option>
-                    </select>
+            <select name="iIsKick">
+              <option value="0">否</option>
+              <option value="1">是</option>
+            </select>
 			    </div>
-            </div>
+        </div>
 		</div>
 		<div class="layui-form-item">
-            <div class="layui-inline">
+        <div class="layui-inline">
 			    <label class="layui-form-label">IOS客户端版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">IOS强制更新版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">AND客户端版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sAndClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">AND强制更新版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sAndForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
+        </div>
         </div>
 		<div class="layui-form-item">
 			<div class="layui-input-block">
@@ -132,6 +132,16 @@
       $("input[name='iZoneId']").val(parent.zonedata.iZoneId);
       $("input[name='sZoneName']").val(parent.zonedata.sZoneName);
       $("input[name='sConnServer']").val(parent.zonedata.sConnServer);
+      $("select[name='iZoneFlag']").val(parent.zonedata.iZoneFlag);
+      $("select[name='iIsManual']").val(parent.zonedata.iIsManual);
+      $("select[name='iManualZoneStatus']").val(parent.zonedata.iManualZoneStatus);
+      $("input[name='iMaxNum']").val(parent.zonedata.iMaxNum);
+      $("select[name='iIsKick']").val(parent.zonedata.iIsKick);
+      $("input[name='sClientVersion']").val(parent.zonedata.sClientVersion);
+      $("input[name='sForceUpdateVersion']").val(parent.zonedata.sForceUpdateVersion);
+      $("input[name='sAndClientVersion']").val(parent.zonedata.sAndClientVersion);
+      $("input[name='sAndForceUpdateVersion']").val(parent.zonedata.sAndForceUpdateVersion);
+      form.render('select');
 
       //数据校验
       form.verify({

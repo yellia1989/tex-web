@@ -66,10 +66,14 @@ func main() {
     // Echo instance
     e := echo.New()
     e.HTTPErrorHandler = httpErrorHandler
+    e.Logger.SetHeader("${time_custom}|${short_file}:${line}|${level}|")
 
     // Middleware
     e.Pre(middleware.RemoveTrailingSlash())
-    e.Use(middleware.Logger())
+    e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+        Format: "${time_custom}|${remote_ip}|${method}|${path}|${status}|${latency_human}|${error}\n",
+        CustomTimeFormat: "2006-01-02 15:04:05", 
+    }))
     e.Use(middleware.Recover())
 
     e.Use(mid.NewContext(), mid.RequireLogin(), mid.RequireAuth())
