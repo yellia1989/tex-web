@@ -31,4 +31,5 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/zone/add", gm.ZoneAdd)              // 增加新分区
     group.POST("/gm/zone/del", gm.ZoneDel)              // 删除分区
     group.POST("/gm/zone/update", gm.ZoneUpdate)        // 更新分区
+    group.POST("/gm/zone/version", gm.ZoneUpdateVersion)        // 批量更新分区版本号
 }

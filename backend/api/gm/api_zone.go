@@ -106,3 +106,44 @@ func ZoneUpdate(c echo.Context) error {
 
     return ctx.SendResponse("修改分区成功")
 }
+
+func ZoneUpdateVersion(c echo.Context) error {
+    ctx := c.(*mid.Context)
+
+    ids := strings.Split(ctx.FormValue("idsStr"), ",")
+    if len(ids) == 0 {
+        return ctx.SendError(-1, "分区不存在")
+    }
+
+    clientVersion := ctx.FormValue("sClientVersion")
+    forceUpdateVersion := ctx.FormValue("sForceUpdateVersion")
+    andClientVersion := ctx.FormValue("sAndClientVersion")
+    andForceUpdateVersion := ctx.FormValue("sAndForceUpdateVersion")
+
+    if len(strings.Split(clientVersion, ".")) != 5 || len(strings.Split(forceUpdateVersion, ".")) != 3 || len(strings.Split(andClientVersion, ".")) != 5 || len(strings.Split(andForceUpdateVersion, ".")) != 3 {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    dirPrx := new(rpc.DirService)
+    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+
+    for _, id := range ids {
+        id, _ := strconv.ParseUint(id, 10, 32)
+        zone := rpc.ZoneInfo{}
+        ret, err := dirPrx.GetZone(uint32(id), &zone)
+        if !checkRet(ret, err, c) {
+            return ctx.SendError(-1, "分区不存在")
+        }
+
+        zone.SClientVersion = clientVersion
+        zone.SForceUpdateVersion = forceUpdateVersion
+        zone.SAndClientVersion = andClientVersion
+        zone.SAndForceUpdateVersion = andForceUpdateVersion
+        ret, err = dirPrx.ModifyZone(zone, rpc.ZoneModifyInfo{})
+        if !checkRet(ret, err, c) {
+            return ctx.SendError(-1, "修改分区版本失败")
+        }
+    }
+
+    return ctx.SendResponse("批量修改分区成功")
+}
