@@ -1,7 +1,6 @@
 package gm
 
 import (
-    "fmt"
     "strings"
     "strconv"
     "github.com/labstack/echo"
@@ -9,26 +8,13 @@ import (
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
 )
 
-func checkRet(ret int32, err error, c echo.Context) bool {
-    if ret != 0 || err != nil {
-        serr := ""
-        if err != nil {
-            serr = err.Error()
-        }
-        c.Error(fmt.Errorf("opt zone failed, ret:%d, err:%s", ret, serr))
-        return false
-    }
-
-    return true
-}
-
 func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
 
     var zones []rpc.ZoneInfo
     ret, err := dirPrx.GetAllZone(&zones)
-    checkRet(ret, err, c)
+    checkRet(ret, err)
     
     return zones
 }
@@ -61,8 +47,8 @@ func ZoneAdd(c echo.Context) error {
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
     ret, err := dirPrx.CreateZone(zone)
-    if !checkRet(ret, err, c) {
-        return ctx.SendError(-1, "添加分区失败")
+    if err := checkRet(ret, err); err != nil {
+        return err
     }
 
     return ctx.SendResponse("添加分区成功")
@@ -81,8 +67,8 @@ func ZoneDel(c echo.Context) error {
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)
         ret, err := dirPrx.DeleteZone(uint32(id))
-        if !checkRet(ret, err, c) {
-            return ctx.SendError(-1, "删除分区失败")
+        if err := checkRet(ret, err); err != nil {
+            return err
         }
     }
 
@@ -100,8 +86,8 @@ func ZoneUpdate(c echo.Context) error {
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
     ret, err := dirPrx.ModifyZone(zone, rpc.ZoneModifyInfo{})
-    if !checkRet(ret, err, c) {
-        return ctx.SendError(-1, "修改分区失败")
+    if err := checkRet(ret, err); err != nil {
+        return err
     }
 
     return ctx.SendResponse("修改分区成功")
@@ -131,8 +117,8 @@ func ZoneUpdateVersion(c echo.Context) error {
         id, _ := strconv.ParseUint(id, 10, 32)
         zone := rpc.ZoneInfo{}
         ret, err := dirPrx.GetZone(uint32(id), &zone)
-        if !checkRet(ret, err, c) {
-            return ctx.SendError(-1, "分区不存在")
+        if err := checkRet(ret, err); err != nil {
+            return err
         }
 
         zone.SClientVersion = clientVersion
@@ -140,8 +126,8 @@ func ZoneUpdateVersion(c echo.Context) error {
         zone.SAndClientVersion = andClientVersion
         zone.SAndForceUpdateVersion = andForceUpdateVersion
         ret, err = dirPrx.ModifyZone(zone, rpc.ZoneModifyInfo{})
-        if !checkRet(ret, err, c) {
-            return ctx.SendError(-1, "修改分区版本失败")
+        if err := checkRet(ret, err); err != nil {
+            return err
         }
     }
 

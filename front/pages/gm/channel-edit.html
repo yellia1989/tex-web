@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>新增渠道</title>
+	<title>编辑渠道</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -12,9 +12,9 @@
 	    <div class="layui-form-item">
 		  	<label class="layui-form-label">渠道</label>
 		   	<div class="layui-input-block">
-		   		<input type="text" name="sChannel" placeholder="请输入渠道名称" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		   		<input type="text" name="sChannel" placeholder="请输入渠道名称" autocomplete="off" disabled class="layui-input layui-disabled" lay-verify="required" lay-verType="tips">
 		   	</div>
-		</div>
+		  </div>
 
 	    <div class="layui-form-item">
 		    <label class="layui-form-label">exe更新地址</label>
@@ -23,7 +23,7 @@
 		    </div>
 		</div>
 
-	    <div class="layui-form-item">
+	  <div class="layui-form-item">
 		    <label class="layui-form-label">res更新地址</label>
 		    <div class="layui-input-block">
 		    	<input type="text" name="sRes" placeholder="请输入资源更新地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
@@ -32,7 +32,7 @@
 
 		<div class="layui-form-item">
 			<div class="layui-input-block">
-				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
+				<button class="layui-btn" lay-submit lay-filter="add">更新</button>
 				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 			</div>
 		</div>
@@ -44,10 +44,15 @@
     let form = layui.form;
     let okUtils = layui.okUtils;
     let okLayer = layui.okLayer;
+    let $ = layui.jquery; 
+
+    $("input[name='sChannel']").val(parent.editdata.sChannel);
+    $("input[name='sAddress']").val(parent.editdata.sAddress);
+    $("input[name='sRes']").val(parent.editdata.sRes);
 
     //监听提交
     form.on('submit(add)', function(data){
-      okUtils.ajax("/api/gm/channel/add", "post", data.field, true).done(function (response) {
+      okUtils.ajax("/api/gm/channel/update", "post", data.field, true).done(function (response) {
         okLayer.greenTickMsg(response.data, function () {
 					parent.layer.close(parent.layer.getFrameIndex(window.name));
 				});

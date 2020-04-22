@@ -32,4 +32,9 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/zone/del", gm.ZoneDel)              // 删除分区
     group.POST("/gm/zone/update", gm.ZoneUpdate)        // 更新分区
     group.POST("/gm/zone/version", gm.ZoneUpdateVersion)        // 批量更新分区版本号
+
+    group.GET("/gm/channel/list", gm.ChannelList)             // 获取渠道列表
+    group.POST("/gm/channel/add", gm.ChannelAdd)              // 增加新渠道
+    group.POST("/gm/channel/del", gm.ChannelDel)              // 删除渠道
+    group.POST("/gm/channel/update", gm.ChannelUpdate)        // 更新渠道
 }

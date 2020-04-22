@@ -14,6 +14,18 @@ var (
     comm = tex.NewCommunicator("tex.mfwregistry.QueryObj@tcp -h 192.168.0.16 -p 2000 -t 3600000")
 )
 
+func checkRet(ret int32, err error) error {
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("opt failed, ret:%d, err:%s", ret, serr)
+    }
+
+    return nil
+}
+
 func GameCmd(c echo.Context) error {
     ctx := c.(*mid.Context)
     zoneid := ctx.FormValue("zoneid")
