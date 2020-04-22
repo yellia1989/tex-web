@@ -37,4 +37,9 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/channel/add", gm.ChannelAdd)              // 增加新渠道
     group.POST("/gm/channel/del", gm.ChannelDel)              // 删除渠道
     group.POST("/gm/channel/update", gm.ChannelUpdate)        // 更新渠道
+
+    group.GET("/gm/registry/list", gm.RegistryList)             // 获取registry列表
+    group.POST("/gm/registry/add", gm.RegistryAdd)              // 增加registry
+    group.POST("/gm/registry/del", gm.RegistryDel)              // 删除registry
+    group.POST("/gm/registry/update", gm.RegistryUpdate)        // 更新registry
 }
