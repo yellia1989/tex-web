@@ -25,8 +25,81 @@ var tabData = [
         "isCheck": true,
       },
       {
+        "title": "Registry管理",
+        "href": "pages/gm/registry.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+      },
+      {
         "title": "渠道管理",
         "href": "pages/gm/channel.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "title": "公告管理",
+        "href": "pages/gm/bulletin.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "title": "跑马灯",
+        "href": "pages/gm/notice.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "title": "邮件管理",
+        "fontFamily": "ok-icon",
+				"icon": "&#xe654;",
+				"children": [
+				{
+        	"title": "邮件管理",
+        	"href": "pages/gm/mail.html",
+        	"fontFamily": "ok-icon",
+					"icon": "&#xe654;",
+				},
+				{
+        	"title": "发送邮件",
+        	"href": "pages/gm/send-mail.html",
+        	"fontFamily": "ok-icon",
+					"icon": "&#xe654;",
+				},
+				{
+        	"title": "发送自定义邮件",
+        	"href": "pages/gm/define-mail.html",
+        	"fontFamily": "ok-icon",
+					"icon": "&#xe654;",
+				},
+			]
+      },
+      {
+        "title": "白名单管理",
+        "href": "pages/gm/whitelist.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "title": "CDK管理",
+        "href": "pages/gm/cdk.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "title": "活动管理",
+        "href": "pages/gm/activity.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "title": "禁止切服",
+        "href": "pages/gm/forbid.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;"
+      },
+      {
+        "title": "屏蔽字",
+        "href": "pages/gm/dirty.html",
         "fontFamily": "ok-icon",
         "icon": "&#xe654;"
       },
