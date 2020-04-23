@@ -1,168 +1,181 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset="UTF-8">
-	<title>CDK管理</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="../../css/oksub.css">
-	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+  <meta charset="UTF-8">
+  <title>CDK管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../../css/oksub.css">
+  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
 </head>
+
 <body>
-<div class="ok-body">
-	<table id="tableId" lay-filter="tableFilter"></table>
-</div>
-<!--js逻辑-->
-<script src="../../lib/layui/layui.js"></script>
-<script>
-	layui.use(["element", "table", "okLayer", "okUtils"], function () {
-		let table = layui.table;
-		let okLayer = layui.okLayer;
-		let okUtils = layui.okUtils;
-		okLoading.close();
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="../../lib/layui/layui.js"></script>
+  <script>
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
 
-		let noticeTable = table.render({
-		elem: "#tableId",
-		data: [
-		{
-			"iId": 1,
-			"sName": "test",
-			"iTotalNum": 5,
-			"iGenerateType": 1,
-			"iGrantType": 1,
-			"iIsGeneric": 1,
-			"iBeginTime": 1588925071,
-			"iEndTime": 1588925070,
-			"sDefineRestrict": "lkl",
-			"sZondRestrict": "1234",
-			"iAccountRestrict": 2,
-			"sDefineReward": "lll",
-			"iGenerated": 2,
-			"iExchange": 1,
-		},
-		],
-		text: {
-			none: '暂无相关数据',
-		},
-		limit: 30,
-		page: true,
-		toolbar: "#toolbarTpl",
-		cols: [[
-			{type: "checkbox", title: "序号", fixed: 'left'},
-			{field: "iId", title: "ID", width: 90, fixed: 'left'},
-			{field: "sName", title: "名称", width: 90, fixed: 'left'},
-			{field: "iTotalNum", title: "总数量", width: 90, fixed: 'left'},
-			{field: "iGenerateType", title: "生成方式", width: 90, align: "center", templet: function(d) {
-				var ret = '';
-				switch (d.iGenerateType) {
-				case 1: ret = '预先生成';break;
-				default:
-						ret = '未知';
-				}
-				return ret;
-			}},
-			{field: "iGrantType", title: "发货方式", width: 90, align: "center", templet: function(d) {
-				var ret = '';
-				switch (d.iGrantType) {
-				case 1: ret = '系统发放';break;
-				default:
-						ret = '未知';
-				}
-				return ret;
-			}},
-			{field: "iIsGeneric", title: "是否是通用CDK", align: "center", templet: function(d) {
-				return d.iIsGeneric == 1 ? '是' : '否';
-			}},
-			{field: "iBeginTime", title: "开始时间", align: "center", templet: function(d) {
-				return okUtils.dateFormat(new Date(d.iEndTime*1000), 'yyyy-MM-dd hh:mm:ss');
-			}},
-			{field: "iEndTime", title: "结束时间", align: "center", templet: function(d) {
-			if (d.iEndTime < d.iBeginTime) {
-					return '结束时间不能小于开始时间';
-				}
-				return okUtils.dateFormat(new Date(d.iEndTime*1000), 'yyyy-MM-dd hh:mm:ss');
-			}},
-			{field: "sDefineRestrict", title: "自定义限制"},
-			// TODO 需要修改
-			{field: "sZondRestrict", title: "分区限制", align: "center"},
-			{field: "iAccountRestrict", title: "每账号限制", align: "center"},
-			{field: "sDefineReward", title: "自定义奖励", align: "center"},
-			{field: "iGenerated", title: "已生成", align: "center"},
-			{field: "iExchange", title: "已兑换", align: "center"},
-			{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
-		]],
-		});
+      let noticeTable = table.render({
+        elem: "#tableId",
+        data: [
+          {
+            "iId": 1,
+            "sName": "test",
+            "iTotalNum": 5,
+            "iGenerateType": 1,
+            "iGrantType": 1,
+            "iIsGeneric": 1,
+            "iBeginTime": 1588925071,
+            "iEndTime": 1588925070,
+            "sDefineRestrict": "lkl",
+            "sZondRestrict": "1234",
+            "iAccountRestrict": 2,
+            "sDefineReward": "lll",
+            "iGenerated": 2,
+            "iExchange": 1,
+          },
+        ],
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "iId", title: "ID", width: 90, fixed: 'left' },
+          { field: "sName", title: "名称", width: 90, fixed: 'left' },
+          { field: "iTotalNum", title: "总数量", width: 90, fixed: 'left' },
+          {
+            field: "iGenerateType", title: "生成方式", width: 90, align: "center", templet: function (d) {
+              var ret = '';
+              switch (d.iGenerateType) {
+                case 1: ret = '预先生成'; break;
+                default:
+                  ret = '未知';
+              }
+              return ret;
+            }
+          },
+          {
+            field: "iGrantType", title: "发货方式", width: 90, align: "center", templet: function (d) {
+              var ret = '';
+              switch (d.iGrantType) {
+                case 1: ret = '系统发放'; break;
+                default:
+                  ret = '未知';
+              }
+              return ret;
+            }
+          },
+          {
+            field: "iIsGeneric", title: "是否是通用CDK", align: "center", templet: function (d) {
+              return d.iIsGeneric == 1 ? '是' : '否';
+            }
+          },
+          {
+            field: "iBeginTime", title: "开始时间", align: "center", templet: function (d) {
+              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            }
+          },
+          {
+            field: "iEndTime", title: "结束时间", align: "center", templet: function (d) {
+              if (d.iEndTime < d.iBeginTime) {
+                return '结束时间不能小于开始时间';
+              }
+              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            }
+          },
+          { field: "sDefineRestrict", title: "自定义限制" },
+          // TODO 需要修改
+          { field: "sZondRestrict", title: "分区限制", align: "center" },
+          { field: "iAccountRestrict", title: "每账号限制", align: "center" },
+          { field: "sDefineReward", title: "自定义奖励", align: "center" },
+          { field: "iGenerated", title: "已生成", align: "center" },
+          { field: "iExchange", title: "已兑换", align: "center" },
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+        ]],
+      });
 
-		table.on("toolbar(tableFilter)", function (obj) {
-			switch (obj.event) {
-				case "add":
-					add();
-					break;
-				case "batchDel":
-					batchDel();
-					break;
-			}
-		});
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "batchDel":
+            batchDel();
+            break;
+        }
+      });
 
-		table.on("tool(tableFilter)", function (obj) {
-			let data = obj.data;
-			switch (obj.event) {
-				case "edit":
-					edit(data.snotice);
-					break;
-				case "del":
-					del(data.snotice);
-					break;
-			}
-		});
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            edit(data.snotice);
+            break;
+          case "del":
+            del(data.snotice);
+            break;
+        }
+      });
 
-		function add() {
-			okLayer.open("添加渠道", "notice-add.html", "90%", "90%", null, function () {
-				noticeTable.reload();
-			})
-		}
+      function add() {
+        okLayer.open("添加渠道", "notice-add.html", "90%", "90%", null, function () {
+          noticeTable.reload();
+        })
+      }
 
-		function batchDel() {
-			okLayer.confirm("确定要批量删除吗？", function (index) {
-				layer.close(index);
-				let idsStr = okUtils.tableBatchCheck(table);
-				if (idsStr) {
-					okUtils.ajax("/gm/notice/deleteNotice", "delete", {idsStr: idsStr}, true).done(function (response) {
-						okUtils.tableSuccessMsg(response.msg);
-					}).fail(function (error) {
-						console.log(error)
-					});
-				}
-			});
-		}
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/gm/notice/deleteNotice", "delete", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.msg);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
 
-		function edit(id) {
-			okLayer.open("编辑渠道", "dir-edit.html?id=" + id, "90%", "90%", null, function () {
-				dirTable.reload();
-			})
-		}
+      function edit(id) {
+        okLayer.open("编辑渠道", "dir-edit.html?id=" + id, "90%", "90%", null, function () {
+          dirTable.reload();
+        })
+      }
 
-		function del(id) {
-			okLayer.confirm("确定要删除吗？", function () {
-				okUtils.ajax("/gm/dir/deletenotice", "delete", {idsStr: id}, true).done(function (response) {
-					okUtils.tableSuccessMsg(response.msg);
-				}).fail(function (error) {
-					console.log(error)
-				});
-			})
-		}
-	})
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/gm/dir/deletenotice", "delete", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.msg);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+  <script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+  </div>
 </script>
-<!-- 头工具栏模板 -->
-<script type="text/html" id="toolbarTpl">
-	<div class="layui-btn-container">
-		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
-		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
-	</div>
-</script>
 
-<script type="text/html" id="operationTpl">
-	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
-	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+  <script type="text/html" id="operationTpl">
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
 </script>
 </body>
+
 </html>

@@ -77,8 +77,8 @@
 
 /*响应样式*/
 @media screen and (max-width:750px){
-	.ok-in-hide-md{display:none!important}
+    .ok-in-hide-md{display:none!important}
 }
 @media screen and (max-width:548px){
-	.ok-in-hide-xs,[ok-pc-in-show]{display:none!important}
+    .ok-in-hide-xs,[ok-pc-in-show]{display:none!important}
 }
