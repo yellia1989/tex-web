@@ -97,7 +97,7 @@
 
 		function del(id) {
 			okLayer.confirm("确定要删除吗？", function () {
-				okUtils.ajax("/api/gm/channel/del", "post", {idsStr: id}, true).done(function (response) {
+				okUtils.ajax("/gm/dir/deleteChannel", "delete", {idsStr: id}, true).done(function (response) {
 					okUtils.tableSuccessMsg(response.msg);
 				}).fail(function (error) {
 					console.log(error)

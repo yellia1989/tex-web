@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>公告管理</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+	<table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script>
+	layui.use(["element", "table", "okLayer", "okUtils"], function () {
+		let table = layui.table;
+		let okLayer = layui.okLayer;
+		let okUtils = layui.okUtils;
+		okLoading.close();
+
+		let bulletinTable = table.render({
+		elem: "#tableId",
+    data: [
+      {"iId": 1, "sTitle": "公告", "sContent": "欢迎来到aqua", "iBeginTime": 1588925071, "iEndTime": 1588925072, "iIsDisplay":1, "iStatus": 3}
+    ],
+    text: {
+      none: '暂无相关数据',
+    },
+		limit: 10,
+		page: true,
+		toolbar: "#toolbarTpl",
+		cols: [[
+			{type: "checkbox", title: "序号", fixed: 'left'},
+			{field: "iId", title: "ID", width: 90, fixed: 'left'},
+			{field: "sTitle", title: "标题", align: "center"},
+			{field: "sContent", title: "内容"},
+			{field: "iBeginTime", title: "开始时间", align: "center", templet: function(d) {
+        return okUtils.dateFormat(new Date(d.iEndTime*1000), 'yyyy-MM-dd hh:mm:ss');
+			}},
+			{field: "iEndTime", title: "结束时间", align: "center", templet: function(d) {
+        if (d.iEndTime < d.iBeginTime) {
+          return '结束时间不能小于开始时间';
+        }
+        return okUtils.dateFormat(new Date(d.iEndTime*1000), 'yyyy-MM-dd hh:mm:ss');
+			}},
+			{field: "iIsDisplay", title: "是否显示", width: 90, align:"center", templet: function(d) {
+		  	return d.iIsDisplay == 1 ? '是' : '否';
+      }},
+			{field: "iStatus", title: "状态", width: 90, align: "center", templet: function(d) {
+        var ret = '';
+        switch (d.iStatus) {
+        case 1: ret = '未开启';break;
+        case 2: ret = '开启中';break;
+        case 3: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">已结束</span>';break;
+        default:
+            ret = '未知状态';
+        }
+        return ret;
+      }},
+			{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
+		]],
+		});
+
+		table.on("toolbar(tableFilter)", function (obj) {
+			switch (obj.event) {
+				case "add":
+					add();
+					break;
+				case "batchDel":
+					batchDel();
+					break;
+			}
+		});
+
+		table.on("tool(tableFilter)", function (obj) {
+			let data = obj.data;
+			switch (obj.event) {
+				case "edit":
+					edit(data.sbulletin);
+					break;
+				case "del":
+					del(data.sbulletin);
+					break;
+			}
+		});
+
+		function add() {
+			okLayer.open("添加渠道", "bulletin-add.html", "90%", "90%", null, function () {
+				bulletinTable.reload();
+			})
+		}
+
+		function batchDel() {
+			okLayer.confirm("确定要批量删除吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/gm/bulletin/deleteBulletin", "delete", {idsStr: idsStr}, true).done(function (response) {
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function edit(id) {
+			okLayer.open("编辑渠道", "dir-edit.html?id=" + id, "90%", "90%", null, function () {
+				dirTable.reload();
+			})
+		}
+
+		function del(id) {
+			okLayer.confirm("确定要删除吗？", function () {
+				okUtils.ajax("/gm/dir/deleteBulletin", "delete", {idsStr: id}, true).done(function (response) {
+					okUtils.tableSuccessMsg(response.msg);
+				}).fail(function (error) {
+					console.log(error)
+				});
+			})
+		}
+	})
+</script>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+	</div>
+</script>
+
+<script type="text/html" id="operationTpl">
+	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+</html>

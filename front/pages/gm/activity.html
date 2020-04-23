@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>活动管理</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+	<div class="ok-body">
+		<table id="tableId" lay-filter="tableFilter"></table>
+	</div>
+	<!--js逻辑-->
+	<script src="../../lib/layui/layui.js"></script>
+	<script>
+		layui.use(["element", "table", "okLayer", "okUtils"], function () {
+			let table = layui.table;
+			let okLayer = layui.okLayer;
+			let okUtils = layui.okUtils;
+			okLoading.close();
+
+			let activityTable = table.render({
+				elem: "#tableId",
+				data: [
+					{
+						"iId": 1,
+						"sZond": "1234",
+						"sAccount": "lkag",
+						"iType": 1,
+						"sRemark": "lkajgd",
+						"iBeginTime": 1588925071,
+						"iEndTime": 1588925070,
+						"sConfigData": "lkjkl",
+					},
+				],
+				text: {
+					none: '暂无相关数据',
+				},
+				limit: 30,
+				page: true,
+				toolbar: "#toolbarTpl",
+				cols: [[
+					{ type: "checkbox", title: "序号", fixed: 'left' },
+					{ field: "iId", title: "活动ID", width: 90, fixed: 'left' },
+					{ field: "sZond", title: "应用分区", width: 90, fixed: 'left' },
+					{ field: "sAccount", title: "应用账户", width: 90 },
+					{
+						field: "iType", title: "活动类型", width: 90, align: "center", templet: function (d) {
+							var ret = '';
+							switch (d.iType) {
+								case 1: ret = '个人消耗'; break;
+								case 2: ret = '冲榜'; break;
+								default:
+									ret = '未知';
+							}
+							return ret;
+						}
+					},
+					{ field: "sRemark", title: "备注" },
+					{
+						field: "iBeginTime", title: "开始时间", align: "center", templet: function (d) {
+							return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+						}
+					},
+					{
+						field: "iEndTime", title: "结束时间", align: "center", templet: function (d) {
+							if (d.iEndTime < d.iBeginTime) {
+								return '结束时间不能小于开始时间';
+							}
+				return okUtils.dateFormat(new Date(d.iEndTime*1000), 'yyyy-MM-dd hh:mm:ss');
+			}},
+			{field: "sConfigData", title: "配置数据", align: "center"},
+			{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
+		]],
+		});
+
+		table.on("toolbar(tableFilter)", function (obj) {
+			switch (obj.event) {
+				case "add":
+					add();
+					break;
+				case "batchDel":
+					batchDel();
+					break;
+			}
+		});
+
+		table.on("tool(tableFilter)", function (obj) {
+			let data = obj.data;
+			switch (obj.event) {
+				case "edit":
+					edit(data.sactivity);
+					break;
+				case "del":
+					del(data.sactivity);
+					break;
+			}
+		});
+
+		function add() {
+			okLayer.open("添加渠道", "activity-add.html", "90%", "90%", null, function () {
+				activityTable.reload();
+			})
+		}
+
+		function batchDel() {
+			okLayer.confirm("确定要批量删除吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/gm/activity/deleteActivity", "delete", {idsStr: idsStr}, true).done(function (response) {
+						okUtils.tableSuccessMsg(response.msg);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function edit(id) {
+			okLayer.open("编辑渠道", "dir-edit.html?id=" + id, "90%", "90%", null, function () {
+				dirTable.reload();
+			})
+		}
+
+		function del(id) {
+			okLayer.confirm("确定要删除吗？", function () {
+				okUtils.ajax("/gm/dir/deleteActivity", "delete", {idsStr: id}, true).done(function (response) {
+					okUtils.tableSuccessMsg(response.msg);
+				}).fail(function (error) {
+					console.log(error)
+				});
+			})
+		}
+	})
+</script>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+	</div>
+</script>
+
+<script type="text/html" id="operationTpl">
+	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+</html>

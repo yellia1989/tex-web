@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>屏蔽字测试</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+	<form class="layui-form" action="">
+		<div class="layui-form-item" style="margin:0px">
+			<div class="layui-form-item" style="margin:0px">
+				<label class="layui-form-label">输入</label>
+				<textarea name="input" class="layui-textarea" rows="1" cols="10"></textarea>
+			</div>
+			<div class="layui-form-item" style="margin:0px">
+				<label class="layui-form-label">输出</label>
+				<textarea name="output" class="layui-textarea" rows="1"></textarea>
+			</div>
+			<div class="layui-input-inline">
+				<button name="setting" class="layui-btn" lay-submit>测试</button>
+			</div>
+		</div>
+	</form>
+</div>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+	</div>
+</script>
+</body>
+</html>
