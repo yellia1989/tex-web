@@ -81,7 +81,7 @@
 				let idsStr = okUtils.tableBatchCheck(table);
 				if (idsStr) {
 					okUtils.ajax("/api/gm/channel/del", "post", {idsStr: idsStr}, true).done(function (response) {
-						okUtils.tableSuccessMsg(response.msg);
+						okUtils.tableSuccessMsg(response.data);
 					}).fail(function (error) {
 						console.log(error)
 					});
@@ -98,7 +98,7 @@
 		function del(id) {
 			okLayer.confirm("确定要删除吗？", function () {
 				okUtils.ajax("/api/gm/channel/del", "post", {idsStr: id}, true).done(function (response) {
-					okUtils.tableSuccessMsg(response.msg);
+					okUtils.tableSuccessMsg(response.data);
 				}).fail(function (error) {
 					console.log(error)
 				});

@@ -41,5 +41,4 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/gm/registry/list", gm.RegistryList)             // 获取registry列表
     group.POST("/gm/registry/add", gm.RegistryAdd)              // 增加registry
     group.POST("/gm/registry/del", gm.RegistryDel)              // 删除registry
-    group.POST("/gm/registry/update", gm.RegistryUpdate)        // 更新registry
 }
