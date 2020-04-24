@@ -1,6 +1,7 @@
 package gm
 
 import (
+    "fmt"
     "strings"
     "strconv"
     "github.com/labstack/echo"
@@ -48,10 +49,31 @@ func ZoneAdd(c echo.Context) error {
         return err
     }
 
+    sDivision := fmt.Sprintf("aqua.zone.%d", zone.IZoneId)
+    sHandleConnEp := ctx.FormValue("sHandleConn")
+    sConnServiceObjEp := ctx.FormValue("sConnServiceObj")
+    sGameServiceObjEp := ctx.FormValue("sGameServiceObj")
+
+    if err := registryAdd("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
+        return err
+    }
+    if err := registryAdd("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
+        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
+        return err
+    }
+    if err := registryAdd("aqua.GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
+        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+        return err
+    }
+
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
     ret, err := dirPrx.CreateZone(zone)
     if err := checkRet(ret, err); err != nil {
+        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+        registryDel("aqua.GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
         return err
     }
 

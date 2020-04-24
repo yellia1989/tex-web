@@ -22,6 +22,18 @@
 		    		<input type="text" name="sZoneName" placeholder="请输入分区名字" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
 		    	</div>
 		    </div>
+	      <div class="layui-inline">
+			    <label class="layui-form-label">内网ip</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sInternalIp" class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+		    </div>
+	      <div class="layui-inline">
+			    <label class="layui-form-label">外网ip</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sExternalIp" class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+		    </div>
         <div class="layui-inline">
 			    <label class="layui-form-label">开服时间</label>
 			    <div class="layui-input-inline">
@@ -29,12 +41,6 @@
 			    </div>
         </div>
       </div>
-	    <div class="layui-form-item">
-			<label class="layui-form-label">ConnServer</label>
-			<div class="layui-input-block">
-				<input type="text" name="sConnServer" placeholder="请输入分区网关地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
-			</div>
-		  </div>
 	    <div class="layui-form-item">
         <div class="layui-inline">
 			    <label class="layui-form-label">分区标识</label>
@@ -109,6 +115,30 @@
 			    </div>
         </div>
       </div>
+	    <div class="layui-form-item">
+			  <label class="layui-form-label">ConnServer</label>
+			  <div class="layui-input-block">
+				  <input type="text" name="sConnServer" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			  </div>
+		  </div>
+      <div class="layui-form-item">
+			    <label class="layui-form-label">HandleConn</label>
+			    <div class="layui-input-block">
+				    <input type="text" name="sHandleConn" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+      </div>
+      <div class="layui-form-item">
+			    <label class="layui-form-label">ConnServiceObj</label>
+			    <div class="layui-input-block">
+				    <input type="text" name="sConnServiceObj" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+      </div>
+      <div class="layui-form-item">
+			    <label class="layui-form-label">GameServiceObj</label>
+			    <div class="layui-input-block">
+				    <input type="text" name="sGameServiceObj" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+      </div>
 		  <div class="layui-form-item">
 			  <div class="layui-input-block">
 				  <button class="layui-btn" lay-submit lay-filter="add">添加</button>
@@ -125,8 +155,23 @@
 	    let laydate = layui.laydate;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
+      let $ = layui.jquery;
 
       laydate.render({elem: "#iPublishTime", type: "datetime"});
+
+      $("input[name='sInternalIp']").change(function () {
+        zoneid = parseInt($("input[name='iZoneId']").val());
+        v = $(this).val();
+        $("input[name='sHandleConn']").val("tcp -h "+v+" -p "+(4000+zoneid)+" -t 60000");
+        $("input[name='sConnServiceObj']").val("tcp -h "+v+" -p "+(6000+zoneid)+" -t 3600000");
+        $("input[name='sGameServiceObj']").val("tcp -h "+v+" -p "+(5000+zoneid)+" -t 3600000");
+      });
+
+      $("input[name='sExternalIp']").change(function () {
+        zoneid = parseInt($("input[name='iZoneId']").val());
+        v = $(this).val();
+        $("input[name='sConnServer']").val(v+":"+(4000+zoneid));
+      });
 
       //数据校验
       form.verify({

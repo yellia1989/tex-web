@@ -27,6 +27,34 @@ func RegistryList(c echo.Context) error {
     return ctx.SendArray(vPage, len(vObj))
 }
 
+func registryAdd(sObj string, sDivision string, sEp string) error {
+    queryPrx := new(rpc.Query)
+    comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
+
+    ret, err := queryPrx.AddEndpoint(sObj, sDivision, sEp)
+    if err := checkRet(ret, err); err != nil {
+        return err
+    }
+
+    return nil
+}
+
+func registryDel(sObj string, sDivision string, sEp string) error {
+    queryPrx := new(rpc.Query)
+    comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
+
+    ret, err := queryPrx.AddEndpoint(sObj, sDivision, sEp)
+    if err := checkRet(ret, err); err != nil {
+        return err
+    }
+
+    if err := checkRet(ret, err); err != nil {
+        return err
+    }
+
+    return nil
+}
+
 func RegistryAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
     sObj := ctx.FormValue("sObj")
@@ -37,11 +65,7 @@ func RegistryAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    queryPrx := new(rpc.Query)
-    comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
-
-    ret, err := queryPrx.AddEndpoint(sObj, sDivision, sEp)
-    if err := checkRet(ret, err); err != nil {
+    if err := registryAdd(sObj, sDivision, sEp); err != nil {
         return err
     }
 
