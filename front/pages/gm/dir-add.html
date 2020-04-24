@@ -22,19 +22,19 @@
 		    		<input type="text" name="sZoneName" placeholder="请输入分区名字" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
 		    	</div>
 		    </div>
-            <div class="layui-inline">
+        <div class="layui-inline">
 			    <label class="layui-form-label">开服时间</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="iPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
 			    </div>
-            </div>
         </div>
+      </div>
 	    <div class="layui-form-item">
 			<label class="layui-form-label">ConnServer</label>
 			<div class="layui-input-block">
 				<input type="text" name="sConnServer" placeholder="请输入分区网关地址" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
 			</div>
-		</div>
+		  </div>
 	    <div class="layui-form-item">
         <div class="layui-inline">
 			    <label class="layui-form-label">分区标识</label>
@@ -46,8 +46,8 @@
               <option value="4">审核</option>
             </select>
 			    </div>
-            </div>
-	        <div class="layui-inline">
+        </div>
+	      <div class="layui-inline">
 			    <label class="layui-form-label">是否手动</label>
 			    <div class="layui-input-inline">
             <select name="iIsManual">
@@ -55,8 +55,8 @@
               <option value="1" selected>是</option>
             </select>
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">手动状态</label>
 			    <div class="layui-input-inline">
             <select name="iManualZoneStatus">
@@ -66,14 +66,14 @@
               <option value="4">维护</option>
             </select>
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">最大人数</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
 			    </div>
-            </div>
-	        <div class="layui-inline">
+        </div>
+	      <div class="layui-inline">
 			    <label class="layui-form-label">是否强制下线</label>
 			    <div class="layui-input-inline">
             <select name="iIsKick">
@@ -81,40 +81,40 @@
               <option value="1" selected>是</option>
             </select>
 			    </div>
-            </div>
-		</div>
-		<div class="layui-form-item">
-            <div class="layui-inline">
+        </div>
+		  </div>
+		  <div class="layui-form-item">
+        <div class="layui-inline">
 			    <label class="layui-form-label">IOS客户端版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">IOS强制更新版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">AND客户端版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sAndClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
-            <div class="layui-inline">
+        </div>
+        <div class="layui-inline">
 			    <label class="layui-form-label">AND强制更新版本</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="sAndForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips">
 			    </div>
-            </div>
         </div>
-		<div class="layui-form-item">
-			<div class="layui-input-block">
-				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
-				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-			</div>
-		</div>
+      </div>
+		  <div class="layui-form-item">
+			  <div class="layui-input-block">
+				  <button class="layui-btn" lay-submit lay-filter="add">添加</button>
+				  <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			  </div>
+		  </div>
 	</form>
 </div>
 <script src="/lib/layui/layui.js"></script>
