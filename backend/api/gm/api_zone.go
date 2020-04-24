@@ -6,6 +6,7 @@ import (
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
+    "github.com/yellia1989/tex-web/backend/common"
 )
 
 func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
@@ -30,10 +31,13 @@ func ZoneSimpleList(c echo.Context) error {
 
 func ZoneList(c echo.Context) error {
     ctx := c.(*mid.Context)
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     zones := zoneList(c)
+    vPage := common.GetPage(zones, page, limit)
 
-    return ctx.SendResponse(zones)
+    return ctx.SendArray(vPage, len(zones))
 }
 
 func ZoneAdd(c echo.Context) error {
