@@ -9,7 +9,7 @@ import (
 func BulletinList(c echo.Context) error {
   ctx := c.(*mid.Context)
 
-  var bulletins []int
+  var bulletins []string
   return ctx.SendResponse(bulletins)
 }
 
@@ -32,7 +32,7 @@ func BulletinAdd(c echo.Context) error {
 func BulletinDel(c echo.Context) error {
   ctx := c.(*mid.Context)
 
-  ids := strings.Split(ctx.FormValue("idsStr"))
+  ids := strings.Split(ctx.FormValue("idsStr"), ",")
 
   if len(ids) == 0 {
     return ctx.SendError(-1, "公告不存在")
