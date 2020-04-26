@@ -22,7 +22,7 @@ func BulletinAdd(c echo.Context) error {
   iEndTime := ctx.FormValue("iEndTime")
   iIsDisplay := ctx.FormValue("iIsDisplay")
 
-  if sTitle == "" || sContent == "" || iBeginTime == 0 || iEndTime == 0 {
+  if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
     return ctx.SendError(-1, "参数非法")
   }
 
@@ -50,7 +50,7 @@ func BulletinUpdate(c echo.Context) error {
   iEndTime := ctx.FormValue("iEndTime")
   iIsDisplay := ctx.FormValue("iIsDisplay")
 
-  if sTitle == "" || sContent == "" || iBeginTime == 0 || iEndTime == 0 {
+  if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
     return ctx.SendError(-1, "参数非法")
   }
 
