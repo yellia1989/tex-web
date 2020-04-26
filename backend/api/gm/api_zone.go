@@ -1,11 +1,13 @@
 package gm
 
 import (
+    "fmt"
     "strings"
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
+    "github.com/yellia1989/tex-web/backend/common"
 )
 
 func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
@@ -30,10 +32,13 @@ func ZoneSimpleList(c echo.Context) error {
 
 func ZoneList(c echo.Context) error {
     ctx := c.(*mid.Context)
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     zones := zoneList(c)
+    vPage := common.GetPage(zones, page, limit)
 
-    return ctx.SendResponse(zones)
+    return ctx.SendArray(vPage, len(zones))
 }
 
 func ZoneAdd(c echo.Context) error {
@@ -44,10 +49,31 @@ func ZoneAdd(c echo.Context) error {
         return err
     }
 
+    sDivision := fmt.Sprintf("aqua.zone.%d", zone.IZoneId)
+    sHandleConnEp := ctx.FormValue("sHandleConn")
+    sConnServiceObjEp := ctx.FormValue("sConnServiceObj")
+    sGameServiceObjEp := ctx.FormValue("sGameServiceObj")
+
+    if err := registryAdd("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
+        return err
+    }
+    if err := registryAdd("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
+        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
+        return err
+    }
+    if err := registryAdd("aqua.GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
+        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+        return err
+    }
+
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
     ret, err := dirPrx.CreateZone(zone)
     if err := checkRet(ret, err); err != nil {
+        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+        registryDel("aqua.GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
         return err
     }
 

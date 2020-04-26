@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增registry</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+	    <div class="layui-form-item">
+		  	<label class="layui-form-label">obj</label>
+		   	<div class="layui-input-block">
+		   		<input type="text" name="sObj" placeholder="app.serverName.objName" autocomplete="off" class="layui-input" lay-verify="obj|required" lay-verType="tips">
+		   	</div>
+		</div>
+
+	    <div class="layui-form-item">
+		    <label class="layui-form-label">分区</label>
+		    <div class="layui-input-block">
+		    	<input type="text" name="sDivision" placeholder="app.zone.*" autocomplete="off" class="layui-input" lay-verify="division|required" lay-verType="tips">
+		    </div>
+		</div>
+
+    <div class="layui-form-item">
+		    <label class="layui-form-label">endpoint</label>
+		    <div class="layui-input-block">
+		    	<input type="text" name="sEp" placeholder="tcp -h 127.0.0.1 -p 2000 -t 3600000" autocomplete="off" class="layui-input" lay-verify="endpoint|required" lay-verType="tips">
+		    </div>
+		</div>
+
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/lib/layui/layui.js"></script>
+<script>
+  layui.use(['form', 'okLayer', 'okUtils'], function(){
+    let form = layui.form;
+    let okUtils = layui.okUtils;
+    let okLayer = layui.okLayer;
+
+    //数据校验
+    form.verify({
+      "obj": function(value, item) {
+        let v = value.split('.');
+        if (v.length != 3) {
+          return 'obj格式不对';
+        }
+      },
+      "division": function(value, item) {
+        let v = value.split('.');
+        if (v.length != 3) {
+          return 'division格式不对';
+        }
+      },
+      "endpoint": function(value, item) {
+        let v = value.trim().replace(/\s+/g, ' ');
+        if (v.split(' ').length != 7) {
+          return 'endpoint格式不对'
+        }
+      }
+    });
+
+    //监听提交
+    form.on('submit(add)', function(data){
+      data.field.sEp = data.field.sEp.trim().replace(/\s+/g, ' ');
+      okUtils.ajax("/api/gm/registry/add", "post", data.field, true).done(function (response) {
+        okLayer.greenTickMsg(response.data, function () {
+					parent.layer.close(parent.layer.getFrameIndex(window.name));
+				});
+		  }).fail(function (error) {
+          console.log(error);
+      });
+      return false;
+    });
+  });
+</script>
+</body>
+</html>
