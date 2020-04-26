@@ -24,9 +24,7 @@
 
       let bulletinTable = table.render({
         elem: "#tableId",
-        data: [
-          { "iId": 1, "sTitle": "公告", "sContent": "欢迎来到aqua", "iBeginTime": 1588925071, "iEndTime": 1588925072, "iIsDisplay": 1, "iStatus": 3 }
-        ],
+        url: '/api/gm/bulletin/list',
         text: {
           none: '暂无相关数据',
         },
@@ -71,6 +69,12 @@
           },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
+        parseData: function (res) {
+          for (i = 0; i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].sBulletin;
+          }
+          return res;
+        }
       });
 
       table.on("toolbar(tableFilter)", function (obj) {
@@ -88,16 +92,16 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
-            edit(data.sbulletin);
+            edit(data.sBulletin);
             break;
           case "del":
-            del(data.sbulletin);
+            del(data.sBulletin);
             break;
         }
       });
 
       function add() {
-        okLayer.open("添加渠道", "bulletin-add.html", "90%", "90%", null, function () {
+        okLayer.open("添加公告", "bulletin-add.html", "90%", "90%", null, function () {
           bulletinTable.reload();
         })
       }
@@ -107,7 +111,7 @@
           layer.close(index);
           let idsStr = okUtils.tableBatchCheck(table);
           if (idsStr) {
-            okUtils.ajax("/gm/bulletin/deleteBulletin", "delete", { idsStr: idsStr }, true).done(function (response) {
+            okUtils.ajax("/api/gm/bulletin/del", "post", { idsStr: idsStr }, true).done(function (response) {
               okUtils.tableSuccessMsg(response.msg);
             }).fail(function (error) {
               console.log(error)
@@ -117,14 +121,14 @@
       }
 
       function edit(id) {
-        okLayer.open("编辑渠道", "dir-edit.html?id=" + id, "90%", "90%", null, function () {
-          dirTable.reload();
+        okLayer.open("编辑公告", "bulletin-edit.html", "90%", "90%", null, function () {
+          bulletinTable.reload();
         })
       }
 
       function del(id) {
         okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/gm/dir/deleteBulletin", "delete", { idsStr: id }, true).done(function (response) {
+          okUtils.ajax("/api/gm/bulletin/del", "delete", { idsStr: id }, true).done(function (response) {
             okUtils.tableSuccessMsg(response.msg);
           }).fail(function (error) {
             console.log(error)

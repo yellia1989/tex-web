@@ -74,14 +74,18 @@
         ]
       },
       {
-        "id": 204,
-        "title": "Registry管理",
-        "href": "gm/registry.html",
+        "id": 205,
+        "title": "公告管理",
+        "href": "gm/bulletin.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
+        "role": [
+          2,
+          3
+        ]
       }
     ],
     "role": [
