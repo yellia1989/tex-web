@@ -14,7 +14,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">标题</label>
         <div class="layui-input-block">
-          <input type="text" name="sTital" placeholder="请输入标题" autocomplete="off" class="layui-input"
+          <input type="text" name="sTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
             lay-verify="required" lay-verType="tips">
         </div>
       </div>
@@ -70,7 +70,7 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      $("input[name='sTital']").val(parent.editdata.sTital);
+      $("input[name='sTitle']").val(parent.editdata.sTitle);
       $("input[name='sContent']").val(parent.editdata.sContent);
       $("input[name='iBeginTime']").val(parent.editdata.iBeginTime);
       $("input[name='iEndTime']").val(parent.editdata.iEndTime);
