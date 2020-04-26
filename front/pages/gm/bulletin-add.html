@@ -30,16 +30,16 @@
       <div class="layui-form-item">
         <label class="layui-form-label">开始时间</label>
         <div class="layui-input-block">
-          <input type="text" name="iBeginTime" autocomplete="off" class="layui-input" lay-verify="required|datetime"
-            lay-verType="tips">
+          <input type="text" name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
+            lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">结束时间</label>
         <div class="layui-input-block">
-          <input type="text" name="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime"
-            lay-verType="tips">
+          <input type="text" name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input"
+            lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
@@ -64,10 +64,19 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
-    layui.use(['form', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
+      let laydate = layui.laydate;
+
+      laydate.render({
+        elem: "#iBeginTime", type:
+          "datetime"
+      },
+        {
+          elem: "#iEndTime", type: "datetime"
+        })
 
       //监听提交
       form.on('submit(add)', function (data) {
