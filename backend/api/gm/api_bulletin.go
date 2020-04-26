@@ -9,7 +9,8 @@ import (
 func BulletinList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	return ctx.SendResponse([])
+	var bulletins []int
+	return ctx.SendResponse(bulletins)
 }
 
 func BulletinAdd(c echo.Context) error {
