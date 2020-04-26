@@ -74,6 +74,14 @@ func (ctx *Context) SendResponse(data interface{}) error {
     })
 }
 
+func (ctx *Context) SendArray(data interface{}, total int) error {
+    return ctx.JSON(http.StatusOK, map[string]interface{}{
+        "code": 0,
+        "data": data,
+        "count": total,
+    })
+}
+
 func (ctx *Context) SendError(code int, msg interface{}) error {
     return ctx.JSON(http.StatusOK, map[string]interface{}{
         "code": code,

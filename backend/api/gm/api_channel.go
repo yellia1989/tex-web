@@ -2,13 +2,17 @@ package gm
 
 import (
     "strings"
+    "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
+    "github.com/yellia1989/tex-web/backend/common"
 )
 
 func ChannelList(c echo.Context) error {
     ctx := c.(*mid.Context)
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     loginPrx := new(rpc.LoginService)
     comm.StringToProxy("aqua.LoginServer.LoginServiceObj", loginPrx)
@@ -18,8 +22,10 @@ func ChannelList(c echo.Context) error {
     if err := checkRet(ret, err); err != nil {
         return err
     }
+
+    vPage := common.GetPage(channels, page, limit)
     
-    return ctx.SendResponse(channels)
+    return ctx.SendArray(vPage, len(channels))
 }
 
 func ChannelAdd(c echo.Context) error {

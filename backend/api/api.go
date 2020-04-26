@@ -41,10 +41,12 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/gm/registry/list", gm.RegistryList)             // 获取registry列表
     group.POST("/gm/registry/add", gm.RegistryAdd)              // 增加registry
     group.POST("/gm/registry/del", gm.RegistryDel)              // 删除registry
-    group.POST("/gm/registry/update", gm.RegistryUpdate)        // 更新registry
+
+    group.GET("/gm/mail/list", gm.MailList)             // 获取邮件列表
 
     group.GET("/gm/bulletin/list", gm.BulletinList)             // 获取公告列表
     group.POST("/gm/bulletin/add", gm.BulletinAdd)              // 增加公告
     group.POST("/gm/bulletin/del", gm.BulletinDel)
     group.POST("/gm/bulletin/update", gm.BulletinUpdate)
+
 }
