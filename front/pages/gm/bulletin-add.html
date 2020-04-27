@@ -71,12 +71,11 @@
       let laydate = layui.laydate;
 
       laydate.render({
-        elem: "#iBeginTime", type:
-          "datetime"
-      },
-        {
-          elem: "#iEndTime", type: "datetime"
-        })
+        elem: "#iBeginTime", type: "datetime"
+      });
+      laydate.render({
+        elem: "#iEndTime", type: "datetime"
+      });
 
       //监听提交
       form.on('submit(add)', function (data) {
