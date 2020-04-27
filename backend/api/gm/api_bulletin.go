@@ -39,7 +39,6 @@ func BulletinAdd(c echo.Context) error {
     sContent := ctx.FormValue("sContent")
     iBeginTime := ctx.FormValue("iBeginTime")
     iEndTime := ctx.FormValue("iEndTime")
-    iIsDisplay := ctx.FormValue("iIsDisplay")
 
     if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
         return ctx.SendError(-1, "参数非法")
@@ -65,20 +64,43 @@ func BulletinDel(c echo.Context) error {
         return ctx.SendError(-1, "公告不存在")
     }
 
+    bulletinPrx := new(rpc.BulletinService)
+    comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+
+    for _, id := range ids  {
+        id, _ := strconv.ParseUnit(id, 10, 32)
+        ret, err := bulletinPrx.DelBulletin(uint32(id))
+        if err := checkRet(ret, err); err != nil {
+            return err
+        }
+    }
+
     return ctx.SendResponse("删除公告成功")
 }
 
 func BulletinUpdate(c echo.Context) error {
     ctx := c.(*mid.Context)
 
+    bulletin := rpc.BulletinDataInfo{}
+    if err := ctx.Bind(&bulletin); err != nil {
+        return err
+    }
+
     sTitle := ctx.FormValue("sTitle")
     sContent := ctx.FormValue("sContent")
     iBeginTime := ctx.FormValue("iBeginTime")
     iEndTime := ctx.FormValue("iEndTime")
-    //iIsDisplay := ctx.FormValue("iIsDisplay")
 
     if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
         return ctx.SendError(-1, "参数非法")
+    }
+
+    bulletinPrx := new(rpc.BulletinService)
+    comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+
+    ret, err := bulletinPrx.ModifyBulletin(bulletin)
+    if err := checkRet(ret, err); err != nil {
+        return err
     }
 
     return ctx.SendResponse("修改公告成功")
