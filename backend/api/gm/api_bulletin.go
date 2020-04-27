@@ -68,7 +68,7 @@ func BulletinDel(c echo.Context) error {
     comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
 
     for _, id := range ids  {
-        id, _ := strconv.ParseUnit(id, 10, 32)
+        id, _ := strconv.ParseUint(id, 10, 32)
         ret, err := bulletinPrx.DelBulletin(uint32(id))
         if err := checkRet(ret, err); err != nil {
             return err

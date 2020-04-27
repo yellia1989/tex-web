@@ -72,10 +72,10 @@
       let $ = layui.jquery;
 
       laydate.render({
-        elem: "#iBeginTime", type: "datetime", value: new Date(parent.zonedate.iBeginTime * 1000)
-      }, /*);
-      laydate.render({*/{
-          elem: "#iEndTime", type: "datetime", value: new Date(parent.zonedate.iEndTime * 1000)
+        elem: "#iBeginTime", type: "datetime"
+      });
+      laydate.render({
+          elem: "#iEndTime", type: "datetime"
         });
 
       $("input[name='sTitle']").val(parent.editdata.sTitle);
