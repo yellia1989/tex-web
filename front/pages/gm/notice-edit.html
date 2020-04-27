@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>编辑公告</title>
+  <title>编辑跑马灯</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -85,7 +85,7 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
-        okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/gm/notice/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });

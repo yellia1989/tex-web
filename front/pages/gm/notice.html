@@ -24,21 +24,7 @@
 
       let noticeTable = table.render({
         elem: "#tableId",
-        data: [
-          {
-            "iId": 1,
-            "iNoticeType": 3,
-            "sContent": "发现bug请及时录入git，请关注git任务单的变化，按优先级处理",
-            "iBeginTime": 1588925071,
-            "iEndTime": 1588925070,
-            "iDisplayType": 1,
-            "iDisplayInterval": 1000,
-            "iDisplayTimes": 999,
-            "iStatus": 3,
-            "sZond": "1234",
-            "iMaintainTime": 10
-          }
-        ],
+        url: "/api/gm/notice/list",
         text: {
           none: '暂无相关数据',
         },
@@ -102,7 +88,6 @@
               return ret;
             }
           },
-          // TODO 需要修改
           { field: "sZond", title: "分区", align: "center" },
           { field: "iMaintainTime", title: "维护时间（分钟）", width: 90, align: "justify" },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
@@ -124,16 +109,16 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
-            edit(data.snotice);
+            edit(data.sNotice);
             break;
           case "del":
-            del(data.snotice);
+            del(data.sNotice);
             break;
         }
       });
 
       function add() {
-        okLayer.open("添加渠道", "notice-add.html", "90%", "90%", null, function () {
+        okLayer.open("添加公告", "notice-add.html", "90%", "90%", null, function () {
           noticeTable.reload();
         })
       }
@@ -143,7 +128,7 @@
           layer.close(index);
           let idsStr = okUtils.tableBatchCheck(table);
           if (idsStr) {
-            okUtils.ajax("/gm/notice/deleteNotice", "delete", { idsStr: idsStr }, true).done(function (response) {
+            okUtils.ajax("/api/gm/notice/del", "post", { idsStr: idsStr }, true).done(function (response) {
               okUtils.tableSuccessMsg(response.msg);
             }).fail(function (error) {
               console.log(error)
@@ -160,7 +145,7 @@
 
       function del(id) {
         okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/gm/dir/deletenotice", "delete", { idsStr: id }, true).done(function (response) {
+          okUtils.ajax("/api/gm/notice/del", "delete", { idsStr: id }, true).done(function (response) {
             okUtils.tableSuccessMsg(response.msg);
           }).fail(function (error) {
             console.log(error)
