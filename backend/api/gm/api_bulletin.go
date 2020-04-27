@@ -1,58 +1,85 @@
 package gm
 
 import (
-    "github.com/labstack/echo"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
-    "strings"
+	"strings"
+	"strconv"
+	"github.com/labstack/echo"
+	mid "github.com/yellia1989/tex-web/backend/middleware"
+	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
+	"github.com/yellia1989/tex-web/backend/common"
 )
 
 func BulletinList(c echo.Context) error {
-    ctx := c.(*mid.Context)
+	ctx := c.(*mid.Context)
+	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    var bulletins []string
-    return ctx.SendResponse(bulletins)
+	bulletinPrx := new(rpc.BulletinService)
+	comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+
+	var vBulletin []rpc.BulletinDataInfo
+	ret, err := bulletinPrx.GetAllBulletin(&vBulletin)
+	if err := checkRet(ret, err); err != nil {
+		return err
+	}
+
+	vPage := comm.GetPage(vBulletin, page, limit)
+	return ctx.SendArray(vPage, len(vBulletin))
 }
 
 func BulletinAdd(c echo.Context) error {
-    ctx := c.(*mid.Context)
+	ctx := c.(*mid.Context)
 
-    sTitle := ctx.FormValue("sTitle")
-    sContent := ctx.FormValue("sContent")
-    iBeginTime := ctx.FormValue("iBeginTime")
-    iEndTime := ctx.FormValue("iEndTime")
-    //iIsDisplay := ctx.FormValue("iIsDisplay")
+	bulletin := rpc.BulletinDataInfo{}
+	if err := ctx.Bind(&zone); err != nil {
+		return err
+	}
 
-    if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
-        return ctx.SendError(-1, "参数非法")
-    }
+	sTitle := ctx.FormValue("sTitle")
+	sContent := ctx.FormValue("sContent")
+	iBeginTime := ctx.FormValue("iBeginTime")
+	iEndTime := ctx.FormValue("iEndTime")
+	iIsDisplay := ctx.FormValue("iIsDisplay")
 
-    return ctx.SendResponse("添加公告成功")
+	if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+	bulletinPrx := new(rpc.BulletinService)
+	comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+
+	ret, err := bulletinPrx.AddBulletin(bulletin)
+	if err := checkRet(ret, err); err != nil {
+		return err
+	}
+
+	return ctx.SendResponse("添加公告成功")
 }
 
 func BulletinDel(c echo.Context) error {
-    ctx := c.(*mid.Context)
+	ctx := c.(*mid.Context)
 
-    ids := strings.Split(ctx.FormValue("idsStr"), ",")
+	ids := strings.Split(ctx.FormValue("idsStr"), ",")
 
-    if len(ids) == 0 {
-        return ctx.SendError(-1, "公告不存在")
-    }
+	if len(ids) == 0 {
+		return ctx.SendError(-1, "公告不存在")
+	}
 
-    return ctx.SendResponse("删除公告成功")
+	return ctx.SendResponse("删除公告成功")
 }
 
 func BulletinUpdate(c echo.Context) error {
-    ctx := c.(*mid.Context)
+	ctx := c.(*mid.Context)
 
-    sTitle := ctx.FormValue("sTitle")
-    sContent := ctx.FormValue("sContent")
-    iBeginTime := ctx.FormValue("iBeginTime")
-    iEndTime := ctx.FormValue("iEndTime")
-    //iIsDisplay := ctx.FormValue("iIsDisplay")
+	sTitle := ctx.FormValue("sTitle")
+	sContent := ctx.FormValue("sContent")
+	iBeginTime := ctx.FormValue("iBeginTime")
+	iEndTime := ctx.FormValue("iEndTime")
+	//iIsDisplay := ctx.FormValue("iIsDisplay")
 
-    if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
-        return ctx.SendError(-1, "参数非法")
-    }
+	if sTitle == "" || sContent == "" || iBeginTime == "" || iEndTime == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
 
-    return ctx.SendResponse("修改公告成功")
+	return ctx.SendResponse("修改公告成功")
 }
