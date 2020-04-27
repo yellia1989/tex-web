@@ -86,6 +86,34 @@
           2,
           3
         ]
+      },
+      {
+        "id": 206,
+        "title": "公告管理",
+        "href": "gm/bulletin.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": 207,
+        "title": "跑马灯",
+        "href": "gm/notice.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
       }
     ],
     "role": [

@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset="UTF-8">
-	<title>GM</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="/css/oksub.css">
-	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <meta charset="UTF-8">
+  <title>GM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
+
 <body>
-<div class="ok-body">
-  <form class="layui-form" action="">
-    <div class="layui-form-item" style="margin:0px">
-      <div class="layui-inline" style="margin:0px">
-        <div class="layui-input-inline">
-          <div id="zoneSelect"></div>
-        </div>
-        <div class="layui-input-inline">
-        <button class="layui-btn" lay-submit lay-filter="gm">执行</button>
+  <div class="ok-body">
+    <form class="layui-form" action="">
+      <div class="layui-form-item" style="margin:0px">
+        <div class="layui-inline" style="margin:0px">
+          <div class="layui-input-inline">
+            <div id="zoneSelect"></div>
+          </div>
+          <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="gm">执行</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="layui-form-item" style="margin:0px">
-      <textarea name="cmd" lay-verify="required" lay-verType="tips" class="layui-textarea" rows="5">help</textarea>
-    </div>
-    <div class="layui-form-item" style="margin:0px">
-      <textarea name="result" class="layui-textarea" rows="30" disabled></textarea>
-    </div>
-  </form>
-</div>
-<!--js逻辑-->
-<script src="/lib/layui/layui.js"></script>
-<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
-<script>
-    layui.use(['form', 'okUtils'], function(){
+      <div class="layui-form-item" style="margin:0px">
+        <textarea name="cmd" lay-verify="required" lay-verType="tips" class="layui-textarea" rows="5">help</textarea>
+      </div>
+      <div class="layui-form-item" style="margin:0px">
+        <textarea name="result" class="layui-textarea" rows="30" disabled></textarea>
+      </div>
+    </form>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let $ = layui.jquery;
       let xmSelect = layui.xmSelect;
-		  okLoading.close();
+      okLoading.close();
 
       let zoneSelect = xmSelect.render({
         el: '#zoneSelect',
@@ -70,17 +72,18 @@
         console.log(error);
       });
 
-      form.on('submit(gm)', function(data){
+      form.on('submit(gm)', function (data) {
         let zoneid = zoneSelect.getValue('valueStr');
         let cmd = $("textarea[name='cmd']").val();
-        okUtils.ajax("/api/gm/game/cmd", "post", {zoneid: zoneid, cmd: cmd}, true).done(function (response) {
+        okUtils.ajax("/api/gm/game/cmd", "post", { zoneid: zoneid, cmd: cmd }, true).done(function (response) {
           $("textarea[name=result]").val(response.data);
-		    }).fail(function (error) {
+        }).fail(function (error) {
           $("textarea[name=result]").val(error.msg);
         });
         return false;
       });
     });
-</script>
+  </script>
 </body>
+
 </html>
