@@ -2,6 +2,7 @@ package gm
 
 import (
     "strconv"
+    "sort"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
@@ -15,7 +16,10 @@ func (s MailSorter) Len() int {
 func (s MailSorter) Less(i, j int) bool {
     return s[i].IMailId < s[j].IMailId
 }
-func (s MailSorter) Swap(i, j bool) {
+func (s MailSorter) Swap(i, j int) {
+    tmp := s[i].Copy()
+    s[i] = *(s[j].Copy())
+    s[j] = *tmp
 }
 
 func MailList(c echo.Context) error {
@@ -31,6 +35,7 @@ func MailList(c echo.Context) error {
     if err := checkRet(ret, err); err != nil {
         return err
     }
+    sort.Sort(sort.Reverse(MailSorter(vMail)))
 
     vPage := common.GetPage(vMail, page, limit)
     return ctx.SendArray(vPage, len(vMail))
