@@ -41,10 +41,10 @@ func MailList(c echo.Context) error {
     return ctx.SendArray(vPage, len(vMail))
 }
 
-func MailAdd(c echo.Context) error {
+func MailTestSend(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    return ctx.SendResponse("添加registry成功")
+    return ctx.SendResponse("发送测试邮件成功")
 }
 
 func MailDel(c echo.Context) error {

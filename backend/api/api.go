@@ -38,15 +38,17 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/channel/del", gm.ChannelDel)              // 删除渠道
     group.POST("/gm/channel/update", gm.ChannelUpdate)        // 更新渠道
 
-    group.GET("/gm/registry/list", gm.RegistryList)             // 获取registry列表
-    group.POST("/gm/registry/add", gm.RegistryAdd)              // 增加registry
-    group.POST("/gm/registry/del", gm.RegistryDel)              // 删除registry
+    group.GET("/gm/registry/list", gm.RegistryList)           // 获取registry列表
+    group.POST("/gm/registry/add", gm.RegistryAdd)            // 增加registry
+    group.POST("/gm/registry/del", gm.RegistryDel)            // 删除registry
 
-    group.GET("/gm/mail/list", gm.MailList)             // 获取邮件列表
+    group.GET("/gm/mail/list", gm.MailList)                   // 获取邮件列表
+    group.POST("/gm/mail/testsend", gm.MailTestSend)           // 发送测试邮件
 
-    group.GET("/gm/bulletin/list", gm.BulletinList)             // 获取公告列表
-    group.POST("/gm/bulletin/add", gm.BulletinAdd)              // 增加公告
+    group.GET("/gm/item/list", gm.ItemList)                   // 获取道具列表
+
+    group.GET("/gm/bulletin/list", gm.BulletinList)           // 获取公告列表
+    group.POST("/gm/bulletin/add", gm.BulletinAdd)            // 增加公告
     group.POST("/gm/bulletin/del", gm.BulletinDel)
     group.POST("/gm/bulletin/update", gm.BulletinUpdate)
-
 }

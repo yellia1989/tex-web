@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>发送邮件</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
+          <input type="text" name="sTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+        </div>
+      </div>
+
+	    <div class="layui-form-item layui-form-text">
+		    <label class="layui-form-label">内容</label>
+		    <div class="layui-input-block">
+		    	<textarea name="sContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
+		    </div>
+		  </div>
+
+	    <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">金币数量</label>
+		      <div class="layui-input-inline">
+		      	<input type="text" name="iCoin" placeholder="请输入金币数量" value="0" autocomplete="off" class="layui-input" lay-verify="number|required" lay-verType="tips">
+		      </div>
+		    </div>
+
+	      <div class="layui-inline">
+		      <label class="layui-form-label">钻石数量</label>
+		      <div class="layui-input-inline">
+		      	<input type="text" name="iDiamond" placeholder="请输入钻石数量" value="0" autocomplete="off" class="layui-input" lay-verify="number|required" lay-verType="tips">
+		      </div>
+        </div>
+		  </div>
+
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">附件1</label>
+		      <div class="layui-input-inline">
+            <div id="iItemID1"></div>
+		      </div>
+          <div class="layui-form-mid">-</div>
+		      <div class="layui-input-inline">
+		      	<input type="text" name="iItemNum1" placeholder="请输入道具数量" autocomplete="off" class="layui-input" lay-verify="item" lay-verType="tips">
+		      </div>
+		    </div>
+		  </div>
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">附件2</label>
+		      <div class="layui-input-inline">
+            <div id="iItemID2"></div>
+		      </div>
+          <div class="layui-form-mid">-</div>
+		      <div class="layui-input-inline">
+		      	<input type="text" name="iItemNum2" placeholder="请输入道具数量" autocomplete="off" class="layui-input" lay-verify="item" lay-verType="tips">
+		      </div>
+		    </div>
+		  </div>
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">附件3</label>
+		      <div class="layui-input-inline">
+            <div id="iItemID3"></div>
+		      </div>
+          <div class="layui-form-mid">-</div>
+		      <div class="layui-input-inline">
+		      	<input type="text" name="iItemNum3" placeholder="请输入道具数量" autocomplete="off" class="layui-input" lay-verify="item" lay-verType="tips">
+		      </div>
+		    </div>
+		  </div>
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">附件4</label>
+		      <div class="layui-input-inline">
+            <div id="iItemID4"></div>
+		      </div>
+          <div class="layui-form-mid">-</div>
+		      <div class="layui-input-inline">
+		      	<input type="text" name="iItemNum4" placeholder="请输入道具数量" autocomplete="off" class="layui-input" lay-verify="item" lay-verType="tips">
+		      </div>
+		    </div>
+		  </div>
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">附件5</label>
+		      <div class="layui-input-inline">
+            <div id="iItemID5"></div>
+		      </div>
+          <div class="layui-form-mid">-</div>
+		      <div class="layui-input-inline">
+		      	<input type="text" name="iItemNum5" placeholder="请输入道具数量" autocomplete="off" class="layui-input" lay-verify="item" lay-verType="tips">
+		      </div>
+		    </div>
+		  </div>
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">阅读后</label>
+		      <div class="layui-input-inline">
+            <select name="iDelTimeAfterOpen" lay-verify="required">
+              <option value="0" selected>立即</option>
+              <option value="1">1天</option>
+              <option value="2">2天</option>
+              <option value="3">3天</option>
+              <option value="4">4天</option>
+              <option value="5">5天</option>
+              <option value="6">6天</option>
+              <option value="7">7天</option>
+            </select>
+		      </div>
+          <div class="layui-form-mid layui-word-aux">删除</div>
+		    </div>
+        <div class="layui-inline">
+		      <label class="layui-form-label">领取附件后</label>
+		      <div class="layui-input-inline">
+            <select name="iDelTimeAfterRcvAttach" lay-verify="required">
+              <option value="0">立即</option>
+              <option value="1">1天</option>
+              <option value="2">2天</option>
+              <option value="3">3天</option>
+              <option value="4">4天</option>
+              <option value="5">5天</option>
+              <option value="6">6天</option>
+              <option value="7" selected>7天</option>
+            </select>
+		      </div>
+          <div class="layui-form-mid layui-word-aux">删除</div>
+		    </div>
+		  </div>
+
+      <fieldset class="layui-elem-field">
+        <legend>测试发送</legend>
+        <div class="layui-field-box">
+          <div class="layui-form-item">
+            <div class="layui-inline">
+              <div class="layui-input-inline">
+                <div id="zoneSelect1"></div>
+              </div>
+              <div class="layui-input-inline">
+                <button class="layui-btn" lay-submit lay-filter="test" id="test">测试发送</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="layui-elem-field">
+        <legend>正式发送</legend>
+        <div class="layui-field-box">
+          <fieldset class="layui-elem-field">
+            <legend>指定服务器发送</legend>
+            <div class="layui-field-box">
+                <div id="zoneSelect2"></div>
+            </div>
+          </fieldset>
+          <fieldset class="layui-elem-field">
+            <legend>指定玩家发送</legend>
+            <div class="layui-field-box">
+            </div>
+          </fieldset>
+          <div class="layui-form-item">
+            <button class="layui-btn layui-btn-disabled" disabled lay-submit lay-filter="send" id="send">发送</button>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let xmSelect = layui.xmSelect;
+      let $ = layui.jquery;
+
+      let iItemID1 = xmSelect.render({
+        el: '#iItemID1',
+        name: 'iItemID1',
+        tips: '请选择道具',
+        filterable: true,
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+      let iItemID2 = xmSelect.render({
+        el: '#iItemID2',
+        name: 'iItemID2',
+        tips: '请选择道具',
+        filterable: true,
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+      let iItemID3 = xmSelect.render({
+        el: '#iItemID3',
+        name: 'iItemID3',
+        tips: '请选择道具',
+        filterable: true,
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+      let iItemID4 = xmSelect.render({
+        el: '#iItemID4',
+        name: 'iItemID4',
+        tips: '请选择道具',
+        filterable: true,
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+      let iItemID5 = xmSelect.render({
+        el: '#iItemID5',
+        name: 'iItemID5',
+        filterable: true,
+        tips: '请选择道具',
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+
+      okUtils.ajax("/api/gm/item/list", "get", null, false).done(function (response) {
+        iItemID1.update({data: response.data});
+        iItemID2.update({data: response.data});
+        iItemID3.update({data: response.data});
+        iItemID4.update({data: response.data});
+        iItemID5.update({data: response.data});
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      let zoneSelect1 = xmSelect.render({
+        el: '#zoneSelect1',
+        name: 'zoneid',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+      let zoneSelect2 = xmSelect.render({
+        el: '#zoneSelect2',
+        name: 'zoneids',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择至少一个服务器',
+        layVerify: 'false',
+        layVerType: 'tips',
+        disabled: true,
+      });
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect1.update({
+          data: response.data,
+        });
+        zoneSelect2.update({
+          data: response.data,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      //数据校验
+      form.verify({
+        "item": function(value, item) {
+          let s;
+          if (item.name == "iItemNum1") {
+            s = iItemID1;
+          } else if (item.name == "iItemNum2") {
+            s = iItemID2;
+          } else if (item.name == "iItemNum3") {
+            s = iItemID3;
+          } else if (item.name == "iItemNum4") {
+            s = iItemID4;
+          } else if (item.name == "iItemNum5") {
+            s = iItemID5;
+          }
+          itemid = s.getValue('valueStr');
+          if (itemid != "") {
+            if (!okUtils.number.isNumber(value)) {
+              return "道具数量必须是数字";
+            }
+          }
+        }
+      });
+
+      //监听提交
+      var mailcontent;
+      form.on('submit(test)', function (data) {
+        let itemstr = "";
+        let itemid1 = iItemID1.getValue("valueStr");
+        if (itemid1 != "") {
+          itemstr += itemid1+","+$("input[name='iItemNum1']").val();
+        }
+        let itemid2 = iItemID2.getValue("valueStr");
+        if (itemid2 != "") {
+          itemstr += ";"+itemid2+","+$("input[name='iItemNum2']").val();
+        }
+        let itemid3 = iItemID3.getValue("valueStr");
+        if (itemid3 != "") {
+          itemstr += ";"+itemid3+","+$("input[name='iItemNum3']").val();
+        }
+        let itemid4 = iItemID4.getValue("valueStr");
+        if (itemid4 != "") {
+          itemstr += ";"+itemid4+","+$("input[name='iItemNum4']").val();
+        }
+        let itemid5 = iItemID5.getValue("valueStr");
+        if (itemid5 != "") {
+          itemstr += ";"+itemid5+","+$("input[name='iItemNum5']").val();
+        }
+        let param = {sTitle: data.field.sTitle, sContent: data.field.sContent, iCoin: data.field.iCoin, iDiamond: data.field.iDiamond, iDelTimeAfterOpen: data.field.iDelTimeAfterOpen, iDelTimeAfterRcvAttach: data.field.iDelTimeAfterRcvAttach, iZoneId: data.field.zoneid, items: itemstr};
+        okUtils.ajax("/api/gm/mail/testsend", "post", param, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $("#test").attr("class", "layui-btn layui-btn-disabled");
+            $("#test").attr("disabled",true);
+            $("#send").attr("class", "layui-btn");
+            $("#send").attr("disabled",false);
+            zoneSelect1.update({
+              disabled: true,
+            });
+            zoneSelect2.update({
+              layVerify: true,
+              disabled: false,
+            });
+            mailcontent = param;
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      form.on('submit(send)', function (data) {
+        console.log(mailcontent);
+
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>
