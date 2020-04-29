@@ -23,6 +23,13 @@ type CmdIDNum struct {
 
 func (st *CmdIDNum) ResetDefault() {
 }
+func (st *CmdIDNum) Copy() *CmdIDNum {
+	ret := &CmdIDNum{}
+	ret.ResetDefault()
+	ret.IId = st.IId
+	ret.INum = st.INum
+	return ret
+}
 func (st *CmdIDNum) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iId")+fmt.Sprintf("%v\n", st.IId))
 	util.Tab(buff, t+1, util.Fieldname("iNum")+fmt.Sprintf("%v\n", st.INum))
@@ -159,6 +166,44 @@ type MailDataInfo struct {
 
 func (st *MailDataInfo) ResetDefault() {
 }
+func (st *MailDataInfo) Copy() *MailDataInfo {
+	ret := &MailDataInfo{}
+	ret.ResetDefault()
+	ret.IMailId = st.IMailId
+	ret.SFrom = st.SFrom
+	ret.VToUser = make([]uint64, len(st.VToUser))
+	for i, _ := range st.VToUser {
+		ret.VToUser[i] = st.VToUser[i]
+	}
+	ret.STime = st.STime
+	ret.STitle = st.STitle
+	ret.SContent = st.SContent
+	ret.IDiamond = st.IDiamond
+	ret.ICoin = st.ICoin
+	ret.VItems = make([]CmdIDNum, len(st.VItems))
+	for i, _ := range st.VItems {
+		ret.VItems[i] = *st.VItems[i].Copy()
+	}
+	ret.VSendZoneIds = make([]uint32, len(st.VSendZoneIds))
+	for i, _ := range st.VSendZoneIds {
+		ret.VSendZoneIds[i] = st.VSendZoneIds[i]
+	}
+	ret.IFlag = st.IFlag
+	ret.VRcvZoneIds = make([]uint32, len(st.VRcvZoneIds))
+	for i, _ := range st.VRcvZoneIds {
+		ret.VRcvZoneIds[i] = st.VRcvZoneIds[i]
+	}
+	ret.IArenaCoin = st.IArenaCoin
+	ret.IDelTimeAfterOpen = st.IDelTimeAfterOpen
+	ret.SUserFileName = st.SUserFileName
+	ret.IKingCoin = st.IKingCoin
+	ret.VCustomItem = make([]string, len(st.VCustomItem))
+	for i, _ := range st.VCustomItem {
+		ret.VCustomItem[i] = st.VCustomItem[i]
+	}
+	ret.IDelTimeAfterRcvAttach = st.IDelTimeAfterRcvAttach
+	return ret
+}
 func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iMailId")+fmt.Sprintf("%v\n", st.IMailId))
 	util.Tab(buff, t+1, util.Fieldname("sFrom")+fmt.Sprintf("%v\n", st.SFrom))
@@ -169,7 +214,6 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 		buff.WriteString(", [\n")
 	}
 	for _, v := range st.VToUser {
-
 		util.Tab(buff, t+1+1, util.Fieldname("")+fmt.Sprintf("%v\n", v))
 	}
 	if len(st.VToUser) != 0 {
@@ -187,7 +231,6 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 		buff.WriteString(", [\n")
 	}
 	for _, v := range st.VItems {
-
 		util.Tab(buff, t+1+1, util.Fieldname("")+"{\n")
 		v.Visit(buff, t+1+1+1)
 		util.Tab(buff, t+1+1, "}\n")
@@ -202,7 +245,6 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 		buff.WriteString(", [\n")
 	}
 	for _, v := range st.VSendZoneIds {
-
 		util.Tab(buff, t+1+1, util.Fieldname("")+fmt.Sprintf("%v\n", v))
 	}
 	if len(st.VSendZoneIds) != 0 {
@@ -216,7 +258,6 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 		buff.WriteString(", [\n")
 	}
 	for _, v := range st.VRcvZoneIds {
-
 		util.Tab(buff, t+1+1, util.Fieldname("")+fmt.Sprintf("%v\n", v))
 	}
 	if len(st.VRcvZoneIds) != 0 {
@@ -233,7 +274,6 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 		buff.WriteString(", [\n")
 	}
 	for _, v := range st.VCustomItem {
-
 		util.Tab(buff, t+1+1, util.Fieldname("")+fmt.Sprintf("%v\n", v))
 	}
 	if len(st.VCustomItem) != 0 {
