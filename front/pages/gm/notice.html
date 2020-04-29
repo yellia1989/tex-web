@@ -70,9 +70,8 @@
             field: "iPause", title: "状态", width: 90, align: "center", templet: function (d) {
               var ret = '';
               switch (d.iPause) {
-                case 1: ret = '未开启'; break;
-                case 2: ret = '开启中'; break;
-                case 3: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">已结束</span>'; break;
+                case 0: ret = '暂停'; break;
+                case 1: ret = '正常'; break;
                 default:
                   ret = '未知状态';
               }
@@ -80,7 +79,7 @@
             }
           },
           { field: "sZone", title: "分区", align: "center" },
-          { field: "iMaintainTime", title: "维护时间（分钟）", width: 90, align: "justify" },
+          { field: "iMaintenanceTime", title: "维护时间（分钟）", width: 90, align: "justify" },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {
