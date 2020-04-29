@@ -11,16 +11,16 @@
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
-      <div class="layui-form-item">
-        <div class="layui-btn-container">
-          <input type="button" onclick="checkAll()" class="layui-input">全选择</input>
-          <input type="button" onclick="cancelAll()" class="layui-input">全取消</input>
+      <fieldset class="layui-elem-field">
+        <legend>选择分区</legend>
+        <div class="layui-field-box">
+          <div class="layui-form-item">
+            <div class="layui-input-inline">
+              <div id="zoneSelect"></div>
+            </div>
+          </div>
         </div>
-        <div class="layui-input-block">
-          <input type="checkbox" title="dev" value="1" lay-skin="primary" class="layui-input">
-          <input type="checkbox" title="yellia" value="2" lay-skin="primary" class="layui-input">
-        </div>
-      </div>
+      </fieldset>
 
       <div class="layui-form-item">
         <label class="layui-form-label">公告类型</label>
@@ -92,16 +92,6 @@
   <script src="/lib/layui/layui.js"></script>
   <script>
 
-    function checkAll() {
-      let $ = layui.jquery;
-      $("from:checkbox").prop('checked', true);
-    }
-
-    function cancelAll() {
-      let $ = layui.jquery;
-      $("from:checkbox").prop('checked', false);
-    }
-
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
@@ -113,6 +103,36 @@
       });
       laydate.render({
         elem: "#iEndTime", type: "datetime"
+      });
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect1',
+        name: 'zoneid',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              showIcon: false,
+            }
+          }
+        }
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect.update({
+          data: response.data,
+        });
+      }).fail(function (error) {
+        console.log(error);
       });
 
       //监听提交
