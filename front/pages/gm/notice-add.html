@@ -90,6 +90,7 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
@@ -97,6 +98,7 @@
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
+      let xmSelect = layui.xmSelect;
 
       laydate.render({
         elem: "#iBeginTime", type: "datetime"
@@ -106,7 +108,7 @@
       });
 
       let zoneSelect = xmSelect.render({
-        el: '#zoneSelect1',
+        el: '#zoneSelect',
         name: 'zoneid',
         prop: {
           value: 'iZoneId',
@@ -115,8 +117,6 @@
         tips: '请选择服务器',
         layVerify: 'required',
         layVerType: 'tips',
-        radio: true,
-        clickClose: true,
         model: {
           label: {
             type: 'block',
