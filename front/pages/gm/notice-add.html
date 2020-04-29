@@ -13,11 +13,12 @@
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
         <div class="layui-btn-container">
-          <button type="button" onclick="checkall()" class="layui-btn layui-btn-radius layui-btn-normal">全选择</button>
-          <button type="button" class="layui-btn layui-btn-radius layui-btn-normal">全取消</button>
+          <input type="button" onclick="checkAll()" class="layui-input">全选择</input>
+          <input type="button" onclick="cancelAll()" class="layui-input">全取消</input>
         </div>
         <div class="layui-input-block">
-          <input type="checkbox" name="" id="zone1" title="dev" value="1" lay-skin="primary" class="layui-input">
+          <input type="checkbox" title="dev" value="1" lay-skin="primary" class="layui-input">
+          <input type="checkbox" title="yellia" value="2" lay-skin="primary" class="layui-input">
         </div>
       </div>
 
@@ -91,9 +92,14 @@
   <script src="/lib/layui/layui.js"></script>
   <script>
 
-    function checkall() {
+    function checkAll() {
       let $ = layui.jquery;
-      $("#zone1").prop('checked', true);
+      $("from:checkbox").prop('checked', true);
+    }
+
+    function cancelAll() {
+      let $ = layui.jquery;
+      $("from:checkbox").prop('checked', false);
     }
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
