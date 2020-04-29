@@ -11,12 +11,12 @@
 
 <body>
   <div class="ok-body">
+    <i class="layui-icon-fonts-html" color="#FF0000">TIPS: 对于公告修改，暂时只支持暂停公告，暂停后不能恢复，要修改其他字段，请暂停公告，创建一个新的公告</i>
     <table id="tableId" lay-filter="tableFilter"></table>
   </div>
   <!--js逻辑-->
   <script src="../../lib/layui/layui.js"></script>
   <script>
-    var editNotice;
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
@@ -109,7 +109,6 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
-            editNotice = data;
             edit(data.id);
             break;
           case "del":
