@@ -3,7 +3,6 @@ package gm
 import (
 	"strconv"
 	"strings"
-    "fmt"
 
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
@@ -41,10 +40,10 @@ func NoticeAdd(c echo.Context) error {
 	sBeginTime := ctx.FormValue("sBeginTime")
 	sEndTime := ctx.FormValue("sEndTime")
 
-    zones := strings.Split(ctx.FormValue("zoneid"), ",")
+	zones := strings.Split(ctx.FormValue("zoneid"), ",")
 	for _, zone := range zones {
 		zone, _ := strconv.ParseUint(zone, 10, 32)
-        notice.VZoneId = append(notice.VZoneId, uint32(zone));
+		notice.VZoneId = append(notice.VZoneId, uint32(zone))
 	}
 
 	if sContent == "" || sBeginTime == "" || sEndTime == "" || len(notice.VZoneId) == 0 {
@@ -92,7 +91,6 @@ func NoticeUpdate(c echo.Context) error {
 	if err := ctx.Bind(&notice); err != nil {
 		return err
 	}
-    fmt.Println(notice)
 
 	bulletinPrx := new(rpc.BulletinService)
 	comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
