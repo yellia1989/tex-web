@@ -11,21 +11,17 @@
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
-      <fieldset class="layui-elem-field">
-        <legend>选择分区</legend>
-        <div class="layui-field-box">
-          <div class="layui-form-item">
-            <div class="layui-input-inline">
-              <div id="zoneSelect"></div>
-            </div>
-          </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">选择分区</label>
+        <div class="layui-input-block">
+          <div id="zoneSelect"></div>
         </div>
-      </fieldset>
+      </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">公告类型</label>
         <div class="layui-input-block">
-          <select name="iType">
+          <select name="iType" lay-filter="type">
             <option value="1" selected>走马灯</option>
             <option value="2">停服公告</option>
             <option value="3">公告</option>
@@ -66,7 +62,7 @@
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-itemi layui-hide" id="test12">
         <label class="layui-form-label">显示间隔</label>
         <div class="layui-input-block">
           <input type="text" name="iDisplayInterval" class="layui-input" lay-verify="required" lay-verType="tips">
@@ -99,6 +95,7 @@
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
       let xmSelect = layui.xmSelect;
+      let $ = layui.jquery;
 
       laydate.render({
         elem: "#iBeginTime", type: "datetime"
@@ -134,6 +131,16 @@
       }).fail(function (error) {
         console.log(error);
       });
+
+      form.on('select(type)', function(data) {
+                  if (data.value == "1") {
+                    $("#test12").attr("class", "layui-input");
+                  } else if (data.value == 2) {
+
+                  } else if (data.value == 3) {
+
+                  }
+                  });
 
       //监听提交
       form.on('submit(add)', function (data) {
