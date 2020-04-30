@@ -140,8 +140,6 @@ func MailSend(c echo.Context) error {
             m.VSendZoneIds = append(m.VSendZoneIds, uint32(id))
         }
 
-        fmt.Printf("%+v\n", m)
-
         ret, err := mailPrx.AddMail(m)
         if err := checkRet(ret, err); err != nil {
             return err
