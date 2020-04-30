@@ -14,6 +14,13 @@
       <div class="layui-form-item">
         <label class="layui-form-label">标题</label>
         <div class="layui-input-block">
+          <input type="text" name="sFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
           <input type="text" name="sTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
@@ -145,6 +152,9 @@
                 <div id="zoneSelect1"></div>
               </div>
               <div class="layui-input-inline">
+                <input type="text" name="iRoleId" placeholder="请输入玩家id" autocomplete="off" class="layui-input" lay-verify="number|required" lay-verType="tips">
+              </div>
+              <div class="layui-input-inline">
                 <button class="layui-btn" lay-submit lay-filter="test" id="test">测试发送</button>
               </div>
             </div>
@@ -163,10 +173,22 @@
           <fieldset class="layui-elem-field">
             <legend>指定玩家发送</legend>
             <div class="layui-field-box">
+              <div class="layui-form-item">
+		            <label>每行格式(空格隔开): 分区ID 玩家ID(小于60k的txt文件)</label>
+                <button type="button" class="layui-btn layui-btn-disabled" disabled id="file">
+                  <i class="layui-icon">&#xe67c;</i>上传文件
+                </button>
+              </div>
+              <div class="layui-form-item">
+                <div class="layui-progress" lay-showPercent="true" lay-filter="filepro">
+                  <div class="layui-progress-bar" lay-percent="0%"></div>
+                </div>
+	    	        <input type="text" name="filepath" class="layui-hide">
+              </div>
             </div>
           </fieldset>
           <div class="layui-form-item">
-            <button class="layui-btn layui-btn-disabled" disabled lay-submit lay-filter="send" id="send">发送</button>
+            <button type="button" class="layui-btn layui-btn-disabled" disabled id="send">发送</button>
           </div>
         </div>
       </fieldset>
@@ -175,12 +197,14 @@
   <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
-    layui.use(['form', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'okLayer', 'okUtils', 'upload', 'element'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let xmSelect = layui.xmSelect;
+      let upload = layui.upload;
       let $ = layui.jquery;
+      let element = layui.element;
 
       let iItemID1 = xmSelect.render({
         el: '#iItemID1',
@@ -322,6 +346,30 @@
       }).fail(function (error) {
         console.log(error);
       });
+      
+      let uploadFile = upload.render({
+        elem: '#file',
+        url: '/api/gm/mail/upload',
+        accept: 'file',
+        acceptMime: 'text/plain',
+        exts: 'txt',
+        field: 'mailids',
+        size: 60,
+        progress: function(n, elem){
+          let percent = n + '%';
+          element.progress('filepro', percent);
+        },
+        done: function(res, index, upload) {
+          if (res.code != 0) {
+            okLayer.redCryMsg(res.msg);
+            return;
+          }
+          $("input[name=filepath]").val(res.data);
+        },
+        error: function(index, upload) {
+          okLayer.redCryMsg("上传失败");
+        }
+      });
 
       //数据校验
       form.verify({
@@ -348,7 +396,7 @@
       });
 
       //监听提交
-      var mailcontent;
+      var mailparam;
       form.on('submit(test)', function (data) {
         let itemstr = "";
         let itemid1 = iItemID1.getValue("valueStr");
@@ -357,27 +405,33 @@
         }
         let itemid2 = iItemID2.getValue("valueStr");
         if (itemid2 != "") {
-          itemstr += ";"+itemid2+","+$("input[name='iItemNum2']").val();
+          if (itemstr != "") itemstr += ";";
+          itemstr += itemid2+","+$("input[name='iItemNum2']").val();
         }
         let itemid3 = iItemID3.getValue("valueStr");
         if (itemid3 != "") {
-          itemstr += ";"+itemid3+","+$("input[name='iItemNum3']").val();
+          if (itemstr != "") itemstr += ";";
+          itemstr += itemid3+","+$("input[name='iItemNum3']").val();
         }
         let itemid4 = iItemID4.getValue("valueStr");
         if (itemid4 != "") {
-          itemstr += ";"+itemid4+","+$("input[name='iItemNum4']").val();
+          if (itemstr != "") itemstr += ";";
+          itemstr += itemid4+","+$("input[name='iItemNum4']").val();
         }
         let itemid5 = iItemID5.getValue("valueStr");
         if (itemid5 != "") {
-          itemstr += ";"+itemid5+","+$("input[name='iItemNum5']").val();
+          if (itemstr != "") itemstr += ";";
+          itemstr += itemid5+","+$("input[name='iItemNum5']").val();
         }
-        let param = {sTitle: data.field.sTitle, sContent: data.field.sContent, iCoin: data.field.iCoin, iDiamond: data.field.iDiamond, iDelTimeAfterOpen: data.field.iDelTimeAfterOpen, iDelTimeAfterRcvAttach: data.field.iDelTimeAfterRcvAttach, iZoneId: data.field.zoneid, items: itemstr};
+        let param = {sFrom: data.field.sFrom, sTitle: data.field.sTitle, sContent: data.field.sContent, iCoin: data.field.iCoin, iDiamond: data.field.iDiamond, iDelTimeAfterOpen: data.field.iDelTimeAfterOpen, iDelTimeAfterRcvAttach: data.field.iDelTimeAfterRcvAttach, iZoneId: data.field.zoneid, iRoleId: data.field.iRoleId, items: itemstr};
         okUtils.ajax("/api/gm/mail/testsend", "post", param, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             $("#test").attr("class", "layui-btn layui-btn-disabled");
             $("#test").attr("disabled",true);
             $("#send").attr("class", "layui-btn");
             $("#send").attr("disabled",false);
+            $("#file").attr("class", "layui-btn");
+            $("#file").attr("disabled",false);
             zoneSelect1.update({
               disabled: true,
             });
@@ -385,7 +439,7 @@
               layVerify: true,
               disabled: false,
             });
-            mailcontent = param;
+            mailparam = param;
           });
         }).fail(function (error) {
           console.log(error);
@@ -393,10 +447,24 @@
         return false;
       });
 
-      form.on('submit(send)', function (data) {
-        console.log(mailcontent);
+      $('#send').click(function () {
+        mailparam.zoneids = zoneSelect2.getValue('valueStr');
+        if (mailparam.zoneids == "") {
+          mailparam.filepath = $("input[name='filepath']").val();
+        }
 
-        return false;
+        if (mailparam.zoneids == "" && mailparam.filepath == "") {
+          okLayer.redCryMsg("请选择至少一个服务器或上传文件");
+          return;
+        }
+
+        okUtils.ajax("/api/gm/mail/send", "post", mailparam, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
       });
     });
   </script>
