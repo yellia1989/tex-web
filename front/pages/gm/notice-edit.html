@@ -40,6 +40,7 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
+        data.field.iNoticeId = parent.editNotice.iId;
         okUtils.ajax("/api/gm/notice/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

@@ -17,6 +17,7 @@
   <!--js逻辑-->
   <script src="../../lib/layui/layui.js"></script>
   <script>
+    var editNotice;
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
@@ -85,11 +86,7 @@
         parseData: function (res) {
           for (i = 0; i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iNoticeId;
-            var tmp = "";
-            for (j = 0; j < res.data[i].vZoneId.length; ++j) {
-              tmp += res.data[i].vZoneId[j];
-            }
-            res.data[i].sZone = tmp;
+            res.data[i].sZone = res.data[i].vZoneId;
           }
         }
       });
@@ -109,6 +106,7 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
+            editNotice = data;
             edit(data.id);
             break;
           case "del":
