@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="content">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
           <textarea name="sContent" required lay-verify="required" placeholder="请输入内容"
@@ -62,17 +62,24 @@
         </div>
       </div>
 
-      <div class="layui-form-itemi layui-hide" id="test12">
+      <div class="layui-form-item" id="displayInterval">
         <label class="layui-form-label">显示间隔</label>
         <div class="layui-input-block">
           <input type="text" name="iDisplayInterval" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="displayNum">
         <label class="layui-form-label">显示次数</label>
         <div class="layui-input-block">
           <input type="text" name="iDisplayNum" class="layui-input" lay-verify="required" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="maintenanceTime">
+        <label class="layui-form-label layui-hide">维护时间</label>
+        <div class="layui-input-block">
+          <input type="text" name="iMaintenanceTime" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
@@ -132,15 +139,24 @@
         console.log(error);
       });
 
-      form.on('select(type)', function(data) {
-                  if (data.value == "1") {
-                    $("#test12").attr("class", "layui-input");
-                  } else if (data.value == 2) {
-
-                  } else if (data.value == 3) {
-
-                  }
-                  });
+      form.on('select(type)', function (data) {
+        if (data.value == "1") {
+          $("#content").attr("class", "layui-form-item");
+          $("#displayInterval").attr("class", "layui-form-item");
+          $("#displayNum").attr("class", "layui-form-item");
+          $("#maintenanceTime").attr("class", "layui-form-item layui-hide");
+        } else if (data.value == "2") {
+          $("#content").attr("class", "layui-form-item layui-hide");
+          $("#displayInterval").attr("class", "layui-form-item layui-hide");
+          $("#displayNum").attr("class", "layui-form-item layui-hide");
+          $("#maintenanceTime").attr("class", "layui-form-item");
+        } else if (data.value == "3") {
+          $("#content").attr("class", "layui-form-item");
+          $("#displayInterval").attr("class", "layui-form-item layui-hide");
+          $("#displayNum").attr("class", "layui-form-item layui-hide");
+          $("#maintenanceTime").attr("class", "layui-form-item layui-hide");
+        }
+      });
 
       //监听提交
       form.on('submit(add)', function (data) {
