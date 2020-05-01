@@ -41,6 +41,9 @@
           { field: "vToUser", title: "接受玩家" },
           { field: "vSendZoneIds", title: "发送服务器" },
           { field: "vRcvZoneIds", title: "接收服务器" },
+          { field: "iFlag", title: "状态", templet: function (d) {
+            return d.iFlag == 0 ? "正在发送中" : "发送成功";
+          }},
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {
