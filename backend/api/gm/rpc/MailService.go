@@ -21,13 +21,17 @@ type CmdIDNum struct {
 	INum uint32 `json:"iNum"`
 }
 
-func (st *CmdIDNum) ResetDefault() {
+func (st *CmdIDNum) resetDefault() {
 }
 func (st *CmdIDNum) Copy() *CmdIDNum {
-	ret := &CmdIDNum{}
-	ret.ResetDefault()
+	ret := NewCmdIDNum()
 	ret.IId = st.IId
 	ret.INum = st.INum
+	return ret
+}
+func NewCmdIDNum() *CmdIDNum {
+	ret := &CmdIDNum{}
+	ret.resetDefault()
 	return ret
 }
 func (st *CmdIDNum) Visit(buff *bytes.Buffer, t int) {
@@ -39,7 +43,7 @@ func (st *CmdIDNum) ReadStruct(up *codec.UnPacker) error {
 	var length uint32
 	var has bool
 	var ty uint32
-	st.ResetDefault()
+	st.resetDefault()
 	err = up.ReadUint32(&st.IId, 0, false)
 	if err != nil {
 		return err
@@ -59,7 +63,6 @@ func (st *CmdIDNum) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bo
 	var err error
 	var has bool
 	var ty uint32
-	st.ResetDefault()
 
 	has, ty, err = up.SkipToTag(tag, require)
 	if !has || err != nil {
@@ -164,16 +167,15 @@ type MailDataInfo struct {
 	IDelTimeAfterRcvAttach uint32     `json:"iDelTimeAfterRcvAttach"`
 }
 
-func (st *MailDataInfo) ResetDefault() {
+func (st *MailDataInfo) resetDefault() {
 }
 func (st *MailDataInfo) Copy() *MailDataInfo {
-	ret := &MailDataInfo{}
-	ret.ResetDefault()
+	ret := NewMailDataInfo()
 	ret.IMailId = st.IMailId
 	ret.SFrom = st.SFrom
 	ret.VToUser = make([]uint64, len(st.VToUser))
-	for i, _ := range st.VToUser {
-		ret.VToUser[i] = st.VToUser[i]
+	for i, v := range st.VToUser {
+		ret.VToUser[i] = v
 	}
 	ret.STime = st.STime
 	ret.STitle = st.STitle
@@ -181,27 +183,32 @@ func (st *MailDataInfo) Copy() *MailDataInfo {
 	ret.IDiamond = st.IDiamond
 	ret.ICoin = st.ICoin
 	ret.VItems = make([]CmdIDNum, len(st.VItems))
-	for i, _ := range st.VItems {
-		ret.VItems[i] = *st.VItems[i].Copy()
+	for i, v := range st.VItems {
+		ret.VItems[i] = *(v.Copy())
 	}
 	ret.VSendZoneIds = make([]uint32, len(st.VSendZoneIds))
-	for i, _ := range st.VSendZoneIds {
-		ret.VSendZoneIds[i] = st.VSendZoneIds[i]
+	for i, v := range st.VSendZoneIds {
+		ret.VSendZoneIds[i] = v
 	}
 	ret.IFlag = st.IFlag
 	ret.VRcvZoneIds = make([]uint32, len(st.VRcvZoneIds))
-	for i, _ := range st.VRcvZoneIds {
-		ret.VRcvZoneIds[i] = st.VRcvZoneIds[i]
+	for i, v := range st.VRcvZoneIds {
+		ret.VRcvZoneIds[i] = v
 	}
 	ret.IArenaCoin = st.IArenaCoin
 	ret.IDelTimeAfterOpen = st.IDelTimeAfterOpen
 	ret.SUserFileName = st.SUserFileName
 	ret.IKingCoin = st.IKingCoin
 	ret.VCustomItem = make([]string, len(st.VCustomItem))
-	for i, _ := range st.VCustomItem {
-		ret.VCustomItem[i] = st.VCustomItem[i]
+	for i, v := range st.VCustomItem {
+		ret.VCustomItem[i] = v
 	}
 	ret.IDelTimeAfterRcvAttach = st.IDelTimeAfterRcvAttach
+	return ret
+}
+func NewMailDataInfo() *MailDataInfo {
+	ret := &MailDataInfo{}
+	ret.resetDefault()
 	return ret
 }
 func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
@@ -286,7 +293,7 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var length uint32
 	var has bool
 	var ty uint32
-	st.ResetDefault()
+	st.resetDefault()
 	err = up.ReadUint32(&st.IMailId, 0, false)
 	if err != nil {
 		return err
@@ -297,22 +304,24 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	}
 
 	has, ty, err = up.SkipToTag(2, false)
-	if !has || err != nil {
-		return err
-	}
-	if ty != codec.SdpType_Vector {
-		return fmt.Errorf("tag:%d got wrong type %d", 2, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return err
 	}
-	st.VToUser = make([]uint64, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = up.ReadUint64(&st.VToUser[i], 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return fmt.Errorf("tag:%d got wrong type %d", 2, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return err
+		}
+		st.VToUser = make([]uint64, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = up.ReadUint64(&st.VToUser[i], 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	err = up.ReadString(&st.STime, 3, false)
@@ -337,42 +346,46 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	}
 
 	has, ty, err = up.SkipToTag(9, false)
-	if !has || err != nil {
-		return err
-	}
-	if ty != codec.SdpType_Vector {
-		return fmt.Errorf("tag:%d got wrong type %d", 9, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return err
 	}
-	st.VItems = make([]CmdIDNum, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = st.VItems[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return fmt.Errorf("tag:%d got wrong type %d", 9, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return err
+		}
+		st.VItems = make([]CmdIDNum, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = st.VItems[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	has, ty, err = up.SkipToTag(10, false)
-	if !has || err != nil {
-		return err
-	}
-	if ty != codec.SdpType_Vector {
-		return fmt.Errorf("tag:%d got wrong type %d", 10, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return err
 	}
-	st.VSendZoneIds = make([]uint32, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = up.ReadUint32(&st.VSendZoneIds[i], 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return fmt.Errorf("tag:%d got wrong type %d", 10, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return err
+		}
+		st.VSendZoneIds = make([]uint32, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = up.ReadUint32(&st.VSendZoneIds[i], 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	err = up.ReadUint32(&st.IFlag, 11, false)
@@ -381,22 +394,24 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	}
 
 	has, ty, err = up.SkipToTag(12, false)
-	if !has || err != nil {
-		return err
-	}
-	if ty != codec.SdpType_Vector {
-		return fmt.Errorf("tag:%d got wrong type %d", 12, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return err
 	}
-	st.VRcvZoneIds = make([]uint32, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = up.ReadUint32(&st.VRcvZoneIds[i], 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return fmt.Errorf("tag:%d got wrong type %d", 12, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return err
+		}
+		st.VRcvZoneIds = make([]uint32, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = up.ReadUint32(&st.VRcvZoneIds[i], 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	err = up.ReadUint32(&st.IArenaCoin, 14, false)
@@ -417,22 +432,24 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	}
 
 	has, ty, err = up.SkipToTag(19, false)
-	if !has || err != nil {
-		return err
-	}
-	if ty != codec.SdpType_Vector {
-		return fmt.Errorf("tag:%d got wrong type %d", 19, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return err
 	}
-	st.VCustomItem = make([]string, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = up.ReadString(&st.VCustomItem[i], 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return fmt.Errorf("tag:%d got wrong type %d", 19, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return err
+		}
+		st.VCustomItem = make([]string, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = up.ReadString(&st.VCustomItem[i], 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	err = up.ReadUint32(&st.IDelTimeAfterRcvAttach, 20, false)
@@ -450,7 +467,6 @@ func (st *MailDataInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, requir
 	var err error
 	var has bool
 	var ty uint32
-	st.ResetDefault()
 
 	has, ty, err = up.SkipToTag(tag, require)
 	if !has || err != nil {
@@ -496,7 +512,7 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -546,7 +562,7 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -564,7 +580,7 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -590,7 +606,7 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -634,7 +650,7 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -748,7 +764,7 @@ func (s *MailService) AddMails(vInfo []MailDataInfo) (int32, error) {
 		if err != nil {
 			return ret, err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return ret, err
 		}
@@ -847,22 +863,24 @@ func (s *MailService) GetAllMail(vInfo *[]MailDataInfo) (int32, error) {
 	}
 
 	has, ty, err = up.SkipToTag(1, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vInfo) = make([]MailDataInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vInfo) = make([]MailDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -901,42 +919,46 @@ func (s *MailService) GetZoneMail(iZoneId uint32, iLastMailId uint32, vInfo *[]M
 	}
 
 	has, ty, err = up.SkipToTag(3, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 3, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vInfo) = make([]MailDataInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 3, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vInfo) = make([]MailDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 
 	has, ty, err = up.SkipToTag(4, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 4, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vDelId) = make([]uint32, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = up.ReadUint32(&(*vDelId)[i], 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 4, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vDelId) = make([]uint32, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = up.ReadUint32(&(*vDelId)[i], 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -990,22 +1012,24 @@ func _MailServiceAddMailsImpl(ctx context.Context, serviceImpl interface{}, up *
 	var p1 []MailDataInfo
 
 	has, ty, err = up.SkipToTag(1, true)
-	if !has || err != nil {
-		return err
-	}
-	if ty != codec.SdpType_Vector {
-		return fmt.Errorf("tag:%d got wrong type %d", 1, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return err
 	}
-	p1 = make([]MailDataInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = p1[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return err
+		}
+		p1 = make([]MailDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = p1[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	var ret int32
@@ -1103,7 +1127,7 @@ func _MailServiceGetAllMailImpl(ctx context.Context, serviceImpl interface{}, up
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -1155,7 +1179,7 @@ func _MailServiceGetZoneMailImpl(ctx context.Context, serviceImpl interface{}, u
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -1173,7 +1197,7 @@ func _MailServiceGetZoneMailImpl(ctx context.Context, serviceImpl interface{}, u
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}

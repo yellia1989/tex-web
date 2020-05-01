@@ -53,7 +53,33 @@ type ZoneInfo struct {
 	ICurZoneStatus         uint32 `json:"iCurZoneStatus"`
 }
 
-func (st *ZoneInfo) ResetDefault() {
+func (st *ZoneInfo) resetDefault() {
+}
+func (st *ZoneInfo) Copy() *ZoneInfo {
+	ret := NewZoneInfo()
+	ret.IZoneId = st.IZoneId
+	ret.SZoneName = st.SZoneName
+	ret.SConnServer = st.SConnServer
+	ret.SGameServer = st.SGameServer
+	ret.IZoneFlag = st.IZoneFlag
+	ret.IIsManual = st.IIsManual
+	ret.IManualZoneStatus = st.IManualZoneStatus
+	ret.IMaxNum = st.IMaxNum
+	ret.IPublishTime = st.IPublishTime
+	ret.SClientVersion = st.SClientVersion
+	ret.SForceUpdateVersion = st.SForceUpdateVersion
+	ret.SAndClientVersion = st.SAndClientVersion
+	ret.SAndForceUpdateVersion = st.SAndForceUpdateVersion
+	ret.IIsKick = st.IIsKick
+	ret.ICurNum = st.ICurNum
+	ret.ILastReportTime = st.ILastReportTime
+	ret.ICurZoneStatus = st.ICurZoneStatus
+	return ret
+}
+func NewZoneInfo() *ZoneInfo {
+	ret := &ZoneInfo{}
+	ret.resetDefault()
+	return ret
 }
 func (st *ZoneInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iZoneId")+fmt.Sprintf("%v\n", st.IZoneId))
@@ -79,7 +105,7 @@ func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 	var length uint32
 	var has bool
 	var ty uint32
-	st.ResetDefault()
+	st.resetDefault()
 	err = up.ReadUint32(&st.IZoneId, 0, false)
 	if err != nil {
 		return err
@@ -159,7 +185,6 @@ func (st *ZoneInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bo
 	var err error
 	var has bool
 	var ty uint32
-	st.ResetDefault()
 
 	has, ty, err = up.SkipToTag(tag, require)
 	if !has || err != nil {
@@ -185,7 +210,7 @@ func (st *ZoneInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bo
 }
 func (st *ZoneInfo) WriteStruct(p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
 	if false || st.IZoneId != 0 {
 		err = p.WriteUint32(0, st.IZoneId)
 		if err != nil {
@@ -349,7 +374,29 @@ type ZoneModifyInfo struct {
 	BKick                        bool `json:"bKick"`
 }
 
-func (st *ZoneModifyInfo) ResetDefault() {
+func (st *ZoneModifyInfo) resetDefault() {
+}
+func (st *ZoneModifyInfo) Copy() *ZoneModifyInfo {
+	ret := NewZoneModifyInfo()
+	ret.BModifyZoneName = st.BModifyZoneName
+	ret.BModifyConnServer = st.BModifyConnServer
+	ret.BModifyGameServer = st.BModifyGameServer
+	ret.BModifyZoneFlag = st.BModifyZoneFlag
+	ret.BModifyIsManual = st.BModifyIsManual
+	ret.BModifyManualZoneStatus = st.BModifyManualZoneStatus
+	ret.BModifyMaxNum = st.BModifyMaxNum
+	ret.BModifyPublishTime = st.BModifyPublishTime
+	ret.BModifyClientVersion = st.BModifyClientVersion
+	ret.BModifyForceUpdateVersion = st.BModifyForceUpdateVersion
+	ret.BModifyAndClientVersion = st.BModifyAndClientVersion
+	ret.BModifyAndForceUpdateVersion = st.BModifyAndForceUpdateVersion
+	ret.BKick = st.BKick
+	return ret
+}
+func NewZoneModifyInfo() *ZoneModifyInfo {
+	ret := &ZoneModifyInfo{}
+	ret.resetDefault()
+	return ret
 }
 func (st *ZoneModifyInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("bModifyZoneName")+fmt.Sprintf("%v\n", st.BModifyZoneName))
@@ -371,7 +418,7 @@ func (st *ZoneModifyInfo) ReadStruct(up *codec.UnPacker) error {
 	var length uint32
 	var has bool
 	var ty uint32
-	st.ResetDefault()
+	st.resetDefault()
 	err = up.ReadBool(&st.BModifyZoneName, 1, false)
 	if err != nil {
 		return err
@@ -435,7 +482,6 @@ func (st *ZoneModifyInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, requ
 	var err error
 	var has bool
 	var ty uint32
-	st.ResetDefault()
 
 	has, ty, err = up.SkipToTag(tag, require)
 	if !has || err != nil {
@@ -461,7 +507,7 @@ func (st *ZoneModifyInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, requ
 }
 func (st *ZoneModifyInfo) WriteStruct(p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
 	if false || st.BModifyZoneName != false {
 		err = p.WriteBool(1, st.BModifyZoneName)
 		if err != nil {
@@ -764,22 +810,24 @@ func (s *DirService) GetAllZone(vZoneInfo *[]ZoneInfo) (int32, error) {
 	}
 
 	has, ty, err = up.SkipToTag(1, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vZoneInfo) = make([]ZoneInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vZoneInfo)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vZoneInfo) = make([]ZoneInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vZoneInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -799,7 +847,9 @@ type _DirServiceImpl interface {
 
 func _DirServiceCreateZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_DirServiceImpl)
 	var p1 ZoneInfo
 	err = p1.ReadStructFromTag(up, 1, true)
@@ -818,11 +868,15 @@ func _DirServiceCreateZoneImpl(ctx context.Context, serviceImpl interface{}, up 
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _DirServiceModifyZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_DirServiceImpl)
 	var p1 ZoneInfo
 	err = p1.ReadStructFromTag(up, 1, true)
@@ -846,11 +900,15 @@ func _DirServiceModifyZoneImpl(ctx context.Context, serviceImpl interface{}, up 
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _DirServiceDeleteZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_DirServiceImpl)
 	var p1 uint32
 	err = up.ReadUint32(&p1, 1, true)
@@ -869,11 +927,15 @@ func _DirServiceDeleteZoneImpl(ctx context.Context, serviceImpl interface{}, up 
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _DirServiceReportZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_DirServiceImpl)
 	var p1 uint32
 	err = up.ReadUint32(&p1, 1, true)
@@ -897,11 +959,15 @@ func _DirServiceReportZoneImpl(ctx context.Context, serviceImpl interface{}, up 
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _DirServiceGetZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_DirServiceImpl)
 	var p1 uint32
 	err = up.ReadUint32(&p1, 1, true)
@@ -925,11 +991,15 @@ func _DirServiceGetZoneImpl(ctx context.Context, serviceImpl interface{}, up *co
 		return err
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _DirServiceGetAllZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_DirServiceImpl)
 	var p1 []ZoneInfo
 	var ret int32
@@ -944,13 +1014,13 @@ func _DirServiceGetAllZoneImpl(ctx context.Context, serviceImpl interface{}, up 
 		}
 	}
 
-	length = len(p1)
+	length = uint32(len(p1))
 	if true || length != 0 {
 		err = p.WriteHeader(1, codec.SdpType_Vector)
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -962,6 +1032,8 @@ func _DirServiceGetAllZoneImpl(ctx context.Context, serviceImpl interface{}, up 
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 

@@ -60,8 +60,7 @@ func MailTestSend(c echo.Context) error {
     iRoleId, _ := strconv.ParseUint(ctx.FormValue("iRoleId"), 10, 64)
     itemstr := ctx.FormValue("items")
 
-    m := rpc.MailDataInfo{}
-    m.ResetDefault()
+    m := rpc.NewMailDataInfo()
     m.SFrom = sFrom
     m.STitle = sTitle
     m.SContent = sContent
@@ -84,7 +83,7 @@ func MailTestSend(c echo.Context) error {
     mailPrx := new(rpc.MailService)
     comm.StringToProxy("aqua.MailServer.MailServiceObj", mailPrx)
 
-    ret, err := mailPrx.AddMail(m)
+    ret, err := mailPrx.AddMail(*m.Copy())
     if err := checkRet(ret, err); err != nil {
         return err
     }
@@ -104,8 +103,7 @@ func MailSend(c echo.Context) error {
     iDelTimeAfterRcvAttach,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterRcvAttach"))
     itemstr := ctx.FormValue("items")
 
-    m := rpc.MailDataInfo{}
-    m.ResetDefault()
+    m := rpc.NewMailDataInfo()
     m.SFrom = sFrom
     m.STitle = sTitle
     m.SContent = sContent
@@ -140,7 +138,7 @@ func MailSend(c echo.Context) error {
             m.VSendZoneIds = append(m.VSendZoneIds, uint32(id))
         }
 
-        ret, err := mailPrx.AddMail(m)
+        ret, err := mailPrx.AddMail(*m.Copy())
         if err := checkRet(ret, err); err != nil {
             return err
         }
@@ -171,7 +169,7 @@ func MailSend(c echo.Context) error {
             m.VSendZoneIds = m.VSendZoneIds[:0]
             m.VSendZoneIds = append(m.VSendZoneIds, uint32(k))
             m.VToUser = v[:]
-            mails = append(mails, m)
+            mails = append(mails, *m.Copy())
         }
 
         ret, err := mailPrx.AddMails(mails)

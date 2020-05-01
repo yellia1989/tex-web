@@ -30,8 +30,8 @@ func BulletinList(c echo.Context) error {
 func BulletinAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    bulletin := rpc.BulletinDataInfo{}
-    if err := ctx.Bind(&bulletin); err != nil {
+    bulletin := rpc.NewBulletinDataInfo()
+    if err := ctx.Bind(bulletin); err != nil {
         return err
     }
 
@@ -47,7 +47,7 @@ func BulletinAdd(c echo.Context) error {
     bulletinPrx := new(rpc.BulletinService)
     comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
 
-    ret, err := bulletinPrx.AddBulletin(bulletin)
+    ret, err := bulletinPrx.AddBulletin(*bulletin.Copy())
     if err := checkRet(ret, err); err != nil {
         return err
     }
@@ -81,8 +81,8 @@ func BulletinDel(c echo.Context) error {
 func BulletinUpdate(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    bulletin := rpc.BulletinDataInfo{}
-    if err := ctx.Bind(&bulletin); err != nil {
+    bulletin := rpc.NewBulletinDataInfo()
+    if err := ctx.Bind(bulletin); err != nil {
         return err
     }
 
@@ -98,7 +98,7 @@ func BulletinUpdate(c echo.Context) error {
     bulletinPrx := new(rpc.BulletinService)
     comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
 
-    ret, err := bulletinPrx.ModifyBulletin(bulletin)
+    ret, err := bulletinPrx.ModifyBulletin(*bulletin.Copy())
     if err := checkRet(ret, err); err != nil {
         return err
     }
