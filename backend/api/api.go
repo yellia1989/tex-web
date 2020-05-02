@@ -46,6 +46,7 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/mail/testsend", gm.MailTestSend)          // 发送测试邮件
     group.POST("/gm/mail/send", gm.MailSend)                  // 发送邮件
     group.POST("/gm/mail/upload", gm.MailUpload)              // 上传玩家列表
+    group.POST("/gm/mail/del", gm.MailDel)                    // 删除邮件
 
     group.GET("/gm/item/list", gm.ItemList)                   // 获取道具列表
 

@@ -209,27 +209,21 @@ func MailUpload(c echo.Context) error {
 
 func MailDel(c echo.Context) error {
     ctx := c.(*mid.Context)
-
-    /*
     ids := strings.Split(ctx.FormValue("idsStr"), ",")
     if len(ids) == 0 {
-        return ctx.SendError(-1, "registry不存在")
+        return ctx.SendError(-1, "邮件不存在")
     }
 
-    queryPrx := new(rpc.Query)
-    comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
+    mailPrx := new(rpc.MailService)
+    comm.StringToProxy("aqua.MailServer.MailServiceObj", mailPrx)
 
     for _, id := range ids {
-        tmp := strings.Split(id, "$")
-        if len(tmp) != 3 {
-            return ctx.SendError(-1, "参数非法")
-        }
-        ret, err := queryPrx.RemoveEndpoint(tmp[0], tmp[1], tmp[2])
+        id, _ := strconv.ParseUint(id, 10, 32)
+        ret, err := mailPrx.DelMail(uint32(id))
         if err := checkRet(ret, err); err != nil {
             return err
         }
     }
-    */
 
-    return ctx.SendResponse("删除registry成功")
+    return ctx.SendResponse("删除邮件成功")
 }
