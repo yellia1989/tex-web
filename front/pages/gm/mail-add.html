@@ -362,12 +362,14 @@
         done: function(res, index, upload) {
           if (res.code != 0) {
             okLayer.redCryMsg(res.msg);
+            element.progress('filepro', "0%");
             return;
           }
           $("input[name=filepath]").val(res.data);
         },
         error: function(index, upload) {
           okLayer.redCryMsg("上传失败");
+          element.progress('filepro', "0%");
         }
       });
 

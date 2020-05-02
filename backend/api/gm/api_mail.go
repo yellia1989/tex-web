@@ -227,3 +227,60 @@ func MailDel(c echo.Context) error {
 
     return ctx.SendResponse("删除邮件成功")
 }
+
+func MailSend2(c echo.Context) error {
+    ctx := c.(*mid.Context)
+
+    sFrom := ctx.FormValue("sFrom")
+    sTitle := ctx.FormValue("sTitle")
+    sContent := ctx.FormValue("sContent")
+    iDelTimeAfterOpen,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterOpen"))
+    iDelTimeAfterRcvAttach,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterRcvAttach"))
+
+    m := rpc.NewMailDataInfo()
+    m.SFrom = sFrom
+    m.STitle = sTitle
+    m.SContent = sContent
+    m.IDelTimeAfterOpen = uint32(iDelTimeAfterOpen)
+    m.IDelTimeAfterRcvAttach = uint32(iDelTimeAfterRcvAttach)
+
+    mailPrx := new(rpc.MailService)
+    comm.StringToProxy("aqua.MailServer.MailServiceObj", mailPrx)
+
+    // 指定玩家发送
+    filename := ctx.FormValue("filepath")
+    if filename == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+    content, err := util.LoadFromFile(filename)
+    if err != nil {
+        return err
+    }
+    role1 := strings.Split(string(content), "\n")
+    for _,ids := range role1 {
+        tmp := strings.Fields(ids)
+        if len(tmp) != 3 {
+            // 格式错误直接忽略
+            continue
+        }
+        zoneid,_ := strconv.Atoi(tmp[0])
+        roleid,_ := strconv.ParseUint(tmp[1], 10, 64)
+        item1 := strings.Split(tmp[2], ";")
+        for _,v := range item1 {
+            item2 := strings.SplitN(v, ",", 2)
+            id,_ := strconv.ParseUint(item2[0], 10, 32)
+            num,_ := strconv.ParseUint(item2[1], 10, 32)
+            m.VItems = append(m.VItems, rpc.CmdIDNum{IId:uint32(id), INum: uint32(num)})
+        }
+
+        m.VSendZoneIds = []uint32{uint32(zoneid)}
+        m.VToUser = []uint64{roleid}
+
+        ret, err := mailPrx.AddMail(*m.Copy())
+        if err := checkRet(ret, err); err != nil {
+            return err
+        }
+    }
+
+    return ctx.SendResponse("发送邮件成功")
+}
