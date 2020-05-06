@@ -52,8 +52,8 @@ func RegisterHandler(group *echo.Group) {
 
     group.GET("/gm/item/list", gm.ItemList)                   // 获取道具列表
 
-    group.GET("/gm/bulletin/list", gm.BulletinList)           // 获取公告列表
-    group.POST("/gm/bulletin/add", gm.BulletinAdd)            // 增加公告
+	group.GET("/gm/bulletin/list", gm.BulletinList)           // 获取公告列表
+	group.POST("/gm/bulletin/add", gm.BulletinAdd)            // 增加公告
 	group.POST("/gm/bulletin/del", gm.BulletinDel)       // 删除公告
 	group.POST("/gm/bulletin/update", gm.BulletinUpdate) // 更新公告
 
@@ -61,6 +61,11 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/notice/add", gm.NoticeAdd)       // 增加跑马灯
 	group.POST("/gm/notice/del", gm.NoticeDel)       // 删除跑马灯
 	group.POST("/gm/notice/update", gm.NoticeUpdate) // 更新跑马灯
+
+	group.GET("/gm/cdk/list", gm.CDKList)      // 获取cdk列表
+	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
+	group.POST("/gm/cdk/del", gm.CDKDel)       // 删除cdk
+	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
 
     group.GET("/game/role/list", game.RoleList)
 }
