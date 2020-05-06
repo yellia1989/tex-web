@@ -60,10 +60,13 @@
               showIcon: false,
             }
           }
-        }
+        },
+        toolbar: {
+          show: true,
+        },
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {gf: true}, false).done(function (response) {
         zoneSelect.update({
           data: response.data,
         });

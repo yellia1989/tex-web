@@ -23,9 +23,13 @@ func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
 
 func ZoneSimpleList(c echo.Context) error {
     ctx := c.(*mid.Context)
+    gf := ctx.FormValue("gf")
 
     zones := zoneList(c)
-    zones = append(zones, rpc.ZoneInfo{IZoneId: 0, SZoneName: "GFServer"})
+
+    if gf != "" {
+        zones = append(zones, rpc.ZoneInfo{IZoneId: 0, SZoneName: "GFServer"})
+    }
 
     return ctx.SendResponse(zones)
 }
