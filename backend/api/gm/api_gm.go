@@ -28,44 +28,50 @@ func checkRet(ret int32, err error) error {
 
 func GameCmd(c echo.Context) error {
     ctx := c.(*mid.Context)
-    zoneid := ctx.FormValue("zoneid")
+    szoneid := ctx.FormValue("zoneids")
     scmd := ctx.FormValue("cmd")
 
-    if zoneid == "" || scmd == "" {
+    if szoneid == "" || scmd == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
-    gamePrx := new(rpc.GameService)
-    gfPrx := new(rpc.GFService)
-    if zoneid != "0" {
-        comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
-    } else {
-        comm.StringToProxy("aqua.GFServer.GFServiceObj", gfPrx)
-    }
-
+    buff := bytes.Buffer{}
     u := ctx.GetUser()
 
-    buff := bytes.Buffer{}
-    cmds := strings.Split(scmd, "\n")
-    for _, cmd := range cmds {
-        cmd := strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
-
-        result := ""
-        var ret int32
-        var err error
+    zoneids := strings.Split(szoneid, ",")
+    for _,zoneid := range zoneids {
+        gamePrx := new(rpc.GameService)
+        gfPrx := new(rpc.GFService)
         if zoneid != "0" {
-            ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+            comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
         } else {
-            ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
+            comm.StringToProxy("aqua.GFServer.GFServiceObj", gfPrx)
         }
-        if ret != 0 || err != nil {
-            serr := ""
-            if err != nil {
-                serr = err.Error()
+
+        cmds := strings.Split(scmd, "\n")
+        for _, cmd := range cmds {
+            cmd := strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
+
+            result := ""
+            var ret int32
+            var err error
+
+            buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
+
+            if zoneid != "0" {
+                ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+            } else {
+                ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
             }
-            result = fmt.Sprintf("ret:%d, err:%s", ret, serr)
+            if ret != 0 || err != nil {
+                serr := ""
+                if err != nil {
+                    serr = err.Error()
+                }
+                result = fmt.Sprintf("ret:%d, err:%s", ret, serr)
+            }
+            buff.WriteString(result+"\n")
         }
-        buff.WriteString(result+"\n")
     }
 
     return ctx.SendResponse(buff.String())
