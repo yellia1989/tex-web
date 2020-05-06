@@ -23,9 +23,13 @@ func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
 
 func ZoneSimpleList(c echo.Context) error {
     ctx := c.(*mid.Context)
+    gf := ctx.FormValue("gf")
 
     zones := zoneList(c)
-    zones = append(zones, rpc.ZoneInfo{IZoneId: 0, SZoneName: "GFServer"})
+
+    if gf != "" {
+        zones = append(zones, rpc.ZoneInfo{IZoneId: 0, SZoneName: "GFServer"})
+    }
 
     return ctx.SendResponse(zones)
 }
@@ -44,8 +48,8 @@ func ZoneList(c echo.Context) error {
 func ZoneAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    zone := rpc.ZoneInfo{}
-    if err := ctx.Bind(&zone); err != nil {
+    zone := rpc.NewZoneInfo()
+    if err := ctx.Bind(zone); err != nil {
         return err
     }
 
@@ -69,7 +73,7 @@ func ZoneAdd(c echo.Context) error {
 
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
-    ret, err := dirPrx.CreateZone(zone)
+    ret, err := dirPrx.CreateZone(*zone.Copy())
     if err := checkRet(ret, err); err != nil {
         registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
         registryDel("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
@@ -104,14 +108,14 @@ func ZoneDel(c echo.Context) error {
 func ZoneUpdate(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    zone := rpc.ZoneInfo{}
-    if err := ctx.Bind(&zone); err != nil {
+    zone := rpc.NewZoneInfo()
+    if err := ctx.Bind(zone); err != nil {
         return err
     }
 
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
-    ret, err := dirPrx.ModifyZone(zone, rpc.ZoneModifyInfo{})
+    ret, err := dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
     if err := checkRet(ret, err); err != nil {
         return err
     }
@@ -141,8 +145,8 @@ func ZoneUpdateVersion(c echo.Context) error {
 
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)
-        zone := rpc.ZoneInfo{}
-        ret, err := dirPrx.GetZone(uint32(id), &zone)
+        zone := rpc.NewZoneInfo()
+        ret, err := dirPrx.GetZone(uint32(id), zone)
         if err := checkRet(ret, err); err != nil {
             return err
         }
@@ -151,7 +155,7 @@ func ZoneUpdateVersion(c echo.Context) error {
         zone.SForceUpdateVersion = forceUpdateVersion
         zone.SAndClientVersion = andClientVersion
         zone.SAndForceUpdateVersion = andForceUpdateVersion
-        ret, err = dirPrx.ModifyZone(zone, rpc.ZoneModifyInfo{})
+        ret, err = dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
         if err := checkRet(ret, err); err != nil {
             return err
         }

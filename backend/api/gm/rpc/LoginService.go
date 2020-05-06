@@ -21,7 +21,19 @@ type ChannelAddr struct {
 	SRes     string `json:"sRes"`
 }
 
-func (st *ChannelAddr) ResetDefault() {
+func (st *ChannelAddr) resetDefault() {
+}
+func (st *ChannelAddr) Copy() *ChannelAddr {
+	ret := NewChannelAddr()
+	ret.SChannel = st.SChannel
+	ret.SAddress = st.SAddress
+	ret.SRes = st.SRes
+	return ret
+}
+func NewChannelAddr() *ChannelAddr {
+	ret := &ChannelAddr{}
+	ret.resetDefault()
+	return ret
 }
 func (st *ChannelAddr) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
@@ -33,7 +45,7 @@ func (st *ChannelAddr) ReadStruct(up *codec.UnPacker) error {
 	var length uint32
 	var has bool
 	var ty uint32
-	st.ResetDefault()
+	st.resetDefault()
 	err = up.ReadString(&st.SChannel, 0, false)
 	if err != nil {
 		return err
@@ -57,7 +69,6 @@ func (st *ChannelAddr) ReadStructFromTag(up *codec.UnPacker, tag uint32, require
 	var err error
 	var has bool
 	var ty uint32
-	st.ResetDefault()
 
 	has, ty, err = up.SkipToTag(tag, require)
 	if !has || err != nil {
@@ -83,7 +94,7 @@ func (st *ChannelAddr) ReadStructFromTag(up *codec.UnPacker, tag uint32, require
 }
 func (st *ChannelAddr) WriteStruct(p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
 	if false || st.SChannel != "" {
 		err = p.WriteString(0, st.SChannel)
 		if err != nil {
@@ -284,22 +295,24 @@ func (s *LoginService) GetAllChannel(vChannelAddr *[]ChannelAddr) (int32, error)
 	}
 
 	has, ty, err = up.SkipToTag(1, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vChannelAddr) = make([]ChannelAddr, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vChannelAddr)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vChannelAddr) = make([]ChannelAddr, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vChannelAddr)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -354,7 +367,9 @@ type _LoginServiceImpl interface {
 
 func _LoginServiceAddNewChannelImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_LoginServiceImpl)
 	var p1 string
 	err = up.ReadString(&p1, 1, true)
@@ -383,11 +398,15 @@ func _LoginServiceAddNewChannelImpl(ctx context.Context, serviceImpl interface{}
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _LoginServiceModifyChannelImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_LoginServiceImpl)
 	var p1 string
 	err = up.ReadString(&p1, 1, true)
@@ -416,11 +435,15 @@ func _LoginServiceModifyChannelImpl(ctx context.Context, serviceImpl interface{}
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _LoginServiceDelChannelImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_LoginServiceImpl)
 	var p1 string
 	err = up.ReadString(&p1, 1, true)
@@ -439,11 +462,15 @@ func _LoginServiceDelChannelImpl(ctx context.Context, serviceImpl interface{}, u
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _LoginServiceGetAllChannelImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_LoginServiceImpl)
 	var p1 []ChannelAddr
 	var ret int32
@@ -458,13 +485,13 @@ func _LoginServiceGetAllChannelImpl(ctx context.Context, serviceImpl interface{}
 		}
 	}
 
-	length = len(p1)
+	length = uint32(len(p1))
 	if true || length != 0 {
 		err = p.WriteHeader(1, codec.SdpType_Vector)
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -476,11 +503,15 @@ func _LoginServiceGetAllChannelImpl(ctx context.Context, serviceImpl interface{}
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 func _LoginServiceGetAddressImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_LoginServiceImpl)
 	var p1 string
 	err = up.ReadString(&p1, 1, true)
@@ -513,6 +544,8 @@ func _LoginServiceGetAddressImpl(ctx context.Context, serviceImpl interface{}, u
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 

@@ -67,7 +67,9 @@ type _GameServiceImpl interface {
 
 func _GameServiceDoGmCmdImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_GameServiceImpl)
 	var p1 string
 	err = up.ReadString(&p1, 1, true)
@@ -98,6 +100,8 @@ func _GameServiceDoGmCmdImpl(ctx context.Context, serviceImpl interface{}, up *c
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 

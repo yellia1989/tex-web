@@ -41,6 +41,9 @@
           { field: "vToUser", title: "接受玩家" },
           { field: "vSendZoneIds", title: "发送服务器" },
           { field: "vRcvZoneIds", title: "接收服务器" },
+          { field: "iFlag", title: "状态", templet: function (d) {
+            return d.iFlag == 0 ? "正在发送中" : "发送成功";
+          }},
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {
@@ -55,6 +58,9 @@
         switch (obj.event) {
           case "add":
             add();
+            break;
+          case "add2":
+            add2();
             break;
           case "batchDel":
             batchDel();
@@ -72,7 +78,13 @@
       });
 
       function add() {
-        okLayer.open("添加邮件", "mail-add.html", "90%", "90%", null, function () {
+        okLayer.open("发送邮件", "mail-add.html", "90%", "90%", null, function () {
+          mailTable.reload();
+        })
+      }
+
+      function add2() {
+        okLayer.open("发送自定义邮件", "mail-add2.html", "90%", "90%", null, function () {
           mailTable.reload();
         })
       }
@@ -107,6 +119,7 @@
   <div class="layui-btn-container">
     <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
     <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+    <div class="layui-inline" lay-event="add2"><i class="layui-icon layui-icon-add-1"></i></div>
   </div>
 </script>
 

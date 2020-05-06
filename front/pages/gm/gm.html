@@ -11,7 +11,7 @@
 
 <body>
   <div class="ok-body">
-    <form class="layui-form" action="">
+    <form class="layui-form">
       <div class="layui-form-item" style="margin:0px">
         <div class="layui-inline" style="margin:0px">
           <div class="layui-input-inline">
@@ -51,8 +51,7 @@
         tips: '请选择一个服务器',
         layVerify: 'required',
         layVerType: 'tips',
-        radio: true,
-        clickClose: true,
+        autoRow: true,
         model: {
           label: {
             type: 'block',
@@ -61,10 +60,13 @@
               showIcon: false,
             }
           }
-        }
+        },
+        toolbar: {
+          show: true,
+        },
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {gf: true}, false).done(function (response) {
         zoneSelect.update({
           data: response.data,
         });
@@ -73,9 +75,9 @@
       });
 
       form.on('submit(gm)', function (data) {
-        let zoneid = zoneSelect.getValue('valueStr');
+        let zoneids = zoneSelect.getValue('valueStr');
         let cmd = $("textarea[name='cmd']").val();
-        okUtils.ajax("/api/gm/game/cmd", "post", { zoneid: zoneid, cmd: cmd }, true).done(function (response) {
+        okUtils.ajax("/api/gm/game/cmd", "post", { zoneids: zoneids, cmd: cmd }, true).done(function (response) {
           $("textarea[name=result]").val(response.data);
         }).fail(function (error) {
           $("textarea[name=result]").val(error.msg);
