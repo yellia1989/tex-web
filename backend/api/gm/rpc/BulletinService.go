@@ -34,7 +34,23 @@ type BulletinDataInfo struct {
 	IDisplay    uint32 `json:"iDisplay"`
 }
 
-func (st *BulletinDataInfo) ResetDefault() {
+func (st *BulletinDataInfo) resetDefault() {
+}
+func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
+	ret := NewBulletinDataInfo()
+	ret.IBulletinId = st.IBulletinId
+	ret.STitle = st.STitle
+	ret.SContent = st.SContent
+	ret.IFlag = st.IFlag
+	ret.SBeginTime = st.SBeginTime
+	ret.SEndTime = st.SEndTime
+	ret.IDisplay = st.IDisplay
+	return ret
+}
+func NewBulletinDataInfo() *BulletinDataInfo {
+	ret := &BulletinDataInfo{}
+	ret.resetDefault()
+	return ret
 }
 func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iBulletinId")+fmt.Sprintf("%v\n", st.IBulletinId))
@@ -50,7 +66,7 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var length uint32
 	var has bool
 	var ty uint32
-	st.ResetDefault()
+	st.resetDefault()
 	err = up.ReadUint32(&st.IBulletinId, 0, false)
 	if err != nil {
 		return err
@@ -90,7 +106,6 @@ func (st *BulletinDataInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, re
 	var err error
 	var has bool
 	var ty uint32
-	st.ResetDefault()
 
 	has, ty, err = up.SkipToTag(tag, require)
 	if !has || err != nil {
@@ -218,7 +233,30 @@ type NoticeDataInfo struct {
 	IMaintenanceTime uint32   `json:"iMaintenanceTime"`
 }
 
-func (st *NoticeDataInfo) ResetDefault() {
+func (st *NoticeDataInfo) resetDefault() {
+}
+func (st *NoticeDataInfo) Copy() *NoticeDataInfo {
+	ret := NewNoticeDataInfo()
+	ret.INoticeId = st.INoticeId
+	ret.IType = st.IType
+	ret.SContent = st.SContent
+	ret.SBeginTime = st.SBeginTime
+	ret.SEndTime = st.SEndTime
+	ret.IDisplayInterval = st.IDisplayInterval
+	ret.IDisplayType = st.IDisplayType
+	ret.IDisplayNum = st.IDisplayNum
+	ret.IPause = st.IPause
+	ret.VZoneId = make([]uint32, len(st.VZoneId))
+	for i, v := range st.VZoneId {
+		ret.VZoneId[i] = v
+	}
+	ret.IMaintenanceTime = st.IMaintenanceTime
+	return ret
+}
+func NewNoticeDataInfo() *NoticeDataInfo {
+	ret := &NoticeDataInfo{}
+	ret.resetDefault()
+	return ret
 }
 func (st *NoticeDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iNoticeId")+fmt.Sprintf("%v\n", st.INoticeId))
@@ -237,7 +275,6 @@ func (st *NoticeDataInfo) Visit(buff *bytes.Buffer, t int) {
 		buff.WriteString(", [\n")
 	}
 	for _, v := range st.VZoneId {
-
 		util.Tab(buff, t+1+1, util.Fieldname("")+fmt.Sprintf("%v\n", v))
 	}
 	if len(st.VZoneId) != 0 {
@@ -250,7 +287,7 @@ func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var length uint32
 	var has bool
 	var ty uint32
-	st.ResetDefault()
+	st.resetDefault()
 	err = up.ReadUint32(&st.INoticeId, 0, false)
 	if err != nil {
 		return err
@@ -289,22 +326,24 @@ func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 	}
 
 	has, ty, err = up.SkipToTag(9, false)
-	if !has || err != nil {
-		return err
-	}
-	if ty != codec.SdpType_Vector {
-		return fmt.Errorf("tag:%d got wrong type %d", 9, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return err
 	}
-	st.VZoneId = make([]uint32, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = up.ReadUint32(&st.VZoneId[i], 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return fmt.Errorf("tag:%d got wrong type %d", 9, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return err
+		}
+		st.VZoneId = make([]uint32, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = up.ReadUint32(&st.VZoneId[i], 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	err = up.ReadUint32(&st.IMaintenanceTime, 10, false)
@@ -322,7 +361,6 @@ func (st *NoticeDataInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, requ
 	var err error
 	var has bool
 	var ty uint32
-	st.ResetDefault()
 
 	has, ty, err = up.SkipToTag(tag, require)
 	if !has || err != nil {
@@ -410,7 +448,7 @@ func (st *NoticeDataInfo) WriteStruct(p *codec.Packer) error {
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -555,22 +593,24 @@ func (s *BulletinService) GetAllBulletin(vInfo *[]BulletinDataInfo) (int32, erro
 	}
 
 	has, ty, err = up.SkipToTag(1, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vInfo) = make([]BulletinDataInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vInfo) = make([]BulletinDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -703,22 +743,24 @@ func (s *BulletinService) GetAllNotice(vInfo *[]NoticeDataInfo) (int32, error) {
 	}
 
 	has, ty, err = up.SkipToTag(1, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vInfo) = make([]NoticeDataInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vInfo) = make([]NoticeDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -779,22 +821,24 @@ func (s *BulletinService) GetLatestBulletin(vInfo *[]BulletinDataInfo, bDisplay 
 	}
 
 	has, ty, err = up.SkipToTag(1, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vInfo) = make([]BulletinDataInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vInfo) = make([]BulletinDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -833,42 +877,46 @@ func (s *BulletinService) GetNotice(iZoneId uint32, iLastNoticeId uint32, vInfo 
 	}
 
 	has, ty, err = up.SkipToTag(3, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 3, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vInfo) = make([]NoticeDataInfo, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 3, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vInfo) = make([]NoticeDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 
 	has, ty, err = up.SkipToTag(4, true)
-	if !has || err != nil {
-		return ret, err
-	}
-	if ty != codec.SdpType_Vector {
-		return ret, fmt.Errorf("tag:%d got wrong type %d", 4, ty)
-	}
-
-	_, length, err = up.ReadNumber32()
 	if err != nil {
 		return ret, err
 	}
-	(*vDel) = make([]uint32, length, length)
-	for i := uint32(0); i < length; i++ {
-		err = up.ReadUint32(&(*vDel)[i], 0, true)
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 4, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
 		if err != nil {
 			return ret, err
+		}
+		(*vDel) = make([]uint32, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = up.ReadUint32(&(*vDel)[i], 0, true)
+			if err != nil {
+				return ret, err
+			}
 		}
 	}
 	_ = has
@@ -970,7 +1018,7 @@ func _BulletinServiceGetAllBulletinImpl(ctx context.Context, serviceImpl interfa
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -1119,7 +1167,7 @@ func _BulletinServiceGetAllNoticeImpl(ctx context.Context, serviceImpl interface
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -1192,7 +1240,7 @@ func _BulletinServiceGetLatestBulletinImpl(ctx context.Context, serviceImpl inte
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -1244,7 +1292,7 @@ func _BulletinServiceGetNoticeImpl(ctx context.Context, serviceImpl interface{},
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}
@@ -1262,7 +1310,7 @@ func _BulletinServiceGetNoticeImpl(ctx context.Context, serviceImpl interface{},
 		if err != nil {
 			return err
 		}
-		err = p.WriteNumber32(uint32(length))
+		err = p.WriteNumber32(length)
 		if err != nil {
 			return err
 		}

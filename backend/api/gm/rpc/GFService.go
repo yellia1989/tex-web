@@ -67,7 +67,9 @@ type _GFServiceImpl interface {
 
 func _GFServiceDoGmCmdImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
-	var length int
+	var length uint32
+	var ty uint32
+	var has bool
 	impl := serviceImpl.(_GFServiceImpl)
 	var p1 string
 	err = up.ReadString(&p1, 1, true)
@@ -98,6 +100,8 @@ func _GFServiceDoGmCmdImpl(ctx context.Context, serviceImpl interface{}, up *cod
 		}
 	}
 	_ = length
+	_ = ty
+	_ = has
 	return nil
 }
 
