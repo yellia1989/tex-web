@@ -22,26 +22,9 @@
       let okUtils = layui.okUtils;
       okLoading.close();
 
-      let noticeTable = table.render({
+      let cdkTable = table.render({
         elem: "#tableId",
-        data: [
-          {
-            "iId": 1,
-            "sName": "test",
-            "iTotalNum": 5,
-            "iGenerateType": 1,
-            "iGrantType": 1,
-            "iIsGeneric": 1,
-            "iBeginTime": 1588925071,
-            "iEndTime": 1588925070,
-            "sDefineRestrict": "lkl",
-            "sZondRestrict": "1234",
-            "iAccountRestrict": 2,
-            "sDefineReward": "lll",
-            "iGenerated": 2,
-            "iExchange": 1,
-          },
-        ],
+        url: "/api/gm/cdk/list",
         text: {
           none: '暂无相关数据',
         },
@@ -50,13 +33,13 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "iId", title: "ID", width: 90, fixed: 'left' },
-          { field: "sName", title: "名称", width: 90, fixed: 'left' },
-          { field: "iTotalNum", title: "总数量", width: 90, fixed: 'left' },
+          { field: "id", title: "ID", width: 90, fixed: 'left' },
+          { field: "sCDKName", title: "名称", width: 90, fixed: 'left' },
+          { field: "iCDKNum", title: "总数量", width: 90, fixed: 'left' },
           {
-            field: "iGenerateType", title: "生成方式", width: 90, align: "center", templet: function (d) {
+            field: "iCreateMode", title: "生成方式", width: 90, align: "center", templet: function (d) {
               var ret = '';
-              switch (d.iGenerateType) {
+              switch (d.iCreateMode) {
                 case 1: ret = '预先生成'; break;
                 default:
                   ret = '未知';
@@ -65,9 +48,9 @@
             }
           },
           {
-            field: "iGrantType", title: "发货方式", width: 90, align: "center", templet: function (d) {
+            field: "iDeliveryMode", title: "发货方式", width: 90, align: "center", templet: function (d) {
               var ret = '';
-              switch (d.iGrantType) {
+              switch (d.iDeliveryMode) {
                 case 1: ret = '系统发放'; break;
                 default:
                   ret = '未知';
@@ -76,8 +59,8 @@
             }
           },
           {
-            field: "iIsGeneric", title: "是否是通用CDK", align: "center", templet: function (d) {
-              return d.iIsGeneric == 1 ? '是' : '否';
+            field: "iCommon", title: "是否是通用CDK", align: "center", templet: function (d) {
+              return d.iCommon == 1 ? '是' : '否';
             }
           },
           {
@@ -93,15 +76,19 @@
               return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             }
           },
-          { field: "sDefineRestrict", title: "自定义限制" },
-          // TODO 需要修改
-          { field: "sZondRestrict", title: "分区限制", align: "center" },
-          { field: "iAccountRestrict", title: "每账号限制", align: "center" },
-          { field: "sDefineReward", title: "自定义奖励", align: "center" },
-          { field: "iGenerated", title: "已生成", align: "center" },
-          { field: "iExchange", title: "已兑换", align: "center" },
+          { field: "sCustomLimit", title: "自定义限制" },
+          { field: "sZoneLimit", title: "分区限制", align: "center" },
+          { field: "iExchangeLimit", title: "每账号限制", align: "center" },
+          { field: "sRewardInfo", title: "自定义奖励", align: "center" },
+          { field: "iGeneratedNum", title: "已生成", align: "center" },
+          { field: "iExchangedNum", title: "已兑换", align: "center" },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
+        parseData: function (res) {
+          for (i = 0; i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iCDKeyId;
+          }
+        }
       });
 
       table.on("toolbar(tableFilter)", function (obj) {
@@ -119,17 +106,17 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
-            edit(data.snotice);
+            edit(data.id);
             break;
           case "del":
-            del(data.snotice);
+            del(data.id);
             break;
         }
       });
 
       function add() {
-        okLayer.open("添加渠道", "notice-add.html", "90%", "90%", null, function () {
-          noticeTable.reload();
+        okLayer.open("添加cdk", "cdk-add.html", "90%", "90%", null, function () {
+          cdkTable.reload();
         })
       }
 
@@ -138,7 +125,7 @@
           layer.close(index);
           let idsStr = okUtils.tableBatchCheck(table);
           if (idsStr) {
-            okUtils.ajax("/gm/notice/deleteNotice", "delete", { idsStr: idsStr }, true).done(function (response) {
+            okUtils.ajax("/api/gm/cdk/del", "post", { idsStr: idsStr }, true).done(function (response) {
               okUtils.tableSuccessMsg(response.msg);
             }).fail(function (error) {
               console.log(error)
@@ -148,14 +135,14 @@
       }
 
       function edit(id) {
-        okLayer.open("编辑渠道", "dir-edit.html?id=" + id, "90%", "90%", null, function () {
+        okLayer.open("编辑cdk", "cdk-edit.html", "90%", "90%", null, function () {
           dirTable.reload();
         })
       }
 
       function del(id) {
         okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/gm/dir/deletenotice", "delete", { idsStr: id }, true).done(function (response) {
+          okUtils.ajax("/api/gm/cdk/del", "post", { idsStr: id }, true).done(function (response) {
             okUtils.tableSuccessMsg(response.msg);
           }).fail(function (error) {
             console.log(error)
