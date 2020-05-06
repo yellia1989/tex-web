@@ -114,6 +114,20 @@
           2,
           3
         ]
+      },
+      {
+        "id": 208,
+        "title": "白名单",
+        "href": "gm/whitelist.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
       }
     ],
     "role": [
