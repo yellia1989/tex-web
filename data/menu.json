@@ -128,6 +128,20 @@
           2,
           3
         ]
+      },
+      {
+        "id": 209,
+        "title": "CDK管理",
+        "href": "gm/cdk.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
       }
     ],
     "role": [

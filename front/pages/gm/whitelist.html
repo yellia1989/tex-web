@@ -14,14 +14,18 @@
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <label class="layui-form-label">当前白名单列表</label>
-          <textarea name="input" class="layui-textarea" rows="1" cols="10"></textarea>
+          <label>当前白名单列表</label>
+          <div name="list"></div>
         </div>
       </div>
 
       <div class="layui-form-item">
+        <hr class="layui-bg-orange">
+      </div>
+
+      <div class="layui-form-item">
         <div class="layui-input-block">
-          <textarea name="output" class="layui-textarea" rows="1"></textarea>
+          <input type="text" name="input" required lay-verify="required" class="layui-input"></textarea>
         </div>
       </div>
 
@@ -38,7 +42,7 @@
 
   <script src="/lib/layui/layui.js"></script>
   <script>
-    layui.use(['from', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
@@ -57,7 +61,7 @@
 
       //监听提交
       form.on('submit(del)', function (data) {
-        okUtils.ajax("/api/gm/whitelist/add", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/gm/whitelist/del", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
@@ -69,7 +73,7 @@
 
       //监听提交
       form.on('submit(cover)', function (data) {
-        okUtils.ajax("/api/gm/whitelist/add", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/gm/whitelist/cover", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
