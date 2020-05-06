@@ -1,0 +1,9 @@
+module rpc
+{
+
+interface DirtyCheckService
+{
+	int filter(string sOrignal, out string sFiltered);
+};
+
+}; 
