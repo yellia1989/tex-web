@@ -36,7 +36,6 @@ func NoticeAdd(c echo.Context) error {
 		return err
 	}
 
-	sContent := ctx.FormValue("sContent")
 	sBeginTime := ctx.FormValue("sBeginTime")
 	sEndTime := ctx.FormValue("sEndTime")
 
@@ -46,7 +45,7 @@ func NoticeAdd(c echo.Context) error {
 		notice.VZoneId = append(notice.VZoneId, uint32(zone))
 	}
 
-	if sContent == "" || sBeginTime == "" || sEndTime == "" || len(notice.VZoneId) == 0 {
+	if sBeginTime == "" || sEndTime == "" || len(notice.VZoneId) == 0 {
 		return ctx.SendError(-1, "参数非法")
 	}
 
