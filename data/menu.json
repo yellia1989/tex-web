@@ -531,5 +531,57 @@
     "role": [
       1
     ]
+  },
+  {
+    "id": 8,
+    "title": "游戏数据查询",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "\u0026#xe68a;",
+    "checked": false,
+    "children": [
+      {
+        "id": 801,
+        "title": "玩家列表",
+        "href": "game/role.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 802,
+        "title": "金币消耗记录",
+        "href": "game/coin.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 803,
+        "title": "钻石消耗记录",
+        "href": "game/diamond.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      }
+    ],
+    "role": [
+      1
+    ]
   }
 ]

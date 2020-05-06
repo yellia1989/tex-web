@@ -3,6 +3,7 @@ package api
 import (
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-web/backend/api/gm"
+    "github.com/yellia1989/tex-web/backend/api/game"
 )
 
 func RegisterHandler(group *echo.Group) {
@@ -55,4 +56,6 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/bulletin/add", gm.BulletinAdd)            // 增加公告
     group.POST("/gm/bulletin/del", gm.BulletinDel)
     group.POST("/gm/bulletin/update", gm.BulletinUpdate)
+
+    group.GET("/game/role/list", game.RoleList)
 }
