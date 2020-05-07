@@ -20,7 +20,7 @@ func CDKList(c echo.Context) error {
 	var vCDK []rpc.CDKeyConfig
 	str := "aqua"
 	var a uint32
-	ret, err := mpPrx.GetCDKeyList(str, uint32(page), uint32(limit), &vCDK, &a)
+	ret, err := mpPrx.GetCDKeyList(str, 0, uint32(page*limit), &vCDK, &a)
 	if err := checkRet(ret, err); err != nil {
 		return err
 	}

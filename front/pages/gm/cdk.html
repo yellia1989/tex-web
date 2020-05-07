@@ -33,9 +33,9 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "id", title: "ID", width: 90, fixed: 'left' },
-          { field: "sCDKName", title: "名称", width: 90, fixed: 'left' },
-          { field: "iCDKNum", title: "总数量", width: 90, fixed: 'left' },
+          { field: "id", title: "ID", width: 50, fixed: 'left' },
+          { field: "sCDKeyName", title: "名称", width: 90, fixed: 'left' },
+          { field: "iCDKeyNum", title: "总数量", width: 90, align: "center", fixed: 'left' },
           {
             field: "iCreateMode", title: "生成方式", width: 90, align: "center", templet: function (d) {
               var ret = '';
@@ -59,30 +59,36 @@
             }
           },
           {
-            field: "iCommon", title: "是否是通用CDK", align: "center", templet: function (d) {
+            field: "iCommon", title: "是否是通用CDK", align: "center", width: 130, templet: function (d) {
+              return d.iCommon == 1 ? '是' : '否';
+            }
+          },
+          { field: "sCommonCdk", title: "通用CDK指定cdk", width: 90},
+          {
+            field: "iActive", title: "是否是激活码", align: "center", width: 90, templet: function (d) {
               return d.iCommon == 1 ? '是' : '否';
             }
           },
           {
-            field: "iBeginTime", title: "开始时间", align: "center", templet: function (d) {
-              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            field: "iBeginTime", title: "开始时间", align: "center", width: 150, templet: function (d) {
+              return okUtils.dateFormat(new Date(d.iBeginTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             }
           },
           {
-            field: "iEndTime", title: "结束时间", align: "center", templet: function (d) {
+            field: "iEndTime", title: "结束时间", align: "center", width: 150, templet: function (d) {
               if (d.iEndTime < d.iBeginTime) {
                 return '结束时间不能小于开始时间';
               }
               return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             }
           },
-          { field: "sCustomLimit", title: "自定义限制" },
-          { field: "sZoneLimit", title: "分区限制", align: "center" },
-          { field: "iExchangeLimit", title: "每账号限制", align: "center" },
-          { field: "sRewardInfo", title: "自定义奖励", align: "center" },
-          { field: "iGeneratedNum", title: "已生成", align: "center" },
-          { field: "iExchangedNum", title: "已兑换", align: "center" },
-          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+          { field: "sCustomLimit", title: "自定义限制", width: 90 },
+          { field: "sZoneLimit", title: "分区限制", align: "center", width: 90},
+          { field: "iExchangeLimit", title: "每账号限制", align: "center", width: 90},
+          { field: "sRewardInfo", title: "自定义奖励", align: "center", width:120, fixed: 'right' },
+          { field: "iGeneratedNum", title: "已生成", align: "center", width:90, fixed: 'right' },
+          { field: "iExchangedNum", title: "已兑换", align: "center", width:90, fixed: 'right' },
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
         parseData: function (res) {
           for (i = 0; i < res.data.length; ++i) {
