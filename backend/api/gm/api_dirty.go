@@ -15,7 +15,7 @@ func DirtyTest(c echo.Context) error {
 	comm.StringToProxy("aqua.DirtyCheckServer.DirtyCheckService", dirtyPrx)
 
 	var sOutPut string
-	ret, err := dirtyPrx.Filter(sInput, sOutPut)
+	ret, err := dirtyPrx.Filter(sInput, &sOutPut)
 	if err := checkRet(ret, err); err != nil {
 		return err
 	}
