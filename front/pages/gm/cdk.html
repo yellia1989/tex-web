@@ -16,6 +16,7 @@
   <!--js逻辑-->
   <script src="../../lib/layui/layui.js"></script>
   <script>
+    let editCDK;
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
@@ -109,6 +110,7 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
+            editCDK = data;
             edit(data.id);
             break;
         }

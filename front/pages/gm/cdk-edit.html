@@ -21,7 +21,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">总数量</label>
         <div class="layui-input-block">
-          <input type="text" value="5" required name="iCDKeyNum" class="layui-input">
+          <input type="text" required name="iCDKeyNum" class="layui-input">
         </div>
       </div>
 
@@ -58,7 +58,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">每账号限制</label>
         <div class="layui-input-block">
-          <input type="text" value="1" name="iExchangeLimit" class="layui-input">
+          <input type="text" name="iExchangeLimit" class="layui-input">
         </div>
       </div>
 
@@ -95,6 +95,15 @@
         elem: "#iEndTime",
         type: "datetime"
       });
+
+      $("input[name='sCDKeyName']").val(parent.editCDK.sCDKeyName);
+      $("input[name='iCDKeyNum']").val(parent.editCDK.iCDKeyNum);
+      $("input[name='iBeginTime']").val(parent.editCDK.iBeginTime);
+      $("input[name='iEndTime']").val(parent.editCDK.iEndTime);
+      $("input[name='sCustomLimit']").val(parent.editCDK.sCustomLimit);
+      $("input[name='sZoneLimit']").val(parent.editCDK.sZoneLimit);
+      $("input[name='iExchangeLimit']").val(parent.editCDK.iExchangeLimit);
+      $("input[name='sRewardInfo']").val(parent.editCDK.sRewardInfo);
 
       //监听提交
       form.on('submit(add)', function (data) {
