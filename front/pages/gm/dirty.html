@@ -11,21 +11,50 @@
 <body>
   <div class="ok-body">
     <form class="layui-form" action="">
-      <div class="layui-form-item" style="margin:0px">
-        <div class="layui-form-item" style="margin:0px">
+      <div class="layui-form-item">
+        <div class="layui-input-block">
           <label class="layui-form-label">输入</label>
           <textarea name="input" class="layui-textarea" rows="1" cols="10"></textarea>
         </div>
-        <div class="layui-form-item" style="margin:0px">
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
           <label class="layui-form-label">输出</label>
-          <textarea name="output" class="layui-textarea" rows="1"></textarea>
-        </div>
-        <div class="layui-input-inline">
-          <button name="setting" class="layui-btn" lay-submit>测试</button>
+          <textarea name="output" id="output" class="layui-textarea" rows="1"></textarea>
         </div>
       </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="test">测试</button>
+        </div>
+      </div>
+
     </form>
   </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      //监听提交
+      form.on('submit(test)', function (data) {
+        okUtils.ajax("/api/gm/dirty/test", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $("#output").val(response.data);
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    })
+  </script>
   <!-- 头工具栏模板 -->
   <script type="text/html" id="toolbarTpl">
   <div class="layui-btn-container">

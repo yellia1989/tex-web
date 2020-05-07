@@ -67,5 +67,7 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/cdk/del", gm.CDKDel)       // 删除cdk
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
 
+    group.GET("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
+
     group.GET("/game/role/list", game.RoleList)
 }
