@@ -32,79 +32,54 @@ func CDKList(c echo.Context) error {
 func CDKAdd(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	/*
-		cdk := rpc.NoticeDataInfo{}
-		if err := ctx.Bind(&notice); err != nil {
-			return err
-		}
+	CDKey := rpc.CDKeyConfig{}
+	if err := ctx.Bind(&CDKey); err != nil {
+		return err
+	}
 
-		sBeginTime := ctx.FormValue("sBeginTime")
-		sEndTime := ctx.FormValue("sEndTime")
+	sBeginTime := ctx.FormValue("sBeginTime")
+	sEndTime := ctx.FormValue("sEndTime")
 
-		zones := strings.Split(ctx.FormValue("zoneid"), ",")
-		for _, zone := range zones {
-			zone, _ := strconv.ParseUint(zone, 10, 32)
-			notice.VZoneId = append(notice.VZoneId, uint32(zone))
-		}
+	if sBeginTime == "" || sEndTime == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
 
-		if sBeginTime == "" || sEndTime == "" || len(notice.VZoneId) == 0 {
-			return ctx.SendError(-1, "参数非法")
-		}
+	MPPrx := new(rpc.MPService)
+	comm.StringToProxy("aqua.MPServer.MPServiceObj", MPPrx)
 
-		bulletinPrx := new(rpc.BulletinService)
-		comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	projectConfig := rpc.MPProjectConfig{}
+	projectConfig.sProjectId = "aqua"
+	projectConfig.sProjectName = "aqua"
 
-		ret, err := bulletinPrx.AddNotice(notice)
-		if err := checkRet(ret, err); err != nil {
-			return err
-		}
-	*/
+	ret, err := MPPrx.CreateProject(projectConfig)
+	if err := checkRet(ret, err); err != nil {
+		return err
+	}
+	CDKey.sProjectId = "aqua"
+	var iCDKeyId uint32
+	ret, err = MPPrx.CreateCDKey(CDKey, &iCDKeyId)
+	if err := checkRet(ret, err); err != nil {
+		return err
+	}
 
 	return ctx.SendResponse("添加CDK成功")
-}
-
-func CDKDel(c echo.Context) error {
-	ctx := c.(*mid.Context)
-
-	/*
-		ids := strings.Split(ctx.FormValue("idsStr"), ",")
-
-		if len(ids) == 0 {
-			return ctx.SendError(-1, "跑马灯不存在")
-		}
-
-		bulletinPrx := new(rpc.BulletinService)
-		comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
-
-		for _, id := range ids {
-			id, _ := strconv.ParseUint(id, 10, 32)
-			ret, err := bulletinPrx.DelNotice(uint32(id))
-			if err := checkRet(ret, err); err != nil {
-				return err
-			}
-		}
-	*/
-
-	return ctx.SendResponse("删除CDK成功")
 }
 
 func CDKUpdate(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	/*
-		notice := rpc.NoticeDataInfo{}
-		if err := ctx.Bind(&notice); err != nil {
-			return err
-		}
+	CDKey := rpc.CDKeyConfig{}
+	if err := ctx.Bind(&CDKey); err != nil {
+		return err
+	}
 
-		bulletinPrx := new(rpc.BulletinService)
-		comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	MPPrx := new(rpc.MPService)
+	comm.StringToProxy("aqua.MPServer.MPServiceObj", MPPrx)
 
-		ret, err := bulletinPrx.ModifyNotice(notice)
-		if err := checkRet(ret, err); err != nil {
-			return err
-		}
-	*/
+	ret, err := MPPrx.modifyCDKey(CDKey)
+	if err := checkRet(ret, err); err != nil {
+		return err
+	}
 
 	return ctx.SendResponse("修改CDK成功")
 }

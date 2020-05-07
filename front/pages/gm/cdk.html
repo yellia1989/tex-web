@@ -63,7 +63,7 @@
               return d.iCommon == 1 ? '是' : '否';
             }
           },
-          { field: "sCommonCdk", title: "通用CDK指定cdk", width: 90},
+          { field: "sCommonCdk", title: "通用CDK指定cdk", width: 90 },
           {
             field: "iActive", title: "是否是激活码", align: "center", width: 90, templet: function (d) {
               return d.iCommon == 1 ? '是' : '否';
@@ -83,11 +83,11 @@
             }
           },
           { field: "sCustomLimit", title: "自定义限制", width: 90 },
-          { field: "sZoneLimit", title: "分区限制", align: "center", width: 90},
-          { field: "iExchangeLimit", title: "每账号限制", align: "center", width: 90},
-          { field: "sRewardInfo", title: "自定义奖励", align: "center", width:120, fixed: 'right' },
-          { field: "iGeneratedNum", title: "已生成", align: "center", width:90, fixed: 'right' },
-          { field: "iExchangedNum", title: "已兑换", align: "center", width:90, fixed: 'right' },
+          { field: "sZoneLimit", title: "分区限制", align: "center", width: 90 },
+          { field: "iExchangeLimit", title: "每账号限制", align: "center", width: 90 },
+          { field: "sRewardInfo", title: "自定义奖励", align: "center", width: 120, fixed: 'right' },
+          { field: "iGeneratedNum", title: "已生成", align: "center", width: 90, fixed: 'right' },
+          { field: "iExchangedNum", title: "已兑换", align: "center", width: 90, fixed: 'right' },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
         parseData: function (res) {
@@ -102,9 +102,6 @@
           case "add":
             add();
             break;
-          case "batchDel":
-            batchDel();
-            break;
         }
       });
 
@@ -113,9 +110,6 @@
         switch (obj.event) {
           case "edit":
             edit(data.id);
-            break;
-          case "del":
-            del(data.id);
             break;
         }
       });
@@ -126,33 +120,9 @@
         })
       }
 
-      function batchDel() {
-        okLayer.confirm("确定要批量删除吗？", function (index) {
-          layer.close(index);
-          let idsStr = okUtils.tableBatchCheck(table);
-          if (idsStr) {
-            okUtils.ajax("/api/gm/cdk/del", "post", { idsStr: idsStr }, true).done(function (response) {
-              okUtils.tableSuccessMsg(response.msg);
-            }).fail(function (error) {
-              console.log(error)
-            });
-          }
-        });
-      }
-
       function edit(id) {
         okLayer.open("编辑cdk", "cdk-edit.html", "90%", "90%", null, function () {
           dirTable.reload();
-        })
-      }
-
-      function del(id) {
-        okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/api/gm/cdk/del", "post", { idsStr: id }, true).done(function (response) {
-            okUtils.tableSuccessMsg(response.msg);
-          }).fail(function (error) {
-            console.log(error)
-          });
         })
       }
     })
@@ -161,13 +131,11 @@
   <script type="text/html" id="toolbarTpl">
   <div class="layui-btn-container">
     <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
-    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
   </div>
 </script>
 
   <script type="text/html" id="operationTpl">
   <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
-  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
 </script>
 </body>
 
