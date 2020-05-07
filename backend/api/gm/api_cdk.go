@@ -18,7 +18,9 @@ func CDKList(c echo.Context) error {
 	comm.StringToProxy("aqua.MPServer.MPServiceObj", mpPrx)
 
 	var vCDK []rpc.CDKeyConfig
-	ret, err := mpPrx.GetAllNotice(&vCDK)
+	str := "aqua"
+	var a uint32
+	ret, err := mpPrx.GetAllNotice(str, page, limit, &vCDK, &a)
 	if err := checkRet(ret, err); err != nil {
 		return err
 	}
