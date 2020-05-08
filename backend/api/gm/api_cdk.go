@@ -48,15 +48,15 @@ func CDKAdd(c echo.Context) error {
 	comm.StringToProxy("aqua.MPServer.MPServiceObj", MPPrx)
 
 	projectConfig := rpc.MPProjectConfig{}
-    if ok, _ := MPPrx.GetProject("aqua", &projectConfig); ok != 0  {
-	    projectConfig.SProjectId = "aqua"
-	    projectConfig.SProjectName = "aqua"
+	if ok, _ := MPPrx.GetProject("aqua", &projectConfig); ok != 0 {
+		projectConfig.SProjectId = "aqua"
+		projectConfig.SProjectName = "aqua"
 
-	    ret, err := MPPrx.CreateProject(projectConfig)
-	    if err := checkRet(ret, err); err != nil {
-            return err
-	    }
-    }
+		ret, err := MPPrx.CreateProject(projectConfig)
+		if err := checkRet(ret, err); err != nil {
+			return err
+		}
+	}
 
 	CDKey.SProjectId = "aqua"
 	var iCDKeyId uint32
@@ -81,7 +81,7 @@ func CDKUpdate(c echo.Context) error {
 
 	ret, err := MPPrx.ModifyCDKey(CDKey)
 	if err := checkRet(ret, err); err != nil {
-	    return err
+		return err
 	}
 
 	return ctx.SendResponse("修改CDK成功")

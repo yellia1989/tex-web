@@ -143,8 +143,8 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
-        data.field.iBeginTime = Date.parse(data.field.iBeginTime)/1000;
-        data.field.iEndTime = Date.parse(data.field.iEndTime)/1000;
+        data.field.iBeginTime = Date.parse(data.field.iBeginTime) / 1000;
+        data.field.iEndTime = Date.parse(data.field.iEndTime) / 1000;
         okUtils.ajax("/api/gm/cdk/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
