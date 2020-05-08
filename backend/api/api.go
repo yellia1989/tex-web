@@ -73,5 +73,7 @@ func RegisterHandler(group *echo.Group) {
 
     group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
 
+    group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
+
     group.GET("/game/role/list", game.RoleList)
 }
