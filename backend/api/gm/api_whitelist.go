@@ -86,5 +86,5 @@ func WhiteReplace(c echo.Context) error {
 		}
 	*/
 
-	return ctx.SendResponse("修改白名单用户成功")
+	return ctx.SendResponse("覆盖白名单用户成功")
 }
