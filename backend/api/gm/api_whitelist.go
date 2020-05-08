@@ -2,6 +2,7 @@ package gm
 
 import (
 	"database/sql"
+	"regexp"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -10,10 +11,17 @@ import (
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
+func parseIDStr(src string, out *string) {
+	reg, _ := regexp.Compile("/[,;\r\n\t ]/")
+	vStr := reg.FindAllString(src, -1)
+
+	*out = strings.Join(vStr, "),(")
+}
+
 func WhiteList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserver")
+	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserver?charset=utf8")
 	defer db.Close()
 	if err != nil {
 		return err
@@ -24,36 +32,44 @@ func WhiteList(c echo.Context) error {
 	}
 	defer rows.Close()
 
-    var strs []string
+	var vStr []string
 	for rows.Next() {
 		var id string
 		err = rows.Scan(&id)
 		if err != nil {
 			return err
 		}
-        strs = append(strs, id)
+		vStr = append(vStr, id)
 	}
 
-	return ctx.SendResponse(strings.Join(strs, ";"))
+	return ctx.SendResponse(strings.Join(vStr, ";"))
 }
 
 func WhiteAdd(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	/*
-		notice := rpc.NoticeDataInfo{}
-		if err := ctx.Bind(&notice); err != nil {
-			return err
-		}
+	input := ctx.FormValue("input")
 
-		bulletinPrx := new(rpc.BulletinService)
-		comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	if input == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
 
-		ret, err := bulletinPrx.AddNotice(notice)
-		if err := checkRet(ret, err); err != nil {
-			return err
-		}
-	*/
+	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserve?charset=utf8")
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare("INSERT IGNORE INTO t_whitelist VALUES(?)")
+	if err != nil {
+		return err
+	}
+
+	parseIDStr(input, &input)
+	_, err = stmt.Exec(input)
+	if err != nil {
+		return err
+	}
 
 	return ctx.SendResponse("添加白名单用户成功")
 }
@@ -61,24 +77,28 @@ func WhiteAdd(c echo.Context) error {
 func WhiteDel(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	/*
-		ids := strings.Split(ctx.FormValue("idsStr"), ",")
+	input := ctx.FormValue("input")
 
-		if len(ids) == 0 {
-			return ctx.SendError(-1, "白名单用户不存在")
-		}
+	if input == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
 
-		bulletinPrx := new(rpc.BulletinService)
-		comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserve?charset=utf8")
+	defer db.Close()
+	if err != nil {
+		return err
+	}
 
-		for _, id := range ids {
-			id, _ := strconv.ParseUint(id, 10, 32)
-			ret, err := bulletinPrx.DelNotice(uint32(id))
-			if err := checkRet(ret, err); err != nil {
-				return err
-			}
-		}
-	*/
+	stmt, err := db.Prepare("DELETE FROM t_whitelist WHERE account_id IN(?)")
+	if err != nil {
+		return err
+	}
+
+	parseIDStr(input, &input)
+	_, err = stmt.Exec(input)
+	if err != nil {
+		return err
+	}
 
 	return ctx.SendResponse("删除白名单用户成功")
 }
@@ -86,20 +106,25 @@ func WhiteDel(c echo.Context) error {
 func WhiteReplace(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	/*
-		notice := rpc.NoticeDataInfo{}
-		if err := ctx.Bind(&notice); err != nil {
-			return err
-		}
+	input := ctx.FormValue("input")
 
-		bulletinPrx := new(rpc.BulletinService)
-		comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserve?charset=utf8")
+	defer db.Close()
+	if err != nil {
+		return err
+	}
 
-		ret, err := bulletinPrx.ModifyNotice(notice)
-		if err := checkRet(ret, err); err != nil {
-			return err
-		}
-	*/
+	db.Exec("DELETE FROM t_whitelist;")
+	stmt, err := db.Prepare("INSERT IGNORE INTO t_whitelist VALUES(?)")
+	if err != nil {
+		return err
+	}
+
+	parseIDStr(input, &input)
+	_, err = stmt.Exec(input)
+	if err != nil {
+		return err
+	}
 
 	return ctx.SendResponse("覆盖白名单用户成功")
 }
