@@ -33,7 +33,7 @@
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">增加到白名单</button>
           <button class="layui-btn" lay-submit lay-filter="del">从白名单删除</button>
-          <button class="layui-btn" lay-submit lay-filter="cover">覆盖白名单</button>
+          <button class="layui-btn" lay-submit lay-filter="replace">覆盖白名单</button>
         </div>
       </div>
 
@@ -46,6 +46,11 @@
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      $.get("/api/gm/whitelist/list", function (data) {
+        $("div=['list']").val(data);
+      });
 
       //监听提交
       form.on('submit(add)', function (data) {
@@ -73,7 +78,7 @@
 
       //监听提交
       form.on('submit(cover)', function (data) {
-        okUtils.ajax("/api/gm/whitelist/cover", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/gm/whitelist/replace", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
