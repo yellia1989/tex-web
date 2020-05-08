@@ -66,7 +66,7 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
 
-    group.GET("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
+    group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
 
     group.GET("/game/role/list", game.RoleList)
 }

@@ -12,7 +12,7 @@ func DirtyTest(c echo.Context) error {
 	sInput := ctx.FormValue("input")
 
 	dirtyPrx := new(rpc.DirtyCheckService)
-	comm.StringToProxy("aqua.DirtyCheckServer.DirtyCheckService", dirtyPrx)
+	comm.StringToProxy("aqua.DirtyCheckServer.DirtyCheckServiceObj", dirtyPrx)
 
 	var sOutPut string
 	ret, err := dirtyPrx.Filter(sInput, &sOutPut)

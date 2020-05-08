@@ -14,19 +14,14 @@
       <div class="layui-form-item">
         <div class="layui-input-block">
           <label class="layui-form-label">输入</label>
-          <textarea name="input" class="layui-textarea" placeholder="·伟大的祖国母亲我爱你！
-·一次性交纳五百元送话费！
-·出售二手24口交换机及一台独立服务器，要的手机联系我……
-·宝鸡巴士公司真诚欢迎来自江阴毛纺厂和江阴道路管理局及上海虹口交警支队的保持党员先进性爱国主义教育小组的领导们！下午将参观模拟开放性交互式的全新网
-络，在此期间各色饮品由X牛酸酸乳房山分销点提供！
-·水乳交融 以死逼婚 成熟女性 众口交赞 上校鸡块" rows="1" cols="10"></textarea>
+          <textarea name="input" id="input" class="layui-textarea" rows="7"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
           <label class="layui-form-label">输出</label>
-          <textarea name="output" id="output" disabled class="layui-textarea" rows="1"></textarea>
+          <textarea name="output" id="output" disabled class="layui-textarea" rows="7"></textarea>
         </div>
       </div>
 
@@ -45,6 +40,7 @@
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
+      $("#input").val("·伟大的祖国母亲我爱你！·一次性交纳五百元送话费！ ·出售二手24口交换机及一台独立服务器，要的手机联系我…… ·宝鸡巴士公司真诚欢迎来自江阴毛纺厂和江阴道路管理局及上海虹口交警支队的保持党员先进性爱国主义教育小组的领导们！下午将参观模拟开放性交互式的全新网络，在此期间各色饮品由X牛酸酸乳房山分销点提供！·水乳交融 以死逼婚 成熟女性 众口交赞 上校鸡块");
 
       //监听提交
       form.on('submit(test)', function (data) {
