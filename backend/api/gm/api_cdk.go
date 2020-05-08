@@ -37,8 +37,8 @@ func CDKAdd(c echo.Context) error {
 		return err
 	}
 
-	sBeginTime := ctx.FormValue("sBeginTime")
-	sEndTime := ctx.FormValue("sEndTime")
+	sBeginTime := ctx.FormValue("iBeginTime")
+	sEndTime := ctx.FormValue("iEndTime")
 
 	if sBeginTime == "" || sEndTime == "" {
 		return ctx.SendError(-1, "参数非法")
@@ -48,16 +48,19 @@ func CDKAdd(c echo.Context) error {
 	comm.StringToProxy("aqua.MPServer.MPServiceObj", MPPrx)
 
 	projectConfig := rpc.MPProjectConfig{}
-	projectConfig.SProjectId = "aqua"
-	projectConfig.SProjectName = "aqua"
+    if ok, _ := MPPrx.GetProject("aqua", &projectConfig); ok != 0  {
+	    projectConfig.SProjectId = "aqua"
+	    projectConfig.SProjectName = "aqua"
 
-	ret, err := MPPrx.CreateProject(projectConfig)
-	if err := checkRet(ret, err); err != nil {
-		return err
-	}
+	    ret, err := MPPrx.CreateProject(projectConfig)
+	    if err := checkRet(ret, err); err != nil {
+            return err
+	    }
+    }
+
 	CDKey.SProjectId = "aqua"
 	var iCDKeyId uint32
-	ret, err = MPPrx.CreateCDKey(CDKey, &iCDKeyId)
+	ret, err := MPPrx.CreateCDKey(CDKey, &iCDKeyId)
 	if err := checkRet(ret, err); err != nil {
 		return err
 	}
@@ -78,7 +81,7 @@ func CDKUpdate(c echo.Context) error {
 
 	ret, err := MPPrx.ModifyCDKey(CDKey)
 	if err := checkRet(ret, err); err != nil {
-		return err
+	    return err
 	}
 
 	return ctx.SendResponse("修改CDK成功")
