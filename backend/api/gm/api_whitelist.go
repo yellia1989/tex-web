@@ -1,6 +1,11 @@
 package gm
 
 import (
+	"database/sql"
+	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/labstack/echo"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
@@ -8,18 +13,28 @@ import (
 func WhiteList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	/*
-		bulletinPrx := new(rpc.BulletinService)
-		comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserver")
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+	rows, err := db.Query("SELECT * FROM t_whitelist;")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
 
-		var vNotice []rpc.NoticeDataInfo
-		ret, err := bulletinPrx.GetAllNotice(&vNotice)
-		if err := checkRet(ret, err); err != nil {
+    var strs []string
+	for rows.Next() {
+		var id string
+		err = rows.Scan(&id)
+		if err != nil {
 			return err
 		}
-	*/
+        strs = append(strs, id)
+	}
 
-	return ctx.SendResponse("11019")
+	return ctx.SendResponse(strings.Join(strs, ";"))
 }
 
 func WhiteAdd(c echo.Context) error {
