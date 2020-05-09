@@ -58,6 +58,9 @@
       form.on('submit(add)', function (data) {
         okUtils.ajax("/api/gm/whitelist/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/list", function (data) {
+              $("div[name='list']").text(data.data);
+            });
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
         }).fail(function (error) {
@@ -70,6 +73,9 @@
       form.on('submit(del)', function (data) {
         okUtils.ajax("/api/gm/whitelist/del", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/list", function (data) {
+              $("div[name='list']").text(data.data);
+            });
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
         }).fail(function (error) {
@@ -82,6 +88,9 @@
       form.on('submit(replace)', function (data) {
         okUtils.ajax("/api/gm/whitelist/replace", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/list", function (data) {
+              $("div[name='list']").text(data.data);
+            });
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
         }).fail(function (error) {
