@@ -15,9 +15,9 @@ func parseIDStr(src, sep string, out *string) {
 	reg, _ := regexp.Compile("\\d{5}")
 	vStr := reg.FindAllString(src, -1)
 
-    if len(vStr) != 0 {
-	    *out = strings.Join(vStr, sep)
-    }
+	if len(vStr) != 0 {
+		*out = strings.Join(vStr, sep)
+	}
 }
 
 func WhiteList(c echo.Context) error {
@@ -63,7 +63,7 @@ func WhiteAdd(c echo.Context) error {
 	}
 
 	parseIDStr(input, "),(", &input)
-    sql := "INSERT IGNORE INTO t_whitelist VALUES(" + input + ");"
+	sql := "INSERT IGNORE INTO t_whitelist VALUES(" + input + ");"
 	_, err = db.Exec(sql)
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func WhiteDel(c echo.Context) error {
 	}
 
 	parseIDStr(input, ",", &input)
-    sql := "DELETE FROM t_whitelist WHERE account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE account_id IN(" + input + ");"
 	_, err = db.Exec(sql)
 	if err != nil {
 		return err
