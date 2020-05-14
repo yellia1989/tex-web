@@ -11,23 +11,93 @@
 <body>
   <div class="ok-body">
     <form class="layui-form" action="">
-      <div class="layui-form-item" style="margin:0px">
-        <div class="layui-form-item" style="margin:0px">
-          <label class="layui-form-label">当前白名单列表</label>
-          <textarea name="input" class="layui-textarea" rows="1" cols="10"></textarea>
-        </div>
-        <hr class="layui-hr">
-        <div class="layui-form-item" style="margin:0px">
-          <textarea name="output" class="layui-textarea" rows="1"></textarea>
-        </div>
-        <div class="layui-input-inline">
-          <button name="setting" class="layui-btn" lay-submit>增加到白名单</button>
-          <button name="setting" class="layui-btn" lay-submit>从白名单删除</button>
-          <button name="setting" class="layui-btn" lay-submit>覆盖白名单</button>
+      <div class="layui-form-item">
+        <div class="layui-input-block" style="color:#a29bfe">
+          <br>
+          <label>当前白名单列表</label>
+          <br>
+          <br>
+          <div name="list" style="width:50%; word-wrap:break-word"></div>
         </div>
       </div>
+      <br>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block" style="width:40%">
+          <textarea name="input" required lay-verify="required" class="layui-textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="add">增加到白名单</button>
+          <button class="layui-btn" lay-submit lay-filter="del">从白名单删除</button>
+          <button class="layui-btn" lay-submit lay-filter="replace">覆盖白名单</button>
+        </div>
+      </div>
+
     </form>
   </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      $.get("/api/gm/whitelist/list", function (data) {
+        $("div[name='list']").text(data.data);
+      });
+
+      //监听提交
+      form.on('submit(add)', function (data) {
+        okUtils.ajax("/api/gm/whitelist/add", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/list", function (data) {
+              $("div[name='list']").text(data.data);
+            });
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      //监听提交
+      form.on('submit(del)', function (data) {
+        okUtils.ajax("/api/gm/whitelist/del", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/list", function (data) {
+              $("div[name='list']").text(data.data);
+            });
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      //监听提交
+      form.on('submit(replace)', function (data) {
+        okUtils.ajax("/api/gm/whitelist/replace", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/list", function (data) {
+              $("div[name='list']").text(data.data);
+            });
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+
   <!-- 头工具栏模板 -->
   <script type="text/html" id="toolbarTpl">
   <div class="layui-btn-container">

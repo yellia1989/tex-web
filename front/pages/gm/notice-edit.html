@@ -12,43 +12,11 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
+        <label class="layui-form-label">状态</label>
         <div class="layui-input-block">
-          <input type="text" name="sTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
-            lay-verify="required" lay-verType="tips">
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">内容</label>
-        <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required"
-            lay-verType="tips"></textarea>
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">开始时间</label>
-        <div class="layui-input-block">
-          <input type="text" name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">结束时间</label>
-        <div class="layui-input-block">
-          <input type="text" name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">是否手动</label>
-        <div class="layui-input-block">
-          <select name="iIsManual">
-            <option value="0">否</option>
-            <option value="1" selected>是</option>
+          <select name="iPause">
+            <option value="0">暂停</option>
+            <option value="1" selected>正常</option>
           </select>
         </div>
       </div>
@@ -64,27 +32,15 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
-      let laydate = layui.laydate;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      laydate.render({
-        elem: "#iBeginTime", type: "datetime"
-      });
-      laydate.render({
-        elem: "#iEndTime", type: "datetime"
-      });
-
-      $("input[name='sTitle']").val(parent.editdata.sTitle);
-      $("input[name='sContent']").val(parent.editdata.sContent);
-      $("input[name='iBeginTime']").val(parent.editdata.iBeginTime);
-      $("input[name='iEndTime']").val(parent.editdata.iEndTime);
-
       //监听提交
       form.on('submit(add)', function (data) {
+        data.field.iNoticeId = parent.editNotice.id;
         okUtils.ajax("/api/gm/notice/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

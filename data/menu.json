@@ -114,6 +114,76 @@
           2,
           3
         ]
+      },
+      {
+        "id": 208,
+        "title": "白名单",
+        "href": "gm/whitelist.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": 209,
+        "title": "CDK管理",
+        "href": "gm/cdk.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": 210,
+        "title": "活动管理",
+        "href": "gm/activity.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": 211,
+        "title": "禁止切服",
+        "href": "gm/forbid.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": 212,
+        "title": "屏蔽字测试",
+        "href": "gm/dirty.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2,
+          3
+        ]
       }
     ],
     "role": [

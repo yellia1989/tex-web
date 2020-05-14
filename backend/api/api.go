@@ -1,8 +1,8 @@
 package api
 
 import (
-    "github.com/labstack/echo"
-    "github.com/yellia1989/tex-web/backend/api/gm"
+	"github.com/labstack/echo"
+	"github.com/yellia1989/tex-web/backend/api/gm"
     "github.com/yellia1989/tex-web/backend/api/game"
 )
 
@@ -52,10 +52,28 @@ func RegisterHandler(group *echo.Group) {
 
     group.GET("/gm/item/list", gm.ItemList)                   // 获取道具列表
 
-    group.GET("/gm/bulletin/list", gm.BulletinList)           // 获取公告列表
-    group.POST("/gm/bulletin/add", gm.BulletinAdd)            // 增加公告
-    group.POST("/gm/bulletin/del", gm.BulletinDel)
-    group.POST("/gm/bulletin/update", gm.BulletinUpdate)
+	group.GET("/gm/bulletin/list", gm.BulletinList)           // 获取公告列表
+	group.POST("/gm/bulletin/add", gm.BulletinAdd)            // 增加公告
+	group.POST("/gm/bulletin/del", gm.BulletinDel)       // 删除公告
+	group.POST("/gm/bulletin/update", gm.BulletinUpdate) // 更新公告
+
+	group.GET("/gm/notice/list", gm.NoticeList)      // 获取跑马灯列表
+	group.POST("/gm/notice/add", gm.NoticeAdd)       // 增加跑马灯
+	group.POST("/gm/notice/del", gm.NoticeDel)       // 删除跑马灯
+	group.POST("/gm/notice/update", gm.NoticeUpdate) // 更新跑马灯
+
+	group.GET("/gm/cdk/list", gm.CDKList)      // 获取cdk列表
+	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
+	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
+
+    group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
+    group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
+    group.POST("/gm/whitelist/del", gm.WhiteDel)    // 删除白名单用户
+    group.POST("/gm/whitelist/replace", gm.WhiteReplace)    // 覆盖白名单用户
+
+    group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
+
+    group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
 
     group.GET("/game/role/list", game.RoleList)
 }

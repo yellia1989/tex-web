@@ -16,6 +16,7 @@
   <!--js逻辑-->
   <script src="../../lib/layui/layui.js"></script>
   <script>
+    var editdata;
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
@@ -33,34 +34,23 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "iId", title: "ID", width: 90, fixed: 'left' },
+          { field: "id", title: "ID", width: 90, fixed: 'left' },
           { field: "sTitle", title: "标题", align: "center" },
           { field: "sContent", title: "内容" },
+          { field: "sBeginTime", title: "开始时间", align: "center" },
+          { field: "sEndTime", title: "结束时间", align: "center" },
           {
-            field: "iBeginTime", title: "开始时间", align: "center", templet: function (d) {
-              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            }
-          },
-          {
-            field: "iEndTime", title: "结束时间", align: "center", templet: function (d) {
-              if (d.iEndTime < d.iBeginTime) {
-                return '结束时间不能小于开始时间';
-              }
-              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            }
-          },
-          {
-            field: "iIsDisplay", title: "是否显示", width: 90, align: "center", templet: function (d) {
+            field: "iDisplay", title: "是否显示", width: 90, align: "center", templet: function (d) {
               return d.iIsDisplay == 1 ? '是' : '否';
             }
           },
           {
-            field: "iStatus", title: "状态", width: 90, align: "center", templet: function (d) {
+            field: "iFlag", title: "状态", width: 90, align: "center", templet: function (d) {
               var ret = '';
-              switch (d.iStatus) {
+              switch (d.iFlag) {
+                case 0: ret = '正常'; break;
                 case 1: ret = '未开启'; break;
-                case 2: ret = '开启中'; break;
-                case 3: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">已结束</span>'; break;
+                case 2: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">已结束</span>'; break;
                 default:
                   ret = '未知状态';
               }
@@ -71,7 +61,7 @@
         ]],
         parseData: function (res) {
           for (i = 0; i < res.data.length; ++i) {
-            res.data[i].id = res.data[i].sBulletin;
+            res.data[i].id = res.data[i].iBulletinId;
           }
           return res;
         }
@@ -92,10 +82,11 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
-            edit(data.sBulletin);
+            editdata = data;
+            edit(data.id);
             break;
           case "del":
-            del(data.sBulletin);
+            del(data.id);
             break;
         }
       });
@@ -139,16 +130,16 @@
   </script>
   <!-- 头工具栏模板 -->
   <script type="text/html" id="toolbarTpl">
-  <div class="layui-btn-container">
-    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
-    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
-  </div>
-</script>
+    <div class="layui-btn-container">
+      <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+      <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+    </div>
+  </script>
 
   <script type="text/html" id="operationTpl">
-  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
-  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
-</script>
+    <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+    <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+  </script>
 </body>
 
 </html>

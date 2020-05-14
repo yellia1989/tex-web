@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>新增公告</title>
+  <title>添加活动</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -12,49 +12,45 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
+        <label class="layui-form-label">活动ID</label>
         <div class="layui-input-block">
-          <input type="text" name="sTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
-            lay-verify="required" lay-verType="tips">
+          <input type="text" name="iActivityId" autocomplete="off" class="layui-input" lay-verify="required"
+            lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">内容</label>
+        <label class="layui-form-label">应用分区</label>
         <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required"
-            lay-verType="tips"></textarea>
+          <input type="text" name="apply_zone" autocomplete="off" class="layui-input" lay-verify="required"
+            lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">开始时间</label>
+        <label class="layui-form-label">应用玩家</label>
         <div class="layui-input-block">
-          <input type="text" name="sBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="apply_user" class="layui-input">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">结束时间</label>
+        <label class="layui-form-label">活动备注</label>
         <div class="layui-input-block">
-          <input type="text" name="sEndTime" id="iEndTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
+          <textarea name="configure_desc" class="layui-textarea"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否显示</label>
+        <label class="layui-form-label">配置数据</label>
         <div class="layui-input-block">
-          <select name="iDisplay">
-            <option value="0">否</option>
-            <option value="1" selected>是</option>
-          </select>
+          <textarea name="config_data" class="layui-textarea"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="edit">编辑配置</button>
           <button class="layui-btn" lay-submit lay-filter="add">添加</button>
           <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
@@ -64,22 +60,14 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
-      let laydate = layui.laydate;
-
-      laydate.render({
-        elem: "#iBeginTime", type: "datetime"
-      });
-      laydate.render({
-        elem: "#iEndTime", type: "datetime"
-      });
 
       //监听提交
       form.on('submit(add)', function (data) {
-        okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/gm/activity/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
@@ -88,6 +76,13 @@
         });
         return false;
       });
+
+      form.on('submit(edit)', function (data) {
+        okLayer.open("编辑配置", "/gm/activity-add2.html", "90%", "90%", null, function () {
+          form.render('textarea');
+        })
+      });
+
     });
   </script>
 </body>

@@ -12,25 +12,34 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
+        <label class="layui-form-label">选择分区</label>
         <div class="layui-input-block">
-          <input type="text" name="sTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
-            lay-verify="required" lay-verType="tips">
+          <div id="zoneSelect"></div>
         </div>
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">公告类型</label>
+        <div class="layui-input-block">
+          <select name="iType" lay-filter="type">
+            <option value="1" selected>走马灯</option>
+            <option value="2">停服公告</option>
+            <option value="3">公告</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="content">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required"
-            lay-verType="tips"></textarea>
+          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">开始时间</label>
         <div class="layui-input-block">
-          <input type="text" name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
+          <input type="text" name="sBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
             lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
@@ -38,18 +47,39 @@
       <div class="layui-form-item">
         <label class="layui-form-label">结束时间</label>
         <div class="layui-input-block">
-          <input type="text" name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input"
+          <input type="text" name="sEndTime" id="iEndTime" autocomplete="off" class="layui-input"
             lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否手动</label>
+        <label class="layui-form-label">显示位置</label>
         <div class="layui-input-block">
-          <select name="iIsManual">
-            <option value="0">否</option>
-            <option value="1" selected>是</option>
+          <select name="iDisplayType">
+            <option value="1" selected>全界面</option>
+            <option value="2">主界面</option>
           </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="displayInterval">
+        <label class="layui-form-label">显示间隔</label>
+        <div class="layui-input-block">
+          <input type="text" name="iDisplayInterval" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="displayNum">
+        <label class="layui-form-label">显示次数</label>
+        <div class="layui-input-block">
+          <input type="text" name="iDisplayNum" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-hide" id="maintenanceTime">
+        <label class="layui-form-label">维护时间</label>
+        <div class="layui-input-block">
+          <input type="text" name="iMaintenanceTime" class="layui-input">
         </div>
       </div>
 
@@ -63,18 +93,73 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
+      let xmSelect = layui.xmSelect;
+      let $ = layui.jquery;
 
       laydate.render({
-        elem: "#iBeginTime", type: "datetime"
+        elem: "#iBeginTime",
+        type: "datetime"
       });
       laydate.render({
-        elem: "#iEndTime", type: "datetime"
+        elem: "#iEndTime",
+        type: "datetime"
+      });
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'zoneid',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              showIcon: false,
+            }
+          }
+        },
+        toolbar: {
+            show: true,
+        }
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect.update({
+          data: response.data,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      form.on('select(type)', function (data) {
+        if (data.value == "1") {
+          $("#content").attr("class", "layui-form-item");
+          $("#displayInterval").attr("class", "layui-form-item");
+          $("#displayNum").attr("class", "layui-form-item");
+          $("#maintenanceTime").attr("class", "layui-form-item layui-hide");
+        } else if (data.value == "2") {
+          $("#content").attr("class", "layui-form-item layui-hide");
+          $("#displayInterval").attr("class", "layui-form-item layui-hide");
+          $("#displayNum").attr("class", "layui-form-item layui-hide");
+          $("#maintenanceTime").attr("class", "layui-form-item");
+        } else if (data.value == "3") {
+          $("#content").attr("class", "layui-form-item");
+          $("#displayInterval").attr("class", "layui-form-item layui-hide");
+          $("#displayNum").attr("class", "layui-form-item layui-hide");
+          $("#maintenanceTime").attr("class", "layui-form-item layui-hide");
+        }
       });
 
       //监听提交
