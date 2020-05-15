@@ -31,10 +31,13 @@
 <script src="/lib/layui/layui.js"></script>
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
-	layui.use(["table", "okUtils", "form"], function () {
+  var zoneid;
+  var roleid;
+	layui.use(["table", "okUtils", "form", "okLayer"], function () {
 		let table = layui.table;
 		let okUtils = layui.okUtils;
     let form = layui.form;
+    let okLayer = layui.okLayer;
     let xmSelect = layui.xmSelect;
     let $ = layui.jquery;
 		okLoading.close();
@@ -103,6 +106,37 @@
       });
     });
 
+    table.on("tool(tableFilter)", function (obj) {
+      roleid = obj.data.id;
+      zoneid = zoneSelect.getValue('valueStr');
+      switch (obj.event) {
+        case "recharge":
+          recharge();
+          break;
+        case "ban_speak":
+          ban_speak();
+          break;
+        case "ban_login":
+          ban_login();
+          break;
+      }
+    });
+
+    function recharge() {
+      okLayer.open("补单", "recharge.html", "40%", "50%", null, function () {
+      })
+    }
+
+    function ban_speak() {
+      okLayer.open("禁言", "ban_speak.html", "40%", "50%", null, function () {
+      })
+    }
+
+    function ban_login() {
+      okLayer.open("封号", "ban_login.html", "40%", "210px", null, function () {
+      })
+    }
+
     form.on("submit(search)", function (data) {
       roleTable.reload({
         where: data.field,
@@ -115,9 +149,11 @@
 	})
 </script>
 <script type="text/html" id="operationTpl">
-	<a href="javascript:" title="补单" lay-event="recharge"><i class="layui-icon">&#xe642;</i></a>
-	<a href="javascript:" title="禁言" lay-event="ban_speak"><i class="layui-icon">&#xe640;</i></a>
-	<a href="javascript:" title="封号" lay-event="ban_login"><i class="layui-icon">&#xe640;</i></a>
+  <div class="layui-btn-group">
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="recharge">补单</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="ban_speak">禁言</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="ban_login">封号</button>
+  </div>
 </script>
 </body>
 </html>

@@ -4,10 +4,12 @@ import (
     "fmt"
     "strings"
     "bytes"
+    "encoding/json"
     "github.com/labstack/echo"
     tex "github.com/yellia1989/tex-go/service"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
+    "github.com/yellia1989/tex-web/backend/model"
 )
 
 var (
@@ -75,4 +77,117 @@ func GameCmd(c echo.Context) error {
     }
 
     return ctx.SendResponse(buff.String())
+}
+
+func cmd(u *model.User, zoneid string, cmd string, result *string) error {
+    gamePrx := new(rpc.GameService)
+    comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
+
+    cmd = strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
+
+    var ret int32
+    var err error
+
+    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, result)
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("ret:%d, err:%s", ret, serr)
+    }
+
+    return nil
+}
+
+func IAPRecharge(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    zoneid := ctx.FormValue("zoneid")
+    roleid := ctx.FormValue("roleid")
+    productid := ctx.FormValue("productid")
+    scmd := "recharge " + roleid + " " + productid
+
+    if zoneid == "" || roleid == "" || productid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    var result string
+    u := ctx.GetUser()
+    err := cmd(u, zoneid, scmd, &result)
+    if err !=  nil {
+        return err
+    }
+
+    return ctx.SendResponse(result)
+}
+
+type _iap struct {
+    Id uint32 `json:"id"`
+    Type uint32 `json:"type"`
+    Name string `json:"name"`
+}
+func IAPList(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    zoneid := ctx.FormValue("zoneid")
+    scmd := "iap_list"
+
+    if zoneid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    var result string
+    u := ctx.GetUser()
+    err := cmd(u, zoneid, scmd, &result)
+    if err !=  nil {
+        return err
+    }
+
+    iaps := make([]_iap,0)
+    if err := json.Unmarshal([]byte(result), &iaps); err != nil {
+        return err
+    }
+
+    return ctx.SendResponse(iaps)
+}
+
+func BanSpeak(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    zoneid := ctx.FormValue("zoneid")
+    roleid := ctx.FormValue("roleid")
+    time := ctx.FormValue("time")
+    scmd := "ban_speak " + roleid + " " + time
+
+    if zoneid == "" || roleid == "" || time == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    var result string
+    u := ctx.GetUser()
+    err := cmd(u, zoneid, scmd, &result)
+    if err !=  nil {
+        return err
+    }
+
+    return ctx.SendResponse(result)
+}
+
+func BanLogin(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    zoneid := ctx.FormValue("zoneid")
+    roleid := ctx.FormValue("roleid")
+    time := ctx.FormValue("time")
+    scmd := "ban_login " + roleid + " " + time
+
+    if zoneid == "" || roleid == "" || time == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    var result string
+    u := ctx.GetUser()
+    err := cmd(u, zoneid, scmd, &result)
+    if err !=  nil {
+        return err
+    }
+
+    return ctx.SendResponse(result)
 }

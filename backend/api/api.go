@@ -75,5 +75,10 @@ func RegisterHandler(group *echo.Group) {
 
     group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
 
+    group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
+    group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
+    group.POST("/gm/ban/speak", gm.BanSpeak) // 禁言
+    group.POST("/gm/ban/login", gm.BanLogin) // 禁止登陆
+
     group.GET("/game/role/list", game.RoleList)
 }
