@@ -625,26 +625,78 @@
       },
       {
         "id": 802,
-        "title": "金币消耗记录",
-        "href": "game/coin.html",
+        "title": "金币记录",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
+        "children": [
+            {
+              "id": 80201,
+              "title": "金币获得记录",
+              "href": "game/coin-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            },
+            {
+              "id": 80202,
+              "title": "金币消耗记录",
+              "href": "game/coin-sub.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
         "role": [
           1
         ]
       },
       {
         "id": 803,
-        "title": "钻石消耗记录",
-        "href": "game/diamond.html",
+        "title": "钻石记录",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
+        "children": [
+            {
+              "id": 80301,
+              "title": "钻石获得记录",
+              "href": "game/diamond-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            },
+            {
+              "id": 80302,
+              "title": "钻石消耗记录",
+              "href": "game/diamond-sub.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
         "role": [
           1
         ]

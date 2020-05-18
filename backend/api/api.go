@@ -81,4 +81,8 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/ban/login", gm.BanLogin) // 禁止登陆
 
     group.GET("/game/role/list", game.RoleList)
+    group.GET("/game/coin/addlog", game.CoinAddLog)
+    group.GET("/game/coin/sublog", game.CoinSubLog)
+    group.GET("/game/diamond/addlog", game.DiamondAddLog)
+    group.GET("/game/diamond/sublog", game.DiamondSubLog)
 }

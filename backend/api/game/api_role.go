@@ -2,17 +2,10 @@ package game
 
 import (
     "strconv"
-    "database/sql"
-    _ "github.com/go-sql-driver/mysql"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/common"
 )
-
-var db *sql.DB
-func init() {
-    db, _ = sql.Open("mysql", "dev:777777@tcp(192.168.0.16:3306)/db_zone_1")
-}
 
 type _role struct {
     Uid uint64  `json:"id"`
@@ -31,6 +24,7 @@ func RoleList(c echo.Context) error {
     field := ctx.QueryParam("field")
     order := ctx.QueryParam("order")
 
+    db := common.GetDb()
     if db == nil {
         return ctx.SendError(-1, "连接数据库失败");
     }
