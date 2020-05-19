@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>角色列表</title>
+	<title>钻石获得</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -16,7 +16,13 @@
           <div id="zoneSelect"></div>
         </div>
 			  <div class="layui-input-inline">
-          <input class="layui-input" placeholder="请输入角色名" autocomplete="off" name="name">
+          <input class="layui-input" lay-verify="required|number" lay-verType="tips" placeholder="请输入角色id" autocomplete="off" name="roleid">
+        </div>
+			  <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+        </div>
+			  <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
         </div>
 			  <div class="layui-input-inline">
           <button class="layui-btn" lay-submit lay-filter="search">
@@ -33,14 +39,18 @@
 <script>
   var zoneid;
   var roleid;
-	layui.use(["table", "okUtils", "form", "okLayer"], function () {
+	layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
 		let table = layui.table;
 		let okUtils = layui.okUtils;
     let form = layui.form;
     let okLayer = layui.okLayer;
     let xmSelect = layui.xmSelect;
     let $ = layui.jquery;
+    let laydate = layui.laydate;
 		okLoading.close();
+
+    laydate.render({elem: "#startTime", type: "datetime"});
+    laydate.render({elem: "#endTime", type: "datetime"});
 
     let zoneSelect = xmSelect.render({
       el: '#zoneSelect',
@@ -74,71 +84,29 @@
       console.log(error);
     });
 
-		let roleTable = table.render({
+		let coinTable = table.render({
 			elem: "#tableId",
-      url: "/api/game/role/list",
-      where: {zoneid: 1},
+      data:[],
       text: {
         none: '暂无相关数据',
       },
 			limit: 30,
 			page: true,
 			cols: [[
-				{field: "id", title: "角色ID"},
-				{field: "name", title: "角色名称"},
-				{field: "vip_level", title: "vip等级", sort: true},
-				{field: "last_login_time", title: "最后登录时间"},
-				{field: "reg_time", title: "注册时间"},
-				{title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
+				{field: "id", title: "日志id"},
+				{field: "time", title: "时间"},
+				{field: "add_num", title: "增加数量"},
+				{field: "cur_num", title: "当前数量"},
+				{field: "action", title: "来源"},
 			]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
     });
 
-    table.on('sort(tableFilter)', function(obj){
-      roleTable.reload({
-        initSort: obj,
-        where: {
-          field: obj.field,
-          order: obj.type,
-        },
-      });
-    });
-
-    table.on("tool(tableFilter)", function (obj) {
-      roleid = obj.data.id;
-      zoneid = zoneSelect.getValue('valueStr');
-      switch (obj.event) {
-        case "recharge":
-          recharge();
-          break;
-        case "ban_speak":
-          ban_speak();
-          break;
-        case "ban_login":
-          ban_login();
-          break;
-      }
-    });
-
-    function recharge() {
-      okLayer.open("补单", "recharge.html", "40%", "50%", null, function () {
-      })
-    }
-
-    function ban_speak() {
-      okLayer.open("禁言", "ban_speak.html", "40%", "50%", null, function () {
-      })
-    }
-
-    function ban_login() {
-      okLayer.open("封号", "ban_login.html", "40%", "210px", null, function () {
-      })
-    }
-
     form.on("submit(search)", function (data) {
-      roleTable.reload({
+      coinTable.reload({
+        url: "/api/game/diamond/addlog",
         where: data.field,
         page: {
           curr: 1,
@@ -147,13 +115,6 @@
       return false;
     });
 	})
-</script>
-<script type="text/html" id="operationTpl">
-  <div class="layui-btn-group">
-    <button type="button" class="layui-btn layui-btn-sm" lay-event="recharge">补单</button>
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="ban_speak">禁言</button>
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="ban_login">封号</button>
-  </div>
 </script>
 </body>
 </html>
