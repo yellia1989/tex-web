@@ -182,3 +182,19 @@ func RealIncome(c echo.Context) error {
     
     return ctx.SendResponse(data)
 }
+
+func RealStageVerify(c echo.Context) error {
+    ctx := c.(*mid.Context)
+
+    now := time.Now()
+
+    // 在线
+    data := make(map[string][]uint32,0)
+    today, err := realtime(now.Format("2006-01-02"), "online")
+    if err != nil {
+        return err
+    }
+    data["today"] = today
+    
+    return ctx.SendResponse(data)
+}
