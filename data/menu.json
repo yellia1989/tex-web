@@ -749,6 +749,18 @@
             "role": [
               1
             ]
+        },
+        {
+            "id": 904,
+            "title": "实时关卡验证",
+            "href": "game/real-stageverify.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "role": [
+              1
+            ]
         }
     ],
     "role": [
