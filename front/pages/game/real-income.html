@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>实时在线</title>
+	<title>实时充值</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -32,7 +32,7 @@
         top: '20',
       },
       legend: {
-          data: ['当日在线', '昨日在线', '上周同期', '上月同期'],
+          data: ['当日充值', '昨日充值', '上周同期', '上月同期'],
           orient: 'vertical',
           top: '100',
           right: '20',
@@ -52,12 +52,12 @@
       },
       series: [
           {
-              name: '当日在线',
+              name: '当日充值',
               type: 'line',
               smooth: true,
           },
           {
-              name: '昨日在线',
+              name: '昨日充值',
               type: 'line',
               smooth: true,
           },
@@ -75,7 +75,7 @@
     };
 
     myChart.setOption(option);
-    okUtils.ajax("/api/game/real/online", "get", null, false).done(function (response) {
+    okUtils.ajax("/api/game/real/income", "get", null, false).done(function (response) {
       let today = response.data.today;
       let yesterday = response.data.yesterday;
       let lastweek = response.data.lastweek;
@@ -83,13 +83,13 @@
       myChart.setOption({
         series: [
           {
-              name: '当日在线',
+              name: '当日充值',
               type: 'line',
               smooth: true,
               data: today,
           },
           {
-              name: '昨日在线',
+              name: '昨日充值',
               type: 'line',
               smooth: true,
               data: yesterday,

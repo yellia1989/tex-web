@@ -26,10 +26,12 @@ func realtime(day string, table string) ([]uint32,error) {
     }
 
     sql := "SELECT time, sum(num) as num FROM realtime_"+table+" WHERE left(time,10)="
+    if table == "income" {
+        sql = "SELECT time, round(sum(num)/100) as num FROM realtime_"+table+" WHERE left(time,10)="
+    }
+
     sql += "'"+day+"'"
     sql += " GROUP BY time ORDER BY time"
-
-    fmt.Printf("%s\n", sql)
 
     rows, err := tx.Query(sql)
     if err != nil {
@@ -136,6 +138,43 @@ func RealNewadd(c echo.Context) error {
 
     // 上月同期
     lastmonth, err := realtime(now.Add(-24*30*time.Hour).Format("2006-01-02"), "newrole")
+    if err != nil {
+        return err
+    }
+    data["lastmonth"] = lastmonth
+    
+    return ctx.SendResponse(data)
+}
+
+func RealIncome(c echo.Context) error {
+    ctx := c.(*mid.Context)
+
+    now := time.Now()
+
+    // 今日充值
+    data := make(map[string][]uint32,0)
+    today, err := realtime(now.Format("2006-01-02"), "income")
+    if err != nil {
+        return err
+    }
+    data["today"] = today
+
+    // 昨日充值
+    yesterday, err := realtime(now.Add(-24*time.Hour).Format("2006-01-02"), "income")
+    if err != nil {
+        return err
+    }
+    data["yesterday"] = yesterday
+
+    // 上周同期
+    lastweek, err := realtime(now.Add(-24*7*time.Hour).Format("2006-01-02"), "income")
+    if err != nil {
+        return err
+    }
+    data["lastweek"] = lastweek
+
+    // 上月同期
+    lastmonth, err := realtime(now.Add(-24*30*time.Hour).Format("2006-01-02"), "income")
     if err != nil {
         return err
     }

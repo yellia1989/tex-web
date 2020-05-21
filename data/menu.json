@@ -737,6 +737,18 @@
             "role": [
               1
             ]
+        },
+        {
+            "id": 903,
+            "title": "实时充值",
+            "href": "game/real-income.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "role": [
+              1
+            ]
         }
     ],
     "role": [
