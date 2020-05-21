@@ -85,4 +85,5 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/coin/sublog", game.CoinSubLog)
     group.GET("/game/diamond/addlog", game.DiamondAddLog)
     group.GET("/game/diamond/sublog", game.DiamondSubLog)
+    group.GET("/game/real/online", game.RealOnline)
 }

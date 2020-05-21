@@ -705,5 +705,30 @@
     "role": [
       1
     ]
+  },
+  {
+    "id": 9,
+    "title": "实时数据",
+    "fontFamily": "ok-icon",
+    "icon": "\u0026#xe654;",
+    "spread": false,
+    "checked": false,
+    "children": [
+        {
+            "id": 901,
+            "title": "实时在线",
+            "href": "game/real-online.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "role": [
+              1
+            ]
+        }
+    ],
+    "role": [
+      1
+    ]
   }
 ]
