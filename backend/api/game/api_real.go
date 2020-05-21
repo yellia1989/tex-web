@@ -8,7 +8,7 @@ import (
     "github.com/yellia1989/tex-web/backend/common"
 )
 
-func online(day string) ([]uint32,error) {
+func realtime(day string, table string) ([]uint32,error) {
     db := common.GetLogDb()
     if db == nil {
         return nil,fmt.Errorf("连接数据库失败")
@@ -25,9 +25,11 @@ func online(day string) ([]uint32,error) {
         return nil,err
     }
 
-    sql := "SELECT time, sum(num) as num FROM realtime_online WHERE left(time,10)="
+    sql := "SELECT time, sum(num) as num FROM realtime_"+table+" WHERE left(time,10)="
     sql += "'"+day+"'"
     sql += " GROUP BY time ORDER BY time"
+
+    fmt.Printf("%s\n", sql)
 
     rows, err := tx.Query(sql)
     if err != nil {
@@ -75,28 +77,65 @@ func RealOnline(c echo.Context) error {
 
     // 今日在线
     data := make(map[string][]uint32,0)
-    today, err := online(now.Format("2006-01-02"))
+    today, err := realtime(now.Format("2006-01-02"), "online")
     if err != nil {
         return err
     }
     data["today"] = today
 
     // 昨日在线
-    yesterday, err := online(now.Add(-24*time.Hour).Format("2006-01-02"))
+    yesterday, err := realtime(now.Add(-24*time.Hour).Format("2006-01-02"), "online")
     if err != nil {
         return err
     }
     data["yesterday"] = yesterday
 
     // 上周同期
-    lastweek, err := online(now.Add(-24*7*time.Hour).Format("2006-01-02"))
+    lastweek, err := realtime(now.Add(-24*7*time.Hour).Format("2006-01-02"), "online")
     if err != nil {
         return err
     }
     data["lastweek"] = lastweek
 
     // 上月同期
-    lastmonth, err := online(now.Add(-24*30*time.Hour).Format("2006-01-02"))
+    lastmonth, err := realtime(now.Add(-24*30*time.Hour).Format("2006-01-02"), "online")
+    if err != nil {
+        return err
+    }
+    data["lastmonth"] = lastmonth
+    
+    return ctx.SendResponse(data)
+}
+
+func RealNewadd(c echo.Context) error {
+    ctx := c.(*mid.Context)
+
+    now := time.Now()
+
+    // 今日新增
+    data := make(map[string][]uint32,0)
+    today, err := realtime(now.Format("2006-01-02"), "newrole")
+    if err != nil {
+        return err
+    }
+    data["today"] = today
+
+    // 昨日新增
+    yesterday, err := realtime(now.Add(-24*time.Hour).Format("2006-01-02"), "newrole")
+    if err != nil {
+        return err
+    }
+    data["yesterday"] = yesterday
+
+    // 上周同期
+    lastweek, err := realtime(now.Add(-24*7*time.Hour).Format("2006-01-02"), "newrole")
+    if err != nil {
+        return err
+    }
+    data["lastweek"] = lastweek
+
+    // 上月同期
+    lastmonth, err := realtime(now.Add(-24*30*time.Hour).Format("2006-01-02"), "newrole")
     if err != nil {
         return err
     }

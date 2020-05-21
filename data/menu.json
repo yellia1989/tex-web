@@ -725,6 +725,18 @@
             "role": [
               1
             ]
+        },
+        {
+            "id": 902,
+            "title": "实时新增",
+            "href": "game/real-newadd.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "role": [
+              1
+            ]
         }
     ],
     "role": [
