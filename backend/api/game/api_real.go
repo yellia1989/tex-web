@@ -208,12 +208,22 @@ func RealStageVerify(c echo.Context) error {
     if err != nil {
         return err
     }
+    for i,v := range queuetime {
+        if times[i] != 0 {
+            queuetime[i] = v/times[i]
+        }
+    }
     data["queuetime"] = queuetime
 
     // 验证时间
     usetime, err := realtime(now.Format("2006-01-02"), "stageverify_use")
     if err != nil {
         return err
+    }
+    for i,v := range usetime {
+        if times[i] != 0 {
+            usetime[i] = v/times[i]
+        }
     }
     data["usetime"] = usetime
     
