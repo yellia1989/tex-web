@@ -190,11 +190,32 @@ func RealStageVerify(c echo.Context) error {
 
     // 在线
     data := make(map[string][]uint32,0)
-    today, err := realtime(now.Format("2006-01-02"), "online")
+    online, err := realtime(now.Format("2006-01-02"), "online")
     if err != nil {
         return err
     }
-    data["today"] = today
+    data["online"] = online
+
+    // 验证次数
+    times, err := realtime(now.Format("2006-01-02"), "stageverify")
+    if err != nil {
+        return err
+    }
+    data["times"] = times
+
+    // 排队时间
+    queuetime, err := realtime(now.Format("2006-01-02"), "stageverify_queue")
+    if err != nil {
+        return err
+    }
+    data["queuetime"] = queuetime
+
+    // 验证时间
+    usetime, err := realtime(now.Format("2006-01-02"), "stageverify_use")
+    if err != nil {
+        return err
+    }
+    data["usetime"] = usetime
     
     return ctx.SendResponse(data)
 }

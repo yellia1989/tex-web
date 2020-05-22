@@ -136,35 +136,35 @@
 
     myChart.setOption(option);
     okUtils.ajax("/api/game/real/stageverify", "get", null, false).done(function (response) {
-      let today = response.data.today;
-      let yesterday = response.data.yesterday;
-      let lastweek = response.data.lastweek;
-      let lastmonth = response.data.lastmonth;
+      let online = response.data.online;
+      let times = response.data.times;
+      let queuetime = response.data.queuetime;
+      let usetime = response.data.usetime;
       myChart.setOption({
         series: [
           {
               name: '在线人数',
               type: 'line',
               smooth: true,
-              data: today,
+              data: online,
           },
           {
               name: '次数',
               type: 'line',
               smooth: true,
-              data: yesterday,
+              data: times,
           },
           {
               name: '排队时间',
               type: 'line',
               smooth: true,
-              data: lastweek,
+              data: queuetime,
           },
           {
               name: '验证时间',
               type: 'line',
               smooth: true,
-              data: lastmonth,
+              data: usetime,
           }
         ]
       });
