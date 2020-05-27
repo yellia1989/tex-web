@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>钱币获得</title>
+	<title>英雄获得</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -84,7 +84,7 @@
       console.log(error);
     });
 
-		let coinTable = table.render({
+		let heroTable = table.render({
 			elem: "#tableId",
       data:[],
       text: {
@@ -95,8 +95,9 @@
 			cols: [[
 				{field: "id", title: "日志id"},
 				{field: "time", title: "时间"},
-				{field: "add_num", title: "增加数量"},
-				{field: "cur_num", title: "当前数量"},
+				{field: "heroid", title: "英雄id"},
+				{field: "level", title: "等级"},
+				{field: "star", title: "星级"},
 				{field: "action", title: "来源"},
 			]],
       toolbar: true,
@@ -105,8 +106,8 @@
     });
 
     form.on("submit(search)", function (data) {
-      coinTable.reload({
-        url: "/api/game/coin/addlog",
+      heroTable.reload({
+        url: "/api/game/hero/addlog",
         where: data.field,
         page: {
           curr: 1,
