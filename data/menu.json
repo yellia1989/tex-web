@@ -377,6 +377,45 @@
               ]
             }
         ]
+      },
+      {
+        "id": 804,
+        "title": "道具记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80401,
+              "title": "道具获得记录",
+              "href": "game/item-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            },
+            {
+              "id": 80402,
+              "title": "道具消耗记录",
+              "href": "game/item-sub.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
+        "role": [
+          1
+        ]
       }
     ],
     "role": [
