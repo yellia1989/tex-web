@@ -12,8 +12,8 @@ type _herolog struct {
 	Id     uint32 `json:"id"`
 	Time   string `json:"time"`
 	HeroId uint32 `json:"heroid"`
-	Level  uint32 `json:level`
-	Star   uint32 `json:star`
+	Level  uint32 `json:"level"`
+	Star   uint32 `json:"star"`
 	Action string `json:"action"`
 }
 
@@ -56,7 +56,7 @@ func HeroAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,time,add_num,cur_num,operate as action FROM add_hero"
+	sql := "SELECT _rid as id,time,heroid,hero_level,hero_star,operate as action FROM add_hero"
 	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
