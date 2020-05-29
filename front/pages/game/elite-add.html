@@ -93,14 +93,20 @@
 			limit: 30,
 			page: true,
 			cols: [[
-        {field: "id", title: "日志id"},
+        {field: "id", title: "日志id", fixed:"left"},
         {field: "stageid", title: "关卡id", fixed:"left"},
-        {field: "win", title: "胜负结果", fixed:"left"},
-        {field: "first", title: "是否首次", fixed:"left"},
+        {field: "win", title: "胜负结果", fixed:"left", templet: function(d) {
+            return d.win == 1 ? '胜' : '负';
+        }},
+        {field: "first", title: "是否首次", fixed:"left", templet: function(d) {
+            return d.first == 1 ? '是' : '否';
+        }},
         {field: "star", title: "星级"},
         {field: "cost_time", title: "消耗时间"},
         {field: "revive_times", title: "战斗复活次数"},
-        {field: "give_up", title: "是否强制结束"},
+        {field: "give_up", title: "是否强制结束", templet: function(d) {
+            return d.give_up == 1 ? '是' : '否';
+        }},
         {field: "consume_cards", title: "消耗卡牌数"},
         {field: "left_cards", title: "剩余卡牌数"},
         {field: "restore_times", title: "战斗恢复次数"},

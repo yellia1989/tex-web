@@ -3,6 +3,7 @@ package game
 import (
 	"strconv"
 
+    Sql "database/sql"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -71,9 +72,12 @@ func HeroAddLog(c echo.Context) error {
 	logs := make([]_herolog, 0)
 	for rows.Next() {
 		var r _herolog
-		if err := rows.Scan(&r.Id, &r.Time, &r.HeroId, &r.Level, &r.Star, &r.Action); err != nil {
+        var star, level Sql.NullInt32
+		if err := rows.Scan(&r.Id, &r.Time, &r.HeroId, &level, &star, &r.Action); err != nil {
 			return err
 		}
+        r.Level = uint32(level.Int32)
+        r.Star = uint32(star.Int32)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {

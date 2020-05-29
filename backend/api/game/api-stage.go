@@ -11,7 +11,7 @@ import (
 type _stagelog struct {
 	Id           uint32 `json:"id"`
 	StageId      uint32 `json:"stageid"`
-	CostTime     string `json:"cost_time"`
+	CostTime     uint32 `json:"cost_time"`
 	RestoreTimes uint32 `json:"restore_times"`
 	ReviveTimes  uint32 `json:"revive_times"`
 	GiveUp       uint32 `json:"give_up`
@@ -61,8 +61,8 @@ func StageAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,stageid,cost_time,restore_times,revive_times,give_up,win,star,consume_cards,left_cards,first as action FROM stage_challenge_finish"
-	sql += " WHERE roleid=" + roleid + "AND elite=0" + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sql := "SELECT _rid as id,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
+	sql += " WHERE roleid=" + roleid + " AND elite=0" + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
 	c.Logger().Error(sql)
@@ -88,6 +88,7 @@ func StageAddLog(c echo.Context) error {
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+
 
 	return ctx.SendArray(logs, total)
 }
@@ -131,8 +132,8 @@ func EliteStageAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,stageid,cost_time,restore_times,revive_times,give_up,win,star,consume_cards,left_cards,first as action FROM stage_challenge_finish"
-	sql += " WHERE roleid=" + roleid + "AND elite=1" + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sql := "SELECT _rid as id,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
+	sql += " WHERE roleid=" + roleid + " AND elite=1" + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
 	c.Logger().Error(sql)
