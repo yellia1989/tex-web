@@ -128,8 +128,6 @@ func DiamondSubLog(c echo.Context) error {
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Error(sql)
-
     rows, err := tx.Query(sql)
     if err != nil {
         return err

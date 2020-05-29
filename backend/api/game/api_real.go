@@ -3,6 +3,7 @@ package game
 import (
     "fmt"
     "time"
+    "database/sql"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/common"
@@ -185,7 +186,6 @@ func RealIncome(c echo.Context) error {
 
 func RealStageVerify(c echo.Context) error {
     ctx := c.(*mid.Context)
-
     now := time.Now()
 
     // 在线
@@ -227,5 +227,92 @@ func RealStageVerify(c echo.Context) error {
     }
     data["usetime"] = usetime
     
+    return ctx.SendResponse(data)
+}
+
+func stat(ssql string) (int32,error) {
+    var total sql.NullInt32
+    db := common.GetLogDb()
+    if db == nil {
+        return total.Int32,fmt.Errorf("连接数据库失败")
+    }
+
+    tx, err := db.Begin()
+    if err != nil {
+        return total.Int32,err
+    }
+    defer tx.Rollback()
+
+    _, err = tx.Exec("USE log_global")
+    if err != nil {
+        return total.Int32,err
+    }
+
+    err = tx.QueryRow(ssql).Scan(&total)
+    if err != nil {
+        return total.Int32,err
+    }
+
+    if err := tx.Commit(); err != nil {
+        return total.Int32,err
+    }
+
+    return total.Int32,nil
+}
+
+func RealStat(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    now := time.Now()
+
+    data := make(map[string]int32, 0)
+
+    // 今日充值
+    todayIncome, err := stat("SELECT round(sum(price)) as total FROM iap_recharge WHERE logymd='"+now.Format("2006-01-02")+"'")
+    if err != nil {
+        return err
+    }
+    data["todayIncome"] = todayIncome
+    // 累计充值
+    totalIncome, err := stat("SELECT round(sum(price)) as total FROM iap_recharge")
+    if err != nil {
+        return err
+    }
+    data["totalIncome"] = totalIncome
+
+    // 今日活跃
+    todayActive, err := stat("SELECT count(distinct roleid) as total FROM login WHERE logymd='"+now.Format("2006-01-02")+"'")
+    if err != nil {
+        return err
+    }
+    data["todayActive"] = todayActive
+
+    // 今日新增
+    todayNewadd, err := stat("SELECT count(distinct roleid) as total FROM create_role WHERE logymd='"+now.Format("2006-01-02")+"'")
+    if err != nil {
+        return err
+    }
+    data["todayNewadd"] = todayNewadd
+
+    // 累计新增
+    totalNewadd, err := stat("SELECT count(distinct roleid) as total FROM create_role")
+    if err != nil {
+        return err
+    }
+    data["totalNewadd"] = totalNewadd
+
+    // 今日注册
+    todayAccount, err := stat("SELECT count(accountid) as total FROM account_create WHERE timeymd='"+now.Format("2006-01-02")+"'")
+    if err != nil {
+        return err
+    }
+    data["todayAccount"] = todayAccount
+
+    // 累计注册
+    totalAccount, err := stat("SELECT count(accountid) as total FROM account_create")
+    if err != nil {
+        return err
+    }
+    data["totalAccount"] = totalAccount
+
     return ctx.SendResponse(data)
 }
