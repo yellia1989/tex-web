@@ -93,12 +93,13 @@
 			limit: 30,
 			page: true,
 			cols: [[
-        {field: "id", title: "日志id", fixed:"left"},
-        {field: "stageid", title: "关卡id", fixed:"left"},
-        {field: "win", title: "胜负结果", fixed:"left", templet: function(d) {
+        {field: "id", title: "日志id"},
+        {field: "time", title: "时间"},
+        {field: "stageid", title: "关卡id"},
+        {field: "win", title: "胜负结果", templet: function(d) {
             return d.win == 1 ? '胜' : '负';
         }},
-        {field: "first", title: "是否首次", fixed:"left", templet: function(d) {
+        {field: "first", title: "是否首次", templet: function(d) {
             return d.first == 1 ? '是' : '否';
         }},
         {field: "star", title: "星级"},

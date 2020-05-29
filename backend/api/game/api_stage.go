@@ -10,6 +10,7 @@ import (
 
 type _stagelog struct {
 	Id           uint32 `json:"id"`
+	Time         uint32 `json:time`
 	StageId      uint32 `json:"stageid"`
 	CostTime     uint32 `json:"cost_time"`
 	RestoreTimes uint32 `json:"restore_times"`
@@ -61,7 +62,7 @@ func StageAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
+	sql := "SELECT _rid as id,time,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
 	sql += " WHERE roleid=" + roleid + " AND elite=0" + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -76,7 +77,7 @@ func StageAddLog(c echo.Context) error {
 	logs := make([]_stagelog, 0)
 	for rows.Next() {
 		var r _stagelog
-		if err := rows.Scan(&r.Id, &r.StageId, &r.CostTime, &r.RestoreTimes, &r.ReviveTimes, &r.GiveUp, &r.Win, &r.Star, &r.ConsumeCards, &r.LeftCards, &r.First); err != nil {
+		if err := rows.Scan(&r.Id, &r.Time, &r.StageId, &r.CostTime, &r.RestoreTimes, &r.ReviveTimes, &r.GiveUp, &r.Win, &r.Star, &r.ConsumeCards, &r.LeftCards, &r.First); err != nil {
 			return err
 		}
 		logs = append(logs, r)
@@ -88,7 +89,6 @@ func StageAddLog(c echo.Context) error {
 	if err := tx.Commit(); err != nil {
 		return err
 	}
-
 
 	return ctx.SendArray(logs, total)
 }
@@ -132,7 +132,7 @@ func EliteStageAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
+	sql := "SELECT _rid as id,time,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
 	sql += " WHERE roleid=" + roleid + " AND elite=1" + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -147,7 +147,7 @@ func EliteStageAddLog(c echo.Context) error {
 	logs := make([]_stagelog, 0)
 	for rows.Next() {
 		var r _stagelog
-		if err := rows.Scan(&r.Id, &r.StageId, &r.CostTime, &r.RestoreTimes, &r.ReviveTimes, &r.GiveUp, &r.Win, &r.Star, &r.ConsumeCards, &r.LeftCards, &r.First); err != nil {
+		if err := rows.Scan(&r.Id, &r.Time, &r.StageId, &r.CostTime, &r.RestoreTimes, &r.ReviveTimes, &r.GiveUp, &r.Win, &r.Star, &r.ConsumeCards, &r.LeftCards, &r.First); err != nil {
 			return err
 		}
 		logs = append(logs, r)

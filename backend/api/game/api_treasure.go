@@ -3,23 +3,19 @@ package game
 import (
 	"strconv"
 
-	Sql "database/sql"
-
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
-type _herolog struct {
-	Id     uint32 `json:"id"`
-	Time   string `json:"time"`
-	HeroId uint32 `json:"heroid"`
-	Level  uint32 `json:"level"`
-	Star   uint32 `json:"star"`
-	Action string `json:"action"`
+type _treasurelog struct {
+	Id         uint32 `json:"id"`
+	Time       string `json:"time"`
+	TreasureId uint32 `json:"treasureId"`
+	Action     string `json:"action"`
 }
 
-func HeroAddLog(c echo.Context) error {
+func TreasureAddLog(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneid := ctx.QueryParam("zoneid")
 	roleid := ctx.QueryParam("roleid")
@@ -48,7 +44,7 @@ func HeroAddLog(c echo.Context) error {
 		return err
 	}
 
-	sqlcount := "SELECT count(*) as total FROM add_hero"
+	sqlcount := "SELECT count(*) as total FROM add_treasure"
 	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
 	err = tx.QueryRow(sqlcount).Scan(&total)
@@ -58,7 +54,7 @@ func HeroAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,time,heroid,hero_level,hero_star,operate as action FROM add_hero"
+	sql := "SELECT _rid as id,time,treasureId,operate as action FROM add_treasure"
 	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -70,15 +66,12 @@ func HeroAddLog(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	logs := make([]_herolog, 0)
+	logs := make([]_treasurelog, 0)
 	for rows.Next() {
-		var r _herolog
-		var star, level Sql.NullInt32
-		if err := rows.Scan(&r.Id, &r.Time, &r.HeroId, &level, &star, &r.Action); err != nil {
+		var r _treasurelog
+		if err := rows.Scan(&r.Id, &r.Time, &r.TreasureId, &r.Action); err != nil {
 			return err
 		}
-		r.Level = uint32(level.Int32)
-		r.Star = uint32(star.Int32)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {
