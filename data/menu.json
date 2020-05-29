@@ -416,6 +416,58 @@
         "role": [
           1
         ]
+      },
+      {
+        "id": 805,
+        "title": "剧情记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80501,
+              "title": "剧情通关记录",
+              "href": "game/stage-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 806,
+        "title": "列传记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80601,
+              "title": "列传通关记录",
+              "href": "game/elite-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
+        "role": [
+          1
+        ]
       }
     ],
     "role": [
