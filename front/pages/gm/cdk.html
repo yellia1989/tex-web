@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>CDK管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../../css/oksub.css">
+  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="../../lib/layui/layui.js"></script>
+  <script>
+    var editCDK;
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      let cdkTable = table.render({
+        elem: "#tableId",
+        url: "/api/gm/cdk/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "id", title: "ID", width: 50, fixed: 'left' },
+          { field: "sCDKeyName", title: "名称", width: 90, fixed: 'left' },
+          { field: "iCDKeyNum", title: "总数量", width: 90, align: "center", fixed: 'left' },
+          {
+            field: "iCreateMode", title: "生成方式", width: 90, align: "center", templet: function (d) {
+              var ret = '';
+              switch (d.iCreateMode) {
+                case 1: ret = '预先生成'; break;
+                default:
+                  ret = '未知';
+              }
+              return ret;
+            }
+          },
+          {
+            field: "iDeliveryMode", title: "发货方式", width: 90, align: "center", templet: function (d) {
+              var ret = '';
+              switch (d.iDeliveryMode) {
+                case 1: ret = '系统发放'; break;
+                default:
+                  ret = '未知';
+              }
+              return ret;
+            }
+          },
+          {
+            field: "iCommon", title: "是否是通用CDK", align: "center", width: 130, templet: function (d) {
+              return d.iCommon == 1 ? '是' : '否';
+            }
+          },
+          { field: "sCommonCdk", title: "通用CDK指定cdk", width: 90 },
+          {
+            field: "iActive", title: "是否是激活码", align: "center", width: 90, templet: function (d) {
+              return d.iCommon == 1 ? '是' : '否';
+            }
+          },
+          {
+            field: "iBeginTime", title: "开始时间", align: "center", width: 150, templet: function (d) {
+              return okUtils.dateFormat(new Date(d.iBeginTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            }
+          },
+          {
+            field: "iEndTime", title: "结束时间", align: "center", width: 150, templet: function (d) {
+              if (d.iEndTime < d.iBeginTime) {
+                return '结束时间不能小于开始时间';
+              }
+              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            }
+          },
+          { field: "sCustomLimit", title: "自定义限制", width: 90 },
+          { field: "sZoneLimit", title: "分区限制", align: "center", width: 90 },
+          { field: "iExchangeLimit", title: "每账号限制", align: "center", width: 90 },
+          { field: "sRewardInfo", title: "自定义奖励", align: "center", width: 120, fixed: 'right' },
+          { field: "iGeneratedNum", title: "已生成", align: "center", width: 90, fixed: 'right' },
+          { field: "iExchangedNum", title: "已兑换", align: "center", width: 90, fixed: 'right' },
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
+        ]],
+        parseData: function (res) {
+          for (i = 0; i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iCDKeyId;
+          }
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            editCDK = data;
+            edit(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("添加cdk", "/gm/cdk-add.html", "90%", "90%", null, function () {
+          cdkTable.reload();
+        })
+      }
+
+      function edit(id) {
+        okLayer.open("编辑cdk", "/gm/cdk-edit.html", "90%", "90%", null, function () {
+          cdkTable.reload();
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+  <script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+  </div>
+</script>
+
+  <script type="text/html" id="operationTpl">
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+</script>
+</body>
+
+</html>

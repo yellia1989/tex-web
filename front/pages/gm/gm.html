@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>GM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form">
+      <div class="layui-form-item" style="margin:0px">
+        <div class="layui-inline" style="margin:0px">
+          <div class="layui-input-inline">
+            <div id="zoneSelect"></div>
+          </div>
+          <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="gm">执行</button>
+          </div>
+        </div>
+      </div>
+      <div class="layui-form-item" style="margin:0px">
+        <textarea name="cmd" lay-verify="required" lay-verType="tips" class="layui-textarea" rows="5">help</textarea>
+      </div>
+      <div class="layui-form-item" style="margin:0px">
+        <textarea name="result" class="layui-textarea" rows="30" disabled></textarea>
+      </div>
+    </form>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let $ = layui.jquery;
+      let xmSelect = layui.xmSelect;
+      okLoading.close();
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'zoneid',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        autoRow: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        },
+        toolbar: {
+          show: true,
+        },
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {gf: true}, false).done(function (response) {
+        zoneSelect.update({
+          data: response.data,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      form.on('submit(gm)', function (data) {
+        let zoneids = zoneSelect.getValue('valueStr');
+        let cmd = $("textarea[name='cmd']").val();
+        okUtils.ajax("/api/gm/game/cmd", "post", { zoneids: zoneids, cmd: cmd }, true).done(function (response) {
+          $("textarea[name=result]").val(response.data);
+        }).fail(function (error) {
+          $("textarea[name=result]").val(error.msg);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>

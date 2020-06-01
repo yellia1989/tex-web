@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>修改密码</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../css/oksub.css">
+	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body class="childrenBody seting-pass">
+<form class="layui-form changePwd">
+	<div class="layui-form-item">
+		<label class="layui-form-label">用户名</label>
+		<div class="layui-input-block">
+			<input type="text" name="username" disabled class="layui-input layui-disabled">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">旧密码</label>
+		<div class="layui-input-block">
+			<input type="password" name="oldpassword" value="" placeholder="请输入旧密码" lay-verify="required" lay-verType="tips" class="layui-input pwd">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">新密码</label>
+		<div class="layui-input-block">
+			<input type="password" name="password" placeholder="请输入新密码" lay-verify="required|password" lay-verType="tips" class="layui-input pwd">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">确认密码</label>
+		<div class="layui-input-block">
+			<input type="password" name="password2" placeholder="请确认密码" lay-verify="required|password2" lay-verType="tips" class="layui-input pwd">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<div class="layui-input-block">
+			<button class="layui-btn" lay-submit="" lay-filter="changePwd">立即修改</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
+<script type="text/javascript" src="/lib/layui/layui.js"></script>
+<script type="text/javascript">
+  layui.use(['form', 'layer', 'okLayer', 'okUtils'], function () {
+  	let form = layui.form,
+  		layer = layui.layer,
+      okLayer = layui.okLayer,
+      okUtils = layui.okUtils,
+  		$ = layui.jquery,
+  		$form = $('form');
+  	okLoading.close();
+
+    $("input[name='username']").val(localStorage.getItem("username"));
+
+    form.verify({
+      password: [
+        /^[\S]{6,12}$/
+        ,'密码必须6到12位，且不能出现空格'
+      ],
+      password2: function(value, item) {
+        if (value != $("input[name='password']").val()) {
+          return '两次输入密码不一致';
+        }
+      }
+    });
+  
+  	//修改密码
+  	form.on("submit(changePwd)", function (data) {
+      okUtils.ajax("/api/user/pwd", "post", data.field, true).done(function (response) {
+        okLayer.greenTickMsg(response.data, function () {
+					parent.layer.close(parent.layer.getFrameIndex(window.name));
+				});
+		  }).fail(function (error) {
+          console.log(error);
+      });
+  		return false;
+  	})
+  });
+</script>
+</body>
+</html>

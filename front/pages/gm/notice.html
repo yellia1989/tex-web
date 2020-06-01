@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>跑马灯</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../../css/oksub.css">
+  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <font color="#FF0000">TIPS: 对于公告修改，暂时只支持暂停公告，暂停后不能恢复，要修改其他字段，请暂停公告，创建一个新的公告</font>
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="../../lib/layui/layui.js"></script>
+  <script>
+    var editNotice;
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      let noticeTable = table.render({
+        elem: "#tableId",
+        url: "/api/gm/notice/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 10,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "id", title: "ID", width: 90, fixed: 'left' },
+          {
+            field: "iType", title: "公告类型", width: 90, align: "center",
+            templet: function (d) {
+              var ret = '';
+              switch (d.iType) {
+                case 1: ret = '走马灯'; break;
+                case 2: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">停服公告</span>'; break;
+                case 3: ret = '公告'; break;
+                default:
+                  ret = '未知状态';
+              }
+              return ret;
+            }
+          },
+          { field: "sContent", title: "内容" },
+          { field: "sBeginTime", title: "开始时间", align: "center" },
+          { field: "sEndTime", title: "结束时间", align: "center" },
+          {
+            field: "iDisplayType", title: "显示位置", width: 90, align: "center", templet: function (d) {
+              var ret = '';
+              switch (d.iDisplayType) {
+                case 1: ret = '全界面'; break;
+                case 2: ret = '主界面'; break;
+                default:
+                  ret = '未知';
+              }
+              return ret;
+            }
+          },
+          { field: "iDisplayInterval", title: "显示间隔（秒）", width: 90, align: "center" },
+          { field: "iDisplayNum", title: "显示次数", width: 90, align: "center" },
+          {
+            field: "iPause", title: "状态", width: 90, align: "center", templet: function (d) {
+              var ret = '';
+              switch (d.iPause) {
+                case 0: ret = '暂停'; break;
+                case 1: ret = '正常'; break;
+                default:
+                  ret = '未知状态';
+              }
+              return ret;
+            }
+          },
+          { field: "sZone", title: "分区", align: "center" },
+          { field: "iMaintenanceTime", title: "维护时间（分钟）", width: 90, align: "justify" },
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+        ]],
+        parseData: function (res) {
+          for (i = 0; i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iNoticeId;
+            res.data[i].sZone = res.data[i].vZoneId;
+          }
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "batchDel":
+            batchDel();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            editNotice = data;
+            edit(data.id);
+            break;
+          case "del":
+            del(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("添加跑马灯", "/gm/notice-add.html", "90%", "90%", null, function () {
+          noticeTable.reload();
+        })
+      }
+
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/notice/del", "post", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.msg);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
+
+      function edit(id) {
+        okLayer.open("编辑跑马灯", "/gm/notice-edit.html", "90%", "90%", null, function () {
+          noticeTable.reload();
+        })
+      }
+
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/gm/notice/del", "delete", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.msg);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+  <script type="text/html" id="toolbarTpl">
+    <div class="layui-btn-container">
+      <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+      <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+    </div>
+  </script>
+
+  <script type="text/html" id="operationTpl">
+    <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+    <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+  </script>
+</body>
+
+</html>

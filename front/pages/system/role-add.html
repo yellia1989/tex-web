@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+	<title>新增角色</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form layui-form-pane ok-form">
+    <div class="layui-form-item">
+		  <label class="layui-form-label">角色名称</label>
+		  <div class="layui-input-block">
+	    	<input type="text" name="name" placeholder="请输入权限名称" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+			  </div>
+    </div>
+	  <div class="layui-form-item">
+			  <label class="layui-form-label">权限列表</label>
+			  <div class="layui-input-block">
+          <div id="permSelect"></div>
+			  </div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+  // https://www.layui.com/doc/modules/form.html
+  layui.use(['form', 'okUtils', 'okLayer'], function(){
+    let form = layui.form;
+    let okUtils = layui.okUtils;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let xmSelect = layui.xmSelect;
+
+    // 加载权限列表
+    let permSelect = xmSelect.render({
+      el: '#permSelect',
+      name: 'perms',
+      prop: {
+        value: 'id',
+      },
+      autoRow: true,
+      tips: '请选择至少一个权限',
+      layVerify: 'required',
+      layVerType: 'tips',
+      data: parent.perms
+    });
+
+    //监听提交
+    form.on('submit(add)', function(data){
+      okUtils.ajax("/api/role/add", "post", data.field, true).done(function (response) {
+        okLayer.greenTickMsg(response.data, function () {
+					parent.layer.close(parent.layer.getFrameIndex(window.name));
+				});
+		  }).fail(function (error) {
+          console.log(error);
+      });
+		  return false;
+    });
+  });
+</script>
+</body>
+</html>

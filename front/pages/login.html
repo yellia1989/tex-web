@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" class="page-fill">
+
+<head>
+  <meta charset="UTF-8">
+  <title>登录</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/oksub.css" />
+</head>
+
+<body class="page-fill">
+  <div class="page-fill" id="login">
+    <form class="layui-form">
+      <div class="layui-form-item login_face">
+        后台管理
+      </div>
+      <div class="layui-form-item input-item">
+        <label for="username">用户名</label>
+        <input type="text" lay-verify="required" name="username" placeholder="请输入账号" autocomplete="off" id="username"
+          class="layui-input">
+      </div>
+      <div class="layui-form-item input-item">
+        <label for="password">密码</label>
+        <input type="password" lay-verify="required|password" name="password" placeholder="请输入密码" autocomplete="off"
+          id="password" class="layui-input">
+      </div>
+      <div class="layui-form-item">
+        <button class="layui-btn layui-block" lay-filter="login" lay-submit="">登录</button>
+      </div>
+      <div class="login-link">
+        <a href="register.html">注册</a>
+        <a href="forget.html">忘记密码?</a>
+      </div>
+    </form>
+  </div>
+  <!--js逻辑-->
+  <script src="lib/layui/layui.js"></script>
+  <script>
+    layui.use(["form", "okUtils", "okLayer", "okCookie"], function () {
+      let form = layui.form;
+      let $ = layui.jquery;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+
+      /**
+       * 表单提交
+       */
+      form.on("submit(login)", function (data) {
+        okUtils.ajax("/api/login", "post", data.field, true).done(function (response) {
+          // 保存token到cookie中供以后使用
+          $.cookie("textoken", response.data.token, { expires: response.data.day })
+          localStorage.setItem("username", response.data.username);
+          okLayer.greenTickMsg("登陆成功", function () {
+            window.location = "/index.html";
+          })
+        }).fail(function (data) {
+          if (data.code == -2) {
+            window.location = "/index.html";
+          }
+        });
+        return false;
+      });
+
+      /**
+       * 表单input组件单击时
+       */
+      $("#login .input-item .layui-input").click(function (e) {
+        e.stopPropagation();
+        $(this).addClass("layui-input-focus").find(".layui-input").focus();
+      });
+
+      /**
+       * 表单input组件获取焦点时
+       */
+      $("#login .layui-form-item .layui-input").focus(function () {
+        $(this).parent().addClass("layui-input-focus");
+      });
+
+      /**
+       * 表单input组件失去焦点时
+       */
+      $("#login .layui-form-item .layui-input").blur(function () {
+        $(this).parent().removeClass("layui-input-focus");
+        if ($(this).val() != "") {
+          $(this).parent().addClass("layui-input-active");
+        } else {
+          $(this).parent().removeClass("layui-input-active");
+        }
+      })
+    });
+  </script>
+</body>
+
+</html>

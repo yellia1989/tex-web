@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>分区管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    versionMap = {};
+    versionMap.colours = ['#000000', '#d04949', '#474ead', '#3197bd', '#4aaa47', '#bd4ace', '#826006', '#017b5a', '    #ba2262', '#20ad83', '#6966ed'];
+    versionMap.iColourIndex = 0;
+    versionMap.chooseColour = function (version) {
+      if (typeof (versionMap[version]) == "undefined") {
+        versionMap[version] = versionMap.colours[versionMap.iColourIndex];
+        if (versionMap.iColourIndex + 1 <= versionMap.colours.length - 1) {
+          versionMap.iColourIndex++;
+        } else {
+          versionMap.iColourIndex = 0;
+        }
+      }
+      return versionMap[version];
+    };
+    function formatVersionColumn(data) {
+      return "<font color='" + versionMap.chooseColour(data) + "'>" + data + "</font>";
+    }
+
+    var zonedata;
+    var zoneids;
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      let dirTable = table.render({
+        elem: "#tableId",
+        url: "/api/gm/zone/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "iZoneId", title: "分区ID", width: 90, fixed: 'left' },
+          { field: "sZoneName", title: "分区名字", width: 90 },
+          { field: "sConnServer", title: "ConnServer", width: 120 },
+          {
+            field: "iZoneFlag", title: "分区标识", width: 90, templet: function (d) {
+              let ret = '';
+              switch (d.iZoneFlag) {
+                case 1: ret = '正常'; break;
+                case 2: ret = '新区'; break;
+                case 3: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">关闭</span>'; break;
+                case 4: ret = '审核'; break;
+                default:
+                  ret = '未知状态';
+              }
+              return ret;
+            }
+          },
+          {
+            field: "iIsManual", title: "是否手动", width: 90, templet: function (d) {
+              return d.iIsManual == 1 ? '是' : '否';
+            }
+          },
+          {
+            field: "iManualZoneStatus", title: "手动状态", width: 90, templet: function (d) {
+              let ret = '';
+              switch (d.iManualZoneStatus) {
+                case 1: ret = '畅通'; break;
+                case 2: ret = '拥挤'; break;
+                case 3: ret = '繁忙'; break;
+                case 4: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">维护</span>'; break;
+                default:
+                  ret = '未知状态';
+              }
+              return ret;
+            }
+          },
+          { field: "iMaxNum", title: "最大人数", width: 90 },
+          {
+            field: "iPublishTime", title: "开区时间", templet: function (d) {
+              let ret = okUtils.dateFormat(new Date(d.iPublishTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+              if (new Date().getTime() < d.iPublishTime * 1000) {
+                ret = '<span class="layui-btn layui-btn-warm layui-btn-xs">' + ret + '</span>';
+              }
+              return ret;
+            }
+          },
+          { field: "iCurNum", title: "当前在线", width: 90 },
+          {
+            field: "iCurZoneStatus", title: "当前状态", width: 90, templet: function (d) {
+              let ret = '';
+              switch (d.iCurZoneStatus) {
+                case 1: ret = '畅通'; break;
+                case 2: ret = '拥挤'; break;
+                case 3: ret = '繁忙'; break;
+                case 4: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">维护</span>'; break;
+                default:
+                  ret = '未知状态';
+              }
+              return ret;
+            }
+          },
+          {
+            field: "iIsKick", title: "强制下线", width: 90, templet: function (d) {
+              return d.iIsKick == 1 ? '是' : '否';
+            }
+          },
+          {
+            field: "sClientVersion", title: "IOS客户端版本", width: 120, fixed: 'right', templet: function (d) {
+              return formatVersionColumn(d.sClientVersion);
+            }
+          },
+          { field: "sForceUpdateVersion", title: "IOS强制下线版本", width: 120, fixed: 'right' },
+          {
+            field: "sAndClientVersion", title: "AND客户端版本", width: 120, fixed: 'right', templet: function (d) {
+              return formatVersionColumn(d.sAndClientVersion);
+            }
+          },
+          { field: "sAndForceUpdateVersion", title: "AND强制下线版本", width: 120, fixed: 'right' },
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+        ]],
+        parseData: function (res) {
+          for (i = 0; i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iZoneId;
+          }
+          return res;
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "batchDel":
+            batchDel();
+            break;
+          case "batchVersion":
+            batchVersion();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            zonedata = data;
+            edit(data.id);
+            break;
+          case "del":
+            del(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("添加分区", "dir-add.html", "90%", "90%", null, function () {
+          dirTable.reload();
+        })
+      }
+
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/zone/del", "post", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.data);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
+
+      function batchVersion() {
+        let idsStr = okUtils.tableBatchCheck(table);
+        if (idsStr) {
+          zoneids = idsStr;
+          okLayer.open("批量修改分区版本号", "dir-version.html", "90%", "90%", null, function () {
+            dirTable.reload();
+          })
+        }
+      }
+
+      function edit(id) {
+        okLayer.open("编辑分区", "dir-edit.html", "90%", "90%", null, function () {
+          dirTable.reload();
+        })
+      }
+
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/gm/zone/del", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+    <div class="layui-inline" lay-event="batchVersion"><i class="layui-icon layui-icon-edit"></i></div>
+  </div>
+</script>
+<script type="text/html" id="operationTpl">
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+
+</html>

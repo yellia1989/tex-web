@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>活动管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../../css/oksub.css">
+  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="../../lib/layui/layui.js"></script>
+  <script>
+    var editActivity;
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      let activityTable = table.render({
+        elem: "#tableId",
+        url: "/api/gm/activity/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "id", title: "活动ID", width: 90, fixed: 'left' },
+          { field: "apply_zone", title: "应用分区", width: 90, fixed: 'left' },
+          { field: "apply_user", title: "应用账户", width: 90 },
+          { field: "configure_data", title: "活动类型", width: 90, align: "center" },
+          { field: "configure_desc", title: "活动备注" },
+          {
+            field: "iBeginTime", title: "开始时间", align: "center", templet: function (d) {
+              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            }
+          },
+          {
+            field: "iEndTime", title: "结束时间", align: "center", templet: function (d) {
+              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            }
+          },
+          { field: "sConfigData", title: "配置数据", align: "center" },
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+        ]],
+        parseData: function (res) {
+          for (i = 0; i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iActivityId;
+          }
+          return res;
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            edit(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("添加活动", "/gm/activity-add.html", "90%", "90%", null, function () {
+          activityTable.reload();
+        })
+      }
+
+      function edit(id) {
+        okLayer.open("编辑活动", "/gm/activity-edit.html", "90%", "90%", null, function () {
+          dirTable.reload();
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+  <script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+  </div>
+</script>
+
+  <script type="text/html" id="operationTpl">
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+</script>
+</body>
+
+</html>
