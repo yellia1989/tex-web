@@ -10,7 +10,7 @@ import (
 
 type _stagelog struct {
 	Id           uint32 `json:"id"`
-	Time         uint32 `json:time`
+	Time         string `json:"time"`
 	StageId      uint32 `json:"stageid"`
 	CostTime     uint32 `json:"cost_time"`
 	RestoreTimes uint32 `json:"restore_times"`
@@ -53,7 +53,7 @@ func StageAddLog(c echo.Context) error {
 	}
 
 	sqlcount := "SELECT count(*) as total FROM stage_challenge_finish"
-	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sqlcount += " WHERE roleid=" + roleid + " AND elite=0 AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
 	err = tx.QueryRow(sqlcount).Scan(&total)
 	if err != nil {
@@ -123,7 +123,7 @@ func EliteStageAddLog(c echo.Context) error {
 	}
 
 	sqlcount := "SELECT count(*) as total FROM stage_challenge_finish"
-	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sqlcount += " WHERE roleid=" + roleid + " AND elite=1 AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
 	err = tx.QueryRow(sqlcount).Scan(&total)
 	if err != nil {
