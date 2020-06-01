@@ -279,7 +279,7 @@
       },
       {
         "id": 802,
-        "title": "金币记录",
+        "title": "银币记录",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
@@ -287,7 +287,7 @@
         "children": [
             {
               "id": 80201,
-              "title": "金币获得记录",
+              "title": "银币获得记录",
               "href": "game/coin-add.html",
               "fontFamily": "ok-icon",
               "icon": "\u0026#xe654;",
@@ -300,7 +300,7 @@
             },
             {
               "id": 80202,
-              "title": "金币消耗记录",
+              "title": "银币消耗记录",
               "href": "game/coin-sub.html",
               "fontFamily": "ok-icon",
               "icon": "\u0026#xe654;",
@@ -318,7 +318,7 @@
       },
       {
         "id": 803,
-        "title": "钻石记录",
+        "title": "元宝记录",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
@@ -326,7 +326,7 @@
         "children": [
             {
               "id": 80301,
-              "title": "钻石获得记录",
+              "title": "元宝获得记录",
               "href": "game/diamond-add.html",
               "fontFamily": "ok-icon",
               "icon": "\u0026#xe654;",
@@ -339,7 +339,7 @@
             },
             {
               "id": 80302,
-              "title": "钻石消耗记录",
+              "title": "元宝消耗记录",
               "href": "game/diamond-sub.html",
               "fontFamily": "ok-icon",
               "icon": "\u0026#xe654;",
@@ -353,6 +353,189 @@
         ],
         "role": [
           1
+        ]
+      },
+      {
+        "id": 804,
+        "title": "武将记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80401,
+              "title": "武将获得记录",
+              "href": "game/hero-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ]
+      },
+      {
+        "id": 804,
+        "title": "道具记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80401,
+              "title": "道具获得记录",
+              "href": "game/item-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            },
+            {
+              "id": 80402,
+              "title": "道具消耗记录",
+              "href": "game/item-sub.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 805,
+        "title": "剧情记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80501,
+              "title": "剧情通关记录",
+              "href": "game/stage-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 806,
+        "title": "列传记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80601,
+              "title": "列传通关记录",
+              "href": "game/elite-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ],
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 807,
+        "title": "宝物记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80701,
+              "title": "宝物获得记录",
+              "href": "game/treasure-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ]
+      },
+      {
+        "id": 808,
+        "title": "军备记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80801,
+              "title": "军备获得记录",
+              "href": "game/weapon-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
+        ]
+      },
+      {
+        "id": 809,
+        "title": "马匹记录",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+            {
+              "id": 80901,
+              "title": "马匹获得记录",
+              "href": "game/horse-add.html",
+              "fontFamily": "ok-icon",
+              "icon": "\u0026#xe654;",
+              "spread": false,
+              "checked": false,
+              "children": null,
+              "role": [
+                1
+              ]
+            }
         ]
       }
     ],

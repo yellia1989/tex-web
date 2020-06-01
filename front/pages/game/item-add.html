@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>钱币获得</title>
+	<title>道具获得</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="/css/oksub.css">
 	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -84,7 +84,7 @@
       console.log(error);
     });
 
-		let coinTable = table.render({
+		let itemTable = table.render({
 			elem: "#tableId",
       data:[],
       text: {
@@ -95,6 +95,7 @@
 			cols: [[
 				{field: "id", title: "日志id"},
 				{field: "time", title: "时间"},
+				{field: "baseId", title: "道具id"},
 				{field: "add_num", title: "增加数量"},
 				{field: "cur_num", title: "当前数量"},
 				{field: "action", title: "来源"},
@@ -105,8 +106,8 @@
     });
 
     form.on("submit(search)", function (data) {
-      coinTable.reload({
-        url: "/api/game/coin/addlog",
+      itemTable.reload({
+        url: "/api/game/item/addlog",
         where: data.field,
         page: {
           curr: 1,
