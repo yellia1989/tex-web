@@ -501,7 +501,7 @@
         "checked": false,
         "children": [
             {
-              "id": 80401,
+              "id": 80801,
               "title": "军备获得记录",
               "href": "game/weapon-add.html",
               "fontFamily": "ok-icon",
@@ -526,7 +526,7 @@
             {
               "id": 80901,
               "title": "马匹获得记录",
-              "href": "game/hero-add.html",
+              "href": "game/horse-add.html",
               "fontFamily": "ok-icon",
               "icon": "\u0026#xe654;",
               "spread": false,

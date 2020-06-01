@@ -12,7 +12,7 @@ type _horselog struct {
 	Id      uint32 `json:"id"`
 	Time    string `json:"time"`
 	HorseId uint32 `json:"horseId"`
-	vSkill  string `json:vSkill`
+	VSkill  string `json:"vSkill"`
 	Action  string `json:"action"`
 }
 
@@ -55,7 +55,7 @@ func HorseAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,time,horseId,operate as action FROM add_horse"
+	sql := "SELECT _rid as id,time,horseId,vSkill,operate as action FROM add_horse"
 	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -70,7 +70,7 @@ func HorseAddLog(c echo.Context) error {
 	logs := make([]_horselog, 0)
 	for rows.Next() {
 		var r _horselog
-		if err := rows.Scan(&r.Id, &r.Time, &r.HorseId, &r.Action); err != nil {
+		if err := rows.Scan(&r.Id, &r.Time, &r.HorseId, &r.VSkill, &r.Action); err != nil {
 			return err
 		}
 		logs = append(logs, r)
