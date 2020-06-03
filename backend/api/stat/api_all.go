@@ -1,6 +1,7 @@
 package stat
 
 import (
+    "fmt"
     "time"
     "strconv"
     "github.com/labstack/echo"
@@ -14,19 +15,19 @@ type _alllog struct {
     Zonename string `json:"zone_name"`
     Zoneopenday uint32 `json:"zone_openday"`
     Accountnum uint32 `json:"accountnum"`
-    Rolenum uint32 `json:"rolenum"`
-    RolenumIncrease float32 `json:"rolenum_increase"`
-    Newadd uint32 `json:"newadd"`
-    Active uint32 `json:"active"`
-    LoginTimes uint32 `json:"login_times"`
-    LoginTimesPer float32 `json:"login_times_per"`
-    RechargeNum uint32 `json:"recharge_num"`
+    Rolenum float32 `json:"rolenum"`
+    RolenumIncrease string `json:"rolenum_increase"`
+    Newadd float32 `json:"newadd"`
+    Active float32 `json:"active"`
+    LoginTimes float32 `json:"login_times"`
+    LoginTimesPer string `json:"login_times_per"`
+    RechargeNum float32 `json:"recharge_num"`
     RechargeMoney uint32 `json:"recharge_money"`
-    RechargePer float32 `json:"recharge_per"`
+    RechargePer string `json:"recharge_per"`
     WeekActive uint32 `json:"week_active"`
     DoubleWeekActive uint32 `json:"double_week_active"`
-    MonthActive uint32 `json:"month_active"`
-    ActivePer float32 `json:"active_per"`
+    MonthActive float32 `json:"month_active"`
+    ActivePer string `json:"active_per"`
 }
 
 func AllList(c echo.Context) error {
@@ -98,6 +99,21 @@ func AllList(c echo.Context) error {
         if v,ok := mzone[zoneid]; ok {
             r.Zonename = v.SZoneName
             r.Zoneopenday = uint32(now.Sub(time.Unix(int64(v.IPublishTime),0)).Hours()/24)
+        }
+        rate := float32(0)
+        if r.Rolenum-r.Newadd != 0 {
+            rate = r.Newadd*100/(r.Rolenum-r.Newadd)
+        }
+        r.RolenumIncrease = fmt.Sprintf("%.2f%%", rate)
+        r.LoginTimesPer = "0"
+        r.RechargePer = "0.00%"
+        r.ActivePer = "0.00%"
+        if r.Active != 0 {
+            r.LoginTimesPer = fmt.Sprintf("%.1f", r.LoginTimes/r.Active)
+            r.RechargePer = fmt.Sprintf("%.2f%%", r.RechargeNum/r.Active)
+        }
+        if r.MonthActive != 0 {
+            r.ActivePer = fmt.Sprintf("%.2f%%", r.Active/r.MonthActive)
         }
         logs = append(logs, r)
     }

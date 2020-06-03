@@ -11,6 +11,18 @@
   <meta name="format-detection" content="telephone=no">
   <link rel="stylesheet" href="css/oksub.css" media="all" />
 	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <!--<style type="text/css">
+  .layui-table-cell {
+    height: auto; 
+    line-height: 28px;
+    padding: 0 15px;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    box-sizing: border-box;
+  }
+  </style>-->
 </head>
 <body class="ok-body-scroll console">
   <div class="ok-body home">
@@ -154,10 +166,11 @@
       text: {
         none: '暂无相关数据',
       },
+      cellMinWidth: 40,
 			limit: 30,
 			page: true,
 			cols: [[
-				{field: "statymd", title: "日期"},
+				{field: "statymd", minWidth:'110', title: "日期"},
 				{field: "zone_name", title: "服务器名"},
 				{field: "zone_openday", title: "开服天数"},
 				{field: "accountnum", title: "总注册"},
@@ -167,12 +180,12 @@
 				{field: "active", title: "日活跃"},
 				{field: "login_times", title: "登录次数"},
 				{field: "login_times_per", title: "人均登录次数"},
-				{field: "recharge_num", title: "日充值人数"},
+				{field: "recharge_num",  title: "日充值人数"},
 				{field: "recharge_money", title: "日充值金额"},
 				{field: "recharge_per", title: "日充值渗透率"},
-				{field: "week_active", title: "周活跃用户数"},
-				{field: "double_week_active", title: "双周活跃用户数"},
-				{field: "month_active", title: "月活跃用户数"},
+				{field: "week_active", title: "周活跃"},
+				{field: "double_week_active", title: "双周活跃"},
+				{field: "month_active", title: "月活跃"},
 				{field: "active_per", title: "用户活跃度"},
 			]],
       toolbar: true,
