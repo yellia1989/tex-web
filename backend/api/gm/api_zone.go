@@ -10,6 +10,20 @@ import (
     "github.com/yellia1989/tex-web/backend/common"
 )
 
+func ZoneMap() map[uint32]rpc.ZoneInfo {
+    dirPrx := new(rpc.DirService)
+    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+
+    mzone := make(map[uint32]rpc.ZoneInfo)
+
+    var zones []rpc.ZoneInfo
+    dirPrx.GetAllZone(&zones)
+    for _, v := range zones {
+        mzone[v.IZoneId] = *(v.Copy())
+    }
+    return mzone
+}
+
 func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
     dirPrx := new(rpc.DirService)
     comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)

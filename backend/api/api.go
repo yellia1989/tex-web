@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/api/gm"
     "github.com/yellia1989/tex-web/backend/api/game"
+    "github.com/yellia1989/tex-web/backend/api/stat"
 )
 
 func RegisterHandler(group *echo.Group) {
@@ -99,4 +100,6 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/real/income", game.RealIncome)
     group.GET("/game/real/stageverify", game.RealStageVerify)
     group.GET("/game/real/stat", game.RealStat)
+
+    group.GET("/stat/all/list", stat.AllList)
 }
