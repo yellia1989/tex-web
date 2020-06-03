@@ -1,13 +1,39 @@
 [
   {
     "id": 1,
-    "title": "控制台",
+    "title": "每日数据",
     "href": "console.html",
     "fontFamily": "ok-icon",
     "icon": "\u0026#xe654;",
     "spread": false,
     "checked": false,
-    "children": null,
+    "children": [
+      {
+        "id": 101,
+        "title": "注册",
+        "href": "stat/newadd.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 102,
+        "title": "留存",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      }
+    ],
     "role": null
   },
   {
