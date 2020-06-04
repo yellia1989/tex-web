@@ -537,6 +537,18 @@
               ]
             }
         ]
+      },
+      {
+        "id": 810,
+        "title": "关卡",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
       }
     ],
     "role": [

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>关卡记录</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+			  <div class="layui-input-inline">
+          <div id="zoneSelect"></div>
+        </div>
+      </div>
+  </form>
+	<table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+  var zoneid;
+	layui.use(["table", "okUtils", "form", "okLayer"], function () {
+		let table = layui.table;
+		let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let xmSelect = layui.xmSelect;
+    let $ = layui.jquery;
+		okLoading.close();
+
+    let zoneSelect = xmSelect.render({
+      el: '#zoneSelect',
+      name: 'zoneid',
+      prop: {
+        value: 'iZoneId',
+        name: 'sZoneName',
+      },
+      tips: '请选择一个服务器',
+      layVerify: 'required',
+      layVerType: 'tips',
+      radio: true,
+      clickClose: true,
+      model: {
+        label: {
+          type: 'block',
+          block: {
+            //是否显示删除图标
+            showIcon: false,
+          }
+        }
+      }
+    });
+
+    okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      zoneSelect.update({
+        data: response.data,
+        initValue: [1],
+      });
+    }).fail(function (error) {
+      console.log(error);
+    });
+
+		let heroTable = table.render({
+			elem: "#tableId",
+      data:[],
+      text: {
+        none: '暂无相关数据',
+      },
+			limit: 30,
+			page: true,
+			cols: [[
+				{field: "stageid", title: "关卡id"},
+				{field: "stage_first_start_num", title: "首次闯关人数"},
+				{field: "stage_first_pass_num", title: "首次通关人数"},
+				{field: "stage_first_pass_star1_num", title: "首次通关1星人数"},
+				{field: "stage_first_pass_star2_num", title: "首次通关2星人数"},
+				{field: "stage_first_pass_star3_num", title: "首次通关3星人数"},
+				{field: "stage_total_pass_num", title: "总通关人数"},
+        {field: "stage_loss_rate", title: "本关失败率(首次闯关人数-总通关人数)/首次闯关人数"},
+        {field: "role_num", title:"创角数"},
+				{field: "stage_total_loss_rate", title: "总流失(创角数-总通关人数)/创角数"},
+			]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+    });
+
+    form.on("submit(search)", function (data) {
+      heroTable.reload({
+        url: "/api/game/stage/pass",
+        where: data.field,
+        page: {
+          curr: 1,
+        }
+      });
+      return false;
+    });
+	})
+</script>
+</body>
+</html>

@@ -99,4 +99,6 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/real/income", game.RealIncome)
     group.GET("/game/real/stageverify", game.RealStageVerify)
     group.GET("/game/real/stat", game.RealStat)
+    group.GET("/game/stage/pass", game.StagePass)
+    group.GET("/game/online/time", game.OnlineTime)
 }
