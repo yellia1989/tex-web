@@ -16,10 +16,10 @@
           <div id="zoneSelect"></div>
         </div>
         <div class="layui-input-inline">
-          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+          <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
         </div>
         <div class="layui-input-inline">
-          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+          <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
         </div>
         <div class="layui-input-inline">
           <button class="layui-btn" lay-submit lay-filter="search">
@@ -93,9 +93,9 @@
       cols: [[
         {field: "onlineTime_total", title: "累计在线时长"},
         {field: "onlineTime_roleNum", title: "角色数量"},
-        {field: "onlineTime_roleNum_total", title: "角色数量"},
+        {field: "onlineTime_roleNum_total", title: "角色总数量"},
         {field: "onlineTime_roleNum_rate", title: "占比", templet: function(d) {
-            return (d.stage_total_loss_rate * 100).toString().substring(0,4) + "%"
+            return (d.onlineTime_roleNum_rate * 100).toString().substring(0,4) + "%"
         }},
       ]],
       autoSort: false,

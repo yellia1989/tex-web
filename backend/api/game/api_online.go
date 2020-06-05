@@ -3,15 +3,17 @@ package game
 import (
 	"strconv"
 
+    "time"
+    "sort"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
 type _onlineTime struct {
-	TotalTime    string  `json:"onlineTime_total`
+	TotalTime    string  `json:"onlineTime_total"`
 	RoleNum      uint32  `json:"onlineTime_roleNum"`
-	RoleNumTotal uint32  `json:"onlineTime_roleNum_total`
+	RoleNumTotal uint32  `json:"onlineTime_roleNum_total"`
 	RoleNumRate  float32 `json:"onlineTime_roleNum_rate"`
 }
 
@@ -20,10 +22,8 @@ func OnlineTime(c echo.Context) error {
 	zoneid := ctx.QueryParam("zoneid")
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
-	startTime := ctx.QueryParam("startTime")
-	endTime := ctx.QueryParam("endTime")
 
-	if zoneid == "" || startTime == "" || endTime == "" {
+	if zoneid == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
@@ -46,8 +46,10 @@ func OnlineTime(c echo.Context) error {
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
 
+    data := time.Now().Format("2006-01-02")
+    data = "logymd='" + data + "'"
 	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
-	sql += "WHERE time between '" + startTime + "' AND '" + endTime + "' GROUP BY roleid ORDER BY sum(online_time)"
+	sql += "WHERE " + data + " GROUP BY roleid ORDER BY sum(online_time)"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
 	rows, err := tx.Query(sql)
@@ -103,10 +105,15 @@ func OnlineTime(c echo.Context) error {
 			times[3600*24+1]++
 		}
 	}
+tmp := make([]int, 0)
+         for k, _ := range times {
+             tmp = append(tmp, int(k))
+         }
+     sort.Ints(tmp)
 
 	logs := make([]_onlineTime, 0)
-	for t, num := range times {
-		r := _onlineTime{RoleNum: num, RoleNumTotal: roleNum}
+	for _, t := range tmp {
+		r := _onlineTime{RoleNum: times[uint32(t)], RoleNumTotal: roleNum}
 		switch {
 		case t == 300:
 			r.TotalTime = "0-5分钟"
@@ -129,7 +136,7 @@ func OnlineTime(c echo.Context) error {
 		case t == 3600*24+1:
 			r.TotalTime = "24小时以上"
 		}
-		r.RoleNumRate = float32(roleNum / r.RoleNumTotal)
+		r.RoleNumRate = float32(r.RoleNum) / float32(r.RoleNumTotal)
 		logs = append(logs, r)
 	}
 
