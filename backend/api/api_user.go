@@ -2,6 +2,7 @@ package api
 
 import (
     "time"
+    "net/http"
     "strconv"
     "strings"
     "github.com/labstack/echo"
@@ -26,10 +27,12 @@ func UserLogin(c echo.Context) error {
     // Create token
     token := jwt.New(jwt.SigningMethodHS256)
 
+    expire := time.Now().Add(time.Hour * 24)
+
     // Set claims
     claims := token.Claims.(jwt.MapClaims)
     claims["id"] = strconv.FormatUint(uint64(u.Id), 10)
-    claims["exp"] = strconv.FormatInt(time.Now().Add(time.Hour * 24).Unix(), 10)
+    claims["exp"] = strconv.FormatInt(expire.Unix(), 10)
 
     // Generate encoded token and send it as response.
     t, err := token.SignedString([]byte(mid.UserKey))
@@ -37,7 +40,12 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, err.Error())
     }
 
-    return ctx.SendResponse(map[string]interface{}{"token":t, "day":1, "username": u.UserName})
+    cjwt := http.Cookie{Name: "textoken", Value: t, Expires: expire, Path: "/", Domain: "192.168.0.16"}
+    cname := http.Cookie{Name: "username", Value: username, Expires: expire, Path: "/", Domain: "192.168.0.16"}
+    ctx.SetCookie(&cjwt)
+    ctx.SetCookie(&cname)
+
+    return ctx.SendResponse("ok")
 }
 
 func UserList(c echo.Context) error {
