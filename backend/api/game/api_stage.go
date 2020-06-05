@@ -3,7 +3,8 @@ package game
 import (
 	"strconv"
 
-    mysql "database/sql"
+	mysql "database/sql"
+
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -226,7 +227,7 @@ func StagePass(c echo.Context) error {
 
 	stage2StarNum := make(map[uint32]_star)
 	for rows2.Next() {
-        mStar := _star{0,0,0}
+		mStar := _star{0, 0, 0}
 		var stage, star, num uint32
 		if err := rows2.Scan(&stage, &star, &num); err != nil {
 			return nil
@@ -240,11 +241,11 @@ func StagePass(c echo.Context) error {
 		case 3:
 			mStar.star3 = num
 		}
-        stage2StarNum[stage] = mStar
+		stage2StarNum[stage] = mStar
 	}
 	rows2.Close()
 
-    sql = "SELECT a.stageid, a.first_start_num, b.first_pass_num, c.total_pass_num FROM "
+	sql = "SELECT a.stageid, a.first_start_num, b.first_pass_num, c.total_pass_num FROM "
 	sql += "( SELECT stageid, count(*) AS first_start_num FROM stage_challenge_start WHERE `elite` = 0 AND `first` = 1 GROUP BY stageid ) a"
 	sql += " LEFT JOIN (SELECT stageid, count(*) AS first_pass_num FROM stage_challenge_finish WHERE `elite` = 0 AND `first` = 1 AND win = 1 GROUP BY stageid ) b ON a.stageid = b.stageid"
 	sql += " LEFT JOIN ( SELECT stageid, count( DISTINCT roleid ) AS total_pass_num FROM stage_challenge_finish WHERE `elite` = 0 AND win = 1 GROUP BY stageid ) c ON a.stageid = c.stageid"
@@ -255,25 +256,24 @@ func StagePass(c echo.Context) error {
 		return err
 	}
 	defer rows.Close()
-    c.Logger().Error(rows);
 
 	logs := make([]_stagePass, 0)
 	for rows.Next() {
 		var r _stagePass
-        var firstPassNum, totalPassNum mysql.NullInt32
+		var firstPassNum, totalPassNum mysql.NullInt32
 		if err := rows.Scan(&r.StageID, &r.StageFirstStartNum, &firstPassNum, &totalPassNum); err != nil {
 			return err
 		}
-        r.StageFirstPassNum = uint32(firstPassNum.Int32);
-        r.StageTotalPassNum = uint32(totalPassNum.Int32);
+		r.StageFirstPassNum = uint32(firstPassNum.Int32)
+		r.StageTotalPassNum = uint32(totalPassNum.Int32)
 
-	    r.RoleNum = roleNum
+		r.RoleNum = roleNum
 		r.StageFirstPassStar1Num = stage2StarNum[r.StageID].star1
 		r.StageFirstPassStar2Num = stage2StarNum[r.StageID].star2
 		r.StageFirstPassStar3Num = stage2StarNum[r.StageID].star3
 
-		r.StageLossRate = float32(r.StageFirstStartNum - r.StageTotalPassNum) / float32(r.StageFirstStartNum)
-        r.StageTotalLossRate = float32(roleNum - r.StageTotalPassNum) / float32(roleNum)
+		r.StageLossRate = float32(r.StageFirstStartNum-r.StageTotalPassNum) / float32(r.StageFirstStartNum)
+		r.StageTotalLossRate = float32(roleNum-r.StageTotalPassNum) / float32(roleNum)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {
