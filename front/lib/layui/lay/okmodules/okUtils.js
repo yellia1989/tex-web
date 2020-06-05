@@ -152,6 +152,20 @@ layui.define(["layer"], function (exprots) {
                     return false;
                 }
             },
+            /**
+             * 格式化百分比，默认带2位小数点
+             * @param num1 分子
+             * @param num2 分母
+             * @param width 小数点位数,默认2位小数点
+             */
+            percent: function(num1, num2, width) {
+                if (width == undefined) {
+                    width = 2
+                }
+ 
+                if (num2 == 0) return "0."+"0".repeat(width) + "%";
+                return (num1*100/num2).toFixed(width) + "%";
+            }
         }
     };
     exprots("okUtils", okUtils);
