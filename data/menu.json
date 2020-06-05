@@ -541,6 +541,7 @@
       {
         "id": 810,
         "title": "关卡",
+        "href": "game/stage-pass.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,

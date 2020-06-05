@@ -237,7 +237,7 @@ func StagePass(c echo.Context) error {
 	}
 	defer rows2.Close()
 
-	stage2StarNum := make(map[uint32]_star)
+	stage2StarNum := make(map[uint32]*_star)
 	for rows2.Next() {
 		var stage, star, num uint32
 		if err := rows2.Scan(&stage, &star, &num); err != nil {
@@ -266,8 +266,8 @@ func StagePass(c echo.Context) error {
 		r.StageFirstPassStar2Num = stage2StarNum[r.StageID].star2
 		r.StageFirstPassStar3Num = stage2StarNum[r.StageID].star3
 
-		r.StageLossRate = (r.StageFirstStartNum - r.StageTotalPassNum) / r.StageFirstStartNum
-		r.StageTotalLossRate = (roleNum - r.StageTotalPassNum) / roleNum
+		r.StageLossRate = float32((r.StageFirstStartNum - r.StageTotalPassNum) / r.StageFirstStartNum)
+		r.StageTotalLossRate = float32((roleNum - r.StageTotalPassNum) / roleNum)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {

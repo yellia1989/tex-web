@@ -53,6 +53,17 @@
             showIcon: false,
           }
         }
+      },
+      on: function(data) {
+              if (data.isAdd) {
+            stageTable.reload({
+              url: "/api/game/stage/pass",
+              where: data.field,
+              page: {
+                curr: 1,
+              }
+            });
+              }
       }
     });
 
@@ -65,7 +76,7 @@
       console.log(error);
     });
 
-		let heroTable = table.render({
+		let stageTable = table.render({
 			elem: "#tableId",
       data:[],
       text: {
@@ -85,13 +96,11 @@
         {field: "role_num", title:"创角数"},
 				{field: "stage_total_loss_rate", title: "总流失(创角数-总通关人数)/创角数"},
 			]],
-      toolbar: true,
-      defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
     });
 
     form.on("submit(search)", function (data) {
-      heroTable.reload({
+      stageTable.reload({
         url: "/api/game/stage/pass",
         where: data.field,
         page: {
