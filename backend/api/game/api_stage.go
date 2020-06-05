@@ -3,6 +3,7 @@ package game
 import (
 	"strconv"
 
+    mysql "database/sql"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -209,22 +210,9 @@ func StagePass(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT a.stageid, a.first_start_num, b.pass_start_num, c.total_pass_num FROM "
-	sql += "( SELECT stageid, count(*) AS first_start_num FROM stage_challenge_start WHERE 'elite' = 0 AND 'first' = 1 GROUP BY stageid ) a"
-	sql += " LEFT JOIN (SELECT stageid, count(*) AS first_start_num FROM stage_challenge_finish WHERE `elite` = 0 AND `first` = 1 AND win = 1 GROUP BY stageid ) b ON a.stageid = b.stageid )"
-	sql += " LEFT JOIN ( SELECT stageid, count( DISTINCT roleid ) AS total_pass_num FROM stage_challenge_finish WHERE `elite` = 0 AND win = 1 GROUP BY stageid ) c ON a.stageid = c.stageid"
-	sql += " LIMIT " + limitstart + "," + limitrow
-
-	c.Logger().Error(sql)
-
-	rows, err := tx.Query(sql)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
 
 	var roleNum uint32
-	sql = "SELECT count(DISTINCT roleid) as roleNum FROM create_role"
+	sql := "SELECT count(DISTINCT roleid) as roleNum FROM create_role"
 	err = tx.QueryRow(sql).Scan(&roleNum)
 	if err != nil {
 		return err
@@ -235,10 +223,10 @@ func StagePass(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	defer rows2.Close()
 
-	stage2StarNum := make(map[uint32]*_star)
+	stage2StarNum := make(map[uint32]_star)
 	for rows2.Next() {
+        mStar := _star{0,0,0}
 		var stage, star, num uint32
 		if err := rows2.Scan(&stage, &star, &num); err != nil {
 			return nil
@@ -246,28 +234,46 @@ func StagePass(c echo.Context) error {
 
 		switch star {
 		case 1:
-			stage2StarNum[stage].star1 = num
+			mStar.star1 = num
 		case 2:
-			stage2StarNum[stage].star2 = num
+			mStar.star2 = num
 		case 3:
-			stage2StarNum[stage].star3 = num
+			mStar.star3 = num
 		}
+        stage2StarNum[stage] = mStar
 	}
+	rows2.Close()
+
+    sql = "SELECT a.stageid, a.first_start_num, b.first_pass_num, c.total_pass_num FROM "
+	sql += "( SELECT stageid, count(*) AS first_start_num FROM stage_challenge_start WHERE `elite` = 0 AND `first` = 1 GROUP BY stageid ) a"
+	sql += " LEFT JOIN (SELECT stageid, count(*) AS first_pass_num FROM stage_challenge_finish WHERE `elite` = 0 AND `first` = 1 AND win = 1 GROUP BY stageid ) b ON a.stageid = b.stageid"
+	sql += " LEFT JOIN ( SELECT stageid, count( DISTINCT roleid ) AS total_pass_num FROM stage_challenge_finish WHERE `elite` = 0 AND win = 1 GROUP BY stageid ) c ON a.stageid = c.stageid"
+	sql += " LIMIT " + limitstart + "," + limitrow
+
+	rows, err := tx.Query(sql)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+    c.Logger().Error(rows);
 
 	logs := make([]_stagePass, 0)
 	for rows.Next() {
 		var r _stagePass
-		if err := rows.Scan(&r.StageID, &r.StageFirstStartNum, &r.StageFirstPassNum, &r.StageTotalPassNum); err != nil {
+        var firstPassNum, totalPassNum mysql.NullInt32
+		if err := rows.Scan(&r.StageID, &r.StageFirstStartNum, &firstPassNum, &totalPassNum); err != nil {
 			return err
 		}
+        r.StageFirstPassNum = uint32(firstPassNum.Int32);
+        r.StageTotalPassNum = uint32(totalPassNum.Int32);
 
-		r.RoleNum = roleNum
+	    r.RoleNum = roleNum
 		r.StageFirstPassStar1Num = stage2StarNum[r.StageID].star1
 		r.StageFirstPassStar2Num = stage2StarNum[r.StageID].star2
 		r.StageFirstPassStar3Num = stage2StarNum[r.StageID].star3
 
-		r.StageLossRate = float32((r.StageFirstStartNum - r.StageTotalPassNum) / r.StageFirstStartNum)
-		r.StageTotalLossRate = float32((roleNum - r.StageTotalPassNum) / roleNum)
+		r.StageLossRate = float32(r.StageFirstStartNum - r.StageTotalPassNum) / float32(r.StageFirstStartNum)
+        r.StageTotalLossRate = float32(roleNum - r.StageTotalPassNum) / float32(roleNum)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {
