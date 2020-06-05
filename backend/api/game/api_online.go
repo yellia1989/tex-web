@@ -3,8 +3,9 @@ package game
 import (
 	"strconv"
 
-    "time"
-    "sort"
+	"sort"
+	"time"
+
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -46,8 +47,8 @@ func OnlineTime(c echo.Context) error {
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
 
-    data := time.Now().Format("2006-01-02")
-    data = "logymd='" + data + "'"
+	data := time.Now().Format("2006-01-02")
+	data = "logymd='" + data + "'"
 	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
 	sql += "WHERE " + data + " GROUP BY roleid ORDER BY sum(online_time)"
 	sql += " LIMIT " + limitstart + "," + limitrow
@@ -105,11 +106,11 @@ func OnlineTime(c echo.Context) error {
 			times[3600*24+1]++
 		}
 	}
-tmp := make([]int, 0)
-         for k, _ := range times {
-             tmp = append(tmp, int(k))
-         }
-     sort.Ints(tmp)
+	tmp := make([]int, 0, 10)
+	for k := range times {
+		tmp = append(tmp, int(k))
+	}
+	sort.Ints(tmp)
 
 	logs := make([]_onlineTime, 0)
 	for _, t := range tmp {
