@@ -20,10 +20,7 @@ type _remainlog struct {
     Ltv7 float32 `json:"ltv7"`
     Ltv30 float32 `json:"ltv30"`
     RechargeRolenum float32 `json:"recharge_rolenum"`
-    RechargeRate string `json:"recharge_rate"`
     RechargeMoney float32 `json:"recharge_money"`
-    RechargePer string `json:"recharge_per"`
-    RechargePer2 string `json:"recharge_per2"`
     RechargeR float32 `json:"recharge_r"`
 }
 
@@ -129,9 +126,6 @@ func RemainList(c echo.Context) error {
         }
         r.Newadd = act[0]
         r.Days = append(r.Days,act[0])
-        r.RechargeRate = "0.0%"
-        r.RechargePer = "0.00"
-        r.RechargePer2 = "0.00"
         logs = append(logs, r)
     }
     if err := rows.Err(); err != nil {
@@ -255,13 +249,6 @@ func RemainList(c echo.Context) error {
             rlog.RechargeRolenum = v.rechargerolenum
             rlog.RechargeMoney = v.money
             rlog.RechargeR = v.r
-            if rlog.Newadd != 0 {
-                rlog.RechargeRate = fmt.Sprintf("%.2f%%", rlog.RechargeRolenum/rlog.Newadd)
-                rlog.RechargePer2 = fmt.Sprintf("%.2f", rlog.RechargeMoney/rlog.Newadd)
-            }
-            if rlog.RechargeRolenum != 0 {
-                rlog.RechargePer = fmt.Sprintf("%.2f", rlog.RechargeMoney/rlog.RechargeRolenum)
-            }
         }
         t,_ := time.Parse("2006-01-02", rlog.Statymd)
         for j := 1; j < 90; j++ {
