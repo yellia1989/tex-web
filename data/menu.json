@@ -1,13 +1,66 @@
 [
   {
     "id": 1,
-    "title": "控制台",
+    "title": "每日数据",
     "href": "console.html",
     "fontFamily": "ok-icon",
     "icon": "\u0026#xe654;",
     "spread": false,
     "checked": false,
-    "children": null,
+    "children": [
+      {
+        "id": 101,
+        "title": "注册",
+        "href": "stat/newadd.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 102,
+        "title": "新增留存",
+        "href": "stat/remain.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 103,
+        "title": "新增留存(全服去重)",
+        "href": "stat/remain2.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 104,
+        "title": "流失",
+        "href": "stat/loss.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      }
+    ],
     "role": null
   },
   {

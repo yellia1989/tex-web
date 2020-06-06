@@ -153,8 +153,8 @@ layui.use(["element", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday
     okLayer.confirm("确定要退出吗？", function (index) {
       okTab.removeTabStorage(function (res) {
         $.removeCookie("textoken");
-        localStorage.removeItem("username");
-        window.location = "login.html";
+        $.removeCookie("username");
+        window.location.href = "/login.html";
       });
     });
   });
@@ -162,5 +162,5 @@ layui.use(["element", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday
   /**
    * 设置用户名字
    */
-  $("#uname").html(localStorage.getItem("username"));
+  $("#uname").html($.cookie("username"));
 });
