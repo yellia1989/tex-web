@@ -590,6 +590,32 @@
               ]
             }
         ]
+      },
+      {
+        "id": 810,
+        "title": "关卡",
+        "href": "game/stage-pass.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 811,
+        "title": "在线时长",
+        "href": "game/online-time.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
       }
     ],
     "role": [
