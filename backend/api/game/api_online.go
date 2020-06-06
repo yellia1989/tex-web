@@ -1,8 +1,6 @@
 package game
 
 import (
-	"strconv"
-
 	"time"
 
 	"github.com/labstack/echo"
@@ -20,8 +18,6 @@ type _onlineTime struct {
 func OnlineTime(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneid := ctx.QueryParam("zoneid")
-	page, _ := strconv.Atoi(ctx.QueryParam("page"))
-	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
 	if zoneid == "" {
 		return ctx.SendError(-1, "参数非法")
@@ -43,14 +39,10 @@ func OnlineTime(c echo.Context) error {
 		return err
 	}
 
-	limitstart := strconv.Itoa((page - 1) * limit)
-	limitrow := strconv.Itoa(limit)
-
 	data := time.Now().Format("2006-01-02")
 	data = "logymd='" + data + "'"
 	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
 	sql += "WHERE " + data + " GROUP BY roleid ORDER BY sum(online_time)"
-	sql += " LIMIT " + limitstart + "," + limitrow
 
 	rows, err := tx.Query(sql)
 	if err != nil {

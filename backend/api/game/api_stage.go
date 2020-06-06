@@ -186,8 +186,6 @@ type _star struct {
 func StagePass(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneid := ctx.QueryParam("zoneid")
-	page, _ := strconv.Atoi(ctx.QueryParam("page"))
-	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
 	if zoneid == "" {
 		return ctx.SendError(-1, "参数非法")
@@ -209,9 +207,6 @@ func StagePass(c echo.Context) error {
 		return err
 	}
 
-	limitstart := strconv.Itoa((page - 1) * limit)
-	limitrow := strconv.Itoa(limit)
-
 	var roleNum uint32
 	sql := "SELECT count(DISTINCT roleid) as roleNum FROM create_role"
 	err = tx.QueryRow(sql).Scan(&roleNum)
@@ -225,23 +220,26 @@ func StagePass(c echo.Context) error {
 		return err
 	}
 
-	stage2StarNum := make(map[uint32]_star)
+    c.Logger().Error(sql)
+
+	stage2StarNum := make(map[uint32]*_star)
 	for rows2.Next() {
-		mStar := _star{0, 0, 0}
 		var stage, star, num uint32
 		if err := rows2.Scan(&stage, &star, &num); err != nil {
 			return nil
 		}
 
+        if _, ok := stage2StarNum[stage]; !ok {
+            stage2StarNum[stage] = &_star{0, 0, 0}
+        }
 		switch star {
 		case 1:
-			mStar.star1 = num
+			stage2StarNum[stage].star1 = num
 		case 2:
-			mStar.star2 = num
+			stage2StarNum[stage].star2 = num
 		case 3:
-			mStar.star3 = num
+			stage2StarNum[stage].star3 = num
 		}
-		stage2StarNum[stage] = mStar
 	}
 	rows2.Close()
 
@@ -249,7 +247,6 @@ func StagePass(c echo.Context) error {
 	sql += "( SELECT stageid, count(*) AS first_start_num FROM stage_challenge_start WHERE `elite` = 0 AND `first` = 1 GROUP BY stageid ) a"
 	sql += " LEFT JOIN (SELECT stageid, count(*) AS first_pass_num FROM stage_challenge_finish WHERE `elite` = 0 AND `first` = 1 AND win = 1 GROUP BY stageid ) b ON a.stageid = b.stageid"
 	sql += " LEFT JOIN ( SELECT stageid, count( DISTINCT roleid ) AS total_pass_num FROM stage_challenge_finish WHERE `elite` = 0 AND win = 1 GROUP BY stageid ) c ON a.stageid = c.stageid"
-	sql += " LIMIT " + limitstart + "," + limitrow
 
 	rows, err := tx.Query(sql)
 	if err != nil {
@@ -257,8 +254,12 @@ func StagePass(c echo.Context) error {
 	}
 	defer rows.Close()
 
+    c.Logger().Error(sql)
+
 	logs := make([]_stagePass, 0)
+    total := 0
 	for rows.Next() {
+        total++
 		var r _stagePass
 		var firstPassNum, totalPassNum mysql.NullInt32
 		if err := rows.Scan(&r.StageID, &r.StageFirstStartNum, &firstPassNum, &totalPassNum); err != nil {
@@ -268,6 +269,10 @@ func StagePass(c echo.Context) error {
 		r.StageTotalPassNum = uint32(totalPassNum.Int32)
 
 		r.RoleNum = roleNum
+
+        if _, ok := stage2StarNum[r.StageID]; !ok {
+            stage2StarNum[r.StageID] = &_star{0, 0, 0}
+        }
 		r.StageFirstPassStar1Num = stage2StarNum[r.StageID].star1
 		r.StageFirstPassStar2Num = stage2StarNum[r.StageID].star2
 		r.StageFirstPassStar3Num = stage2StarNum[r.StageID].star3
@@ -284,5 +289,5 @@ func StagePass(c echo.Context) error {
 		return err
 	}
 
-	return ctx.SendArray(logs, len(logs))
+	return ctx.SendArray(logs, total)
 }

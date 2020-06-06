@@ -78,16 +78,16 @@
       text: {
         none: '暂无相关数据',
       },
-      limit: 10,
-      page: true,
       cols: [[
         {field: "onlineTime_total", title: "累计在线时长"},
         {field: "onlineTime_roleNum", title: "角色数量"},
         {field: "onlineTime_roleNum_total", title: "角色总数量"},
         {field: "onlineTime_roleNum_rate", title: "占比", templet: function(d) {
-            return (d.onlineTime_roleNum_rate * 100).toString().substring(0,4) + "%"
+            return (d.onlineTime_roleNum_rate * 100).toString().substring(0,5) + "%"
         }},
       ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
     });
 
@@ -95,9 +95,6 @@
       stageTable.reload({
         url: "/api/game/online/time",
         where: data.field,
-        page: {
-          curr: 1,
-        }
       });
       return false;
     });

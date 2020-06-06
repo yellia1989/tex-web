@@ -78,8 +78,6 @@
       text: {
         none: '暂无相关数据',
       },
-      limit: 30,
-      page: true,
       cols: [[
         {field: "stageid", title: "关卡id"},
         {field: "stage_first_start_num", title: "首次闯关人数"},
@@ -89,13 +87,15 @@
         {field: "stage_first_pass_star3_num", title: "首次通关3星人数"},
         {field: "stage_total_pass_num", title: "总通关人数"},
         {field: "stage_loss_rate", title: "本关失败率(首次闯关人数-总通关人数)/首次闯关人数", templet: function(d) {
-            return (d.stage_loss_rate * 100).toString().substring(0,4) + "%"
+            return (d.stage_loss_rate * 100).toString().substring(0,5) + "%"
         }},
         {field: "role_num", title:"创角数"},
         {field: "stage_total_loss_rate", title: "总流失(创角数-总通关人数)/创角数", templet: function(d) {
-            return (d.stage_total_loss_rate * 100).toString().substring(0,4) + "%"
+            return (d.stage_total_loss_rate * 100).toString().substring(0,5) + "%"
         }},
       ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
     });
 
@@ -103,9 +103,6 @@
       stageTable.reload({
         url: "/api/game/stage/pass",
         where: data.field,
-        page: {
-          curr: 1,
-        }
       });
       return false;
     });
