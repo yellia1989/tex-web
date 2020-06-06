@@ -18,6 +18,7 @@ type _onlineTime struct {
 func OnlineTime(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneid := ctx.QueryParam("zoneid")
+	date := ctx.QueryParam("date")
 
 	if zoneid == "" {
 		return ctx.SendError(-1, "参数非法")
@@ -39,16 +40,19 @@ func OnlineTime(c echo.Context) error {
 		return err
 	}
 
-	data := time.Now().Format("2006-01-02")
-	data = "logymd='" + data + "'"
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	}
+	date = "logymd='" + date + "'"
 	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
-	sql += "WHERE " + data + " GROUP BY roleid ORDER BY sum(online_time)"
+	sql += "WHERE " + date + " GROUP BY roleid ORDER BY sum(online_time)"
 
 	rows, err := tx.Query(sql)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
+	c.Logger().Error(sql)
 
 	mRole := make(map[uint64]uint32)
 	for rows.Next() {
