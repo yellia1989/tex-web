@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增留存(全服去重)</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+	    	<div class="layui-input-inline">
+          <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+        </div>
+	    	<div class="layui-input-inline">
+          <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+        </div>
+			  <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="search">
+            <i class="layui-icon layui-icon-search"></i>
+          </button>
+        </div>
+      </div>
+  </form>
+	<table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script>
+	layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+		let table = layui.table;
+		let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+		okLoading.close();
+
+    laydate.render({elem: "#startTime", type: "datetime"});
+    laydate.render({elem: "#endTime", type: "datetime"});
+
+		let remainTable = table.render({
+			elem: "#tableId",
+      url: "/api/stat/remain/list",
+      where: {datatype: 2},
+      text: {
+        none: '暂无相关数据',
+      },
+			limit: 30,
+			page: true,
+      cellMinWidth: 78,
+			cols: [[
+				{field: "statymd", minWidth:'110', title: "日期", fixed: "left"},
+				{field: "newadd", title: "创角人数", fixed: "left"},
+				{field: "ltv7", title: "7日LTV", fixed: "left"},
+				{field: "ltv30", title: "30日LTV", fixed: "left"},
+				{field: "recharge_rolenum", title: "充值人数", fixed: "left"},
+				{field: "recharge_rate", title: "付费率", fixed: "left", templet: function(d) { return okUtils.number.percent(d.recharge_rolenum, d.newadd)}},
+				{field: "recharge_money", title: "充值金额", fixed: "left"},
+				{field: "recharge_per",  title: "付费人均付费", fixed: "left", templet: function(d) { return okUtils.number.percent(d.recharge_money, d.recharge_rolenum, 2, '')}},
+				{field: "recharge_per2", title: "人均付费", fixed: "left", templet: function(d) { return okUtils.number.percent(d.recharge_money, d.newadd, 2, '')}},
+				{field: "recharge_r", title: "大R数量", fixed: "left"},
+				{field: "day1", title: "day1", templet: function(d) { return d.day1 != undefined ? okUtils.number.percent(d.day1*100,d.newadd,1) : '-'}},
+				{field: "day2", title: "day2", templet: function(d) { return d.day2 != undefined ? okUtils.number.percent(d.day2*100,d.newadd,1) : '-'}},
+				{field: "day3", title: "day3", templet: function(d) { return d.day3 != undefined ? okUtils.number.percent(d.day3*100,d.newadd,1) : '-'}},
+				{field: "day4", title: "day4", templet: function(d) { return d.day4 != undefined ? okUtils.number.percent(d.day4*100,d.newadd,1) : '-'}},
+				{field: "day5", title: "day5", templet: function(d) { return d.day5 != undefined ? okUtils.number.percent(d.day5*100,d.newadd,1) : '-'}},
+				{field: "day6", title: "day6", templet: function(d) { return d.day6 != undefined ? okUtils.number.percent(d.day6*100,d.newadd,1) : '-'}},
+				{field: "day7", title: "day7", templet: function(d) { return d.day7 != undefined ? okUtils.number.percent(d.day7*100,d.newadd,1) : '-'}},
+				{field: "day8", title: "day8", templet: function(d) { return d.day8 != undefined ? okUtils.number.percent(d.day8*100,d.newadd,1) : '-'}},
+				{field: "day9", title: "day9", templet: function(d) { return d.day9 != undefined ? okUtils.number.percent(d.day9*100,d.newadd,1) : '-'}},
+				{field: "day10", title: "day10", templet: function(d) { return d.day10 != undefined ? okUtils.number.percent(d.day10*100,d.newadd,1) : '-'}},
+				{field: "day11", title: "day11", templet: function(d) { return d.day11 != undefined ? okUtils.number.percent(d.day11*100,d.newadd,1) : '-'}},
+				{field: "day12", title: "day12", templet: function(d) { return d.day12 != undefined ? okUtils.number.percent(d.day12*100,d.newadd,1) : '-'}},
+				{field: "day13", title: "day13", templet: function(d) { return d.day13 != undefined ? okUtils.number.percent(d.day13*100,d.newadd,1) : '-'}},
+				{field: "day14", title: "day14", templet: function(d) { return d.day14 != undefined ? okUtils.number.percent(d.day14*100,d.newadd,1) : '-'}},
+				{field: "day15", title: "day15", templet: function(d) { return d.day15 != undefined ? okUtils.number.percent(d.day15*100,d.newadd,1) : '-'}},
+				{field: "day16", title: "day16", templet: function(d) { return d.day16 != undefined ? okUtils.number.percent(d.day16*100,d.newadd,1) : '-'}},
+				{field: "day17", title: "day17", templet: function(d) { return d.day17 != undefined ? okUtils.number.percent(d.day17*100,d.newadd,1) : '-'}},
+				{field: "day18", title: "day18", templet: function(d) { return d.day18 != undefined ? okUtils.number.percent(d.day18*100,d.newadd,1) : '-'}},
+				{field: "day19", title: "day19", templet: function(d) { return d.day19 != undefined ? okUtils.number.percent(d.day19*100,d.newadd,1) : '-'}},
+				{field: "day20", title: "day20", templet: function(d) { return d.day20 != undefined ? okUtils.number.percent(d.day20*100,d.newadd,1) : '-'}},
+				{field: "day21", title: "day21", templet: function(d) { return d.day21 != undefined ? okUtils.number.percent(d.day21*100,d.newadd,1) : '-'}},
+				{field: "day22", title: "day22", templet: function(d) { return d.day22 != undefined ? okUtils.number.percent(d.day22*100,d.newadd,1) : '-'}},
+				{field: "day23", title: "day23", templet: function(d) { return d.day23 != undefined ? okUtils.number.percent(d.day23*100,d.newadd,1) : '-'}},
+				{field: "day24", title: "day24", templet: function(d) { return d.day24 != undefined ? okUtils.number.percent(d.day24*100,d.newadd,1) : '-'}},
+				{field: "day25", title: "day25", templet: function(d) { return d.day25 != undefined ? okUtils.number.percent(d.day25*100,d.newadd,1) : '-'}},
+				{field: "day26", title: "day26", templet: function(d) { return d.day26 != undefined ? okUtils.number.percent(d.day26*100,d.newadd,1) : '-'}},
+				{field: "day27", title: "day27", templet: function(d) { return d.day27 != undefined ? okUtils.number.percent(d.day27*100,d.newadd,1) : '-'}},
+				{field: "day28", title: "day28", templet: function(d) { return d.day28 != undefined ? okUtils.number.percent(d.day28*100,d.newadd,1) : '-'}},
+				{field: "day29", title: "day29", templet: function(d) { return d.day29 != undefined ? okUtils.number.percent(d.day29*100,d.newadd,1) : '-'}},
+				{field: "day30", title: "day30", templet: function(d) { return d.day30 != undefined ? okUtils.number.percent(d.day30*100,d.newadd,1) : '-'}},
+				{field: "day31", title: "day31", templet: function(d) { return d.day31 != undefined ? okUtils.number.percent(d.day31*100,d.newadd,1) : '-'}},
+				{field: "day32", title: "day32", templet: function(d) { return d.day32 != undefined ? okUtils.number.percent(d.day32*100,d.newadd,1) : '-'}},
+				{field: "day33", title: "day33", templet: function(d) { return d.day33 != undefined ? okUtils.number.percent(d.day33*100,d.newadd,1) : '-'}},
+				{field: "day34", title: "day34", templet: function(d) { return d.day34 != undefined ? okUtils.number.percent(d.day34*100,d.newadd,1) : '-'}},
+				{field: "day35", title: "day35", templet: function(d) { return d.day35 != undefined ? okUtils.number.percent(d.day35*100,d.newadd,1) : '-'}},
+				{field: "day36", title: "day36", templet: function(d) { return d.day36 != undefined ? okUtils.number.percent(d.day36*100,d.newadd,1) : '-'}},
+				{field: "day37", title: "day37", templet: function(d) { return d.day37 != undefined ? okUtils.number.percent(d.day37*100,d.newadd,1) : '-'}},
+				{field: "day38", title: "day38", templet: function(d) { return d.day38 != undefined ? okUtils.number.percent(d.day38*100,d.newadd,1) : '-'}},
+				{field: "day39", title: "day39", templet: function(d) { return d.day39 != undefined ? okUtils.number.percent(d.day39*100,d.newadd,1) : '-'}},
+				{field: "day40", title: "day40", templet: function(d) { return d.day40 != undefined ? okUtils.number.percent(d.day40*100,d.newadd,1) : '-'}},
+				{field: "day41", title: "day41", templet: function(d) { return d.day41 != undefined ? okUtils.number.percent(d.day41*100,d.newadd,1) : '-'}},
+				{field: "day42", title: "day42", templet: function(d) { return d.day42 != undefined ? okUtils.number.percent(d.day42*100,d.newadd,1) : '-'}},
+				{field: "day43", title: "day43", templet: function(d) { return d.day43 != undefined ? okUtils.number.percent(d.day43*100,d.newadd,1) : '-'}},
+				{field: "day44", title: "day44", templet: function(d) { return d.day44 != undefined ? okUtils.number.percent(d.day44*100,d.newadd,1) : '-'}},
+				{field: "day45", title: "day45", templet: function(d) { return d.day45 != undefined ? okUtils.number.percent(d.day45*100,d.newadd,1) : '-'}},
+				{field: "day46", title: "day46", templet: function(d) { return d.day46 != undefined ? okUtils.number.percent(d.day46*100,d.newadd,1) : '-'}},
+				{field: "day47", title: "day47", templet: function(d) { return d.day47 != undefined ? okUtils.number.percent(d.day47*100,d.newadd,1) : '-'}},
+				{field: "day48", title: "day48", templet: function(d) { return d.day48 != undefined ? okUtils.number.percent(d.day48*100,d.newadd,1) : '-'}},
+				{field: "day49", title: "day49", templet: function(d) { return d.day49 != undefined ? okUtils.number.percent(d.day49*100,d.newadd,1) : '-'}},
+				{field: "day50", title: "day50", templet: function(d) { return d.day50 != undefined ? okUtils.number.percent(d.day50*100,d.newadd,1) : '-'}},
+				{field: "day51", title: "day51", templet: function(d) { return d.day51 != undefined ? okUtils.number.percent(d.day51*100,d.newadd,1) : '-'}},
+				{field: "day52", title: "day52", templet: function(d) { return d.day52 != undefined ? okUtils.number.percent(d.day52*100,d.newadd,1) : '-'}},
+				{field: "day53", title: "day53", templet: function(d) { return d.day53 != undefined ? okUtils.number.percent(d.day53*100,d.newadd,1) : '-'}},
+				{field: "day54", title: "day54", templet: function(d) { return d.day54 != undefined ? okUtils.number.percent(d.day54*100,d.newadd,1) : '-'}},
+				{field: "day55", title: "day55", templet: function(d) { return d.day55 != undefined ? okUtils.number.percent(d.day55*100,d.newadd,1) : '-'}},
+				{field: "day56", title: "day56", templet: function(d) { return d.day56 != undefined ? okUtils.number.percent(d.day56*100,d.newadd,1) : '-'}},
+				{field: "day57", title: "day57", templet: function(d) { return d.day57 != undefined ? okUtils.number.percent(d.day57*100,d.newadd,1) : '-'}},
+				{field: "day58", title: "day58", templet: function(d) { return d.day58 != undefined ? okUtils.number.percent(d.day58*100,d.newadd,1) : '-'}},
+				{field: "day59", title: "day59", templet: function(d) { return d.day59 != undefined ? okUtils.number.percent(d.day59*100,d.newadd,1) : '-'}},
+				{field: "day60", title: "day60", templet: function(d) { return d.day60 != undefined ? okUtils.number.percent(d.day60*100,d.newadd,1) : '-'}},
+				{field: "day61", title: "day61", templet: function(d) { return d.day61 != undefined ? okUtils.number.percent(d.day61*100,d.newadd,1) : '-'}},
+				{field: "day62", title: "day62", templet: function(d) { return d.day62 != undefined ? okUtils.number.percent(d.day62*100,d.newadd,1) : '-'}},
+				{field: "day63", title: "day63", templet: function(d) { return d.day63 != undefined ? okUtils.number.percent(d.day63*100,d.newadd,1) : '-'}},
+				{field: "day64", title: "day64", templet: function(d) { return d.day64 != undefined ? okUtils.number.percent(d.day64*100,d.newadd,1) : '-'}},
+				{field: "day65", title: "day65", templet: function(d) { return d.day65 != undefined ? okUtils.number.percent(d.day65*100,d.newadd,1) : '-'}},
+				{field: "day66", title: "day66", templet: function(d) { return d.day66 != undefined ? okUtils.number.percent(d.day66*100,d.newadd,1) : '-'}},
+				{field: "day67", title: "day67", templet: function(d) { return d.day67 != undefined ? okUtils.number.percent(d.day67*100,d.newadd,1) : '-'}},
+				{field: "day68", title: "day68", templet: function(d) { return d.day68 != undefined ? okUtils.number.percent(d.day68*100,d.newadd,1) : '-'}},
+				{field: "day69", title: "day69", templet: function(d) { return d.day69 != undefined ? okUtils.number.percent(d.day69*100,d.newadd,1) : '-'}},
+				{field: "day70", title: "day70", templet: function(d) { return d.day70 != undefined ? okUtils.number.percent(d.day70*100,d.newadd,1) : '-'}},
+				{field: "day71", title: "day71", templet: function(d) { return d.day71 != undefined ? okUtils.number.percent(d.day71*100,d.newadd,1) : '-'}},
+				{field: "day72", title: "day72", templet: function(d) { return d.day72 != undefined ? okUtils.number.percent(d.day72*100,d.newadd,1) : '-'}},
+				{field: "day73", title: "day73", templet: function(d) { return d.day73 != undefined ? okUtils.number.percent(d.day73*100,d.newadd,1) : '-'}},
+				{field: "day74", title: "day74", templet: function(d) { return d.day74 != undefined ? okUtils.number.percent(d.day74*100,d.newadd,1) : '-'}},
+				{field: "day75", title: "day75", templet: function(d) { return d.day75 != undefined ? okUtils.number.percent(d.day75*100,d.newadd,1) : '-'}},
+				{field: "day76", title: "day76", templet: function(d) { return d.day76 != undefined ? okUtils.number.percent(d.day76*100,d.newadd,1) : '-'}},
+				{field: "day77", title: "day77", templet: function(d) { return d.day77 != undefined ? okUtils.number.percent(d.day77*100,d.newadd,1) : '-'}},
+				{field: "day78", title: "day78", templet: function(d) { return d.day78 != undefined ? okUtils.number.percent(d.day78*100,d.newadd,1) : '-'}},
+				{field: "day79", title: "day79", templet: function(d) { return d.day79 != undefined ? okUtils.number.percent(d.day79*100,d.newadd,1) : '-'}},
+				{field: "day80", title: "day80", templet: function(d) { return d.day80 != undefined ? okUtils.number.percent(d.day80*100,d.newadd,1) : '-'}},
+				{field: "day81", title: "day81", templet: function(d) { return d.day81 != undefined ? okUtils.number.percent(d.day81*100,d.newadd,1) : '-'}},
+				{field: "day82", title: "day82", templet: function(d) { return d.day82 != undefined ? okUtils.number.percent(d.day82*100,d.newadd,1) : '-'}},
+				{field: "day83", title: "day83", templet: function(d) { return d.day83 != undefined ? okUtils.number.percent(d.day83*100,d.newadd,1) : '-'}},
+				{field: "day84", title: "day84", templet: function(d) { return d.day84 != undefined ? okUtils.number.percent(d.day84*100,d.newadd,1) : '-'}},
+				{field: "day85", title: "day85", templet: function(d) { return d.day85 != undefined ? okUtils.number.percent(d.day85*100,d.newadd,1) : '-'}},
+				{field: "day86", title: "day86", templet: function(d) { return d.day86 != undefined ? okUtils.number.percent(d.day86*100,d.newadd,1) : '-'}},
+				{field: "day87", title: "day87", templet: function(d) { return d.day87 != undefined ? okUtils.number.percent(d.day87*100,d.newadd,1) : '-'}},
+				{field: "day88", title: "day88", templet: function(d) { return d.day88 != undefined ? okUtils.number.percent(d.day88*100,d.newadd,1) : '-'}},
+				{field: "day89", title: "day89", templet: function(d) { return d.day89 != undefined ? okUtils.number.percent(d.day89*100,d.newadd,1) : '-'}},
+				{field: "day90", title: "day90", templet: function(d) { return d.day90 != undefined ? okUtils.number.percent(d.day90*100,d.newadd,1) : '-'}}
+			]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+      parseData: function(res){
+        let data = res.data;
+        for (let i = 0; data != null && i < data.length; ++i) {
+          let v = data[i];
+          for (let j = 0; v.days != null && j < v.days.length; ++j) {
+            data[i]["day"+(j+1)] = v.days[j];
+          }
+          console.log(data[i]);
+        }
+        return res;
+      }
+    });
+
+    form.on("submit(search)", function (data) {
+      let field = data.field;
+      field['datatype'] = 2;
+      remainTable.reload({
+        where: field,
+        page: {
+          curr: 1,
+        }
+      });
+      return false;
+    });
+	})
+</script>
+</body>
+</html>
