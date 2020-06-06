@@ -59,13 +59,6 @@ func RemainList(c echo.Context) error {
         endTime = now.Format("2006-01-02 15:04:05")
     }
 
-    endTime2 := endTime
-    t2,_ := time.Parse("2006-01-02 15:04:05", endTime2)
-    t3 := t2.Add(24*90*time.Hour)
-    if t3.After(now) {
-        endTime2 = now.Format("2006-01-02 15:04:05")
-    }
-
     mzone := gm.ZoneMap()
 
     db := common.GetStatDb()
@@ -89,40 +82,34 @@ func RemainList(c echo.Context) error {
         sql += fmt.Sprintf(",sum(day_%d) as sum_day_%d",i+1,i+1)
     }
     sql += " FROM t_remain"
-    sql2 := sql
-    sql += " WHERE datatype="+datatype+" AND statymd between '"+startTime+"' AND '"+endTime+"'" 
-    sql2 += " WHERE datatype="+datatype+" AND statymd between '"+startTime+"' AND '"+endTime2+"'" 
+    sql += " WHERE datatype="+datatype+" AND statymd between '%s' AND '%s'" 
     if zoneid != "" {
         sql += " AND zoneid in ("+zoneid+")"
-        sql2 += " AND zoneid in ("+zoneid+")"
     }
     sql += " GROUP BY statymd, zoneid ORDER BY statymd desc, zoneid desc"
-    sql2 += " GROUP BY statymd, zoneid ORDER BY statymd desc, zoneid desc"
 
     c.Logger().Error(sql)
 
     var total int
-    err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
+    err = tx.QueryRow("SELECT count(*) as total FROM ("+fmt.Sprintf(sql, startTime, endTime)+") a").Scan(&total)
     if err != nil {
         return err
     }
 
+    logs := make([]_remainlog, 0)
+
+    if total == 0 {
+        return ctx.SendArray(logs, total)
+    }
+
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql2 += " LIMIT "+limitstart+","+limitrow
-
-    c.Logger().Error(sql2)
-
-    rows, err := tx.Query(sql2)
+    rows, err := tx.Query(fmt.Sprintf(sql+" LIMIT "+limitstart+","+limitrow, startTime, endTime))
     if err != nil {
         return err
     }
     defer rows.Close()
 
-    // 充值记录查询开始时间,因为分页关系老的充值记录不用查询
-    rechargeStartTime := ""
-
-    logs := make([]_remainlog, 0)
     mdays := make(map[statkey]*statval,0)
     act := make([]float32,90)
     for rows.Next() {
@@ -137,46 +124,66 @@ func RemainList(c echo.Context) error {
         mdays[k] = &v
 
         if v,ok := mzone[r.zoneid]; ok {
-            r.Zonename = v.SZoneName
+            r.Zonename = v.SZoneName+"("+strconv.Itoa(int(v.IZoneId))+")"
             r.Zoneopenday = uint32(now.Sub(time.Unix(int64(v.IPublishTime),0)).Hours()/24)
         }
-        t,_ := time.Parse("2006-01-02", r.Statymd)
-        if !t.After(t2) {
-            r.Newadd = act[0]
-            r.Days = append(r.Days,act[0])
-            r.RechargeRate = "0.0%"
-            r.RechargePer = "0.00"
-            r.RechargePer2 = "0.00"
-            logs = append(logs, r)
-            rechargeStartTime = r.Statymd
-        }
+        r.Newadd = act[0]
+        r.Days = append(r.Days,act[0])
+        r.RechargeRate = "0.0%"
+        r.RechargePer = "0.00"
+        r.RechargePer2 = "0.00"
+        logs = append(logs, r)
     }
     if err := rows.Err(); err != nil {
         return err
     }
 
-    c.Logger().Error(mdays)
-
-    sqlwhere := " WHERE rolecreatetimeymd >= '" + rechargeStartTime + "'"
-    if zoneid != "" {
-        sqlwhere += " AND zoneid in ("+zoneid+")"
-    }
-
-    // 总充值金额和玩家数量
-    sql3 := "SELECT rolecreatetimeymd, zoneid, count( DISTINCT roleid ) AS rolenum, sum( money ) AS money FROM t_recharge"
-    sql3 += sqlwhere
-    sql3 += " GROUP BY rolecreatetimeymd, zoneid ORDER BY rolecreatetimeymd, zoneid"
-    c.Logger().Error(sql3)
-    rows2, err := tx.Query(sql3)
+    t2,_ := time.Parse("2006-01-02", logs[0].Statymd)
+    startTime2 := t2.Add(24*time.Hour).Format("2006-01-02")
+    endTime2 := t2.Add(90*24*time.Hour).Format("2006-01-02")
+    rows2, err := tx.Query(fmt.Sprintf(sql, startTime2, endTime2))
     if err != nil {
         return err
     }
     defer rows2.Close()
     for rows2.Next() {
+        var statymd string
+        var zoneid uint32
+        if err := rows2.Scan(&statymd, &zoneid, &act[0], &act[1], &act[2], &act[3], &act[4], &act[5], &act[6], &act[7], &act[8], &act[9], &act[10], &act[11], &act[12], &act[13], &act[14], &act[15], &act[16], &act[17], &act[18], &act[19], &act[20], &act[21], &act[22], &act[23], &act[24], &act[25], &act[26], &act[27], &act[28], &act[29], &act[30], &act[31], &act[32], &act[33], &act[34], &act[35], &act[36], &act[37], &act[38], &act[39], &act[40], &act[41], &act[42], &act[43], &act[44], &act[45], &act[46], &act[47], &act[48], &act[49], &act[50], &act[51], &act[52], &act[53], &act[54], &act[55], &act[56], &act[57], &act[58], &act[59], &act[60], &act[61], &act[62], &act[63], &act[64], &act[65], &act[66], &act[67], &act[68], &act[69], &act[70], &act[71], &act[72], &act[73], &act[74], &act[75], &act[76], &act[77], &act[78], &act[79], &act[80], &act[81], &act[82], &act[83], &act[84], &act[85], &act[86], &act[87], &act[88], &act[89]); err != nil {
+            return err
+        }
+        v := statval{}
+        v.active = make([]float32,90)
+        copy(v.active, act)
+        k := statkey{statymd:statymd, zoneid:zoneid}
+        mdays[k] = &v
+    }
+    if err := rows2.Err(); err != nil {
+        return err
+    }
+
+    t3,_ := time.Parse("2006-01-02", logs[len(logs)-1].Statymd)
+    startTime3 := t3.Format("2006-01-02")
+    sqlwhere := " WHERE rolecreatetimeymd >= '" + startTime3 + "'"
+    if zoneid != "" {
+        sqlwhere += " AND zoneid in ("+zoneid+")"
+    }
+
+    // 总充值金额和玩家数量
+    sql = "SELECT rolecreatetimeymd, zoneid, count( DISTINCT roleid ) AS rolenum, sum( money ) AS money FROM t_recharge"
+    sql += sqlwhere
+    sql += " GROUP BY rolecreatetimeymd, zoneid ORDER BY rolecreatetimeymd, zoneid"
+    c.Logger().Error(sql)
+    rows3, err := tx.Query(sql)
+    if err != nil {
+        return err
+    }
+    defer rows3.Close()
+    for rows3.Next() {
         var k statkey
         var rolenum float32
         var money float32
-        if err := rows2.Scan(&k.statymd, &k.zoneid, &rolenum, &money); err != nil {
+        if err := rows3.Scan(&k.statymd, &k.zoneid, &rolenum, &money); err != nil {
             return err
         }
         if v,ok := mdays[k]; ok {
@@ -185,20 +192,20 @@ func RemainList(c echo.Context) error {
         }
     }
     // 30ltv
-    sql3 = "SELECT rolecreatetimeymd, zoneid, floor(( unix_timestamp( statymd )- unix_timestamp( rolecreatetimeymd ))/ 86400 ) AS days, sum( money ) AS money FROM t_recharge"
-    sql3 += sqlwhere
-    sql3 += " GROUP BY rolecreatetimeymd, statymd, zoneid HAVING floor(( unix_timestamp( statymd )- unix_timestamp( rolecreatetimeymd ))/ 86400 ) <=30"
-    c.Logger().Error(sql3)
-    rows3, err := tx.Query(sql3)
+    sql = "SELECT rolecreatetimeymd, zoneid, floor(( unix_timestamp( statymd )- unix_timestamp( rolecreatetimeymd ))/ 86400 ) AS days, sum( money ) AS money FROM t_recharge"
+    sql += sqlwhere
+    sql += " GROUP BY rolecreatetimeymd, statymd, zoneid HAVING floor(( unix_timestamp( statymd )- unix_timestamp( rolecreatetimeymd ))/ 86400 ) <=30"
+    c.Logger().Error(sql)
+    rows4, err := tx.Query(sql)
     if err != nil {
         return err
     }
-    defer rows3.Close()
-    for rows3.Next() {
+    defer rows4.Close()
+    for rows4.Next() {
         var k statkey
         var days uint32
         var money float32
-        if err := rows2.Scan(&k.statymd, &k.zoneid, &days, &money); err != nil {
+        if err := rows4.Scan(&k.statymd, &k.zoneid, &days, &money); err != nil {
             return err
         }
 
@@ -212,19 +219,19 @@ func RemainList(c echo.Context) error {
         }
     }
     // 大R数量
-    sql3 = "SELECT rolecreatetimeymd, zoneid, sum( money ) AS money FROM t_recharge" 
-    sql3 += sqlwhere
-    sql3 += " GROUP BY rolecreatetimeymd, zoneid,roleid"
-    c.Logger().Error(sql3)
-    rows4, err := tx.Query(sql3)
+    sql = "SELECT rolecreatetimeymd, zoneid, sum( money ) AS money FROM t_recharge" 
+    sql += sqlwhere
+    sql += " GROUP BY rolecreatetimeymd, zoneid,roleid"
+    c.Logger().Error(sql)
+    rows5, err := tx.Query(sql)
     if err != nil {
         return err
     }
-    defer rows4.Close()
-    for rows4.Next() {
+    defer rows5.Close()
+    for rows5.Next() {
         var k statkey
         var money float32
-        if err := rows2.Scan(&k.statymd, &k.zoneid, &money); err != nil {
+        if err := rows5.Scan(&k.statymd, &k.zoneid, &money); err != nil {
             return err
         }
 
