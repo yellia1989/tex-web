@@ -80,7 +80,7 @@ func OnlineTime(c echo.Context) error {
 
 	// 初始化一套时间轴
 	time := []uint32{300, 600, 1800, 3600, 7200, 3600 * 4, 3600 * 8, 3600 * 12, 3600 * 24, 3600*24 + 1}
-num := make([]uint32, len(time))
+	num := make([]uint32, len(time))
 	// 统计数据
 	for _, t := range mRole {
 		switch {
