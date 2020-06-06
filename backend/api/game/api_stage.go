@@ -220,7 +220,7 @@ func StagePass(c echo.Context) error {
 		return err
 	}
 
-    c.Logger().Error(sql)
+	c.Logger().Error(sql)
 
 	stage2StarNum := make(map[uint32]*_star)
 	for rows2.Next() {
@@ -229,9 +229,9 @@ func StagePass(c echo.Context) error {
 			return nil
 		}
 
-        if _, ok := stage2StarNum[stage]; !ok {
-            stage2StarNum[stage] = &_star{0, 0, 0}
-        }
+		if _, ok := stage2StarNum[stage]; !ok {
+			stage2StarNum[stage] = &_star{0, 0, 0}
+		}
 		switch star {
 		case 1:
 			stage2StarNum[stage].star1 = num
@@ -254,12 +254,12 @@ func StagePass(c echo.Context) error {
 	}
 	defer rows.Close()
 
-    c.Logger().Error(sql)
+	c.Logger().Error(sql)
 
 	logs := make([]_stagePass, 0)
-    total := 0
+	total := 0
 	for rows.Next() {
-        total++
+		total++
 		var r _stagePass
 		var firstPassNum, totalPassNum mysql.NullInt32
 		if err := rows.Scan(&r.StageID, &r.StageFirstStartNum, &firstPassNum, &totalPassNum); err != nil {
@@ -270,9 +270,9 @@ func StagePass(c echo.Context) error {
 
 		r.RoleNum = roleNum
 
-        if _, ok := stage2StarNum[r.StageID]; !ok {
-            stage2StarNum[r.StageID] = &_star{0, 0, 0}
-        }
+		if _, ok := stage2StarNum[r.StageID]; !ok {
+			stage2StarNum[r.StageID] = &_star{0, 0, 0}
+		}
 		r.StageFirstPassStar1Num = stage2StarNum[r.StageID].star1
 		r.StageFirstPassStar2Num = stage2StarNum[r.StageID].star2
 		r.StageFirstPassStar3Num = stage2StarNum[r.StageID].star3
