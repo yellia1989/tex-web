@@ -107,4 +107,5 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/stat/newadd/list", stat.NewaddList)
     group.GET("/stat/remain/list", stat.RemainList)
     group.GET("/stat/remain/loss", stat.LossList)
+    group.GET("/stat/income/list", stat.IncomeList)
 }
