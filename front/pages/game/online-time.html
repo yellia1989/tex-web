@@ -16,12 +16,6 @@
           <div id="zoneSelect"></div>
         </div>
         <div class="layui-input-inline">
-          <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
-        </div>
-        <div class="layui-input-inline">
-          <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
-        </div>
-        <div class="layui-input-inline">
           <button class="layui-btn" lay-submit lay-filter="search">
             <i class="layui-icon layui-icon-refresh-3"></i>
           </button>
@@ -35,18 +29,14 @@
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
   var zoneid;
-  layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+  layui.use(["table", "okUtils", "form", "okLayer"], function () {
     let table = layui.table;
     let okUtils = layui.okUtils;
     let form = layui.form;
     let okLayer = layui.okLayer;
     let xmSelect = layui.xmSelect;
     let $ = layui.jquery;
-    let laydate = layui.laydate
     okLoading.close();
-
-    laydate.render({elem: "#startTime", type: "datetime"});
-    laydate.render({elem: "#endTime", type: "datetime"});
 
     let zoneSelect = xmSelect.render({
       el: '#zoneSelect',
@@ -83,7 +73,7 @@
     let stageTable = table.render({
       elem: "#tableId",
       url: "/api/game/online/time",
-      where: {zoneid:zoneSelect.getValue('value')},
+      where: {zoneid:'1'},
       data:[],
       text: {
         none: '暂无相关数据',

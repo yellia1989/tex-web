@@ -73,12 +73,12 @@
     let stageTable = table.render({
       elem: "#tableId",
       url: "/api/game/stage/pass",
-      where: {zoneid:zoneSelect.getValue('value')},
+      where: {zoneid:'1'},
       data:[],
       text: {
         none: '暂无相关数据',
       },
-      limit: 10,
+      limit: 30,
       page: true,
       cols: [[
         {field: "stageid", title: "关卡id"},

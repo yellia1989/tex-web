@@ -12,7 +12,7 @@ import (
 
 type _stagelog struct {
 	Id           uint32 `json:"id"`
-	Time         uint32 `json:time`
+	Time         string `json:"time"`
 	StageId      uint32 `json:"stageid"`
 	CostTime     uint32 `json:"cost_time"`
 	RestoreTimes uint32 `json:"restore_times"`
