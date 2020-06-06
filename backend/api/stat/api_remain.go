@@ -269,3 +269,102 @@ func RemainList(c echo.Context) error {
 
     return ctx.SendArray(logs, total)
 }
+
+type _losslog struct {
+    Statymd string `json:"statymd"`
+    zoneid uint32
+    Zonename string `json:"zone_name"`
+    Zoneopenday uint32 `json:"zone_openday"`
+    WeekActive1 float32 `json:"week_active1"`
+    WeekActive2 float32 `json:"week_active2"`
+    DWeekActive1 float32 `json:"dweek_active1"`
+    DWeekActive2 float32 `json:"dweek_active2"`
+    MonthActive1 float32 `json:"month_active1"`
+    MonthActive2 float32 `json:"month_active2"`
+    PayWeekActive1 float32 `json:"pay_week_active1"`
+    PayWeekActive2 float32 `json:"pay_week_active2"`
+    PayDWeekActive1 float32 `json:"pay_dweek_active1"`
+    PayDWeekActive2 float32 `json:"pay_dweek_active2"`
+    PayMonthActive1 float32 `json:"pay_month_active1"`
+    PayMonthActive2 float32 `json:"pay_month_active2"`
+}
+
+func LossList(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    zoneid := ctx.QueryParam("zoneid")
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+    startTime := ctx.QueryParam("startTime")
+    endTime := ctx.QueryParam("endTime")
+
+    now,_ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+    if startTime == "" {
+        startTime = now.Add(-7*24*time.Hour).Format("2006-01-02 15:04:05")
+    }
+    if endTime == "" {
+        endTime = now.Format("2006-01-02 15:04:05")
+    }
+
+    db := common.GetStatDb()
+    if db == nil {
+        return ctx.SendError(-1, "连接数据库失败")
+    }
+
+    tx, err := db.Begin()
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    _, err = tx.Exec("USE db_stat")
+    if err != nil {
+        return err
+    }
+
+    sql := "SELECT statymd,zoneid,sum(week_active_1) as week_active_1, sum(week_active_2) as week_active_2,sum(dweek_active_1) as dweek_active_1,sum(dweek_active_2) as dweek_active_2, sum(month_active_1) as month_active_1, sum(month_active_2) as month_active_2,sum(pay_week_active_1) as pay_week_active_1, sum(pay_week_active_2) as pay_week_active_2,sum(pay_dweek_active_1) as pay_dweek_active_1,sum(pay_dweek_active_2) as pay_dweek_active_2, sum(pay_month_active_1) as pay_month_active_1, sum(pay_month_active_2) as pay_month_active_2 FROM t_lose"
+    sql += " WHERE statymd between '"+startTime+"' AND '"+endTime+"'"
+    if zoneid != "" {
+        sql += " AND zoneid in ("+zoneid+")"
+    }
+    sql += " GROUP BY statymd, zoneid ORDER BY statymd desc, zoneid desc"
+
+    c.Logger().Error(sql)
+
+    var total int
+    err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
+    if err != nil {
+        return err
+    }
+
+    logs := make([]_losslog,0)
+
+    limitstart := strconv.Itoa((page-1)*limit)
+    limitrow := strconv.Itoa(limit)
+    rows, err := tx.Query(sql+" LIMIT "+limitstart+","+limitrow)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    mzone := gm.ZoneMap()
+
+    for rows.Next() {
+        var r _losslog
+        if err := rows.Scan(&r.Statymd, &r.zoneid, &r.WeekActive1, &r.WeekActive2, &r.DWeekActive1, &r.DWeekActive2, &r.MonthActive1, &r.MonthActive2, &r.PayWeekActive1, &r.PayWeekActive2, &r.PayDWeekActive1, &r.PayDWeekActive2, &r.PayMonthActive1, &r.PayMonthActive2); err != nil {
+            return err
+        }
+
+        if v,ok := mzone[r.zoneid]; ok {
+            r.Zonename = v.SZoneName+"("+strconv.Itoa(int(v.IZoneId))+")"
+            r.Zoneopenday = uint32(now.Sub(time.Unix(int64(v.IPublishTime),0)).Hours()/24)
+        }
+
+        logs = append(logs, r)
+    }
+
+    if err := tx.Commit(); err != nil {
+        return err
+    }
+
+    return ctx.SendArray(logs, total)
+}
