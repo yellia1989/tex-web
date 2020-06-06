@@ -3,7 +3,6 @@ package game
 import (
 	"strconv"
 
-	"sort"
 	"time"
 
 	"github.com/labstack/echo"
@@ -80,41 +79,37 @@ func OnlineTime(c echo.Context) error {
 	roleNum := uint32(len(mRole))
 
 	// 初始化一套时间轴
-	times := map[uint32]uint32{300: 0, 600: 0, 1800: 0, 3600: 0, 7200: 0, 3600 * 4: 0, 3600 * 8: 0, 3600 * 12: 0, 3600 * 24: 0, 3600*24 + 1: 0}
+	time := []uint32{300, 600, 1800, 3600, 7200, 3600 * 4, 3600 * 8, 3600 * 12, 3600 * 24, 3600*24 + 1}
+num := make([]uint32, len(time))
 	// 统计数据
 	for _, t := range mRole {
 		switch {
 		case t <= 300:
-			times[300]++
+			num[0]++
 		case t <= 600:
-			times[600]++
+			num[1]++
 		case t <= 1800:
-			times[1800]++
+			num[2]++
 		case t <= 3600:
-			times[3600]++
+			num[3]++
 		case t <= 7200:
-			times[7200]++
+			num[4]++
 		case t <= 3600*4:
-			times[3600*4]++
+			num[5]++
 		case t <= 3600*8:
-			times[3600*8]++
+			num[6]++
 		case t <= 3600*12:
-			times[3600*12]++
+			num[7]++
 		case t <= 3600*24:
-			times[3600*24]++
+			num[8]++
 		default:
-			times[3600*24+1]++
+			num[9]++
 		}
 	}
-	tmp := make([]int, 0, 10)
-	for k := range times {
-		tmp = append(tmp, int(k))
-	}
-	sort.Ints(tmp)
 
 	logs := make([]_onlineTime, 0)
-	for _, t := range tmp {
-		r := _onlineTime{RoleNum: times[uint32(t)], RoleNumTotal: roleNum}
+	for k, t := range time {
+		r := _onlineTime{RoleNum: num[k], RoleNumTotal: roleNum}
 		switch {
 		case t == 300:
 			r.TotalTime = "0-5分钟"
