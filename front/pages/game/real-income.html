@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>实时充值</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="/css/oksub.css">
-	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <meta charset="UTF-8">
+  <title>实时充值</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 <body>
 <div class="ok-body">
@@ -15,11 +15,11 @@
 <script src="/lib/layui/layui.js"></script>
 <script src="/lib/echarts/echarts.min.js"></script>
 <script>
-	layui.use(["okUtils", "okLayer"], function () {
-		let okUtils = layui.okUtils;
+  layui.use(["okUtils", "okLayer"], function () {
+    let okUtils = layui.okUtils;
     let okLayer = layui.okLayer;
     let $ = layui.jquery;
-		okLoading.close();
+    okLoading.close();
 
     let myChart = echarts.init(document.getElementById('main'));
     let option = {
@@ -115,7 +115,7 @@
     window.addEventListener("resize", function () {
       myChart.resize();
     });
-	});
+  });
 </script>
 </body>
 </html>
