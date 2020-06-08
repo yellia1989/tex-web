@@ -93,7 +93,7 @@
 				{field: "zone_openday", title: "开服天数", fixed: 'left', templet: function(d) { return d.zone_openday == 0 ? "-": d.zone_openday;}},
 				{field: "newadd", title: "日新增", fixed: 'left'},
 				{field: "recharge_money", title: "累计充值", fixed: 'left'},
-				{field: "recharge_per", title: "平均贡献", fixed: 'left', templet: function(d) { return okUtils.number.percent(d.recharge_rolenum, d.active);}},
+				{field: "recharge_per", title: "平均贡献", fixed: 'left', templet: function(d) { return okUtils.number.percent(d.recharge_money, d.newadd, 2, '');}},
 				{field: "recharge_money3", title: "3日累计", fixed: 'left'},
 				{field: "recharge_money7", title: "7日累计", fixed: 'left'},
 				{field: "recharge_money14", title: "14累计", fixed: 'left'},

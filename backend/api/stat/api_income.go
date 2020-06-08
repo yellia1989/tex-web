@@ -107,11 +107,11 @@ type _incomemoneylog struct {
     Zonename string `json:"zone_name"`
     Zoneopenday uint32 `json:"zone_openday"`
     Newadd uint32 `json:"newadd"`
-    Money float32 `json:"money"`
-    Money3 float32 `json:"money3"`
-    Money7 float32 `json:"money7"`
-    Money14 float32 `json:"money14"`
-    Money30 float32 `json:"money30"`
+    Money float32 `json:"recharge_money"`
+    Money3 float32 `json:"recharge_money3"`
+    Money7 float32 `json:"recharge_money7"`
+    Money14 float32 `json:"recharge_money14"`
+    Money30 float32 `json:"recharge_money30"`
     Days []float32 `json:"days"`
 }
 
