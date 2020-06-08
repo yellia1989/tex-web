@@ -33,8 +33,9 @@
 <script>
   var zoneid;
   var roleid;
-  layui.use(["table", "okUtils", "form", "okLayer"], function () {
+  layui.use(["table", "okUtils", "form", "okLayer", "opTable"], function () {
     let table = layui.table;
+    let opTable = layui.opTable;
     let okUtils = layui.okUtils;
     let form = layui.form;
     let okLayer = layui.okLayer;
@@ -74,7 +75,7 @@
       console.log(error);
     });
 
-    let roleTable = table.render({
+    let roleTable = opTable.render({
       elem: "#tableId",
       url: "/api/game/role/list",
       where: {zoneid: 1},
@@ -91,6 +92,11 @@
         {field: "reg_time", title: "注册时间"},
         {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
+      openCols: [
+        {field: "coin", title: "金币数"},
+        {field: "diamond", title: "钻石数"},
+        {field: "heroList", title: "拥有英雄"},
+      ],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
