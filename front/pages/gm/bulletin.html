@@ -15,11 +15,10 @@
   </div>
   <!--js逻辑-->
   <script src="../../lib/layui/layui.js"></script>
-  <script type="text/javascript" src="/lib/layui-op-table/opTable/opTable.js"></script>
   <script>
     var editdata;
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
-      let table = layui.opTable;
+      let table = layui.table;
       let okLayer = layui.okLayer;
       let okUtils = layui.okUtils;
       okLoading.close();
@@ -35,21 +34,18 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "id", title: "ID", width: 90, fixed: 'left' },
+          { field: "id", title: "ID" },
           { field: "sTitle", title: "标题", align: "center" },
           { field: "sContent", title: "内容" },
           { field: "sBeginTime", title: "开始时间", align: "center" },
           { field: "sEndTime", title: "结束时间", align: "center" },
           {
-            field: "iDisplay", title: "是否显示", width: 90, align: "center", templet: function (d) {
+            field: "iDisplay", title: "是否显示", align: "center", templet: function (d) {
               return d.iIsDisplay == 1 ? '是' : '否';
             }
           },
-          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
-        ]],
-        openCols: [
           {
-            field: "iFlag", title: "状态", width: 90, align: "center", templet: function (d) {
+            field: "iFlag", title: "状态", align: "center", templet: function (d) {
               var ret = '';
               switch (d.iFlag) {
                 case 0: ret = '正常'; break;
@@ -61,8 +57,8 @@
               return ret;
             }
           },
-        ],
-        openType: 0,
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
+        ]],
         parseData: function (res) {
           for (i = 0; i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iBulletinId;
