@@ -150,6 +150,30 @@ func IAPList(c echo.Context) error {
     return ctx.SendResponse(iaps)
 }
 
+type _item struct {
+    ID uint32 `json:"value"`
+    Name string `json:"name"`
+}
+func ItemList(c echo.Context) error {
+    ctx := c.(*mid.Context)
+
+    zoneid := "1"
+    scmd := "item_list"
+    var result string
+    u := ctx.GetUser()
+    err := cmd(u, zoneid, scmd, &result)
+    if err !=  nil {
+        return err
+    }
+
+    items := make([]_item,0)
+    if err := json.Unmarshal([]byte(result), &items); err != nil {
+        return err
+    }
+
+    return ctx.SendResponse(items)
+}
+
 func BanSpeak(c echo.Context) error {
     ctx := c.(*mid.Context)
     zoneid := ctx.FormValue("zoneid")
