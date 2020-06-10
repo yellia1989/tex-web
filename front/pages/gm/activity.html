@@ -11,17 +11,61 @@
 
 <body>
   <div class="ok-body">
-    <table id="tableId" lay-filter="tableFilter"></table>
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <div class="layui-input-inline">
+            <div id="activitySelect"></div>
+          </div>
+          <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="search">
+              <i class="layui-icon layui-icon-refresh-3"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
+  <table id="tableId" lay-filter="tableFilter"></table>
   <!--js逻辑-->
   <script src="../../lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     var editActivity;
-    layui.use(["element", "table", "okLayer", "okUtils"], function () {
-      let table = layui.table;
-      let okLayer = layui.okLayer;
-      let okUtils = layui.okUtils;
-      okLoading.close();
+      layui.use(["element", "table", "okLayer", "okUtils"], function () {
+        let table = layui.table;
+        let okLayer = layui.okLayer;
+        let okUtils = layui.okUtils;
+        let xmSelect = layui.xmSelect;
+        okLoading.close();
+
+        let activitySelect = xmSelect.render({
+          el: '#activitySelect',
+          name: 'activityType',
+          prop: {
+            value: 'activity_type',
+            name: 'type_name',
+          },
+          tips: '请选择一个活动类型',
+          clickClose: true,
+          model: {
+            label: {
+              type: 'block',
+              block: {
+                //是否显示删除图标
+                showIcon: false,
+              }
+            }
+          }
+        });
+
+        okUtils.ajax("/api/gm/activity/typeList", "get", null, false).done(function (response) {
+          activitySelect.update({
+            data: response.data,
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
 
       let activityTable = table.render({
         elem: "#tableId",
