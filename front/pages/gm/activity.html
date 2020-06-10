@@ -32,11 +32,12 @@
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     var editActivity;
-      layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
         let table = layui.table;
         let okLayer = layui.okLayer;
         let okUtils = layui.okUtils;
         let xmSelect = layui.xmSelect;
+        let form = layui.form;
         okLoading.close();
 
         let activitySelect = xmSelect.render({
@@ -47,7 +48,6 @@
             name: 'type_name',
           },
           tips: '晒选活动类型',
-          clickClose: true,
           model: {
             label: {
               type: 'block',
@@ -57,6 +57,7 @@
               }
             }
           },
+          autoRow: true,
           toolbar: {
             show: true,
             list: ["ALL", "CLEAR", "REVERSE"]
@@ -139,8 +140,8 @@
       }
 
         form.on("submit(search)", function (data) {
-          stageTable.reload({
-            url: "/api/game/activity/typeList",
+          activityTable.reload({
+            url: "/api/gm/activity/list",
             where: data.field,
           });
           return false;

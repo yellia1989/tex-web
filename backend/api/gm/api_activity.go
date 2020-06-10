@@ -75,9 +75,9 @@ func ActivityList(c echo.Context) error {
 		types := strings.Split(sType, ",")
 		where := ""
 		for i := 0; i < len(types)-1; i++ {
-			where += "activity_id=" + types[i] + "OR "
+			where += "activity_type=" + types[i] + " OR "
 		}
-		where += "activity_id=" + types[len(types)-1]
+		where += "activity_type=" + types[len(types)-1]
 		sql = "SELECT * FROM t_activity WHERE " + where + " ORDER BY activity_id DESC;"
 	}
 	rows, err := tx.Query(sql)
