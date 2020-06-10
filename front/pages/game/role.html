@@ -31,9 +31,9 @@
 <script src="/lib/layui/layui.js"></script>
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
-layui.config({
-            base: "../../lib/opTable/"
-            });
+  layui.config({
+    base: "../../lib/opTable/"
+  });
   var zoneid;
   var roleid;
   layui.use(["table", "okUtils", "form", "okLayer", "opTable"], function () {
@@ -99,6 +99,7 @@ layui.config({
         {field: "coin", title: "金币数"},
         {field: "diamond", title: "钻石数"},
         {field: "heroList", title: "拥有英雄"},
+        {field: "itemList", title: "拥有道具"},
       ],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
