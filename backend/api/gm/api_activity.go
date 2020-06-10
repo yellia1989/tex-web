@@ -13,7 +13,7 @@ type _activityData struct {
 	ApplyUser     string `json:"apply_user"`
 	ConfigureData string `json:"configure_data"`
 	ConfigureDesc string `json:"configure_desc"`
-	Ts            string `json:"ts"`
+	Ts            string `json:"_"`
 }
 
 type _activityType struct {
@@ -21,28 +21,29 @@ type _activityType struct {
 	Name string `json:"type_name"`
 }
 
-func ActivityTypeList(c echo.Context) []_activityData {
-	types := []_activityData{
-		{1, "模块控制"},
-		{2, "个人消耗"},
-		{3, "冲榜"},
-		{4, "累计充值"},
-		{5, "首冲送英雄"},
-		{6, "一元购"},
-		{7, "七日登陆"},
-		{8, "免费福利"},
-		{9, "成长基金"},
-		{10, "个性化活动"},
-		{11, "在线时长奖励"},
-		{12, "英雄众筹"},
-		{13, "许愿"},
-		{14, "英雄兑换"},
-		{15, "幸运转盘"},
-		{16, "邀请有礼"},
-		{17, "vip福利"},
+func ActivityTypeList(c echo.Context) error {
+ctx := c.(*mid.Context)
+	types := []_activityType{
+		{1, "模块控制",},
+		{2, "个人消耗",},
+		{3, "冲榜",},
+		{4, "累计充值",},
+		{5, "首冲送英雄",},
+		{6, "一元购",},
+		{7, "七日登陆",},
+		{8, "免费福利",},
+		{9, "成长基金",},
+		{10, "个性化活动",},
+		{11, "在线时长奖励",},
+		{12, "英雄众筹",},
+		{13, "许愿",},
+		{14, "英雄兑换",},
+		{15, "幸运转盘",},
+		{16, "邀请有礼",},
+		{17, "vip福利",},
 	}
 
-	return types
+	return ctx.SendResponse(types)
 }
 
 func ActivityList(c echo.Context) error {

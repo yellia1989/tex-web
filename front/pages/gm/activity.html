@@ -46,7 +46,7 @@
             value: 'activity_type',
             name: 'type_name',
           },
-          tips: '请选择一个活动类型',
+          tips: '晒选活动类型',
           clickClose: true,
           model: {
             label: {
@@ -56,7 +56,10 @@
                 showIcon: false,
               }
             }
-          }
+          },
+toolbar: {
+show: true,
+}
         });
 
         okUtils.ajax("/api/gm/activity/typeList", "get", null, false).done(function (response) {
