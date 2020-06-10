@@ -101,6 +101,22 @@
         {field: "heroList", title: "拥有英雄"},
         {field: "itemList", title: "拥有道具"},
       ],
+      openTable: function(itemData) {
+        return {
+          elem: "#child" + itemData.LAY_INDEX,
+          id: "child" + itemData.LAY_INDEX,
+          cols: [[
+            {field: 'id', title: "拉可适当"}
+          ]],
+          openTable: function(item) {
+            return {
+              cols: [[
+                {field: 'id2', title: "hello"}
+              ]]
+            }
+          }
+        }
+      },
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
