@@ -69,6 +69,7 @@
       okUtils.ajax("/api/gm/zone/simplelist", "get", {gf: true}, false).done(function (response) {
         zoneSelect.update({
           data: response.data,
+          initValue: data[1],
         });
       }).fail(function (error) {
         console.log(error);

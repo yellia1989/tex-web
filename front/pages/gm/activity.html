@@ -57,9 +57,10 @@
               }
             }
           },
-toolbar: {
-show: true,
-}
+          toolbar: {
+            show: true,
+            list: ["ALL", "CLEAR", "REVERSE"]
+          }
         });
 
         okUtils.ajax("/api/gm/activity/typeList", "get", null, false).done(function (response) {
@@ -136,6 +137,14 @@ show: true,
           activityTable.reload();
         })
       }
+
+        form.on("submit(search)", function (data) {
+          stageTable.reload({
+            url: "/api/game/activity/typeList",
+            where: data.field,
+          });
+          return false;
+        });
     })
   </script>
   <!-- 头工具栏模板 -->

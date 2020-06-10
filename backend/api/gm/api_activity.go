@@ -1,6 +1,8 @@
 package gm
 
 import (
+	"strings"
+
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -22,25 +24,25 @@ type _activityType struct {
 }
 
 func ActivityTypeList(c echo.Context) error {
-ctx := c.(*mid.Context)
+	ctx := c.(*mid.Context)
 	types := []_activityType{
-		{1, "模块控制",},
-		{2, "个人消耗",},
-		{3, "冲榜",},
-		{4, "累计充值",},
-		{5, "首冲送英雄",},
-		{6, "一元购",},
-		{7, "七日登陆",},
-		{8, "免费福利",},
-		{9, "成长基金",},
-		{10, "个性化活动",},
-		{11, "在线时长奖励",},
-		{12, "英雄众筹",},
-		{13, "许愿",},
-		{14, "英雄兑换",},
-		{15, "幸运转盘",},
-		{16, "邀请有礼",},
-		{17, "vip福利",},
+		{1, "模块控制"},
+		{2, "个人消耗"},
+		{3, "冲榜"},
+		{4, "累计充值"},
+		{5, "首冲送英雄"},
+		{6, "一元购"},
+		{7, "七日登陆"},
+		{8, "免费福利"},
+		{9, "成长基金"},
+		{10, "个性化活动"},
+		{11, "在线时长奖励"},
+		{12, "英雄众筹"},
+		{13, "许愿"},
+		{14, "英雄兑换"},
+		{15, "幸运转盘"},
+		{16, "邀请有礼"},
+		{17, "vip福利"},
 	}
 
 	return ctx.SendResponse(types)
@@ -48,6 +50,7 @@ ctx := c.(*mid.Context)
 
 func ActivityList(c echo.Context) error {
 	ctx := c.(*mid.Context)
+	sType := ctx.QueryParam("activityType")
 
 	db := common.GetLogDb()
 	if db == nil {
@@ -65,7 +68,18 @@ func ActivityList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT * FROM t_activity ORDER BY activity_id DESC;"
+	sql := ""
+	if sType == "" {
+		sql = "SELECT * FROM t_activity ORDER BY activity_id DESC;"
+	} else {
+		types := strings.Split(sType, ",")
+		where := ""
+		for i := 0; i < len(types)-1; i++ {
+			where += "activity_id=" + types[i] + "OR "
+		}
+		where += "activity_id=" + types[len(types)-1]
+		sql = "SELECT * FROM t_activity WHERE " + where + " ORDER BY activity_id DESC;"
+	}
 	rows, err := tx.Query(sql)
 	if err != nil {
 		return err
