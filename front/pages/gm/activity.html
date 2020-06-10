@@ -72,6 +72,7 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
+            editActivity = data;
             edit(data.id);
             break;
         }
@@ -85,7 +86,7 @@
 
       function edit(id) {
         okLayer.open("编辑活动", "/gm/activity-edit.html", "90%", "90%", null, function () {
-          dirTable.reload();
+          activityTable.reload();
         })
       }
     })

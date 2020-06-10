@@ -37,7 +37,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">配置数据</label>
         <div class="layui-input-block">
-          <textarea name="config_data" class="layui-textarea"></textarea>
+          <textarea name="configure_data" class="layui-textarea"></textarea>
         </div>
       </div>
 
@@ -57,11 +57,12 @@
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
+      okLoading.close();
 
       $("input[name='apply_zone']").val(parent.editActivity.apply_zone);
       $("input[name='apply_user']").val(parent.editActivity.apply_user);
       $("textarea[name='configure_desc']").val(parent.editActivity.configure_desc);
-      $("textarea[name='config_data']").val(parent.editActivity.config_data);
+      $("textarea[name='configure_data']").val(parent.editActivity.configure_data);
 
       //监听提交
       form.on('submit(add)', function (data) {
