@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <title>活动管理</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="../../css/oksub.css">
-  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 
 <body>
@@ -23,12 +23,12 @@
             </button>
           </div>
         </div>
+        <table id="tableId" lay-filter="tableFilter"></table>
       </div>
     </form>
   </div>
-  <table id="tableId" lay-filter="tableFilter"></table>
   <!--js逻辑-->
-  <script src="../../lib/layui/layui.js"></script>
+  <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     var editActivity;
@@ -64,7 +64,7 @@
           }
         });
 
-        okUtils.ajax("/api/gm/activity/typeList", "get", null, false).done(function (response) {
+        okUtils.ajax("/api/gm/activity/type", "get", null, false).done(function (response) {
           activitySelect.update({
             data: response.data,
           });

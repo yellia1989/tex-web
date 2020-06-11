@@ -75,6 +75,7 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
 
     group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
+    group.GET("/gm/activity/type", gm.ActivityTypeList)     // 获取活动类型
 
     group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
     group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
