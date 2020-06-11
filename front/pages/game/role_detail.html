@@ -42,6 +42,10 @@
             { field: "level", title: "英雄等级" },
             { field: "star", title: "英雄星级" },
           ]],
+          initSort: {
+            field: 'id',
+            type: 'asc'
+          },
           parseData: function (res) {
             for (i = 0; i < res.data.length; ++i) {
               res.data[i].id = res.data[i].iHeroId;
