@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <title>活动管理</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="../../css/oksub.css">
-  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 
 <body>
@@ -23,12 +23,12 @@
             </button>
           </div>
         </div>
+        <table id="tableId" lay-filter="tableFilter"></table>
       </div>
     </form>
   </div>
-  <table id="tableId" lay-filter="tableFilter"></table>
   <!--js逻辑-->
-  <script src="../../lib/layui/layui.js"></script>
+  <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     var editActivity;
@@ -64,7 +64,7 @@
           }
         });
 
-        okUtils.ajax("/api/gm/activity/typeList", "get", null, false).done(function (response) {
+        okUtils.ajax("/api/gm/activity/type", "get", null, false).done(function (response) {
           activitySelect.update({
             data: response.data,
           });
@@ -87,13 +87,15 @@
           { field: "activity_type", title: "活动类型", width: 90, align: "center" },
           { field: "configure_desc", title: "活动备注" },
           {
-            field: "iBeginTime", title: "开始时间", align: "center", templet: function (d) {
-              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            field: "begin_time", title: "开始时间", align: "center", templet: function (d) {
+              let json = JSON.parse(d.configure_data);
+              return json.constrain.begin_time != undefined ? json.constrain.begin_time : "";
             }
           },
           {
-            field: "iEndTime", title: "结束时间", align: "center", templet: function (d) {
-              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+            field: "end_time", title: "结束时间", align: "center", templet: function (d) {
+              let json = JSON.parse(d.configure_data);
+              return json.constrain.end_time != undefined ? json.constrain.end_time : "";
             }
           },
           { field: "configure_data", title: "配置数据", align: "center" },

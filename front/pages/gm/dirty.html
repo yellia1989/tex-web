@@ -45,10 +45,7 @@
       //监听提交
       form.on('submit(test)', function (data) {
         okUtils.ajax("/api/gm/dirty/test", "post", data.field, true).done(function (response) {
-          okLayer.greenTickMsg(response.data, function () {
-            $("#output").val(response.data);
-            parent.layer.close(parent.layer.getFrameIndex(window.name));
-          });
+          $("#output").val(response.data);
         }).fail(function (error) {
           console.log(error);
         });
