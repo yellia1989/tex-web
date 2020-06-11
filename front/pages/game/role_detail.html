@@ -12,8 +12,8 @@
 <body>
   <div class="layui-tab layui-tab-brief" lay-allowClose="true">
     <ul class="layui-tab-title">
-      <li class="layui-this">基础信息</li>
       <li>英雄列表</li>
+      <li class="layui-this">基础信息</li>
     </ul>
     <div class="layui-tab-content">
       <div class="layui-tab-item layui-show">金币</div>
@@ -27,6 +27,7 @@
         let element = layui.element;
         let table = layui.table;
         let $ = layui.jquery;
+        okLoading.close();
 
         let roleTable = table.render({
           elem: "#heroTable",
