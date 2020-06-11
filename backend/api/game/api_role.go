@@ -84,7 +84,7 @@ func RoleList(c echo.Context) error {
 }
 
 type _heroData struct {
-	HeroID uint32 `json:"heroID"`
+	HeroID uint32 `json:"iHeroId"`
 	Name string `json:"name"`
 	Level uint32 `json:"level"`
 	Star uint32 `json:"star"`
@@ -108,7 +108,6 @@ func getRoleDetail(zone, role string) []byte {
 	}
 
 	buff.WriteString(result+"\n")
-	fmt.Println(result)
 	return buff.Bytes()
 }
 
@@ -120,12 +119,29 @@ func RoleHeroList(c echo.Context) error {
 	if zoneId == "" || roleId == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
+
 	result := getRoleDetail(zoneId, roleId)
 	role := make(map[string]interface{})
-	json.Unmarshal(result, role)
-	c.Logger().Error(role)
+	err := json.Unmarshal(result, &role)
+    if err != nil {
+        return err
+    }
 
 	var heroList []_heroData
+        stAllHero := role["stAllHero"]
+        //vHeroList := stAllHero["vHeroList"]
+        fmt.Printf("%T", stAllHero)
+
+        for _, v:= range role["stAllHero"].(map[string]interface{})["vHeroList"].([]interface{}) {
+            var hero _heroData
+                s := v.(map[string]interface{})
+            hero.HeroID = uint32(s["iHeroId"].(float64))
+            hero.Level = uint32(s["iLevel"].(float64))
+            hero.Star = uint32(s["iStar"].(float64))
+            hero.Name = strconv.FormatFloat(s["iHeroId"].(float64), 'f', -1, 64)
+
+            heroList = append(heroList, hero)
+        }
 
 	return ctx.SendArray(heroList, len(heroList))
 }

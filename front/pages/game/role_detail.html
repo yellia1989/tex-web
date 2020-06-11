@@ -42,10 +42,7 @@
             { field: "level", title: "英雄等级" },
             { field: "star", title: "英雄星级" },
           ]],
-          data: [
-          {"id": 1, "name":"lk", "level":1, "star":1}
-          ],
-          praseData: function (res) {
+          parseData: function (res) {
             for (i = 0; i < res.data.length; ++i) {
               res.data[i].id = res.data[i].iHeroId;
             }
