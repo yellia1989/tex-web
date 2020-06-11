@@ -84,7 +84,9 @@
       limit: 30,
       page: true,
       cols: [[
-        {field: "id", title: "角色ID"},
+        {field: "id", title: "角色ID", templet: function (d) {
+          return <a href="javascript:;" onclick="detail(d.id)"></a>
+        }},
         {field: "name", title: "角色名称"},
         {field: "vip_level", title: "vip等级", sort: true},
         {field: "last_login_time", title: "最后登录时间"},
@@ -134,6 +136,11 @@
 
     function ban_login() {
       okLayer.open("封号", "ban_login.html", "40%", "210px", null, function () {
+      })
+    }
+
+    function detail(id) {
+      okLayer.open("详情","role_detail.html", "100%", "100%", null, function () {
       })
     }
 
