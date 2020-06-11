@@ -87,13 +87,13 @@
           { field: "activity_type", title: "活动类型", width: 90, align: "center" },
           { field: "configure_desc", title: "活动备注" },
           {
-            title: "开始时间", align: "center", templet: function (d) {
+            field: "begin_time", title: "开始时间", align: "center", templet: function (d) {
               let json = JSON.parse(d.configure_data);
               return json.constrain.begin_time != undefined ? json.constrain.begin_time : "";
             }
           },
           {
-            title: "结束时间", align: "center", templet: function (d) {
+            field: "end_time", title: "结束时间", align: "center", templet: function (d) {
               let json = JSON.parse(d.configure_data);
               return json.constrain.end_time != undefined ? json.constrain.end_time : "";
             }
