@@ -85,7 +85,6 @@ func RoleList(c echo.Context) error {
 
 type _heroData struct {
 	HeroID uint32 `json:"iHeroId"`
-	Name string `json:"name"`
 	Level uint32 `json:"level"`
 	Star uint32 `json:"star"`
 }
@@ -136,7 +135,6 @@ func RoleHeroList(c echo.Context) error {
 		hero.HeroID = uint32(stHero["iHeroId"].(float64))
 		hero.Level = uint32(stHero["iLevel"].(float64))
 		hero.Star = uint32(stHero["iStar"].(float64))
-		hero.Name = strconv.FormatFloat(stHero["iHeroId"].(float64), 'f', -1, 64)
 
 		heroList = append(heroList, hero)
 	}
