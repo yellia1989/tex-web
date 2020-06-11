@@ -14,7 +14,7 @@ import (
 )
 
 var (
-    comm = tex.NewCommunicator("tex.mfwregistry.QueryObj@tcp -h 192.168.0.16 -p 2000 -t 3600000")
+	comm = tex.NewCommunicator("tex.mfwregistry.QueryObj@tcp -h 192.168.0.16 -p 2000 -t 3600000")
 )
 
 type _role struct {
@@ -98,7 +98,7 @@ func getRoleDetail(zone, role string) []byte {
 	buff := bytes.Buffer{}
 	var ret int32
 	var err error
-	ret, err = gamePrx.DoGmCmd(role, "see_json", &result)
+	ret, err = gamePrx.DoGmCmd("admin", "see_json "+role, &result)
 	if ret != 0 || err != nil {
 		sErr := ""
 		if err != nil {
@@ -108,6 +108,7 @@ func getRoleDetail(zone, role string) []byte {
 	}
 
 	buff.WriteString(result+"\n")
+	fmt.Println(result)
 	return buff.Bytes()
 }
 
