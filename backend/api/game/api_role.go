@@ -7,9 +7,14 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
+	tex "github.com/yellia1989/tex-go/service"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+)
+
+var (
+    comm = tex.NewCommunicator("tex.mfwregistry.QueryObj@tcp -h 192.168.0.16 -p 2000 -t 3600000")
 )
 
 type _role struct {
@@ -120,5 +125,6 @@ func RoleHeroList(c echo.Context) error {
 	c.Logger().Error(role)
 
 	var heroList []_heroData
-	ctx.SendArray(heroList, len(heroList))
+
+	return ctx.SendArray(heroList, len(heroList))
 }
