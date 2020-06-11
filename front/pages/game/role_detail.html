@@ -10,47 +10,45 @@
 </head>
 
 <body>
-  <div class="layui-tab" lay-allowClose="true">
+  <div class="layui-tab layui-tab-brief" lay-allowClose="true">
     <ul class="layui-tab-title">
       <li class="layui-this">基础信息</li>
       <li>英雄列表</li>
     </ul>
     <div class="layui-tab-content">
       <div class="layui-tab-item layui-show">金币</div>
-      <div class="layui-tab-item">钻石</div>
+      <div class="layui-tab-item">
+        <table id="heroTable" lay-filter="hero_table"></table>
+      </div>
     </div>
-    <!--
     <script src="/lib/layui/layui.js"></script>
     <script>
-      layui.use(["tree"], function () {
-        let tree = layui.tree;
+      layui.use(["element", "table"], function () {
+        let element = layui.element;
+        let table = layui.table;
         let $ = layui.jquery;
-        okLoading.close();
 
-        var roleTree = tree.render({
-          elem: "#roleDetail",
+        let roleTable = table.render({
+          elem: "#heroTable",
+          //url: "/api/game/role/heroList",
           text: {
-            none: "暂无相关数据",
+            none: '暂无相关数据',
           },
-          data: [
-            {
-              field: "base", title: "基础数据",
-              children: [
-                {field: "coin", title:"金币数"},
-                {field: "diamond", title: "钻石数"},
-              ]
-            },
-            {
-              field: "heroList", title:"英雄列表",
-              children: [
-                {field: "1", title: "曹操"}
-              ]
+          cols: [[
+            { field: "id", title: "英雄ID" },
+            { field: "name", title: "英雄名称" },
+            { field: "level", title: "英雄等级" },
+            { field: "star", title: "英雄星级" },
+          ]],
+          praseData: function (res) {
+            for (i = 0; i < res.data.length; ++i) {
+              res.data[i].id = res.data[i].iHeroId;
             }
-          ]
-        })
+            return res;
+          }
+        });
       })
     </script>
-    -->
   </div>
 </body>
 
