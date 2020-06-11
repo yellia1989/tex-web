@@ -109,3 +109,4 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/stat/remain/loss", stat.LossList)
     group.GET("/stat/income/list", stat.IncomeList)
     group.GET("/stat/income/track", stat.IncomeTrack)
+}
