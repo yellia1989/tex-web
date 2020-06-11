@@ -32,7 +32,7 @@
         let heroTable = table.render({
           elem: "#heroTable",
           url: "/api/game/role/heroList",
-          where: {zoneId:1, roleId:11019}
+          where: {zoneId:1, roleId:11019},
           text: {
             none: '暂无相关数据',
           },
@@ -44,7 +44,7 @@
           ]],
           data: [
           {"id": 1, "name":"lk", "level":1, "star":1}
-          ]
+          ],
           praseData: function (res) {
             for (i = 0; i < res.data.length; ++i) {
               res.data[i].id = res.data[i].iHeroId;

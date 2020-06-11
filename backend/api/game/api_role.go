@@ -1,10 +1,15 @@
 package game
 
 import (
-    "strconv"
-    "github.com/labstack/echo"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"strconv"
+
+	"github.com/labstack/echo"
+	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
+	"github.com/yellia1989/tex-web/backend/common"
+	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
 type _role struct {
@@ -71,4 +76,49 @@ func RoleList(c echo.Context) error {
 
     vPage := common.GetPage(roles, page, limit)
     return ctx.SendArray(vPage, len(roles))
+}
+
+type _heroData struct {
+	HeroID uint32 `json:"heroID"`
+	Name string `json:"name"`
+	Level uint32 `json:"level"`
+	Star uint32 `json:"star"`
+}
+
+func getRoleDetail(zone, role string) []byte {
+	gamePrx := new(rpc.GameService)
+	comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zone, gamePrx)
+
+	result := ""
+	buff := bytes.Buffer{}
+	var ret int32
+	var err error
+	ret, err = gamePrx.DoGmCmd(role, "see_json", &result)
+	if ret != 0 || err != nil {
+		sErr := ""
+		if err != nil {
+			sErr = err.Error()
+		}
+		result = fmt.Sprintf("ret:%d, err:%s", ret, sErr)
+	}
+
+	buff.WriteString(result+"\n")
+	return buff.Bytes()
+}
+
+func RoleHeroList(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	zoneId := ctx.QueryParam("zoneId")
+	roleId := ctx.QueryParam("roleId")
+
+	if zoneId == "" || roleId == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+	result := getRoleDetail(zoneId, roleId)
+	role := make(map[string]interface{})
+	json.Unmarshal(result, role)
+	c.Logger().Error(role)
+
+	var heroList []_heroData
+	ctx.SendArray(heroList, len(heroList))
 }

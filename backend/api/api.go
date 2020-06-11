@@ -67,45 +67,48 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
 
-    group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
-    group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
-    group.POST("/gm/whitelist/del", gm.WhiteDel)    // 删除白名单用户
-    group.POST("/gm/whitelist/replace", gm.WhiteReplace)    // 覆盖白名单用户
+	group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
+	group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
+	group.POST("/gm/whitelist/del", gm.WhiteDel)    // 删除白名单用户
+	group.POST("/gm/whitelist/replace", gm.WhiteReplace)    // 覆盖白名单用户
 
-    group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
+	group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
 
-    group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
+	group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
 
-    group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
-    group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
-    group.POST("/gm/ban/speak", gm.BanSpeak) // 禁言
-    group.POST("/gm/ban/login", gm.BanLogin) // 禁止登陆
+	group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
+	group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
+	group.POST("/gm/ban/speak", gm.BanSpeak) // 禁言
+	group.POST("/gm/ban/login", gm.BanLogin) // 禁止登陆
 
-    group.GET("/game/role/list", game.RoleList)
-    group.GET("/game/coin/addlog", game.CoinAddLog)
-    group.GET("/game/coin/sublog", game.CoinSubLog)
-    group.GET("/game/diamond/addlog", game.DiamondAddLog)
-    group.GET("/game/diamond/sublog", game.DiamondSubLog)
-    group.GET("/game/hero/addlog", game.HeroAddLog)
-    group.GET("/game/item/addlog", game.ItemAddLog)
-    group.GET("/game/item/sublog", game.ItemSubLog)
-    group.GET("/game/stage/addlog", game.StageAddLog)
-    group.GET("/game/elite/addlog", game.EliteStageAddLog)
-    group.GET("/game/treasure/addlog", game.TreasureAddLog)
-    group.GET("/game/weapon/addlog", game.WeaponAddLog)
-    group.GET("/game/horse/addlog", game.HorseAddLog)
+	group.GET("/game/role/list", game.RoleList) // 玩家列表
+	group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志
+	group.GET("/game/coin/sublog", game.CoinSubLog)
+	group.GET("/game/diamond/addlog", game.DiamondAddLog) // 钻石日志
+	group.GET("/game/diamond/sublog", game.DiamondSubLog)
+	group.GET("/game/hero/addlog", game.HeroAddLog) // 英雄日志
+	group.GET("/game/item/addlog", game.ItemAddLog) // 道具日志
+	group.GET("/game/item/sublog", game.ItemSubLog)
+	group.GET("/game/stage/addlog", game.StageAddLog) // 关卡日志
+	group.GET("/game/elite/addlog", game.EliteStageAddLog)
+	group.GET("/game/treasure/addlog", game.TreasureAddLog) // 宝物日志
+	group.GET("/game/weapon/addlog", game.WeaponAddLog) // 武器日志
+	group.GET("/game/horse/addlog", game.HorseAddLog) // 马匹日志
 
-    group.GET("/game/real/online", game.RealOnline)
-    group.GET("/game/real/newadd", game.RealNewadd)
-    group.GET("/game/real/income", game.RealIncome)
-    group.GET("/game/real/stageverify", game.RealStageVerify)
-    group.GET("/game/real/stat", game.RealStat)
-    group.GET("/game/stage/pass", game.StagePass)
-    group.GET("/game/online/time", game.OnlineTime)
+	group.GET("/game/real/online", game.RealOnline)
+	group.GET("/game/real/newadd", game.RealNewadd)
+	group.GET("/game/real/income", game.RealIncome)
+	group.GET("/game/real/stageverify", game.RealStageVerify)
+	group.GET("/game/real/stat", game.RealStat)
+	group.GET("/game/stage/pass", game.StagePass) // 通关记录
+	group.GET("/game/online/time", game.OnlineTime) // 在线时间记录
 
-    group.GET("/stat/all/list", stat.AllList)
-    group.GET("/stat/newadd/list", stat.NewaddList)
-    group.GET("/stat/remain/list", stat.RemainList)
-    group.GET("/stat/remain/loss", stat.LossList)
-    group.GET("/stat/income/list", stat.IncomeList)
-    group.GET("/stat/income/track", stat.IncomeTrack)
+	group.GET("/stat/all/list", stat.AllList)
+	group.GET("/stat/newadd/list", stat.NewaddList)
+	group.GET("/stat/remain/list", stat.RemainList)
+	group.GET("/stat/remain/loss", stat.LossList)
+	group.GET("/stat/income/list", stat.IncomeList)
+	group.GET("/stat/income/track", stat.IncomeTrack)
+
+	// role detail
+	group.GET("/game/role/heroList", game.RoleHeroList) //获取特定玩家英雄列表
