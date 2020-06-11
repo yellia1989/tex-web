@@ -121,27 +121,25 @@ func RoleHeroList(c echo.Context) error {
 	}
 
 	result := getRoleDetail(zoneId, roleId)
-	role := make(map[string]interface{})
-	err := json.Unmarshal(result, &role)
-    if err != nil {
-        return err
-    }
+	roleData := make(map[string]interface{})
+	err := json.Unmarshal(result, &roleData)
+	if err != nil {
+		return err
+	}
+	vHero := roleData["stAllHero"].(map[string]interface{})["vHeroList"].([]interface{})
 
 	var heroList []_heroData
-        stAllHero := role["stAllHero"]
-        //vHeroList := stAllHero["vHeroList"]
-        fmt.Printf("%T", stAllHero)
+	for _, v := range vHero {
+		var hero _heroData
+		stHero := v.(map[string]interface{})
 
-        for _, v:= range role["stAllHero"].(map[string]interface{})["vHeroList"].([]interface{}) {
-            var hero _heroData
-                s := v.(map[string]interface{})
-            hero.HeroID = uint32(s["iHeroId"].(float64))
-            hero.Level = uint32(s["iLevel"].(float64))
-            hero.Star = uint32(s["iStar"].(float64))
-            hero.Name = strconv.FormatFloat(s["iHeroId"].(float64), 'f', -1, 64)
+		hero.HeroID = uint32(stHero["iHeroId"].(float64))
+		hero.Level = uint32(stHero["iLevel"].(float64))
+		hero.Star = uint32(stHero["iStar"].(float64))
+		hero.Name = strconv.FormatFloat(stHero["iHeroId"].(float64), 'f', -1, 64)
 
-            heroList = append(heroList, hero)
-        }
+		heroList = append(heroList, hero)
+	}
 
 	return ctx.SendArray(heroList, len(heroList))
 }
