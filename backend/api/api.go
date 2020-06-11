@@ -67,45 +67,45 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
 
-	group.GET("/gm/whitelist/list", gm.WhiteList)        // 获取白名单列表
-	group.POST("/gm/whitelist/add", gm.WhiteAdd)         // 增加白名单用户
-	group.POST("/gm/whitelist/del", gm.WhiteDel)         // 删除白名单用户
-	group.POST("/gm/whitelist/replace", gm.WhiteReplace) // 覆盖白名单用户
+    group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
+    group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
+    group.POST("/gm/whitelist/del", gm.WhiteDel)    // 删除白名单用户
+    group.POST("/gm/whitelist/replace", gm.WhiteReplace)    // 覆盖白名单用户
 
-	group.POST("/gm/dirty/test", gm.DirtyTest) // 屏蔽字测试
+    group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
 
-	group.GET("/gm/activity/typeList", gm.ActivityTypeList) // 活动类型列表
-	group.GET("/gm/activity/list", gm.ActivityList)         // 获取活动列表
+    group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
 
-	group.GET("/gm/iap/list", gm.IAPList)          // 获取补单商品
-	group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
-	group.POST("/gm/ban/speak", gm.BanSpeak)       // 禁言
-	group.POST("/gm/ban/login", gm.BanLogin)       // 禁止登陆
+    group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
+    group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
+    group.POST("/gm/ban/speak", gm.BanSpeak) // 禁言
+    group.POST("/gm/ban/login", gm.BanLogin) // 禁止登陆
 
-	group.GET("/game/role/list", game.RoleList)
-	group.GET("/game/coin/addlog", game.CoinAddLog)
-	group.GET("/game/coin/sublog", game.CoinSubLog)
-	group.GET("/game/diamond/addlog", game.DiamondAddLog)
-	group.GET("/game/diamond/sublog", game.DiamondSubLog)
-	group.GET("/game/hero/addlog", game.HeroAddLog)
-	group.GET("/game/item/addlog", game.ItemAddLog)
-	group.GET("/game/item/sublog", game.ItemSubLog)
-	group.GET("/game/stage/addlog", game.StageAddLog)
-	group.GET("/game/elite/addlog", game.EliteStageAddLog)
-	group.GET("/game/treasure/addlog", game.TreasureAddLog)
-	group.GET("/game/weapon/addlog", game.WeaponAddLog)
-	group.GET("/game/horse/addlog", game.HorseAddLog)
+    group.GET("/game/role/list", game.RoleList)
+    group.GET("/game/coin/addlog", game.CoinAddLog)
+    group.GET("/game/coin/sublog", game.CoinSubLog)
+    group.GET("/game/diamond/addlog", game.DiamondAddLog)
+    group.GET("/game/diamond/sublog", game.DiamondSubLog)
+    group.GET("/game/hero/addlog", game.HeroAddLog)
+    group.GET("/game/item/addlog", game.ItemAddLog)
+    group.GET("/game/item/sublog", game.ItemSubLog)
+    group.GET("/game/stage/addlog", game.StageAddLog)
+    group.GET("/game/elite/addlog", game.EliteStageAddLog)
+    group.GET("/game/treasure/addlog", game.TreasureAddLog)
+    group.GET("/game/weapon/addlog", game.WeaponAddLog)
+    group.GET("/game/horse/addlog", game.HorseAddLog)
 
-	group.GET("/game/real/online", game.RealOnline)
-	group.GET("/game/real/newadd", game.RealNewadd)
-	group.GET("/game/real/income", game.RealIncome)
-	group.GET("/game/real/stageverify", game.RealStageVerify)
-	group.GET("/game/real/stat", game.RealStat)
-	group.GET("/game/stage/pass", game.StagePass)
-	group.GET("/game/online/time", game.OnlineTime)
+    group.GET("/game/real/online", game.RealOnline)
+    group.GET("/game/real/newadd", game.RealNewadd)
+    group.GET("/game/real/income", game.RealIncome)
+    group.GET("/game/real/stageverify", game.RealStageVerify)
+    group.GET("/game/real/stat", game.RealStat)
+    group.GET("/game/stage/pass", game.StagePass)
+    group.GET("/game/online/time", game.OnlineTime)
 
-	group.GET("/stat/all/list", stat.AllList)
-	group.GET("/stat/newadd/list", stat.NewaddList)
-	group.GET("/stat/remain/list", stat.RemainList)
-	group.GET("/stat/remain/loss", stat.LossList)
-}
+    group.GET("/stat/all/list", stat.AllList)
+    group.GET("/stat/newadd/list", stat.NewaddList)
+    group.GET("/stat/remain/list", stat.RemainList)
+    group.GET("/stat/remain/loss", stat.LossList)
+    group.GET("/stat/income/list", stat.IncomeList)
+    group.GET("/stat/income/track", stat.IncomeTrack)

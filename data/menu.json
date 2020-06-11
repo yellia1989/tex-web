@@ -59,6 +59,45 @@
         "role": [
           2
         ]
+      },
+      {
+        "id": 105,
+        "title": "充值总况",
+        "href": "stat/income.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 106,
+        "title": "充值跟踪",
+        "href": "stat/income-track.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
+      },
+      {
+        "id": 107,
+        "title": "充值金额",
+        "href": "stat/income-money.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          2
+        ]
       }
     ],
     "role": null
