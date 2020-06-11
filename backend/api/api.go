@@ -67,6 +67,7 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
 
+<<<<<<< HEAD
 	group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
 	group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
 	group.POST("/gm/whitelist/del", gm.WhiteDel)    // 删除白名单用户
@@ -75,6 +76,7 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
 
 	group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
+	group.GET("/gm/activity/type", gm.ActivityTypeList)     // 获取活动类型
 
 	group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
 	group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
@@ -112,3 +114,4 @@ func RegisterHandler(group *echo.Group) {
 
 	// role detail
 	group.GET("/game/role/heroList", game.RoleHeroList) //获取特定玩家英雄列表
+}
