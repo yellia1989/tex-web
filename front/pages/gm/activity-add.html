@@ -37,20 +37,20 @@
       <div class="layui-form-item">
         <label class="layui-form-label">活动备注</label>
         <div class="layui-input-block">
-          <textarea name="configure_desc" class="layui-textarea"></textarea>
+          <input type="text" name="configure_desc" class="layui-input">
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">配置数据</label>
         <div class="layui-input-block">
-          <textarea name="config_data" class="layui-textarea"></textarea>
+          <textarea name="config_data" class="layui-textarea" rows="18"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="edit">编辑配置</button>
+          <button class="layui-btn" name="edit">编辑配置</button>
           <button class="layui-btn" lay-submit lay-filter="add">添加</button>
           <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
@@ -64,6 +64,7 @@
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
+      let $ = layui.jquery;
 
       //监听提交
       form.on('submit(add)', function (data) {
@@ -77,12 +78,9 @@
         return false;
       });
 
-      form.on('submit(edit)', function (data) {
-        okLayer.open("编辑配置", "/gm/activity-add2.html", "90%", "90%", null, function () {
-          form.render('textarea');
-        })
+      $('button[name="edit"]').click(function(e) {
+        console.log(e);
       });
-
     });
   </script>
 </body>
