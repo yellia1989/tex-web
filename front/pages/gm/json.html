@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>json</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form" id="json">
+    </form>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script src="/js/activity.config.js"></script>
+  <script>
+    layui.use(['form', 'okUtils', 'okLayer', 'laydate'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let $ = layui.jquery;
+      let laydate = layui.laydate;
+      let okLayer = layui.okLayer;
+
+      form.on('checkbox', function(data){
+        let checked = data.elem.checked;
+        let inputname = data.elem.getAttribute("inputname");
+        $('#'+inputname).prop('disabled', !checked);
+        form.render();
+      });
+
+      form.on('submit(save)', function(data){
+        let fields = {};
+        $("input[type='checkbox']:checked").each(function(index) {
+          let inputname = this.getAttribute("inputname");
+          if (inputname != "") {
+            let v = data.field[inputname];
+            let k = inputname.replace("-",".");
+            okUtils.setJsonValue(fields, k, v);
+          }
+        });
+        console.log(fields);
+        parent.layui.$(parent.config_data).val(okUtils.jsonToString(fields));
+        parent.layer.close(parent.layer.getFrameIndex(window.name));
+        return false;
+      });
+
+      function jsonEditor(json, field) {
+        try {
+          this.fieldOption = field;
+          if (!this.parseJson(json)) {
+            this.error('不是有效的Json格式配置');
+            return;
+          }
+          this.createEditor();
+        } catch (e) {
+          console.log(e);
+          this.error(e);
+        }
+      }
+      jsonEditor.prototype.escape = function (txt) {
+        if (!txt) return "";
+        return $('<div/>').text(txt).html();
+      },
+      jsonEditor.prototype.error = function(msg) {
+        okLayer.redCrossMsg(this.escape(msg));
+      },
+      jsonEditor.prototype.createEditor = function() {
+        let $form = $('#json');
+        let fieldKey, fieldDesc, fieldValue;
+        for (fieldKey in this.fieldOption) {
+          fieldDesc = this.fieldOption[fieldKey];
+          fieldValue = fieldDesc.useWholeValue ? this.json : okUtils.getJsonValue(this.json, fieldKey);
+          let formItem = this.createFormItem(fieldKey, fieldDesc, fieldValue);
+          $form.append(formItem);
+        }
+        $form.append('<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn" lay-submit lay-filter="save">保存</button></div></div>');
+        form.render();
+      }
+      jsonEditor.prototype.createFormItem = function(fieldKey, fieldDesc, fieldValue) {
+        if (fieldDesc.printer) {
+          fieldValue = fieldDesc.printer(fieldValue);
+        }
+        if (fieldDesc.type == 'map' || fieldDesc.type == 'array') {
+          return this.createFormGroupItem(fieldKey, fieldDesc, fieldValue);
+        } else {
+          return this.createFormSimpleItem(fieldKey, fieldDesc, fieldValue);
+        }
+      }
+      jsonEditor.prototype.createFormGroupItem = function(fieldKey, fieldDesc, fieldValue) {
+        let formItem = $('<div class="layui-form-item"></div>');
+        return formItem;
+      }
+      jsonEditor.prototype.createFormSimpleItem = function(fieldKey, fieldDesc, fieldValue) {
+        // 创建第一个layui-input-inline
+        let cb = $('<input type="checkbox" title="覆盖"/>');
+        cb.attr("inputname", fieldKey.replace(".","-"));
+        let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
+        label.append(fieldDesc.name);
+        let formItem = $('<div class="layui-form-item"></div>').append($('<div class="layui-input-inline" style="width:80px">').append(cb)).append(label);
+
+        // 创建第二个layui-input-inline
+        formItem.append(this.createInputField(fieldKey, fieldDesc, fieldValue, cb));
+
+        return formItem;
+      }
+      jsonEditor.prototype.createInputField = function(fieldKey, fieldDesc, fieldValue, ctlCheckBox) {
+        if (fieldValue !== null && typeof(fieldValue) == 'object') {
+          fieldValue = okUtils.jsonToString(fieldValue);
+        }
+        let input;
+        if (fieldDesc.type === undefined || fieldDesc.type == 'text') {
+          input = $('<input type="text" class="layui-input">');
+        } else if (fieldDesc.type == 'midtext') {
+          input = $('<input type="text" class="layui-input" style="width:300px">');
+        } else if (fieldDesc.type == 'longtext') {
+          input = $('<input type="text" class="layui-input" style="width:400px">');
+        } else if (fieldDesc.type == 'textarea') {
+          input = $('<textarea class="layui-textarea" style="width:400px"></textarea>');
+        } else if (fieldDesc.type == 'number') {
+          input = $('<input type="text" class="layui-input" lay-verify="integer">');
+        } else if (fieldDesc.type == 'datetime') {
+          input = $('<input type="text" class="layui-input" lay-verify="datetime">');
+          laydate.render({
+            elem: input.get(0),
+            type: 'datetime',
+          });
+        } else if (fieldDesc.type == 'select') {
+          input = $('<select></select>');
+          for (let opt in fieldDesc.options) {
+            input.append($('<option></option>').attr('value', opt).text(fieldDesc.options[opt]));
+          }
+        } else {
+          throw('未知类型: ' + fieldDesc.type);
+          return;
+        }
+
+        input.attr("name", fieldKey.replace(".","-"));
+        input.attr("id", fieldKey.replace(".","-"));
+        if (fieldValue !== undefined && fieldValue !== null) {
+          input.val(fieldValue);
+        }
+
+        if (ctlCheckBox !== undefined) {
+          function setDisabled(disabled) {
+            input.prop('disabled', disabled);
+          }
+
+          if (fieldValue === undefined || fieldValue === null) {
+            setDisabled(true);
+          } else {
+            setDisabled(false);
+            ctlCheckBox.prop('checked', true);
+          }
+        }
+
+        if (fieldDesc.onChange) {
+          input.on('change', function() {
+            fieldDesc.onChange(input.val());
+          });
+        }
+
+        let inputLine = $('<div class="layui-input-inline">');
+        inputLine.append(input);
+        return inputLine;
+      },
+      jsonEditor.prototype.parseJson = function(json) {
+        this.json = typeof(json) == 'object' ? json : okUtils.stringToJson(json);
+        let fieldKey;
+        for (fieldKey in this.fieldOption) {
+          let fieldDesc = this.fieldOption[fieldKey];
+          if (!fieldDesc.checkValid) {
+            continue;
+          }
+          let checkResult = fieldDesc.checkValid(okUtils.getJsonValue(this.json, fieldKey), this.json);
+          if (checkResult !== true) {
+            this.error(checkResult);
+            return false;
+          }
+        }
+        return true;
+      }
+
+      new jsonEditor(parent.layui.$(parent.config_data).val(), activity.config.mainFieldOption);
+   });
+  </script>
+</body>
+
+</html>

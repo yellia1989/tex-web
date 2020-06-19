@@ -43,7 +43,7 @@
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="edit">编辑配置</button>
+          <button type="button" class="layui-btn" name="edit">编辑配置</button>
           <button class="layui-btn" lay-submit lay-filter="add">保存</button>
           <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
@@ -52,6 +52,7 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
+    var config_data;
     layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
@@ -77,10 +78,9 @@
         return false;
       });
 
-      form.on('submit(edit)', function (data) {
-        okLayer.open("编辑配置", "/gm/activity-edit2.html", "90%", "90%", null, function () {
-          form.render('textarea');
-        })
+      $('button[name="edit"]').click(function(e) {
+        config_data = "textarea[name='configure_data']";
+        okLayer.open("编辑活动配置", "/gm/json.html", "90%", "90%", null, null);
       });
     });
   </script>

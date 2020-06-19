@@ -2,6 +2,44 @@
 layui.define(["layer"], function (exprots) {
     var $ = layui.jquery;
     var okUtils = {
+        stringToJson: function(text) {
+          if ($.trim(text) == '') {
+            return {};
+          }
+          return JSON.parse(text);
+        },
+        jsonToString: function(json) {
+            return JSON.stringify(json, null, '\t');
+        },
+        getJsonValue: function(json, fieldKey) {
+            if (json === undefined) {
+                return undefined;
+            }
+            if (typeof (fieldKey) == 'number') {
+                return json[fieldKey];
+            }
+            let idx = fieldKey.indexOf('.');
+            if (idx === -1) {
+                return json[fieldKey];
+            }
+            return this.getJsonValue(json[fieldKey.substr(0, idx)], fieldKey.substr(idx + 1));
+        },
+        setJsonValue: function(json, fieldKey, fieldValue) {
+            if (typeof(json) != 'object') {
+                return;
+            }
+            var idx = fieldKey.indexOf('.');
+            if (idx === -1) {
+                json[fieldKey] = fieldValue;
+                return;
+            }
+
+            var k1 = fieldKey.substr(0, idx), k2 = fieldKey.substr(idx + 1);
+            if (json[k1] == undefined) {
+                json[k1] = {};
+            }
+            this.setJsonValue(json[k1], k2, fieldValue);
+        },
         /**
          * 获取body的总宽度
          */
