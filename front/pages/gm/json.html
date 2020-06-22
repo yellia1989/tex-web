@@ -15,7 +15,6 @@
   </div>
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
-  <script src="/js/activity.config.js"></script>
   <script>
     layui.use(['form', 'okUtils', 'okLayer', 'laydate'], function () {
       let form = layui.form;
@@ -23,29 +22,6 @@
       let $ = layui.jquery;
       let laydate = layui.laydate;
       let okLayer = layui.okLayer;
-
-      form.on('checkbox', function(data){
-        let checked = data.elem.checked;
-        let inputname = data.elem.getAttribute("inputname");
-        $('#'+inputname).prop('disabled', !checked);
-        form.render();
-      });
-
-      form.on('submit(save)', function(data){
-        let fields = {};
-        $("input[type='checkbox']:checked").each(function(index) {
-          let inputname = this.getAttribute("inputname");
-          if (inputname != "") {
-            let v = data.field[inputname];
-            let k = inputname.replace("-",".");
-            okUtils.setJsonValue(fields, k, v);
-          }
-        });
-        console.log(fields);
-        parent.layui.$(parent.config_data).val(okUtils.jsonToString(fields));
-        parent.layer.close(parent.layer.getFrameIndex(window.name));
-        return false;
-      });
 
       function jsonEditor(json, field) {
         try {
@@ -97,6 +73,7 @@
         // 创建第一个layui-input-inline
         let cb = $('<input type="checkbox" title="覆盖"/>');
         cb.attr("inputname", fieldKey.replace(".","-"));
+        cb.attr("id", 'cb-'+fieldKey.replace(".","-"));
         let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
         label.append(fieldDesc.name);
         let formItem = $('<div class="layui-form-item"></div>').append($('<div class="layui-input-inline" style="width:80px">').append(cb)).append(label);
@@ -146,6 +123,11 @@
         if (ctlCheckBox !== undefined) {
           function setDisabled(disabled) {
             input.prop('disabled', disabled);
+            if (disabled) {
+              input.addClass("layui-disabled");
+            } else {
+              input.removeClass("layui-disabled");
+            }
           }
 
           if (fieldValue === undefined || fieldValue === null) {
@@ -182,8 +164,56 @@
         }
         return true;
       }
+      jsonEditor.prototype.getValue = function() {
+        let json = {};
+        for (fieldKey in this.fieldOption) {
+          let fieldDesc = this.fieldOption[fieldKey];
+          let cb = $('#cb-'+fieldKey.replace('.', '-'))
+          if (!cb.is(":checked")) continue;
+          let input = $('#'+fieldKey.replace('.', '-'))
+          let fieldValue = input.val();
+          try {
+            if (fieldDesc.parser === JSON.parse) {
+              fieldValue = $.trim(fieldValue) == '' ? {} : fieldDesc.parser(fieldValue);
+            } else if (fieldDesc.parser == parseInt) {
+                if (!$.isNumeric(fieldValue)) {
+                    throw 'Not a Number';
+                }
+                fieldValue = fieldDesc.parser(fieldValue);
+            } else if (fieldDesc.parser) {
+                fieldValue = fieldDesc.parser(fieldValue);
+            }
+          } catch (e) {
+            this.error(fieldKey + ' parse error:' + e);
+            console.log(e);
+          }
+          okUtils.setJsonValue(json, fieldKey, fieldValue);
+        }
+        return json;
+      }
 
-      new jsonEditor(parent.layui.$(parent.config_data).val(), activity.config.mainFieldOption);
+      let editor = new jsonEditor(parent.layui.$(parent.json_data).val(), parent.config_data);
+
+      form.on('checkbox', function(data){
+        let checked = data.elem.checked;
+        let inputname = data.elem.getAttribute("inputname");
+        let disabled = !checked;
+        if (disabled) {
+          $('#'+inputname).addClass('layui-disabled');
+        } else {
+          $('#'+inputname).removeClass('layui-disabled');
+        }
+        $('#'+inputname).prop('disabled', disabled);
+        form.render();
+      });
+
+      form.on('submit(save)', function(data){
+        let fields = editor.getValue();
+        console.log(fields);
+        parent.layui.$(parent.config_data).val(okUtils.jsonToString(fields));
+        parent.layer.close(parent.layer.getFrameIndex(window.name));
+        return false;
+      });
    });
   </script>
 </body>
