@@ -55,11 +55,12 @@
   <script>
     var json_data;
     var config_data;
+    var $;
     layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
-      let $ = layui.jquery;
+      $ = layui.jquery;
       okLoading.close();
 
       $("input[name='apply_zone']").val(parent.editActivity.apply_zone);

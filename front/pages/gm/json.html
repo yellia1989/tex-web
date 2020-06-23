@@ -101,7 +101,6 @@
         }
 
         function setDisabled(disabled) {
-          console.log(disabled);
           if (disabled) {
             group.addClass('layui-hide');
             ctlBtnAdd.addClass('layui-disabled');
@@ -264,7 +263,13 @@
         } else if (fieldDesc.type == 'longtext') {
           input = $('<input type="text" class="layui-input" style="width:400px">');
         } else if (fieldDesc.type == 'textarea') {
-          input = $('<textarea class="layui-textarea" style="width:400px"></textarea>');
+          input = $('<textarea class="layui-textarea"></textarea>');
+          if (fieldDesc.subFieldOption) {
+            input.attr('rows', 18);
+            input.attr('style','width:600px');
+          } else {
+            input.attr('style','width:400px');
+          }
         } else if (fieldDesc.type == 'number') {
           input = $('<input type="text" class="layui-input" lay-verify="integer">');
         } else if (fieldDesc.type == 'datetime') {
@@ -342,25 +347,75 @@
           let cb = $('#cb-'+fieldKey.replace('.', '-'))
           if (!cb.is(":checked")) continue;
           let input = $('#'+fieldKey.replace('.', '-'))
-          let fieldValue = input.val();
-          try {
-            if (fieldDesc.parser === JSON.parse) {
-              fieldValue = $.trim(fieldValue) == '' ? {} : fieldDesc.parser(fieldValue);
-            } else if (fieldDesc.parser == parseInt) {
-                if (!$.isNumeric(fieldValue)) {
-                    throw 'Not a Number';
+          let fieldValue = '';
+
+          let isMap = fieldDesc.type == 'map';
+          let isArray = fieldDesc.type == 'array';
+          let isGroup = isMap || isArray;
+          if (!isGroup) {
+            fieldValue = this.parseValue(fieldDesc, input.val());
+          } else {
+            let group = input.next().next();
+            let self = this;
+            fieldValue = isMap ? {} : [];
+            group.find('.group-row').each(function () {
+              let ctlGroupRow = $(this);
+              let mapKey, valEntry;
+              $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
+                var ctlInput = ctlGroupRow.find('[name="' + grpFieldKey + '"]');
+                var grpFieldValue = ctlInput.val();
+                if (grpFieldDesc.isMapKey) {
+                  mapKey = grpFieldValue;
+                  return;
                 }
-                fieldValue = fieldDesc.parser(fieldValue);
-            } else if (fieldDesc.parser) {
-                fieldValue = fieldDesc.parser(fieldValue);
-            }
-          } catch (e) {
-            this.error(fieldKey + ' parse error:' + e);
-            console.log(e);
+
+                grpFieldValue = self.parseValue(grpFieldDesc, grpFieldValue);
+                if (grpFieldDesc.useWholeValue) {
+                  valEntry = grpFieldValue;
+                } else if (grpFieldDesc.arrayIndex !== undefined) {
+                  if (valEntry === undefined) {
+                    valEntry = [];
+                  }
+                  valEntry[grpFieldDesc.arrayIndex] = grpFieldValue;
+                } else {
+                  if (valEntry === undefined) {
+                    valEntry = {};
+                  }
+                  valEntry[grpFieldKey] = grpFieldValue;
+                }
+              });
+
+              if (valEntry !== undefined) {
+                if (isMap) {
+                  fieldValue[mapKey] = valEntry;
+                } else {
+                  fieldValue.push(valEntry);
+                }
+              }
+            });
           }
+
           okUtils.setJsonValue(json, fieldKey, fieldValue);
         }
         return json;
+      }
+      jsonEditor.prototype.parseValue = function(fieldDesc, fieldValue) {
+        try {
+          if (fieldDesc.parser === JSON.parse) {
+            fieldValue = $.trim(fieldValue) == '' ? {} : fieldDesc.parser(fieldValue);
+          } else if (fieldDesc.parser == parseInt) {
+              if (!$.isNumeric(fieldValue)) {
+                  throw 'Not a Number';
+              }
+              fieldValue = fieldDesc.parser(fieldValue);
+          } else if (fieldDesc.parser) {
+              fieldValue = fieldDesc.parser(fieldValue);
+          }
+        } catch (e) {
+          this.error(fieldKey + ' parse error:' + e);
+          console.log(e);
+        }
+        return fieldValue;
       }
 
       let editor = new jsonEditor(parent.layui.$(parent.json_data).val(), parent.config_data);
@@ -397,7 +452,6 @@
 
       form.on('submit(save)', function(data){
         let fields = editor.getValue();
-        console.log(fields);
         parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
         parent.layer.close(parent.layer.getFrameIndex(window.name));
         return false;
