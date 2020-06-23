@@ -69,15 +69,157 @@
         formItem.append($('<div class="layui-input-inline" style="width:80px">').append(cb));
 
         if (fieldDesc.type == 'map' || fieldDesc.type == 'array') {
-          this.createFormGroupItem(formItem, fieldKey, fieldDesc, fieldValue, cb);
+          if (this.checkGroupFieldOption(fieldKey, fieldDesc)) {
+            this.createFormGroupItem(formItem, fieldKey, fieldDesc, fieldValue, cb);
+          }
         } else {
           this.createFormSimpleItem(formItem, fieldKey, fieldDesc, fieldValue, cb);
         }
         return formItem;
       }
-      jsonEditor.prototype.createFormGroupItem = function(formItem, fieldKey, fieldDesc, fieldValue) {
-        return formItem;
+      jsonEditor.prototype.createFormGroupItem = function(formItem, fieldKey, fieldDesc, fieldValue, cb) {
+        let ctlHiddenInput = $('<input type="hidden">');
+        ctlHiddenInput.attr("name", fieldKey.replace(".","-"));
+        ctlHiddenInput.attr("id", fieldKey.replace(".","-"));
+        formItem.append(ctlHiddenInput);
+        let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
+        label.append(fieldDesc.name);
+        formItem.append(label);
+        let group = $('<div class="group">');
+        formItem.append(group);
+        let that = this;
+        ctlBtnAdd = $('<input type="button" class="layui-btn layui-btn-xs" value="+">').click(function() {
+          group.prepend(that.createGroupInputRow(fieldDesc, undefined, undefined));
+        });
+        label.append(ctlBtnAdd);
+
+        let dataKey, dataVal, num = 0;
+        for (dataKey in fieldValue) {
+            dataVal = fieldValue[dataKey];
+            ++num;
+            group.append(this.createGroupInputRow(fieldDesc, dataKey, dataVal));
+        }
+
+        function setDisabled(disabled) {
+          console.log(disabled);
+          if (disabled) {
+            group.addClass('layui-hide');
+            ctlBtnAdd.addClass('layui-disabled');
+          } else {
+            group.removeClass('layui-hide');
+            ctlBtnAdd.removeClass('layui-disabled');
+          }
+        }
+
+        if (num == 0) {
+          setDisabled(true);
+        } else {
+          setDisabled(false);
+          cb.prop('checked', true);
+        }
       }
+      jsonEditor.prototype.createGroupInputRow = function(fieldDesc, dataKey, dataVal) {
+        let self = this;
+        let isMap = fieldDesc.type == 'map' ? true : false;
+        let ctlGroupRow = $('<div class="group-row layui-form-item" />');
+        let btnGroup = $('<div class="layui-btn-group" style="margin-right:8px">');
+        let ctlBtnAdd = $('<input type="button" class="layui-btn layui-btn-xs" value="+">').click(function () {
+          ctlGroupRow.after(self.createGroupInputRow(fieldDesc, undefined, undefined));
+        });
+        let ctlBtnDel = $('<input type="button" class="layui-btn layui-btn-xs" value="-">').click(function () {
+          ctlGroupRow.remove();
+        });
+        btnGroup.append(ctlBtnAdd, ctlBtnDel);
+        ctlGroupRow.append(btnGroup);
+
+        let inline = $('<div class="layui-inline">');
+        $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
+          let grpFieldValue;
+          if (grpFieldDesc.isMapKey) {
+            grpFieldValue = dataKey;
+          } else if (grpFieldDesc.useWholeValue) {
+            grpFieldValue = dataVal;
+          } else if (grpFieldDesc.arrayIndex !== undefined) {
+            grpFieldValue = okUtils.getJsonValue(dataVal, grpFieldDesc.arrayIndex);
+          } else {
+            grpFieldValue = okUtils.getJsonValue(dataVal, grpFieldKey);
+          }
+
+          if (grpFieldDesc.printer) {
+            grpFieldValue = grpFieldDesc.printer(grpFieldValue);
+          }
+
+          let input = self.createInputField(grpFieldKey, grpFieldDesc, grpFieldValue);
+          inline.append(input.label);
+          inline.append(input.input);
+        });
+
+        ctlGroupRow.append(inline);
+        return ctlGroupRow;
+      }
+      jsonEditor.prototype.checkGroupFieldOption = function (fieldKey, fieldDesc) {
+        let mapKeyNum = 0, useWholeNum = 0, arrayEntryNum = 0, mapEntryNum = 0;
+        let errMsg;
+        function addErrMsg(msg) {
+          if (errMsg == undefined) {
+            errMsg = msg;
+          } else {
+            errMsg += '\n';
+            errMsg += msg;
+          }
+        }
+        $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
+            if (grpFieldDesc.isMapKey) {
+              ++mapKeyNum;
+            }
+            if (grpFieldDesc.useWholeValue) {
+              ++useWholeNum;
+            }
+            if (grpFieldDesc.arrayIndex !== undefined) {
+              ++arrayEntryNum;
+            }
+            if (!grpFieldDesc.isMapKey && !grpFieldDesc.useWholeValue && grpFieldDesc.arrayIndex === undefined) {
+              ++mapEntryNum;
+            }
+
+            if (grpFieldDesc.isMapKey && grpFieldDesc.useWholeValue) {
+              addErrMsg('不能同时包含isMapKey和useWholeValue：' + grpFieldKey);
+            } else if (grpFieldDesc.isMapKey && grpFieldDesc.arrayIndex !== undefined) {
+              addErrMsg('不能同时包含isMapKey和arrayIndex：' + grpFieldKey);
+            } else if (grpFieldDesc.useWholeValue && grpFieldDesc.arrayIndex !== undefined) {
+              addErrMsg('不能同时包含useWholeValue和arrayIndex：' + grpFieldKey);
+            }
+        });
+
+        if (useWholeNum > 1) {
+          addErrMsg('useWholeValue不能大于1个');
+        }
+        if (useWholeNum != 0 && (arrayEntryNum != 0 || mapEntryNum != 0)) {
+          addErrMsg('有useWholeValue后不能再配置其他字段');
+        }
+        if (useWholeNum == 0 && arrayEntryNum == 0 && mapEntryNum == 0) {
+          addErrMsg('必须配置至少一条map字段，或者一条arrayIndex，或者useWholeValue');
+        } else if ((useWholeNum != 0) + (arrayEntryNum != 0) + (mapEntryNum != 0) != 1) {
+          addErrMsg('不能同时配置map字段、arrayIndex、useWholeValue');
+        }
+
+        if (fieldDesc.type == 'map') {
+            if (mapKeyNum != 1) {
+              addErrMsg('map类型必须有且仅有一个isMapKey');
+            }
+        }
+        if (fieldDesc.type == 'array') {
+            if (mapKeyNum != 0) {
+              addErrMsg('array类型不能配置isMapKey');
+            }
+        }
+
+        if (errMsg !== undefined) {
+            this.error(fieldKey + '\n' + errMsg);
+            return false;
+        }
+        return true;
+      },
       jsonEditor.prototype.createFormSimpleItem = function(formItem, fieldKey, fieldDesc, fieldValue, cb) {
         let line = this.createInputField(fieldKey, fieldDesc, fieldValue, cb);
         formItem.append(line.label);
@@ -223,16 +365,33 @@
 
       let editor = new jsonEditor(parent.layui.$(parent.json_data).val(), parent.config_data);
 
-      form.on('checkbox', function(data){
+      form.on('checkbox', function(data) {
         let checked = data.elem.checked;
         let inputname = data.elem.getAttribute("inputname");
+        if (inputname == "") return;
+        let fieldDesc = editor.fieldOption[inputname.replace('-','.')];
+        if (!fieldDesc) return;
+
         let disabled = !checked;
-        if (disabled) {
-          $('#'+inputname).addClass('layui-disabled');
+        let isGroup = fieldDesc.type == 'map' || fieldDesc.type == "array";
+        if (!isGroup) {
+          if (disabled) {
+            $('#'+inputname).addClass('layui-disabled');
+          } else {
+            $('#'+inputname).removeClass('layui-disabled');
+          }
+          $('#'+inputname).prop('disabled', disabled);
         } else {
-          $('#'+inputname).removeClass('layui-disabled');
+          let btn = $('#'+inputname).next().find("input");
+          let group = $('#'+inputname).next().next();
+          if (disabled) {
+            btn.addClass('layui-hide');
+            group.addClass('layui-hide');
+          } else {
+            btn.removeClass('layui-hide');
+            group.removeClass('layui-hide');
+          }
         }
-        $('#'+inputname).prop('disabled', disabled);
         form.render();
       });
 
