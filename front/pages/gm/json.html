@@ -16,6 +16,8 @@
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
   <script>
+    var config_data;
+    var json_data;
     layui.use(['form', 'okUtils', 'okLayer', 'laydate'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
@@ -59,31 +61,56 @@
         if (fieldDesc.printer) {
           fieldValue = fieldDesc.printer(fieldValue);
         }
-        if (fieldDesc.type == 'map' || fieldDesc.type == 'array') {
-          return this.createFormGroupItem(fieldKey, fieldDesc, fieldValue);
-        } else {
-          return this.createFormSimpleItem(fieldKey, fieldDesc, fieldValue);
-        }
-      }
-      jsonEditor.prototype.createFormGroupItem = function(fieldKey, fieldDesc, fieldValue) {
+
         let formItem = $('<div class="layui-form-item"></div>');
-        return formItem;
-      }
-      jsonEditor.prototype.createFormSimpleItem = function(fieldKey, fieldDesc, fieldValue) {
-        // 创建第一个layui-input-inline
         let cb = $('<input type="checkbox" title="覆盖"/>');
         cb.attr("inputname", fieldKey.replace(".","-"));
         cb.attr("id", 'cb-'+fieldKey.replace(".","-"));
-        let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
-        label.append(fieldDesc.name);
-        let formItem = $('<div class="layui-form-item"></div>').append($('<div class="layui-input-inline" style="width:80px">').append(cb)).append(label);
+        formItem.append($('<div class="layui-input-inline" style="width:80px">').append(cb));
 
-        // 创建第二个layui-input-inline
-        formItem.append(this.createInputField(fieldKey, fieldDesc, fieldValue, cb));
-
+        if (fieldDesc.type == 'map' || fieldDesc.type == 'array') {
+          this.createFormGroupItem(formItem, fieldKey, fieldDesc, fieldValue, cb);
+        } else {
+          this.createFormSimpleItem(formItem, fieldKey, fieldDesc, fieldValue, cb);
+        }
+        return formItem;
+      }
+      jsonEditor.prototype.createFormGroupItem = function(formItem, fieldKey, fieldDesc, fieldValue) {
+        return formItem;
+      }
+      jsonEditor.prototype.createFormSimpleItem = function(formItem, fieldKey, fieldDesc, fieldValue, cb) {
+        let line = this.createInputField(fieldKey, fieldDesc, fieldValue, cb);
+        formItem.append(line.label);
+        formItem.append(line.input);
         return formItem;
       }
       jsonEditor.prototype.createInputField = function(fieldKey, fieldDesc, fieldValue, ctlCheckBox) {
+        let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
+        label.append(fieldDesc.name);
+
+        if (fieldDesc.subFieldOption) {
+          let a = $('<a href="javascript:void(0)"></a>');
+          a.append($('<i class="layui-icon layui-icon-set" style="font-size: 18px; color: #1E9FFF;"></i>'));
+          label.append(a);
+          let that = this;
+          a.on('click', function() {
+            if (!ctlCheckBox.prop('checked')) {
+              return;
+            }
+            let title = '编辑-'+fieldDesc.name;
+            config_data = fieldDesc.subFieldOption;
+            if (typeof(fieldDesc.subFieldOption) == 'function') {
+              config_data = fieldDesc.subFieldOption(fieldKey);
+            }
+            if (config_data === undefined) {
+              that.error('没有定义字段，请手动编辑');
+              return;
+            }
+            json_data = "#"+fieldKey.replace(".","-");
+            okLayer.open(title, "/gm/json.html", "90%", "90%", null, null);
+          });
+        }
+
         if (fieldValue !== null && typeof(fieldValue) == 'object') {
           fieldValue = okUtils.jsonToString(fieldValue);
         }
@@ -139,6 +166,7 @@
         }
 
         if (fieldDesc.onChange) {
+          fieldDesc.onChange(input.val());
           input.on('change', function() {
             fieldDesc.onChange(input.val());
           });
@@ -146,7 +174,8 @@
 
         let inputLine = $('<div class="layui-input-inline">');
         inputLine.append(input);
-        return inputLine;
+
+        return {label: label, input: inputLine};
       },
       jsonEditor.prototype.parseJson = function(json) {
         this.json = typeof(json) == 'object' ? json : okUtils.stringToJson(json);
@@ -210,7 +239,7 @@
       form.on('submit(save)', function(data){
         let fields = editor.getValue();
         console.log(fields);
-        parent.layui.$(parent.config_data).val(okUtils.jsonToString(fields));
+        parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
         parent.layer.close(parent.layer.getFrameIndex(window.name));
         return false;
       });
