@@ -118,7 +118,7 @@
         ctlHiddenInput.attr("name", fieldKey.replace(".","-"));
         ctlHiddenInput.attr("id", fieldKey.replace(".","-"));
         formItem.append(ctlHiddenInput);
-        let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
+        let label = $('<div style="width:120px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
         label.append(fieldDesc.name);
         formItem.append(label);
         let group = $('<div class="group">');
@@ -140,9 +140,17 @@
           if (disabled) {
             group.addClass('layui-hide');
             ctlBtnAdd.addClass('layui-hide');
+            group.find(':input').each(function(){
+              let input = $(this);
+              input.removeAttr('lay-verify');
+            });
           } else {
             group.removeClass('layui-hide');
             ctlBtnAdd.removeClass('layui-hide');
+            group.find(':input').each(function() {
+              let input = $(this);
+              input.attr('lay-verify', 'required');
+            });
           }
         }
 
@@ -186,6 +194,7 @@
 
           let input = self.createInputField(grpFieldKey, grpFieldDesc, grpFieldValue);
           inline.append(input.label);
+          //input.input.attr('lay-verify', 'required');
           inline.append(input.input);
         });
 
