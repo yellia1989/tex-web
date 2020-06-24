@@ -14,55 +14,41 @@
       <div class="layui-form-item">
         <label class="layui-form-label">活动ID</label>
         <div class="layui-input-block">
-          <input type="text" name="iActivityId" autocomplete="off" class="layui-input" lay-verify="required"
-            lay-verType="tips">
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <div class="layui-input-inline">
-          <input type="checkbox" title="覆盖" />
-          <label class="layui-text">活动类型</label>
-        </div>
-        <div class="layui-input-inline">
-          <input type="text" class="layui-input" lay-verify="required" lay-verType="tips">
+          <input type="text" name="iActivityId" placeholder="只能是>0的整数" class="layui-input" lay-verify="required|integer" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">应用分区</label>
         <div class="layui-input-block">
-          <input type="text" name="apply_zone" autocomplete="off" class="layui-input" lay-verify="required"
-            lay-verType="tips">
+          <div id="zoneSelect"></div>
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">应用玩家</label>
         <div class="layui-input-block">
-          <input type="text" name="apply_user" class="layui-input">
+          <input type="text" name="apply_user" class="layui-input" placeholder="多个玩家以英文逗号(,)分隔">
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">活动备注</label>
         <div class="layui-input-block">
-          <input type="text" name="configure_desc" class="layui-input">
+          <textarea name="configure_desc" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">配置数据</label>
+        <label class="layui-form-label">配置数据<a href="javascript:void(0)" id="editconfig"><i class="layui-icon layui-icon-set" style="font-size: 18px; color: #1E9FFF;"></i></a></label>
         <div class="layui-input-block">
-          <textarea name="configure_data" class="layui-textarea" rows="18"></textarea>
+          <textarea name="configure_data" class="layui-textarea" rows="18" lay-verify="required" lay-verType="tips"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button type="button" class="layui-btn" name="edit">编辑配置</button>
           <button class="layui-btn" lay-submit lay-filter="add">添加</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
       </div>
 
@@ -70,14 +56,72 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script src="/js/activity.config.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     var config_data;
+    var json_data;
     layui.use(['form', 'okLayer', 'okUtils', 'layer'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
       let layer = layui.layer;
+      let xmSelect = layui.xmSelect;
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'apply_zone',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        autoRow: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        },
+        toolbar: {
+          show: true,
+        },
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect.update({
+          data: response.data,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
 
       //监听提交
       form.on('submit(add)', function (data) {
@@ -91,8 +135,9 @@
         return false;
       });
 
-      $('button[name="edit"]').click(function(e) {
-        config_data = $("textarea[name='configure_data']").val();
+      $('#editconfig').click(function(e) {
+        json_data = "textarea[name='configure_data']";
+        config_data = activity.config.mainFieldOption;
         okLayer.open("编辑配置", "/gm/json.html", "90%", "90%", null, null);
       });
     });

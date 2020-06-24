@@ -28,11 +28,9 @@
       function jsonEditor(json, field) {
         try {
           this.fieldOption = field;
-          if (!this.parseJson(json)) {
-            this.error('不是有效的Json格式配置');
-            return;
+          if (this.parseJson(json)) {
+            this.createEditor();
           }
-          this.createEditor();
         } catch (e) {
           console.log(e);
           this.error(e);
@@ -103,10 +101,10 @@
         function setDisabled(disabled) {
           if (disabled) {
             group.addClass('layui-hide');
-            ctlBtnAdd.addClass('layui-disabled');
+            ctlBtnAdd.addClass('layui-hide');
           } else {
             group.removeClass('layui-hide');
-            ctlBtnAdd.removeClass('layui-disabled');
+            ctlBtnAdd.removeClass('layui-hide');
           }
         }
 
@@ -271,9 +269,9 @@
             input.attr('style','width:400px');
           }
         } else if (fieldDesc.type == 'number') {
-          input = $('<input type="text" class="layui-input" lay-verify="integer">');
+          input = $('<input type="text" class="layui-input">');
         } else if (fieldDesc.type == 'datetime') {
-          input = $('<input type="text" class="layui-input" lay-verify="datetime">');
+          input = $('<input type="text" class="layui-input">');
           laydate.render({
             elem: input.get(0),
             type: 'datetime',
@@ -299,8 +297,16 @@
             input.prop('disabled', disabled);
             if (disabled) {
               input.addClass("layui-disabled");
+              input.removeAttr('lay-verify');
             } else {
               input.removeClass("layui-disabled");
+              let verify = 'required';
+              if (fieldDesc.type == 'number') {
+                verify += '|integer';
+              } else if (fieldDesc.type == 'datetime') {
+                verify += '|datetime';
+              }
+              input.attr('lay-verify', verify);
             }
           }
 
@@ -314,9 +320,6 @@
 
         if (fieldDesc.onChange) {
           fieldDesc.onChange(input.val());
-          input.on('change', function() {
-            fieldDesc.onChange(input.val());
-          });
         }
 
         let inputLine = $('<div class="layui-input-inline">');
@@ -334,7 +337,7 @@
           }
           let checkResult = fieldDesc.checkValid(okUtils.getJsonValue(this.json, fieldKey), this.json);
           if (checkResult !== true) {
-            this.error(checkResult);
+            this.error('不是有效的Json格式配置:'+checkResult);
             return false;
           }
         }
@@ -430,10 +433,19 @@
         let disabled = !checked;
         let isGroup = fieldDesc.type == 'map' || fieldDesc.type == "array";
         if (!isGroup) {
+          let input = $('#'+inputname);
           if (disabled) {
-            $('#'+inputname).addClass('layui-disabled');
+            input.addClass('layui-disabled');
+            input.removeAttr('lay-verify');
           } else {
-            $('#'+inputname).removeClass('layui-disabled');
+            input.removeClass('layui-disabled');
+            let verify = 'required';
+            if (fieldDesc.type == 'number') {
+              verify += '|integer';
+            } else if (fieldDesc.type == 'datetime') {
+              verify += '|datetime';
+            }
+            input.attr('lay-verify', verify);
           }
           $('#'+inputname).prop('disabled', disabled);
         } else {
@@ -450,9 +462,19 @@
         form.render();
       });
 
+      form.on('select', function(data){
+        let fieldDesc = editor.fieldOption[data.elem.id];
+        if (!fieldDesc) return;
+        if (fieldDesc.onChange) {
+          fieldDesc.onChange(data.value);
+        }
+      });
+
       form.on('submit(save)', function(data){
         let fields = editor.getValue();
-        parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
+        if (!okUtils.isEmpty(fields)) {
+          parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
+        }
         parent.layer.close(parent.layer.getFrameIndex(window.name));
         return false;
       });

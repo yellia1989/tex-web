@@ -41,11 +41,19 @@ func ZoneSimpleList(c echo.Context) error {
 
     zones := zoneList(c)
 
+    for i,_ := range zones {
+        zones[i].SZoneName = fmt.Sprintf("%s(%d)", zones[i].SZoneName, zones[i].IZoneId)
+    }
+
     if gf != "" {
         zones = append(zones, rpc.ZoneInfo{IZoneId: 0, SZoneName: "GFServer"})
     }
 
-    return ctx.SendResponse(zones)
+    var zones2 []rpc.ZoneInfo
+    zones2 = append(zones2, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
+    zones2 = append(zones2, zones...)
+
+    return ctx.SendResponse(zones2)
 }
 
 func ZoneList(c echo.Context) error {

@@ -40,6 +40,14 @@ layui.define(["layer"], function (exprots) {
             }
             this.setJsonValue(json[k1], k2, fieldValue);
         },
+        isEmpty: function(obj) {
+            for (var k in obj) {
+                if (obj[k] !== undefined) {
+                    return false;
+                }
+            }
+            return true;
+        },
         /**
          * 获取body的总宽度
          */

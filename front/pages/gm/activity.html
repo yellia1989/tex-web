@@ -83,22 +83,22 @@
           { type: "checkbox", title: "序号", fixed: 'left' },
           { field: "id", title: "活动ID", width: 90, fixed: 'left' },
           { field: "apply_zone", title: "应用分区", width: 90, fixed: 'left' },
-          { field: "apply_user", title: "应用账户", width: 90 },
+          { field: "apply_user", title: "应用玩家", width: 90 },
           { field: "activity_type", title: "活动类型", width: 90, align: "center" },
-          { field: "configure_desc", title: "活动备注" },
+          { field: "configure_desc", title: "活动备注", width: 150},
           {
-            field: "begin_time", title: "开始时间", align: "center", templet: function (d) {
+            field: "begin_time", title: "开始时间", align: "center", width: 180, templet: function (d) {
               let json = JSON.parse(d.configure_data);
               return json.constrain.begin_time != undefined ? json.constrain.begin_time : "";
             }
           },
           {
-            field: "end_time", title: "结束时间", align: "center", templet: function (d) {
+            field: "end_time", title: "结束时间", align: "center", width: 180, templet: function (d) {
               let json = JSON.parse(d.configure_data);
               return json.constrain.end_time != undefined ? json.constrain.end_time : "";
             }
           },
-          { field: "configure_data", title: "配置数据", align: "center" },
+          { field: "configure_data", title: "配置数据", align: "center"},
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {

@@ -1020,7 +1020,7 @@
             onChange: utils.changeActivityType
         },
 		'info.close': {
-            name: '---紧急关闭活动---',
+            name: '紧急关闭活动',
             type: 'select',
             options: options.optYesNo,
             parser: parseInt
