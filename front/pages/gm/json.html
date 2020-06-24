@@ -328,19 +328,34 @@
         return {label: label, input: inputLine};
       },
       jsonEditor.prototype.parseJson = function(json) {
-        this.json = typeof(json) == 'object' ? json : okUtils.stringToJson(json);
+        json = typeof(json) == 'object' ? json : okUtils.stringToJson(json);
         let fieldKey;
         for (fieldKey in this.fieldOption) {
           let fieldDesc = this.fieldOption[fieldKey];
-          if (!fieldDesc.checkValid) {
-            continue;
-          }
-          let checkResult = fieldDesc.checkValid(okUtils.getJsonValue(this.json, fieldKey), this.json);
-          if (checkResult !== true) {
-            this.error('不是有效的Json格式配置:'+checkResult);
-            return false;
+          if (fieldDesc.type != 'map' && fieldDesc.type != 'array') {
+            if (!fieldDesc.checkValid) continue;
+            let checkResult = fieldDesc.checkValid(okUtils.getJsonValue(json, fieldKey), json);
+            if (checkResult !== true) {
+              this.error('不是有效的Json格式配置:'+checkResult);
+              return false;
+            }
+          } else {
+            let fieldValue = okUtils.getJsonValue(this.json, fieldKey);
+            for (mfield in fieldDesc.groupFieldOption) {
+              mfieldDesc = fieldDesc.groupFieldOption[mfield];
+              if (!mfieldDesc.checkValid) continue;
+              for (k in fieldValue) {
+                let v = fieldValue[k];
+                checkResult = mfieldDesc.checkValid(v[mfield]);
+                if (checkResult !== true) {
+                  this.error('不是有效的Json格式配置:'+checkResult);
+                  return false;
+                }
+              }
+            }
           }
         }
+        this.json = json;
         return true;
       }
       jsonEditor.prototype.getValue = function() {
@@ -400,6 +415,11 @@
 
           okUtils.setJsonValue(json, fieldKey, fieldValue);
         }
+
+        if (!this.parseJson(json)) {
+          return false;
+        }
+
         return json;
       }
       jsonEditor.prototype.parseValue = function(fieldDesc, fieldValue) {
@@ -472,6 +492,9 @@
 
       form.on('submit(save)', function(data){
         let fields = editor.getValue();
+        if (!fields) {
+          return false;
+        }
         if (!okUtils.isEmpty(fields)) {
           parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
         }
