@@ -46,11 +46,49 @@
       jsonEditor.prototype.createEditor = function() {
         let $form = $('#json');
         let fieldKey, fieldDesc, fieldValue;
+        let $fieldset;
+        let $fieldbox;
         for (fieldKey in this.fieldOption) {
           fieldDesc = this.fieldOption[fieldKey];
           fieldValue = fieldDesc.useWholeValue ? this.json : okUtils.getJsonValue(this.json, fieldKey);
+
+          if (fieldKey == 'constrain.begin_time') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>绝对时间填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          } else if (fieldKey == 'constrain.server_publish_day_begin') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>按开服时间计算活动时间填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          } else if (fieldKey == 'constrain.server_publish_day_last_time') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>按排期表计算活动时间填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          } else if (fieldKey == 'constrain.reg_day_begin') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>个性化活动填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          }
+ 
           let formItem = this.createFormItem(fieldKey, fieldDesc, fieldValue);
-          $form.append(formItem);
+          if ($fieldbox) {
+            $fieldbox.append(formItem);
+          } else {
+            $form.append(formItem);
+          }
+ 
+          if (fieldKey == 'constrain.reg_day_show_end') {
+            $fieldset = null;
+            $fieldbox = null;
+          }
         }
         $form.append('<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn" lay-submit lay-filter="save">保存</button></div></div>');
         form.render();
@@ -353,6 +391,38 @@
                 }
               }
             }
+          }
+        }
+        // 检查活动时间配置
+        if (json.constrain) {
+          let absTime = 0,zoneOpenTime = 0,lastTime = 0,roleTime = 0;
+          if (json.constrain.begin_time || json.constrain.end_time || json.constrain.show_begin_time || json.constrain.show_end_time) {
+            absTime += 1;
+          }
+          if (json.constrain.server_publish_day_begin || json.constrain.server_publish_day_end || json.constrain.server_publish_day_show_begin || json.constrain.server_publish_day_show_end) {
+            zoneOpenTime += 1;
+          }
+          if (json.constrain.server_publish_day_last_time) {
+            lastTime += 1;
+          }
+          if (json.constrain.reg_day_begin || json.constrain.reg_day_end || json.constrain.reg_day_show_begin || json.constrain.reg_day_show_end) {
+            roleTime += 1;
+          }
+          if (absTime != 0 && (zoneOpenTime != 0 || lastTime != 0 || roleTime != 0)) {
+            this.error('配置了绝对时间不需要再配置其他时间');
+            return false;
+          }
+          if (zoneOpenTime != 0 && (absTime != 0 || lastTime != 0 || roleTime != 0)) {
+            this.error('配置了开服时间不需要再配置其他时间');
+            return false;
+          }
+          if (lastTime != 0 && (absTime != 0 || zoneOpenTime != 0 || roleTime != 0)) {
+            this.error('配置了排期表持续时间不需要再配置其他时间');
+            return false;
+          }
+          if (roleTime != 0 && (absTime != 0 || zoneOpenTime != 0 || lastTime != 0)) {
+            this.error('个性化活动不需要再配置其他时间');
+            return false;
           }
         }
         this.json = json;

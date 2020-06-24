@@ -13,9 +13,8 @@
          options: { val: 'text' }, // select选项，value=>说明
          printer: fn, // fn(object), 把json对象转换为配置文本项
          parser: fn, // 解析函数fn(text)，把文本解析成json对象，比如JSON.parse，parseInt
-         checkValid: fn, // 校验配置是否合法函数fn(object)
+         checkValid: fn, // 校验配置是否合法函数fn(object, json)
          onChange: fn, // 字段被设置为指定值, fn(object)
-         separate: true, // 是否在这个字段前面加上换行
          subFieldOption: {} // 子字段配置，可以是一个object，或者一个返回object的fn，参数为fieldKey，
 
          useWholeValue: false,  // type=map|array时有效，是否使用整个字段，如果为false则根据fieldKey取值，否则取整个字段本身
@@ -1082,7 +1081,6 @@
         'constrain.begin_time': {
             name: '活动开始时间',
             type: 'datetime',
-            separate: true,
         },
         'constrain.end_time': {
             name: '活动结束时间',
@@ -1146,7 +1144,6 @@
             type: 'textarea',
             parser: JSON.parse,
             subFieldOption: utils.getFieldOptionByActivity,
-            separate: true
         },
         server_param: {
             name: '服务端私有参数',
