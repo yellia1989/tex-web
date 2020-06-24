@@ -1,8 +1,8 @@
 package gm
 
 import (
-	"strings"
-
+	"strconv"
+    "encoding/json"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -15,42 +15,13 @@ type _activityData struct {
 	ApplyUser     string `json:"apply_user"`
 	ConfigureData string `json:"configure_data"`
 	ConfigureDesc string `json:"configure_desc"`
-	Ts            string `json:"_"`
-}
-
-type _activityType struct {
-	Type uint32 `json:"activity_type"`
-	Name string `json:"type_name"`
-}
-
-func ActivityTypeList(c echo.Context) error {
-	ctx := c.(*mid.Context)
-	types := []_activityType{
-		{1, "模块控制"},
-		{2, "个人消耗"},
-		{3, "冲榜"},
-		{4, "累计充值"},
-		{5, "首冲送英雄"},
-		{6, "一元购"},
-		{7, "七日登陆"},
-		{8, "免费福利"},
-		{9, "成长基金"},
-		{10, "个性化活动"},
-		{11, "在线时长奖励"},
-		{12, "英雄众筹"},
-		{13, "许愿"},
-		{14, "英雄兑换"},
-		{15, "幸运转盘"},
-		{16, "邀请有礼"},
-		{17, "vip福利"},
-	}
-
-	return ctx.SendResponse(types)
 }
 
 func ActivityList(c echo.Context) error {
 	ctx := c.(*mid.Context)
-	sType := ctx.QueryParam("activityType")
+	stype := ctx.QueryParam("activityType")
+	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
 	db := common.GetLogDb()
 	if db == nil {
@@ -68,33 +39,39 @@ func ActivityList(c echo.Context) error {
 		return err
 	}
 
-	sql := ""
-	if sType == "" {
-		sql = "SELECT * FROM t_activity ORDER BY activity_id DESC;"
-	} else {
-		types := strings.Split(sType, ",")
-		where := ""
-		for i := 0; i < len(types)-1; i++ {
-			where += "activity_type=" + types[i] + " OR "
-		}
-		where += "activity_type=" + types[len(types)-1]
-
-		sql = "SELECT * FROM t_activity WHERE " + where + " ORDER BY activity_id DESC;"
+	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc FROM t_activity"
+	where := ""
+    if stype != "" {
+		where += " activity_type IN (" + stype + ")"
 	}
+    if where != "" {
+        sql += " WHERE " + where
+    }
+    sql += " ORDER BY activity_id desc"
+    var total int
+    err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
+    if err != nil {
+        return err
+    }
+
+    limitstart := strconv.Itoa((page-1)*limit)
+    limitrow := strconv.Itoa(limit)
+    sql += " LIMIT "+limitstart+","+limitrow
+
+	c.Logger().Error(sql)
+
 	rows, err := tx.Query(sql)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
-	c.Logger().Error(sql)
 
 	logs := make([]_activityData, 0)
 	for rows.Next() {
 		var r _activityData
-		if err := rows.Scan(&r.ActivityID, &r.ApplyZone, &r.ApplyUser, &r.ConfigureData, &r.ConfigureDesc, &r.Ts, &r.ActivityType); err != nil {
+		if err := rows.Scan(&r.ActivityID, &r.ActivityType, &r.ApplyZone, &r.ApplyUser, &r.ConfigureData, &r.ConfigureDesc); err != nil {
 			return err
 		}
-
 		logs = append(logs, r)
 	}
 
@@ -106,5 +83,85 @@ func ActivityList(c echo.Context) error {
 		return err
 	}
 
-	return ctx.SendArray(logs, len(logs))
+	return ctx.SendArray(logs, total)
+}
+
+func ActivityAdd(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    activity_id := ctx.FormValue("iActivityId")
+    apply_zone := ctx.FormValue("apply_zone")
+    apply_user := ctx.FormValue("apply_user")
+    config_desc := ctx.FormValue("configure_desc")
+    config_data := ctx.FormValue("configure_data")
+
+    json_data := make(map[string]interface{})
+    err := json.Unmarshal([]byte(config_data), &json_data)
+    if err != nil {
+        return err
+    }
+
+    activity_type := json_data["type"]
+
+	db := common.GetLogDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE db_zone_global")
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("insert into t_activity(activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc) value(?,?,?,?,?,?)", activity_id, activity_type, apply_zone, apply_user, config_data, config_desc)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    return ctx.SendResponse("添加活动成功")
+}
+
+func ActivityEdit(c echo.Context) error {
+    return nil
+}
+
+func ActivityDel(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    ids := ctx.FormValue("idsStr")
+
+	db := common.GetLogDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE db_zone_global")
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("Delete FROM t_activity WHERE activity_id IN ("+ids+")")
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    return ctx.SendResponse("删除活动成功")
 }

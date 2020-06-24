@@ -14,7 +14,7 @@
     <form class="layui-form">
       <div class="layui-form-item">
         <div class="layui-inline">
-          <div class="layui-input-inline">
+          <div class="layui-input-inline" style="width:250px">
             <div id="activitySelect"></div>
           </div>
           <div class="layui-input-inline">
@@ -29,48 +29,44 @@
   </div>
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
+  <script src="/js/activity.config.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     var editActivity;
-      layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
-        let table = layui.table;
-        let okLayer = layui.okLayer;
-        let okUtils = layui.okUtils;
-        let xmSelect = layui.xmSelect;
-        let form = layui.form;
-        okLoading.close();
+    layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      let xmSelect = layui.xmSelect;
+      let form = layui.form;
+      okLoading.close();
 
-        let activitySelect = xmSelect.render({
-          el: '#activitySelect',
-          name: 'activityType',
-          prop: {
-            value: 'activity_type',
-            name: 'type_name',
-          },
-          tips: '晒选活动类型',
-          model: {
-            label: {
-              type: 'block',
-              block: {
-                //是否显示删除图标
-                showIcon: false,
-              }
+      let actType = [];
+      for (i in activity.config.activityTypeDefine) {
+        let act = activity.config.activityTypeDefine[i];
+        actType.push({value: i, name: act.name});
+      }
+
+      let activitySelect = xmSelect.render({
+        el: '#activitySelect',
+        name: 'activityType',
+        data: actType,
+        tips: '晒选活动类型',
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
             }
-          },
-          autoRow: true,
-          toolbar: {
-            show: true,
-            list: ["ALL", "CLEAR", "REVERSE"]
           }
-        });
-
-        okUtils.ajax("/api/gm/activity/type", "get", null, false).done(function (response) {
-          activitySelect.update({
-            data: response.data,
-          });
-        }).fail(function (error) {
-          console.log(error);
-        });
+        },
+        autoRow: true,
+        toolbar: {
+          show: true,
+          list: ["ALL", "CLEAR", "REVERSE"]
+        }
+      });
 
       let activityTable = table.render({
         elem: "#tableId",
@@ -78,6 +74,8 @@
         text: {
           none: '暂无相关数据',
         },
+        limit: 30,
+        page: true,
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
@@ -102,7 +100,7 @@
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {
-          for (i = 0; i < res.data.length; ++i) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].activity_id;
           }
           return res;
@@ -114,6 +112,9 @@
           case "add":
             add();
             break;
+          case "batchDel":
+            batchDel();
+            break;
         }
       });
 
@@ -123,6 +124,9 @@
           case "edit":
             editActivity = data;
             edit(data.id);
+            break;
+          case "del":
+            del(data.id);
             break;
         }
       });
@@ -139,24 +143,50 @@
         })
       }
 
-        form.on("submit(search)", function (data) {
-          activityTable.reload({
-            url: "/api/gm/activity/list",
-            where: data.field,
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/gm/activity/del", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
           });
-          return false;
+        })
+      }
+
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/activity/del", "post", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.data);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
         });
-    })
+      }
+
+      form.on("submit(search)", function (data) {
+        activityTable.reload({
+          url: "/api/gm/activity/list",
+          where: data.field,
+        });
+        return false;
+      });
+    });
   </script>
   <!-- 头工具栏模板 -->
   <script type="text/html" id="toolbarTpl">
   <div class="layui-btn-container">
     <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
   </div>
 </script>
 
   <script type="text/html" id="operationTpl">
   <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
 </script>
 </body>
 
