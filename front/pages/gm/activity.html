@@ -82,7 +82,10 @@
           { field: "id", title: "活动ID", width: 90, fixed: 'left' },
           { field: "apply_zone", title: "应用分区", width: 90, fixed: 'left' },
           { field: "apply_user", title: "应用玩家", width: 90 },
-          { field: "activity_type", title: "活动类型", width: 90, align: "center" },
+          { field: "activity_type", title: "活动类型", width: 90, align: "center", templet: function (d) {
+            let act = activity.config.activityTypeDefine[d.activity_type];
+            return act ? act.name : '未知类型';
+          }},
           { field: "configure_desc", title: "活动备注", width: 150},
           {
             field: "begin_time", title: "开始时间", align: "center", width: 180, templet: function (d) {

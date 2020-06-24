@@ -131,7 +131,47 @@ func ActivityAdd(c echo.Context) error {
 }
 
 func ActivityEdit(c echo.Context) error {
-    return nil
+    ctx := c.(*mid.Context)
+    activity_id := ctx.FormValue("iActivityId")
+    apply_zone := ctx.FormValue("apply_zone")
+    apply_user := ctx.FormValue("apply_user")
+    config_desc := ctx.FormValue("configure_desc")
+    config_data := ctx.FormValue("configure_data")
+
+    json_data := make(map[string]interface{})
+    err := json.Unmarshal([]byte(config_data), &json_data)
+    if err != nil {
+        return err
+    }
+
+    activity_type := json_data["type"]
+
+	db := common.GetLogDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE db_zone_global")
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("update t_activity set activity_type=?,apply_zone=?,apply_user=?,configure_data=?,configure_desc=? WHERE activity_id=?",activity_type, apply_zone, apply_user, config_data, config_desc, activity_id)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    return ctx.SendResponse("更新活动成功")
 }
 
 func ActivityDel(c echo.Context) error {

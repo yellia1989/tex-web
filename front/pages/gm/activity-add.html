@@ -126,6 +126,9 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
+        if (data.field.apply_zone == '99999') {
+          data.field.apply_zone = '';
+        }
         okUtils.ajax("/api/gm/activity/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
