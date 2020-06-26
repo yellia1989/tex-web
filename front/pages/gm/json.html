@@ -527,13 +527,13 @@
         try {
           if (fieldDesc.parser === JSON.parse) {
             fieldValue = $.trim(fieldValue) == '' ? {} : fieldDesc.parser(fieldValue);
-          } else if (fieldDesc.parser == parseInt) {
-              if (!$.isNumeric(fieldValue)) {
-                  throw 'Not a Number';
-              }
-              fieldValue = fieldDesc.parser(fieldValue);
+          } else if (fieldDesc.parser === parseInt) {
+            if (!$.isNumeric(fieldValue)) {
+              throw 'Not a Number';
+            }
+            fieldValue = fieldDesc.parser(fieldValue);
           } else if (fieldDesc.parser) {
-              fieldValue = fieldDesc.parser(fieldValue);
+            fieldValue = fieldDesc.parser(fieldValue);
           }
         } catch (e) {
           this.error(fieldDesc.name + ' parse error:' + e);
