@@ -125,7 +125,12 @@
         formItem.append(group);
         let that = this;
         ctlBtnAdd = $('<input type="button" class="layui-btn layui-btn-xs" value="+">').click(function() {
-          group.prepend(that.createGroupInputRow(fieldDesc, undefined, undefined));
+          let row = that.createGroupInputRow(fieldDesc, undefined, undefined);
+          row.find(':input').each(function() {
+            let input = $(this);
+            input.attr('lay-verify', 'required');
+          });
+          group.prepend(row);
         });
         label.append(ctlBtnAdd);
 
@@ -167,7 +172,12 @@
         let ctlGroupRow = $('<div class="group-row layui-form-item" />');
         let btnGroup = $('<div class="layui-btn-group" style="margin-right:8px">');
         let ctlBtnAdd = $('<input type="button" class="layui-btn layui-btn-xs" value="+">').click(function () {
-          ctlGroupRow.after(self.createGroupInputRow(fieldDesc, undefined, undefined));
+          let row = self.createGroupInputRow(fieldDesc, undefined, undefined);
+          row.find(':input').each(function() {
+            let input = $(this);
+            input.attr('lay-verify', 'required');
+          });
+          ctlGroupRow.after(row);
         });
         let ctlBtnDel = $('<input type="button" class="layui-btn layui-btn-xs" value="-">').click(function () {
           ctlGroupRow.remove();
@@ -194,7 +204,6 @@
 
           let input = self.createInputField(grpFieldKey, grpFieldDesc, grpFieldValue);
           inline.append(input.label);
-          //input.input.attr('lay-verify', 'required');
           inline.append(input.input);
         });
 
@@ -455,10 +464,15 @@
             let group = input.next().next();
             let self = this;
             fieldValue = isMap ? {} : [];
+            let failed = false;
             group.find('.group-row').each(function () {
+              if (failed) return;
+
               let ctlGroupRow = $(this);
               let mapKey, valEntry;
               $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
+                if (failed) return;
+
                 var ctlInput = ctlGroupRow.find('[name="' + grpFieldKey + '"]');
                 var grpFieldValue = ctlInput.val();
                 if (grpFieldDesc.isMapKey) {
@@ -467,6 +481,10 @@
                 }
 
                 grpFieldValue = self.parseValue(grpFieldDesc, grpFieldValue);
+                if (grpFieldValue === undefined) {
+                  failed = true;
+                  return;
+                }
                 if (grpFieldDesc.useWholeValue) {
                   valEntry = grpFieldValue;
                 } else if (grpFieldDesc.arrayIndex !== undefined) {
@@ -482,6 +500,8 @@
                 }
               });
 
+              if (failed) return;
+
               if (valEntry !== undefined) {
                 if (isMap) {
                   fieldValue[mapKey] = valEntry;
@@ -490,6 +510,8 @@
                 }
               }
             });
+
+            if (failed) return undefined;
           }
 
           okUtils.setJsonValue(json, fieldKey, fieldValue);
@@ -514,8 +536,9 @@
               fieldValue = fieldDesc.parser(fieldValue);
           }
         } catch (e) {
-          this.error(fieldKey + ' parse error:' + e);
+          this.error(fieldDesc.name + ' parse error:' + e);
           console.log(e);
+          return undefined;
         }
         return fieldValue;
       }
