@@ -12,94 +12,83 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
-        <label class="layui-form-label">名称 *</label>
+        <label class="layui-form-label">名称</label>
         <div class="layui-input-block">
-          <input type="text" required name="sCDKeyName" class="layui-input">
+          <input type="text" name="sCDKeyName" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">总数量 *</label>
+        <label class="layui-form-label">总数量</label>
         <div class="layui-input-block">
-          <input type="text" required name="iCDKeyNum" class="layui-input">
+          <input type="text" name="iCDKeyNum" class="layui-input" lay-verify="required|integer" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否是通用CDK</label>
+        <label class="layui-form-label">类型</label>
         <div class="layui-input-block">
-          <select name="iCommon">
-            <option value="0" selected>否</option>
-            <option value="1">是</option>
+          <select name="iType" lay-filter="type">
+            <option value="0" selected>普通CDK</option>
+            <option value="1">通用CDK</option>
+            <option value="2">通用CDK指定</option>
+            <option value="3">激活码</option>
           </select>
         </div>
       </div>
 
-      <div class="layui-form-item">
-        <label class="layui-form-label">通用CDK指定cdk</label>
+      <div class="layui-form-item layui-hide" id="commoncdk">
+        <label class="layui-form-label">指定CDK</label>
         <div class="layui-input-block">
           <input type="text" name="sCommonCdk" class="layui-input">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否是激活码</label>
+        <label class="layui-form-label">开始时间</label>
         <div class="layui-input-block">
-          <select name="iActive">
-            <option value="0" selected>否</option>
-            <option value="1">是</option>
-          </select>
+          <input type="text" name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">开始时间 *</label>
+        <label class="layui-form-label">结束时间</label>
         <div class="layui-input-block">
-          <input type="text" required name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
-      <div class="layui-form-item">
-        <label class="layui-form-label">结束时间 *</label>
-        <div class="layui-input-block">
-          <input type="text" required name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
-        </div>
-      </div>
-
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="customlimit">
         <label class="layui-form-label">自定义限制</label>
         <div class="layui-input-block">
           <textarea name="sCustomLimit" class="layui-textarea"></textarea>
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="zonelimit">
         <label class="layui-form-label">分区限制</label>
         <div class="layui-input-block">
           <input type="text" name="sZoneLimit" class="layui-input">
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="exchangelimit">
         <label class="layui-form-label">每账号限制</label>
         <div class="layui-input-block">
           <input type="text" name="iExchangeLimit" class="layui-input">
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="rewardinfo">
         <label class="layui-form-label">自定义奖励</label>
         <div class="layui-input-block">
-          <textarea name="sRewardInfo" class="layui-textarea"></textarea>
+          <textarea name="sRewardInfo" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">添加</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
       </div>
 
@@ -123,10 +112,39 @@
         type: "datetime"
       });
 
+      form.on('select(type)', function(data){
+        if (data.value == 2) {
+          $('#commoncdk').removeClass('layui-hide');
+          $('input[name=sCommonCdk]').val('');
+        } else {
+          $('#commoncdk').addClass('layui-hide');
+        }
+
+        if (data.value == 3) {
+          $('#customlimit').addClass('layui-hide');
+          $('#zonelimit').addClass('layui-hide');
+          $('#exchangelimit').addClass('layui-hide');
+          $('#rewardinfo').addClass('layui-hide');
+          $('textarea[name=sRewardInfo]').removeAttr('lay-verify');
+        } else {
+          $('#customlimit').removeClass('layui-hide');
+          $('#zonelimit').removeClass('layui-hide');
+          $('#exchangelimit').removeClass('layui-hide');
+          $('#rewardinfo').removeClass('layui-hide');
+          $('textarea[name=sRewardInfo]').attr('lay-verify', 'required');
+        }
+      });
+
       //监听提交
       form.on('submit(add)', function (data) {
         data.field.iBeginTime = Date.parse(data.field.iBeginTime) / 1000;
         data.field.iEndTime = Date.parse(data.field.iEndTime) / 1000;
+        data.field.iCommonCdk = 0;
+        if (data.field.iType == 1 || data.field.iType == 2) {
+          data.field.iCommonCdk = 1;
+        } else if (data.field.iType == 3) {
+          data.field.iActive = 1;
+        }
         okUtils.ajax("/api/gm/cdk/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
