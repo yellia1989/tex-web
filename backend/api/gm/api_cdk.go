@@ -36,6 +36,8 @@ func CDKAdd(c echo.Context) error {
 	if err := ctx.Bind(&CDKey); err != nil {
 		return err
 	}
+    CDKey.ICreateMode = 1
+    CDKey.IDeliveryMode = 1
 
 	sBeginTime := ctx.FormValue("iBeginTime")
 	sEndTime := ctx.FormValue("iEndTime")
