@@ -460,6 +460,9 @@
           let isGroup = isMap || isArray;
           if (!isGroup) {
             fieldValue = this.parseValue(fieldDesc, input.val());
+            if (fieldValue == undefined) {
+              return undefined;
+            }
           } else {
             let group = input.next().next();
             let self = this;
@@ -525,9 +528,11 @@
       }
       jsonEditor.prototype.parseValue = function(fieldDesc, fieldValue) {
         try {
-          if (fieldDesc.parser === JSON.parse) {
+          if (!fieldDesc.parser) return fieldValue;
+
+          if (fieldDesc.parser.name == 'parse') {
             fieldValue = $.trim(fieldValue) == '' ? {} : fieldDesc.parser(fieldValue);
-          } else if (fieldDesc.parser === parseInt) {
+          } else if (fieldDesc.parser.name == 'parseInt') {
             if (!$.isNumeric(fieldValue)) {
               throw 'Not a Number';
             }
