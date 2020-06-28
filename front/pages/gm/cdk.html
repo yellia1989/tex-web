@@ -78,7 +78,7 @@
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
         parseData: function (res) {
-          for (i = 0; i < res.data.length; ++i) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iCDKeyId;
           }
         }
