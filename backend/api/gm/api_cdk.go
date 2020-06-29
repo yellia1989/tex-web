@@ -5,7 +5,6 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
-	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -19,14 +18,16 @@ func CDKList(c echo.Context) error {
 
 	var vCDK []rpc.CDKeyConfig
 	str := "aqua"
-	var a uint32
-	ret, err := mpPrx.GetCDKeyList(str, 0, uint32(page*limit), &vCDK, &a)
+
+	var l uint32
+    from := (page-1) * limit
+    to := from + limit
+	ret, err := mpPrx.GetCDKeyList(str, uint32(from), uint32(to), &vCDK, &l)
 	if err := checkRet(ret, err); err != nil {
 		return err
 	}
 
-	vPage := common.GetPage(vCDK, page, limit)
-	return ctx.SendArray(vPage, len(vCDK))
+	return ctx.SendArray(vCDK, int(l))
 }
 
 func CDKAdd(c echo.Context) error {
