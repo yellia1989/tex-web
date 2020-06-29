@@ -28,25 +28,23 @@
       <div class="layui-form-item">
         <label class="layui-form-label">开始时间</label>
         <div class="layui-input-block">
-          <input type="text" required name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" required name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">结束时间</label>
         <div class="layui-input-block">
-          <input type="text" required name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" required name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <!--<div class="layui-form-item">
         <label class="layui-form-label">自定义限制</label>
         <div class="layui-input-block">
           <textarea name="sCustomLimit" class="layui-textarea"></textarea>
         </div>
-      </div>
+      </div>-->
 
       <div class="layui-form-item">
         <label class="layui-form-label">分区限制</label>
@@ -65,14 +63,13 @@
       <div class="layui-form-item">
         <label class="layui-form-label">自定义奖励</label>
         <div class="layui-input-block">
-          <textarea name="sRewardInfo" class="layui-textarea"></textarea>
+          <textarea name="sRewardInfo" placeholder="1:邮件id:道具id*数量,道具id*数量" class="layui-textarea"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="add">添加</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+          <button class="layui-btn" lay-submit lay-filter="add">更新</button>
         </div>
       </div>
 
@@ -87,19 +84,11 @@
       let laydate = layui.laydate;
       let $ = layui.jquery;
 
-      laydate.render({
-        elem: "#iBeginTime",
-        type: "datetime"
-      });
-      laydate.render({
-        elem: "#iEndTime",
-        type: "datetime"
-      });
+      laydate.render({ elem: "#iBeginTime", type: "datetime", value: new Date(parent.editCDK.iBeginTime * 1000) });
+      laydate.render({ elem: "#iEndTime", type: "datetime", value: new Date(parent.editCDK.iEndTime * 1000) });
 
       $("input[name='sCDKeyName']").val(parent.editCDK.sCDKeyName);
       $("input[name='iCDKeyNum']").val(parent.editCDK.iCDKeyNum);
-      $("input[name='iBeginTime']").val(new Date(parent.editCDK.iBeginTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-      $("input[name='iEndTime']").val(new Date(parent.editCDK.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
       $("textarea[name='sCustomLimit']").val(parent.editCDK.sCustomLimit);
       $("input[name='sZoneLimit']").val(parent.editCDK.sZoneLimit);
       $("input[name='iExchangeLimit']").val(parent.editCDK.iExchangeLimit);
