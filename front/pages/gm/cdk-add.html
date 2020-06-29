@@ -68,7 +68,7 @@
       <div class="layui-form-item" id="zonelimit">
         <label class="layui-form-label">可用分区</label>
         <div class="layui-input-block">
-          <input type="text" name="sZoneLimit" class="layui-input">
+          <div id="zoneSelect"></div>
         </div>
       </div>
 
@@ -95,6 +95,7 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
@@ -102,6 +103,62 @@
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
       let $ = layui.jquery;
+      let xmSelect = layui.xmSelect;
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'sZoneLimit',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        autoRow: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        },
+        toolbar: {
+          show: true,
+        },
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect.update({
+          data: response.data,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
 
       laydate.render({
         elem: "#iBeginTime",
@@ -144,6 +201,9 @@
           data.field.iCommon = 1;
         } else if (data.field.iType == 3) {
           data.field.iActive = 1;
+        }
+        if (data.field.sZoneLimit == '99999') {
+          data.field.sZoneLimit = '';
         }
         okUtils.ajax("/api/gm/cdk/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {

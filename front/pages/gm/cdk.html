@@ -64,7 +64,9 @@
             }
           },
           //{ field: "sCustomLimit", title: "自定义限制", width: 120 },
-          { field: "sZoneLimit", title: "可用分区", align: "center", width: 90 },
+          { field: "sZoneLimit", title: "可用分区", align: "center", width: 90, templet: function (d) {
+            return d.sZoneLimit == '' ? '全服' : d.sZoneLimit;
+          }},
           { field: "iExchangeLimit", title: "账号使用次数", align: "center", width: 120, templet: function (d) {
             if (d.iExchangeLimit == 0) {
               return '无';
