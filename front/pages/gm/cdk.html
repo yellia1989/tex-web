@@ -38,11 +38,11 @@
           { field: "sCDKeyName", title: "名称", fixed: 'left' },
           { field: "iCDKeyNum", title: "总数量", width: 100, align: "center", fixed: 'left' },
           {
-            field: "iType", title: "类型", align: "center", width: 110, templet: function (d) {
+            field: "iType", title: "类型", align: "center", templet: function (d) {
               if (d.iCommon == 1) {
                 let ret = '<span class="layui-btn layui-btn-warm layui-btn-xs">通用兑换码';
                 if (d.sCommonCdk != "") {
-                  ret += '<'+d.sCommonCdk+'>';
+                  ret += '('+d.sCommonCdk+')';
                 }
                 ret += '</span>';
                 return ret;

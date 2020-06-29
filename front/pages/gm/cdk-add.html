@@ -139,9 +139,9 @@
       form.on('submit(add)', function (data) {
         data.field.iBeginTime = Date.parse(data.field.iBeginTime) / 1000;
         data.field.iEndTime = Date.parse(data.field.iEndTime) / 1000;
-        data.field.iCommonCdk = 0;
+        data.field.iCommon = 0;
         if (data.field.iType == 1 || data.field.iType == 2) {
-          data.field.iCommonCdk = 1;
+          data.field.iCommon = 1;
         } else if (data.field.iType == 3) {
           data.field.iActive = 1;
         }
