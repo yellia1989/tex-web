@@ -4,8 +4,8 @@
 	<meta charset="utf-8">
 	<title>修改密码</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="../../css/oksub.css">
-	<script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 <body class="childrenBody seting-pass">
 <form class="layui-form changePwd">
@@ -42,7 +42,7 @@
 </form>
 <script type="text/javascript" src="/lib/layui/layui.js"></script>
 <script type="text/javascript">
-  layui.use(['form', 'layer', 'okLayer', 'okUtils'], function () {
+  layui.use(['form', 'layer', 'okLayer', 'okUtils', 'okCookie'], function () {
   	let form = layui.form,
   		layer = layui.layer,
       okLayer = layui.okLayer,
@@ -51,12 +51,12 @@
   		$form = $('form');
   	okLoading.close();
 
-    $("input[name='username']").val(localStorage.getItem("username"));
+    $("input[name='username']").val($.cookie("username"));
 
     form.verify({
       password: [
-        /^[\S]{6,12}$/
-        ,'密码必须6到12位，且不能出现空格'
+        /^[\S]{6,14}$/
+        ,'密码必须6到14位，且不能出现空格'
       ],
       password2: function(value, item) {
         if (value != $("input[name='password']").val()) {
