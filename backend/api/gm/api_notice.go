@@ -39,13 +39,16 @@ func NoticeAdd(c echo.Context) error {
 	sBeginTime := ctx.FormValue("sBeginTime")
 	sEndTime := ctx.FormValue("sEndTime")
 
-	zones := strings.Split(ctx.FormValue("zoneid"), ",")
-	for _, zone := range zones {
-		zone, _ := strconv.ParseUint(zone, 10, 32)
-		notice.VZoneId = append(notice.VZoneId, uint32(zone))
-	}
+    szoneid := ctx.FormValue("zoneid")
+    if szoneid != "" {
+	    zones := strings.Split(szoneid, ",")
+	    for _, zone := range zones {
+	    	zone, _ := strconv.ParseUint(zone, 10, 32)
+	    	notice.VZoneId = append(notice.VZoneId, uint32(zone))
+	    }
+    }
 
-	if sBeginTime == "" || sEndTime == "" || len(notice.VZoneId) == 0 {
+	if sBeginTime == "" || sEndTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 

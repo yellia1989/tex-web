@@ -250,20 +250,6 @@
         ]
       },
       {
-        "id": 211,
-        "title": "禁止切服",
-        "href": "gm/forbid.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null,
-        "role": [
-          2,
-          3
-        ]
-      },
-      {
         "id": 212,
         "title": "屏蔽字测试",
         "href": "gm/dirty.html",
