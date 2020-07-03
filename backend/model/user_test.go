@@ -7,7 +7,7 @@ import (
 func TestAddUser(t *testing.T) {
     u := AddUser("yellia", "pwd", 0)
     if u == nil || u.Id != 1 {
-        t.Fatal("add user failed, should success")
+        t.Fatalf("add user failed, should success, %v", u)
     }
 
     u2 := GetUserByUserName(u.UserName)

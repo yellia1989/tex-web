@@ -157,7 +157,7 @@ func AddUser(username string, password string, role uint32) *User {
         return nil
     }
     // role必须存在
-    if GetRole(role) == nil {
+    if role != 0 && GetRole(role) == nil {
         return nil
     }
     // username不能相同

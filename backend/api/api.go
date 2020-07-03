@@ -9,7 +9,7 @@ import (
 )
 
 func RegisterHandler(group *echo.Group) {
-	group.POST("/login", UserLogin) // 登陆
+	group.POST("/login", sys.UserLogin) // 登陆
 
 	group.GET("/menu/list", sys.MenuList)               // 菜单列表
 	group.POST("/menu/update", sys.MenuUpdate)          // 更新菜单

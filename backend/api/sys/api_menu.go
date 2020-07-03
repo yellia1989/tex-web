@@ -41,6 +41,13 @@ func filterMenu(ms []*model.Menu, role uint32) []*model.Menu {
     return ret
 }
 
+func setMenuRole(m *model.Menu, role []uint32) {
+    m.Role = role[:]
+    for _,c := range m.Children {
+        setMenuRole(c, role)
+    }
+}
+
 func MenuUpdate(c echo.Context) error {
     ctx := c.(*mid.Context)
     id, _ := strconv.ParseUint(ctx.FormValue("id"), 10 ,32)
@@ -62,7 +69,9 @@ func MenuUpdate(c echo.Context) error {
             ids = append(ids, uint32(id))
         }
     }
-    m.Role = ids[:]
+
+    setMenuRole(m, ids)
+
     if !model.UpdateMenu(m) {
         return errors.New("更新菜单失败")
     }
