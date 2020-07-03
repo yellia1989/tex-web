@@ -57,6 +57,7 @@ func HorseAddLog(c echo.Context) error {
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid as id,time,horseId,vSkill,operate as action FROM add_horse"
 	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
 	c.Logger().Error(sql)

@@ -66,6 +66,7 @@ func StageAddLog(c echo.Context) error {
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid as id,time,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
 	sql += " WHERE roleid=" + roleid + " AND elite=0" + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
 	c.Logger().Error(sql)
@@ -136,6 +137,7 @@ func EliteStageAddLog(c echo.Context) error {
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid as id,time,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
 	sql += " WHERE roleid=" + roleid + " AND elite=1" + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
 	c.Logger().Error(sql)
