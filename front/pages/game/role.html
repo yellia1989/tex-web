@@ -84,9 +84,7 @@
       limit: 30,
       page: true,
       cols: [[
-        {field: "id", title: "角色ID", templet: function (d) {
-          return <a href="javascript:;" onclick="detail(d.id)"></a>
-        }},
+        {field: "id", title: "角色ID"},
         {field: "name", title: "角色名称"},
         {field: "vip_level", title: "vip等级", sort: true},
         {field: "last_login_time", title: "最后登录时间"},
@@ -94,7 +92,7 @@
         {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
-      defaultToolbar: ['filter', 'print', 'exports'],
+      defaultToolbar: ['filter', 'print', 'exports', 'detail'],
       autoSort: false,
     });
 
@@ -120,6 +118,9 @@
           break;
         case "ban_login":
           ban_login();
+          break;
+        case "detail":
+          detail(roleid);
           break;
       }
     });
@@ -160,6 +161,7 @@
     <button type="button" class="layui-btn layui-btn-sm" lay-event="recharge">补单</button>
     <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="ban_speak">禁言</button>
     <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="ban_login">封号</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="detail">详情</button>
   </div>
 </script>
 </body>

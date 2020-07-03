@@ -1,10 +1,20 @@
 package game
 
 import (
-    "strconv"
-    "github.com/labstack/echo"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"strconv"
+
+	"github.com/labstack/echo"
+	tex "github.com/yellia1989/tex-go/service"
+	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
+	"github.com/yellia1989/tex-web/backend/common"
+	mid "github.com/yellia1989/tex-web/backend/middleware"
+)
+
+var (
+	comm = tex.NewCommunicator("tex.mfwregistry.QueryObj@tcp -h 192.168.0.16 -p 2000 -t 3600000")
 )
 
 type _role struct {
@@ -71,4 +81,63 @@ func RoleList(c echo.Context) error {
 
     vPage := common.GetPage(roles, page, limit)
     return ctx.SendArray(vPage, len(roles))
+}
+
+type _heroData struct {
+	HeroID uint32 `json:"iHeroId"`
+	Level uint32 `json:"level"`
+	Star uint32 `json:"star"`
+}
+
+func getRoleDetail(zone, role string) []byte {
+	gamePrx := new(rpc.GameService)
+	comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zone, gamePrx)
+
+	result := ""
+	buff := bytes.Buffer{}
+	var ret int32
+	var err error
+	ret, err = gamePrx.DoGmCmd("admin", "see_json "+role, &result)
+	if ret != 0 || err != nil {
+		sErr := ""
+		if err != nil {
+			sErr = err.Error()
+		}
+		result = fmt.Sprintf("ret:%d, err:%s", ret, sErr)
+	}
+
+	buff.WriteString(result+"\n")
+	return buff.Bytes()
+}
+
+func RoleHeroList(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	zoneId := ctx.QueryParam("zoneId")
+	roleId := ctx.QueryParam("roleId")
+
+	if zoneId == "" || roleId == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+	result := getRoleDetail(zoneId, roleId)
+	roleData := make(map[string]interface{})
+	err := json.Unmarshal(result, &roleData)
+	if err != nil {
+		return err
+	}
+	vHero := roleData["stAllHero"].(map[string]interface{})["vHeroList"].([]interface{})
+
+	var heroList []_heroData
+	for _, v := range vHero {
+		var hero _heroData
+		stHero := v.(map[string]interface{})
+
+		hero.HeroID = uint32(stHero["iHeroId"].(float64))
+		hero.Level = uint32(stHero["iLevel"].(float64))
+		hero.Star = uint32(stHero["iStar"].(float64))
+
+		heroList = append(heroList, hero)
+	}
+
+	return ctx.SendArray(heroList, len(heroList))
 }
