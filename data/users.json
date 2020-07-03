@@ -12,9 +12,9 @@
     "role": 3
   },
   {
-    "id": 1003,
-    "username": "test",
-    "password": "$2a$10$g4/lCIMzMWb705KIpLQxQeTto0w5r/jqUmwbGUaOR7chGjFtZUVbS",
-    "role": 3
+    "id": 1004,
+    "username": "kefu001",
+    "password": "$2a$10$QqevnqbjmRBnxuQia03ioOdPxJAng53nhNkj0HW83iWQYRsfnOWQy",
+    "role": 4
   }
 ]

@@ -123,6 +123,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -136,6 +137,7 @@
         "checked": true,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -149,6 +151,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -162,6 +165,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -175,6 +179,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -188,6 +193,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -201,6 +207,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -214,6 +221,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -227,6 +235,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -240,6 +249,7 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       },
@@ -253,11 +263,13 @@
         "checked": false,
         "children": null,
         "role": [
+          4,
           3
         ]
       }
     ],
     "role": [
+      4,
       3
     ]
   },
@@ -346,7 +358,8 @@
         "checked": false,
         "children": null,
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -368,7 +381,8 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           },
           {
@@ -381,12 +395,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -408,7 +424,8 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           },
           {
@@ -421,12 +438,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -448,12 +467,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -475,7 +496,8 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           },
           {
@@ -488,12 +510,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -515,12 +539,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -542,12 +568,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -569,12 +597,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -596,12 +626,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -623,12 +655,14 @@
             "checked": false,
             "children": null,
             "role": [
-              3
+              3,
+              4
             ]
           }
         ],
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -641,7 +675,8 @@
         "checked": false,
         "children": null,
         "role": [
-          3
+          3,
+          4
         ]
       },
       {
@@ -654,12 +689,14 @@
         "checked": false,
         "children": null,
         "role": [
-          3
+          3,
+          4
         ]
       }
     ],
     "role": [
-      3
+      3,
+      4
     ]
   },
   {
