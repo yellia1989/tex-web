@@ -59,7 +59,7 @@ func LogList(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT time,username,action,desc FROM t_log"
+    sql := "SELECT time,username,action,`desc` FROM t_log"
     sql += " WHERE time between '"+startTime+"' AND '"+endTime+"'" 
     if username != "" {
         sql += " AND username='"+username+"'"
