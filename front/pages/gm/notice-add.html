@@ -6,6 +6,25 @@
   <title>新增跑马灯</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
+  <style>
+    .layui-form-pane .layui-form-label {
+      width: 140px;
+      padding: 8px 15px;
+      height: 38px;
+      line-height: 20px;
+      border-width: 1px;
+      border-style: solid;
+      border-radius: 2px 0 0 2px;
+      text-align: center;
+      background-color: #FBFBFB;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    .layui-form-pane .layui-input-block {
+      margin-left: 140px;
+      left: -1px;
+    }
+  </style>
 </head>
 
 <body>
@@ -32,23 +51,21 @@
       <div class="layui-form-item" id="content">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea"></textarea>
+          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">开始时间</label>
         <div class="layui-input-block">
-          <input type="text" name="sBeginTime" id="iBeginTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="sBeginTime" id="iBeginTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">结束时间</label>
         <div class="layui-input-block">
-          <input type="text" name="sEndTime" id="iEndTime" autocomplete="off" class="layui-input"
-            lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="sEndTime" id="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
@@ -63,30 +80,29 @@
       </div>
 
       <div class="layui-form-item" id="displayInterval">
-        <label class="layui-form-label">显示间隔</label>
+        <label class="layui-form-label">显示间隔(秒)</label>
         <div class="layui-input-block">
-          <input type="text" name="iDisplayInterval" class="layui-input">
+          <input type="text" name="iDisplayInterval" class="layui-input" lay-verify="required|integer" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item" id="displayNum">
         <label class="layui-form-label">显示次数</label>
         <div class="layui-input-block">
-          <input type="text" name="iDisplayNum" class="layui-input">
+          <input type="text" name="iDisplayNum" class="layui-input" lay-verify="required|integer" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item layui-hide" id="maintenanceTime">
-        <label class="layui-form-label">维护时间</label>
+        <label class="layui-form-label">维护时间(分钟)</label>
         <div class="layui-input-block">
-          <input type="text" name="iMaintenanceTime" class="layui-input">
+          <input type="text" name="iMaintenanceTime" class="layui-input" lay-verify="required|integer" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">添加</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
       </div>
 
@@ -132,7 +148,29 @@
         },
         toolbar: {
             show: true,
-        }
+        },
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
       });
 
       okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
@@ -143,27 +181,48 @@
         console.log(error);
       });
 
+      $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
+
       form.on('select(type)', function (data) {
         if (data.value == "1") {
-          $("#content").attr("class", "layui-form-item");
-          $("#displayInterval").attr("class", "layui-form-item");
-          $("#displayNum").attr("class", "layui-form-item");
-          $("#maintenanceTime").attr("class", "layui-form-item layui-hide");
+          $("#content").removeClass("layui-hide");
+          $("textarea[name=sContent]").attr("lay-verify", "required");
+          $("#displayInterval").removeClass("layui-hide");
+          $("input[name=iDisplayInterval]").attr("lay-verify", "required|integer");
+          $("#displayNum").removeClass("layui-hide");
+          $("input[name=iDisplayNum]").attr("lay-verify", "required|integer");
+          $("#maintenanceTime").addClass("layui-hide");
+          $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
         } else if (data.value == "2") {
-          $("#content").attr("class", "layui-form-item layui-hide");
-          $("#displayInterval").attr("class", "layui-form-item layui-hide");
-          $("#displayNum").attr("class", "layui-form-item layui-hide");
-          $("#maintenanceTime").attr("class", "layui-form-item");
+          $("#content").addClass("layui-hide");
+          $("textarea[name=sContent]").removeAttr("lay-verify");
+          $("#displayInterval").addClass("layui-hide");
+          $("input[name=iDisplayInterval]").removeAttr("lay-verify");
+          $("#displayNum").addClass("layui-hide");
+          $("input[name=iDisplayNum]").removeAttr("lay-verify");
+          $("#maintenanceTime").removeClass("layui-hide");
+          $("input[name=iMaintenanceTime]").attr("lay-verify", "required|integer");
         } else if (data.value == "3") {
-          $("#content").attr("class", "layui-form-item");
-          $("#displayInterval").attr("class", "layui-form-item layui-hide");
-          $("#displayNum").attr("class", "layui-form-item layui-hide");
-          $("#maintenanceTime").attr("class", "layui-form-item layui-hide");
+          $("#content").removeClass("layui-hide");
+          $("textarea[name=sContent]").attr("lay-verify", "required");
+          $("#displayInterval").addClass("layui-hide");
+          $("input[name=iDisplayInterval]").removeAttr("lay-verify");
+          $("#displayNum").addClass("layui-hide");
+          $("input[name=iDisplayNum]").removeAttr("lay-verify");
+          $("#maintenanceTime").addClass("layui-hide");
+          $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
         }
       });
 
       //监听提交
       form.on('submit(add)', function (data) {
+        if (data.field.zoneid == '99999') {
+          data.field.zoneid = '';
+        }
+        if (data.field.sBeginTime >= data.field.sEndTime) {
+          okLayer.redCrossMsg('开始时间不能大于结束时间', function () {});
+          return false;
+        }
         okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
