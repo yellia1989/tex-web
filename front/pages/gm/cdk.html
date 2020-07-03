@@ -35,64 +35,52 @@
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
           { field: "id", title: "ID", width: 50, fixed: 'left' },
-          { field: "sCDKeyName", title: "名称", width: 90, fixed: 'left' },
-          { field: "iCDKeyNum", title: "总数量", width: 90, align: "center", fixed: 'left' },
+          { field: "sCDKeyName", title: "名称", fixed: 'left' },
+          { field: "iCDKeyNum", title: "总数量", width: 100, align: "center", fixed: 'left' },
           {
-            field: "iCreateMode", title: "生成方式", width: 90, align: "center", templet: function (d) {
-              var ret = '';
-              switch (d.iCreateMode) {
-                case 1: ret = '预先生成'; break;
-                default:
-                  ret = '未知';
+            field: "iType", title: "类型", align: "center", templet: function (d) {
+              if (d.iCommon == 1) {
+                let ret = '<span class="layui-btn layui-btn-warm layui-btn-xs">通用兑换码';
+                if (d.sCommonCdk != "") {
+                  ret += '('+d.sCommonCdk+')';
+                }
+                ret += '</span>';
+                return ret;
+              } else if (d.iActive == 1) {
+                return '<span class="layui-btn layui-btn-danger layui-btn-xs">激活码</span>';
+              } else {
+                return '<span class="layui-btn layui-btn-xs">兑换码</span>';
               }
-              return ret;
             }
           },
           {
-            field: "iDeliveryMode", title: "发货方式", width: 90, align: "center", templet: function (d) {
-              var ret = '';
-              switch (d.iDeliveryMode) {
-                case 1: ret = '系统发放'; break;
-                default:
-                  ret = '未知';
-              }
-              return ret;
-            }
-          },
-          {
-            field: "iCommon", title: "是否是通用CDK", align: "center", width: 130, templet: function (d) {
-              return d.iCommon == 1 ? '是' : '否';
-            }
-          },
-          { field: "sCommonCdk", title: "通用CDK指定cdk", width: 90 },
-          {
-            field: "iActive", title: "是否是激活码", align: "center", width: 90, templet: function (d) {
-              return d.iCommon == 1 ? '是' : '否';
-            }
-          },
-          {
-            field: "iBeginTime", title: "开始时间", align: "center", width: 150, templet: function (d) {
+            field: "iBeginTime", title: "开始时间", align: "center", width: 170, templet: function (d) {
               return okUtils.dateFormat(new Date(d.iBeginTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             }
           },
           {
-            field: "iEndTime", title: "结束时间", align: "center", width: 150, templet: function (d) {
-              if (d.iEndTime < d.iBeginTime) {
-                return '结束时间不能小于开始时间';
-              }
+            field: "iEndTime", title: "结束时间", align: "center", width: 170, templet: function (d) {
               return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
             }
           },
-          { field: "sCustomLimit", title: "自定义限制", width: 90 },
-          { field: "sZoneLimit", title: "分区限制", align: "center", width: 90 },
-          { field: "iExchangeLimit", title: "每账号限制", align: "center", width: 90 },
-          { field: "sRewardInfo", title: "自定义奖励", align: "center", width: 120, fixed: 'right' },
+          //{ field: "sCustomLimit", title: "自定义限制", width: 120 },
+          { field: "sZoneLimit", title: "可用分区", align: "center", width: 90, templet: function (d) {
+            return d.sZoneLimit == '' ? '全服' : d.sZoneLimit;
+          }},
+          { field: "iExchangeLimit", title: "账号使用次数", align: "center", width: 120, templet: function (d) {
+            if (d.iExchangeLimit == 0) {
+              return '无';
+            } else {
+              return d.iExchangeLimit + '次';
+            }
+          }},
+          { field: "sRewardInfo", title: "自定义奖励", align: "center", fixed: 'right' },
           { field: "iGeneratedNum", title: "已生成", align: "center", width: 90, fixed: 'right' },
           { field: "iExchangedNum", title: "已兑换", align: "center", width: 90, fixed: 'right' },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
         parseData: function (res) {
-          for (i = 0; i < res.data.length; ++i) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iCDKeyId;
           }
         }
