@@ -27,6 +27,7 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/role/add", sys.RoleAdd)                // 角色增加
 	group.POST("/role/del", sys.RoleDel)                // 角色删除
 	group.POST("/role/update", sys.RoleUpdate)          // 角色更新
+	group.GET("/log/list", sys.LogList)                 // 系统日志
 
 	group.POST("/gm/game/cmd", gm.GameCmd)               // 执行gm命令
 	group.GET("/gm/zone/simplelist", gm.ZoneSimpleList)  // 获取分区列表
