@@ -9,25 +9,25 @@ import (
 func RequireAuth() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
+            ctx := c.(*Context)
+            method := ctx.Request().Method
+            path := ctx.Request().URL.Path
+            if path == "/api/login" {
+                return next(c)
+            }
+
             if pathIgnore(c) {
                 return next(c)
             }
 
             // 验证权限
-            ctx := c.(*Context)
             userid := ctx.GetUserId()
             user := model.GetUser(userid)
             if user == nil {
                 return &echo.HTTPError{
                     Code:    http.StatusForbidden,
-                    Message: "invalid userid",
+                    Message: "玩家没有登陆",
                 }
-            }
-            method := ctx.Request().Method
-            path := ctx.Request().URL.Path
-            // 对已经登陆还调用/api/login做特殊处理
-            if path == "/api/login" {
-                return next(c)
             }
 
             err := user.CheckPermission(path, method)
