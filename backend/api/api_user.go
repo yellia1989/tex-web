@@ -40,8 +40,8 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, err.Error())
     }
 
-    cjwt := http.Cookie{Name: "textoken", Value: t, Expires: expire, Path: "/", Domain: "192.168.0.16"}
-    cname := http.Cookie{Name: "username", Value: username, Expires: expire, Path: "/", Domain: "192.168.0.16"}
+    cjwt := http.Cookie{Name: "textoken", Value: t, Expires: expire, Path: "/"}
+    cname := http.Cookie{Name: "username", Value: username, Expires: expire, Path: "/"}
     ctx.SetCookie(&cjwt)
     ctx.SetCookie(&cname)
 
