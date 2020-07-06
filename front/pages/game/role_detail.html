@@ -47,15 +47,16 @@
             type: 'asc'
           },
           parseData: function (res) {
+            var result = [{}];
             var obj = JSON.parse(res.data)
             console.log(obj)
             vHeroList = obj.stAllHero.vHeroList;
-            for (i = 0; i < vHeroList; ++i) {
-              res.data[i].id = vHeroList[i].iHeroId;
-              res.data[i].level = vHeroList[i].iLevel;
-              res.data[i].star = vHeroList[i].iStar;
+            for (i = 0; i < vHeroList.length; ++i) {
+              result[i].id = vHeroList[i].iHeroId;
+              result[i].level = vHeroList[i].iLevel;
+              result[i].star = vHeroList[i].iStar;
             }
-            return res;
+            return result;
           }
         });
       })
