@@ -41,22 +41,23 @@
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
 <script>
-  layui.use(["table", "form", "laydate"], function () {
+  layui.use(["table", "form", "laydate", "okUtils"], function () {
     let table = layui.table;
     let form = layui.form;
     let laydate = layui.laydate;
     let $ = layui.jquery;
+    let okUtils = layui.okUtils;
     okLoading.close();
 
-    let now = new Date().getTime();
-    let lastweek = now -7*86400*1000;
-    laydate.render({elem: "#startTime", type: "datetime", value: new Date(lastweek)});
-    laydate.render({elem: "#endTime", type: "datetime", value: new Date()});
+    let now = new Date();
+    let lastweek = new Date(now.getTime() -7*86400*1000);
+    laydate.render({elem: "#startTime", type: "datetime", value: lastweek});
+    laydate.render({elem: "#endTime", type: "datetime", value: now});
 
     let logTable = table.render({
       elem: "#tableId",
       url: "/api/log/list",
-      where: {startTime: $('#startTime').val(), endTime: $('#endTime').val()},
+      where: {startTime: okUtils.dateFormat(lastweek, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
       text: {
         none: '暂无相关数据',
       },
