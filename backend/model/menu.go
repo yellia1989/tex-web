@@ -133,6 +133,10 @@ func (m *Menu) updateMenu(update *Menu) {
         m.Role = make([]uint32,len(update.Role))
         copy(m.Role,update.Role)
     }
+    m.Children = nil
+    for _, v := range update.Children {
+        m.Children = append(m.Children, v.copy())
+    }
 }
 
 func GetMenus()[]*Menu {

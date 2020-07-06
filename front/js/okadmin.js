@@ -152,7 +152,7 @@ layui.use(["element", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday
   $("#logout").click(function () {
     okLayer.confirm("确定要退出吗？", function (index) {
       okTab.removeTabStorage(function (res) {
-        $.removeCookie("textoken");
+        $.removeCookie("texweb_session");
         $.removeCookie("username");
         window.location.href = "/login.html";
       });

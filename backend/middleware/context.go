@@ -1,17 +1,16 @@
 package middleware
 
 import (
-    "time"
     "net/http"
     "strconv"
     "github.com/labstack/echo"
-    "github.com/dgrijalva/jwt-go"
-    "github.com/labstack/echo/middleware"
+    "github.com/gorilla/sessions"
+    "github.com/labstack/echo-contrib/session"
     "github.com/yellia1989/tex-web/backend/model"
 )
 
 const (
-    UserKey = "github.com/yellia1989/tex-web/backend/context"
+    SessionKey = "github.com/yellia1989/tex-web/backend/context"
 )
 
 type Context struct {
@@ -28,27 +27,24 @@ func NewContext() echo.MiddlewareFunc {
 }
 
 func RequireLogin() echo.MiddlewareFunc {
-    return middleware.JWTWithConfig(middleware.JWTConfig{
+    cfg := session.Config{
         Skipper: func(c echo.Context) bool {
             return pathIgnore(c)
         },
-        SigningKey: []byte(UserKey),
-        TokenLookup: "cookie:textoken",
-    })
+        Store: sessions.NewCookieStore([]byte(SessionKey)),
+    }
+
+    return session.MiddlewareWithConfig(cfg)
 }
 
 func GetUserId(c echo.Context) uint32 {
-    v := c.Get("user")
-    if v == nil {
+    sess, _ := session.Get("texweb_session", c)
+    userid, ok := sess.Values["userid"]
+    if !ok {
         return 0
     }
-    user := v.(*jwt.Token)
-    claims := user.Claims.(jwt.MapClaims)
-    exp, err := strconv.ParseInt(claims["exp"].(string), 10, 64)
-    if err != nil || time.Now().Unix() > exp {
-        return 0
-    }
-    id, err := strconv.ParseUint(claims["id"].(string), 10, 32)
+
+    id, err := strconv.ParseUint(userid.(string), 10, 32)
     if err != nil {
         return 0
     }

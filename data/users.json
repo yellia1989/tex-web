@@ -2,19 +2,19 @@
   {
     "id": 1001,
     "username": "admin",
-    "password": "$2a$10$DdPhySwqvYr/H6qNj0iryOFoCE6ZK/h2tFW.saCVDGMaDxszOH2m.",
+    "password": "$2a$10$qagHB4idcO.JXyapRGdm9eE4kqGcw/09V8ammDdElVDf555YzKCxe",
     "role": 1
   },
   {
     "id": 1002,
     "username": "dev",
-    "password": "$2a$10$0ESbzbPRid53ILgZhb1yp.69suy3qRQyCZwAAektF2rIJwOnWE2SG",
+    "password": "$2a$10$AOpce2OI8jILWrryDvBWS.qOREsws1lzwg/Qo5k1tLGjwWEJ/Fhs.",
     "role": 3
   },
   {
-    "id": 1003,
-    "username": "test",
-    "password": "$2a$10$g4/lCIMzMWb705KIpLQxQeTto0w5r/jqUmwbGUaOR7chGjFtZUVbS",
-    "role": 3
+    "id": 1004,
+    "username": "kefu001",
+    "password": "$2a$10$QqevnqbjmRBnxuQia03ioOdPxJAng53nhNkj0HW83iWQYRsfnOWQy",
+    "role": 4
   }
 ]

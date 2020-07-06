@@ -21,19 +21,6 @@ func pathIgnore(c echo.Context) bool {
         // 资源不需要验证
         return true
     default:
-        if strings.HasPrefix(path, "/api") {
-            // api需要特殊处理
-            switch path {
-            case "/api/login":
-                // 上传了cookie的话需要处理
-                if _, err := c.Cookie("textoken"); err != nil {
-                    return true
-                }
-                return false
-            default:
-                return false
-            }
-        }
         return false
     }
 }

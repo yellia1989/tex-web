@@ -85,8 +85,8 @@
         }
       },
       password: [
-        /^[\S]{6,12}$/
-        ,'密码必须6到12位，且不能出现空格'
+        /^[\S]{6,14}$/
+        ,'密码必须6到14位，且不能出现空格'
       ],
       password2: function(value, item) {
         if (value != $("input[name='password']").val()) {

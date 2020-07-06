@@ -52,7 +52,7 @@ func OnlineTime(c echo.Context) error {
 		return err
 	}
 	defer rows.Close()
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	mRole := make(map[uint64]uint32)
 	for rows.Next() {

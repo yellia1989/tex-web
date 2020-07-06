@@ -81,7 +81,7 @@ func AllList(c echo.Context) error {
     limitrow := strconv.Itoa(limit)
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
 
     rows, err := tx.Query(sql)
     if err != nil {
