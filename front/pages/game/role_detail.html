@@ -47,16 +47,17 @@
             type: 'asc'
           },
           parseData: function (res) {
-            var result = [{}];
-            var obj = JSON.parse(res.data)
-            console.log(obj)
+            var obj = JSON.parse(res.data);
             vHeroList = obj.stAllHero.vHeroList;
+            res.data = new Array();
             for (i = 0; i < vHeroList.length; ++i) {
-              result[i].id = vHeroList[i].iHeroId;
-              result[i].level = vHeroList[i].iLevel;
-              result[i].star = vHeroList[i].iStar;
+            res.data[i] = {};
+              res.data[i].id = vHeroList[i].iHeroId;
+              res.data[i].level = vHeroList[i].iLevel;
+              res.data[i].star = vHeroList[i].iStar;
             }
-            return result;
+            console.log(res);
+            return res;
           }
         });
       })
