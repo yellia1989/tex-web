@@ -101,8 +101,16 @@ func LogList(c echo.Context) error {
 func LogAdd(c echo.Context, action string, desc string) {
     ctx := c.(*mid.Context)
 
+    var err error
+    defer func() {
+        if err != nil {
+            c.Logger().Errorf("add sys log failed, %v", err)
+        }
+    }()
+
     db := common.GetStatDb()
     if db == nil {
+        ctx.Logger().Error("connect stat db failed")
         return
     }
 
@@ -122,9 +130,13 @@ func LogAdd(c echo.Context, action string, desc string) {
         return
     }
 
-    tx.Exec("insert into t_log(time, username, action, desc) values(?,?,?,?)", time.Now().Format("2006-01-02 15:04:05"), u.UserName, action, desc)
+    _, err = tx.Exec("insert into t_log(time, username, action, `desc`) values(?,?,?,?)", time.Now().Format("2006-01-02 15:04:05"), u.UserName, action, desc)
+    if err != nil {
+        return
+    }
 
-    if err := tx.Commit(); err != nil {
+    err = tx.Commit()
+    if err != nil {
         return
     }
 }
