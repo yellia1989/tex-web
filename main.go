@@ -65,6 +65,7 @@ func httpErrorHandler(err error, c echo.Context) {
 func main() {
     // Echo instance
     e := echo.New()
+    e.Debug = true
     e.HTTPErrorHandler = httpErrorHandler
     e.Logger.SetHeader("${time_custom}|${short_file}:${line}|${level}|")
 

@@ -4,7 +4,7 @@
     "title": "每日数据",
     "href": "console.html",
     "fontFamily": "ok-icon",
-    "icon": "\u0026#xe654;",
+    "icon": "&#xe722;",
     "spread": false,
     "checked": false,
     "children": [
@@ -13,12 +13,12 @@
         "title": "注册",
         "href": "stat/newadd.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe736;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          3
         ]
       },
       {
@@ -26,12 +26,12 @@
         "title": "新增留存",
         "href": "stat/remain.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe736;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          3
         ]
       },
       {
@@ -39,12 +39,12 @@
         "title": "新增留存(全服去重)",
         "href": "stat/remain2.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe736;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          3
         ]
       },
       {
@@ -52,12 +52,12 @@
         "title": "流失",
         "href": "stat/loss.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe736;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          3
         ]
       },
       {
@@ -65,12 +65,12 @@
         "title": "充值总况",
         "href": "stat/income.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe7d1;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          3
         ]
       },
       {
@@ -78,12 +78,12 @@
         "title": "充值跟踪",
         "href": "stat/income-track.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe7d1;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          3
         ]
       },
       {
@@ -91,23 +91,25 @@
         "title": "充值金额",
         "href": "stat/income-money.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe7d1;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          3
         ]
       }
     ],
-    "role": null
+    "role": [
+      3
+    ]
   },
   {
     "id": 2,
     "title": "GM工具",
     "href": "",
     "fontFamily": "ok-icon",
-    "icon": "\u0026#xe68a;",
+    "icon": "&#xe654;",
     "spread": false,
     "checked": false,
     "children": [
@@ -116,12 +118,13 @@
         "title": "GM",
         "href": "gm/gm.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2
+          4,
+          3
         ]
       },
       {
@@ -129,12 +132,13 @@
         "title": "分区管理",
         "href": "gm/dir.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": true,
         "children": null,
         "role": [
-          2
+          4,
+          3
         ]
       },
       {
@@ -142,12 +146,12 @@
         "title": "渠道管理",
         "href": "gm/channel.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -156,12 +160,12 @@
         "title": "Registry管理",
         "href": "gm/registry.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -170,12 +174,12 @@
         "title": "邮件管理",
         "href": "gm/mail.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -184,12 +188,12 @@
         "title": "公告管理",
         "href": "gm/bulletin.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -198,12 +202,12 @@
         "title": "跑马灯",
         "href": "gm/notice.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -212,12 +216,12 @@
         "title": "白名单",
         "href": "gm/whitelist.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -226,12 +230,12 @@
         "title": "CDK管理",
         "href": "gm/cdk.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -240,12 +244,12 @@
         "title": "活动管理",
         "href": "gm/activity.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       },
@@ -254,18 +258,19 @@
         "title": "屏蔽字测试",
         "href": "gm/dirty.html",
         "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
+        "icon": "&#xe654;",
         "spread": false,
         "checked": false,
         "children": null,
         "role": [
-          2,
+          4,
           3
         ]
       }
     ],
     "role": [
-      2
+      4,
+      3
     ]
   },
   {
@@ -328,6 +333,19 @@
         "role": [
           1
         ]
+      },
+      {
+        "id": 705,
+        "title": "日志管理",
+        "href": "system/log.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
       }
     ],
     "role": [
@@ -339,7 +357,8 @@
     "title": "游戏数据查询",
     "href": "",
     "fontFamily": "ok-icon",
-    "icon": "\u0026#xe68a;",
+    "icon": "&#xe7c5;",
+    "spread": false,
     "checked": false,
     "children": [
       {
@@ -352,268 +371,311 @@
         "checked": false,
         "children": null,
         "role": [
-          1
+          3,
+          4
         ]
       },
       {
         "id": 802,
         "title": "银币记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80201,
-              "title": "银币获得记录",
-              "href": "game/coin-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            },
-            {
-              "id": 80202,
-              "title": "银币消耗记录",
-              "href": "game/coin-sub.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80201,
+            "title": "银币获得记录",
+            "href": "game/coin-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 80202,
+            "title": "银币消耗记录",
+            "href": "game/coin-sub.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
         ],
         "role": [
-          1
+          3,
+          4
         ]
       },
       {
         "id": 803,
         "title": "元宝记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80301,
-              "title": "元宝获得记录",
-              "href": "game/diamond-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            },
-            {
-              "id": 80302,
-              "title": "元宝消耗记录",
-              "href": "game/diamond-sub.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80301,
+            "title": "元宝获得记录",
+            "href": "game/diamond-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 80302,
+            "title": "元宝消耗记录",
+            "href": "game/diamond-sub.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
         ],
         "role": [
-          1
+          3,
+          4
         ]
       },
       {
         "id": 804,
         "title": "武将记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80401,
-              "title": "武将获得记录",
-              "href": "game/hero-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80401,
+            "title": "武将获得记录",
+            "href": "game/hero-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
         ]
       },
       {
         "id": 804,
         "title": "道具记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80401,
-              "title": "道具获得记录",
-              "href": "game/item-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            },
-            {
-              "id": 80402,
-              "title": "道具消耗记录",
-              "href": "game/item-sub.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80401,
+            "title": "道具获得记录",
+            "href": "game/item-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 80402,
+            "title": "道具消耗记录",
+            "href": "game/item-sub.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
         ],
         "role": [
-          1
+          3,
+          4
         ]
       },
       {
         "id": 805,
         "title": "剧情记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80501,
-              "title": "剧情通关记录",
-              "href": "game/stage-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80501,
+            "title": "剧情通关记录",
+            "href": "game/stage-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
         ],
         "role": [
-          1
+          3,
+          4
         ]
       },
       {
         "id": 806,
         "title": "列传记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80601,
-              "title": "列传通关记录",
-              "href": "game/elite-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80601,
+            "title": "列传通关记录",
+            "href": "game/elite-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
         ],
         "role": [
-          1
+          3,
+          4
         ]
       },
       {
         "id": 807,
         "title": "宝物记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80701,
-              "title": "宝物获得记录",
-              "href": "game/treasure-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80701,
+            "title": "宝物获得记录",
+            "href": "game/treasure-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
         ]
       },
       {
         "id": 808,
         "title": "军备记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80801,
-              "title": "军备获得记录",
-              "href": "game/weapon-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80801,
+            "title": "军备获得记录",
+            "href": "game/weapon-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
         ]
       },
       {
         "id": 809,
         "title": "马匹记录",
+        "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
-            {
-              "id": 80901,
-              "title": "马匹获得记录",
-              "href": "game/horse-add.html",
-              "fontFamily": "ok-icon",
-              "icon": "\u0026#xe654;",
-              "spread": false,
-              "checked": false,
-              "children": null,
-              "role": [
-                1
-              ]
-            }
+          {
+            "id": 80901,
+            "title": "马匹获得记录",
+            "href": "game/horse-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
         ]
       },
       {
@@ -626,7 +688,8 @@
         "checked": false,
         "children": null,
         "role": [
-          1
+          3,
+          4
         ]
       },
       {
@@ -639,73 +702,80 @@
         "checked": false,
         "children": null,
         "role": [
-          1
+          3,
+          4
         ]
       }
     ],
     "role": [
-      1
+      3,
+      4
     ]
   },
   {
     "id": 9,
     "title": "实时数据",
+    "href": "",
     "fontFamily": "ok-icon",
-    "icon": "\u0026#xe654;",
+    "icon": "&#xe660;",
     "spread": false,
     "checked": false,
     "children": [
-        {
-            "id": 901,
-            "title": "实时在线",
-            "href": "game/real-online.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "role": [
-              1
-            ]
-        },
-        {
-            "id": 902,
-            "title": "实时新增",
-            "href": "game/real-newadd.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "role": [
-              1
-            ]
-        },
-        {
-            "id": 903,
-            "title": "实时充值",
-            "href": "game/real-income.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "role": [
-              1
-            ]
-        },
-        {
-            "id": 904,
-            "title": "实时关卡验证",
-            "href": "game/real-stageverify.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "role": [
-              1
-            ]
-        }
+      {
+        "id": 901,
+        "title": "实时在线",
+        "href": "game/real-online.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 902,
+        "title": "实时新增",
+        "href": "game/real-newadd.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 903,
+        "title": "实时充值",
+        "href": "game/real-income.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 904,
+        "title": "实时关卡验证",
+        "href": "game/real-stageverify.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      }
     ],
     "role": [
-      1
+      3
     ]
   }
 ]

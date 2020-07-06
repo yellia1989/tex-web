@@ -66,9 +66,10 @@ func StageAddLog(c echo.Context) error {
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid as id,time,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
 	sql += " WHERE roleid=" + roleid + " AND elite=0" + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	rows, err := tx.Query(sql)
 	if err != nil {
@@ -136,9 +137,10 @@ func EliteStageAddLog(c echo.Context) error {
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid as id,time,stageid,cost_time,restore_times,revive_times,giveup,win,star,consume_cards,left_cards,first FROM stage_challenge_finish"
 	sql += " WHERE roleid=" + roleid + " AND elite=1" + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	rows, err := tx.Query(sql)
 	if err != nil {
@@ -220,7 +222,7 @@ func StagePass(c echo.Context) error {
 		return err
 	}
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	stage2StarNum := make(map[uint32]*_star)
 	for rows2.Next() {
@@ -254,7 +256,7 @@ func StagePass(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	logs := make([]_stagePass, 0)
 	total := 0

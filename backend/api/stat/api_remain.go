@@ -85,7 +85,7 @@ func RemainList(c echo.Context) error {
     }
     sql += " GROUP BY statymd, zoneid ORDER BY statymd desc, zoneid desc"
 
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
 
     var total int
     err = tx.QueryRow("SELECT count(*) as total FROM ("+fmt.Sprintf(sql, startTime, endTime)+") a").Scan(&total)
@@ -167,7 +167,7 @@ func RemainList(c echo.Context) error {
     sql = "SELECT rolecreatetimeymd, zoneid, count( DISTINCT roleid ) AS rolenum, sum( money ) AS money FROM t_recharge"
     sql += sqlwhere
     sql += " GROUP BY rolecreatetimeymd, zoneid ORDER BY rolecreatetimeymd, zoneid"
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
     rows3, err := tx.Query(sql)
     if err != nil {
         return err
@@ -189,7 +189,7 @@ func RemainList(c echo.Context) error {
     sql = "SELECT rolecreatetimeymd, zoneid, floor(( unix_timestamp( statymd )- unix_timestamp( rolecreatetimeymd ))/ 86400 ) AS days, sum( money ) AS money FROM t_recharge"
     sql += sqlwhere
     sql += " GROUP BY rolecreatetimeymd, statymd, zoneid HAVING floor(( unix_timestamp( statymd )- unix_timestamp( rolecreatetimeymd ))/ 86400 ) <=30"
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
     rows4, err := tx.Query(sql)
     if err != nil {
         return err
@@ -216,7 +216,7 @@ func RemainList(c echo.Context) error {
     sql = "SELECT rolecreatetimeymd, zoneid, sum( money ) AS money FROM t_recharge" 
     sql += sqlwhere
     sql += " GROUP BY rolecreatetimeymd, zoneid,roleid"
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
     rows5, err := tx.Query(sql)
     if err != nil {
         return err
@@ -328,7 +328,7 @@ func LossList(c echo.Context) error {
     }
     sql += " GROUP BY statymd, zoneid ORDER BY statymd desc, zoneid desc"
 
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
 
     var total int
     err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)

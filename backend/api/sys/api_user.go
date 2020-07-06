@@ -1,12 +1,13 @@
-package api
+package sys
 
 import (
     "time"
-    "net/http"
     "strconv"
     "strings"
+    "net/http"
     "github.com/labstack/echo"
-    "github.com/dgrijalva/jwt-go"
+    "github.com/gorilla/sessions"
+    "github.com/labstack/echo-contrib/session"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
 )
@@ -24,25 +25,20 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, "用户名或密码输入错误")
     }
 
-    // Create token
-    token := jwt.New(jwt.SigningMethodHS256)
-
-    expire := time.Now().Add(time.Hour * 24)
-
-    // Set claims
-    claims := token.Claims.(jwt.MapClaims)
-    claims["id"] = strconv.FormatUint(uint64(u.Id), 10)
-    claims["exp"] = strconv.FormatInt(expire.Unix(), 10)
-
-    // Generate encoded token and send it as response.
-    t, err := token.SignedString([]byte(mid.UserKey))
+    expire := time.Hour * 24 * 7
+    sess, err := session.Get("texweb_session", c)
     if err != nil {
-        return ctx.SendError(-1, err.Error())
+        return err
+    }
+    sess.Options = &sessions.Options{
+        Path : "/",
+        MaxAge : int(expire.Seconds()),
     }
 
-    cjwt := http.Cookie{Name: "textoken", Value: t, Expires: expire, Path: "/"}
-    cname := http.Cookie{Name: "username", Value: username, Expires: expire, Path: "/"}
-    ctx.SetCookie(&cjwt)
+    sess.Values["userid"] = strconv.FormatUint(uint64(u.Id), 10)
+    sess.Save(c.Request(), c.Response())
+
+    cname := http.Cookie{Name: "username", Value: u.UserName, Expires: time.Now().Add(expire), Path: "/"}
     ctx.SetCookie(&cname)
 
     return ctx.SendResponse("ok")

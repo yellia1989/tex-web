@@ -56,9 +56,10 @@ func CoinAddLog(c echo.Context) error {
     limitrow := strconv.Itoa(limit)
     sql := "SELECT _rid as id,time,add_num,cur_num,operate as action FROM add_coin"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql += " ORDER BY _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
 
     rows, err := tx.Query(sql)
     if err != nil {
@@ -126,9 +127,10 @@ func CoinSubLog(c echo.Context) error {
     limitrow := strconv.Itoa(limit)
     sql := "SELECT _rid as id,time,sub_num,cur_num,operate as action FROM sub_coin"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql += " ORDER BY _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
 
     rows, err := tx.Query(sql)
     if err != nil {

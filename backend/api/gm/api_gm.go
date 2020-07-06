@@ -9,7 +9,7 @@ import (
     tex "github.com/yellia1989/tex-go/service"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
-    "github.com/yellia1989/tex-web/backend/model"
+    "github.com/yellia1989/tex-web/backend/api/sys"
 )
 
 var (
@@ -76,10 +76,12 @@ func GameCmd(c echo.Context) error {
         }
     }
 
+    sys.LogAdd(ctx, "gm", "[" + szoneid + "]>" + scmd)
+
     return ctx.SendResponse(buff.String())
 }
 
-func cmd(u *model.User, zoneid string, cmd string, result *string) error {
+func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     gamePrx := new(rpc.GameService)
     comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
 
@@ -88,6 +90,7 @@ func cmd(u *model.User, zoneid string, cmd string, result *string) error {
     var ret int32
     var err error
 
+    u := ctx.GetUser()
     ret, err = gamePrx.DoGmCmd(u.UserName, cmd, result)
     if ret != 0 || err != nil {
         serr := ""
@@ -95,6 +98,10 @@ func cmd(u *model.User, zoneid string, cmd string, result *string) error {
             serr = err.Error()
         }
         return fmt.Errorf("ret:%d, err:%s", ret, serr)
+    }
+
+    if cmd != "iap_list" && cmd != "item_list" {
+        sys.LogAdd(ctx, "gm", "[" + zoneid + "]>" + cmd)
     }
 
     return nil
@@ -112,8 +119,7 @@ func IAPRecharge(c echo.Context) error {
     }
 
     var result string
-    u := ctx.GetUser()
-    err := cmd(u, zoneid, scmd, &result)
+    err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
     }
@@ -136,8 +142,7 @@ func IAPList(c echo.Context) error {
     }
 
     var result string
-    u := ctx.GetUser()
-    err := cmd(u, zoneid, scmd, &result)
+    err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
     }
@@ -160,8 +165,7 @@ func ItemList(c echo.Context) error {
     zoneid := "1"
     scmd := "item_list"
     var result string
-    u := ctx.GetUser()
-    err := cmd(u, zoneid, scmd, &result)
+    err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
     }
@@ -186,8 +190,7 @@ func BanSpeak(c echo.Context) error {
     }
 
     var result string
-    u := ctx.GetUser()
-    err := cmd(u, zoneid, scmd, &result)
+    err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
     }
@@ -207,8 +210,7 @@ func BanLogin(c echo.Context) error {
     }
 
     var result string
-    u := ctx.GetUser()
-    err := cmd(u, zoneid, scmd, &result)
+    err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
     }
