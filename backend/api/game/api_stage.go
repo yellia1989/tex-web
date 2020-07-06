@@ -69,7 +69,7 @@ func StageAddLog(c echo.Context) error {
     sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	rows, err := tx.Query(sql)
 	if err != nil {
@@ -140,7 +140,7 @@ func EliteStageAddLog(c echo.Context) error {
     sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	rows, err := tx.Query(sql)
 	if err != nil {
@@ -222,7 +222,7 @@ func StagePass(c echo.Context) error {
 		return err
 	}
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	stage2StarNum := make(map[uint32]*_star)
 	for rows2.Next() {
@@ -256,7 +256,7 @@ func StagePass(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	logs := make([]_stagePass, 0)
 	total := 0

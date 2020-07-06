@@ -1,6 +1,7 @@
 package sys
 
 import (
+    "time"
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -70,7 +71,7 @@ func LogList(c echo.Context) error {
     sql += " ORDER BY time desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Error(sql)
+    c.Logger().Debug(sql)
 
     rows, err := tx.Query(sql)
     if err != nil {
@@ -95,4 +96,35 @@ func LogList(c echo.Context) error {
     }
 
     return ctx.SendArray(logs, total)
+}
+
+func LogAdd(c echo.Context, action string, desc string) {
+    ctx := c.(*mid.Context)
+
+    db := common.GetStatDb()
+    if db == nil {
+        return
+    }
+
+    tx, err := db.Begin()
+    if err != nil {
+        return
+    }
+    defer tx.Rollback()
+
+    _, err = tx.Exec("USE db_stat")
+    if err != nil {
+        return
+    }
+
+    u := ctx.GetUser()
+    if u == nil {
+        return
+    }
+
+    tx.Exec("insert into t_log(time, username, action, desc) values(?,?,?,?)", time.Now().Format("2006-01-02 15:04:05"), u.UserName, action, desc)
+
+    if err := tx.Commit(); err != nil {
+        return
+    }
 }

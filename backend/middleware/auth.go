@@ -35,7 +35,7 @@ func RequireAuth() echo.MiddlewareFunc {
             if err != nil {
                 pass = "failed"
             }
-            ctx.Logger().Error("username:"+user.UserName+",path:"+path+",method:"+method+",pass:"+pass)
+            ctx.Logger().Debug("username:"+user.UserName+",path:"+path+",method:"+method+",pass:"+pass)
             if err != nil {
                 return err
             }

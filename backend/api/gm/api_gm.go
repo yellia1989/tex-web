@@ -10,6 +10,7 @@ import (
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/model"
+    "github.com/yellia1989/tex-web/backend/api/sys"
 )
 
 var (
@@ -75,6 +76,8 @@ func GameCmd(c echo.Context) error {
             buff.WriteString(result+"\n")
         }
     }
+
+    sys.LogAdd(c, "gm", "[" + szoneid + "]>" + scmd)
 
     return ctx.SendResponse(buff.String())
 }

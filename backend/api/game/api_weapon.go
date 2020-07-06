@@ -59,7 +59,7 @@ func WeaponAddLog(c echo.Context) error {
     sql += " ORDER BY _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Error(sql)
+	c.Logger().Debug(sql)
 
 	rows, err := tx.Query(sql)
 	if err != nil {
