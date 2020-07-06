@@ -111,6 +111,5 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/stat/income/list", stat.IncomeList)
 	group.GET("/stat/income/track", stat.IncomeTrack)
 
-	// role detail
-	group.GET("/game/role/heroList", game.RoleHeroList) //获取特定玩家英雄列表
+	group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
 }

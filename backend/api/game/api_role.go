@@ -2,7 +2,6 @@ package game
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -110,7 +109,7 @@ func getRoleDetail(zone, role string) []byte {
 	return buff.Bytes()
 }
 
-func RoleHeroList(c echo.Context) error {
+func RoleDeatil(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneId := ctx.QueryParam("zoneId")
 	roleId := ctx.QueryParam("roleId")
@@ -120,24 +119,6 @@ func RoleHeroList(c echo.Context) error {
 	}
 
 	result := getRoleDetail(zoneId, roleId)
-	roleData := make(map[string]interface{})
-	err := json.Unmarshal(result, &roleData)
-	if err != nil {
-		return err
-	}
-	vHero := roleData["stAllHero"].(map[string]interface{})["vHeroList"].([]interface{})
 
-	var heroList []_heroData
-	for _, v := range vHero {
-		var hero _heroData
-		stHero := v.(map[string]interface{})
-
-		hero.HeroID = uint32(stHero["iHeroId"].(float64))
-		hero.Level = uint32(stHero["iLevel"].(float64))
-		hero.Star = uint32(stHero["iStar"].(float64))
-
-		heroList = append(heroList, hero)
-	}
-
-	return ctx.SendArray(heroList, len(heroList))
+	return ctx.SendResponse(result)
 }
