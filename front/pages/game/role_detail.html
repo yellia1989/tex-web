@@ -49,6 +49,12 @@
           parseData: function (res) {
             var obj = JSON.parse(res.data)
             console.log(obj)
+            vHeroList = obj.stAllHero.vHeroList;
+            for (i = 0; i < vHeroList; ++i) {
+              res.data[i].id = vHeroList[i].iHeroId;
+              res.data[i].level = vHeroList[i].iLevel;
+              res.data[i].star = vHeroList[i].iStar;
+            }
             return res;
           }
         });
