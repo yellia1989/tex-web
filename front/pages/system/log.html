@@ -13,7 +13,7 @@
     <div class="layui-form-item">
       <div class="layui-inline">
         <div class="layui-input-inline">
-          <select name="action" lay-verify="required" lay-verType="tips">
+          <select name="action">
             <option value="">请选择行为</option>
             <option value="gm">gm</option>
           </select>
@@ -45,21 +45,25 @@
     let table = layui.table;
     let form = layui.form;
     let laydate = layui.laydate;
+    let $ = layui.jquery;
     okLoading.close();
 
-    laydate.render({elem: "#startTime", type: "datetime"});
-    laydate.render({elem: "#endTime", type: "datetime"});
+    let now = new Date().getTime();
+    let lastweek = now -7*86400*1000;
+    laydate.render({elem: "#startTime", type: "datetime", value: new Date(lastweek)});
+    laydate.render({elem: "#endTime", type: "datetime", value: new Date()});
 
     let logTable = table.render({
       elem: "#tableId",
       url: "/api/log/list",
+      where: {startTime: $('#startTime').val(), endTime: $('#endTime').val()},
       text: {
         none: '暂无相关数据',
       },
       limit: 30,
       page: true,
       cols: [[
-        {field: "time", title: "时间", width: 150},
+        {field: "time", title: "时间", width: 170},
         {field: "username", title: "用户", width: 100},
         {field: "action", title: "行为", width: 140},
         {field: "desc", title: "详细信息"},
