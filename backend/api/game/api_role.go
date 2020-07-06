@@ -1,7 +1,6 @@
 package game
 
 import (
-	"bytes"
 	"fmt"
 	"strconv"
 
@@ -82,18 +81,11 @@ func RoleList(c echo.Context) error {
     return ctx.SendArray(vPage, len(roles))
 }
 
-type _heroData struct {
-	HeroID uint32 `json:"iHeroId"`
-	Level uint32 `json:"level"`
-	Star uint32 `json:"star"`
-}
-
-func getRoleDetail(zone, role string) []byte {
+func getRoleDetail(zone, role string) string {
 	gamePrx := new(rpc.GameService)
 	comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zone, gamePrx)
 
 	result := ""
-	buff := bytes.Buffer{}
 	var ret int32
 	var err error
 	ret, err = gamePrx.DoGmCmd("admin", "see_json "+role, &result)
@@ -105,8 +97,7 @@ func getRoleDetail(zone, role string) []byte {
 		result = fmt.Sprintf("ret:%d, err:%s", ret, sErr)
 	}
 
-	buff.WriteString(result+"\n")
-	return buff.Bytes()
+	return result
 }
 
 func RoleDeatil(c echo.Context) error {
@@ -118,7 +109,7 @@ func RoleDeatil(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	result := getRoleDetail(zoneId, roleId)
+    result := getRoleDetail(zoneId, roleId)
 
 	return ctx.SendResponse(result)
 }

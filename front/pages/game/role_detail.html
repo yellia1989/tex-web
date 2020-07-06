@@ -21,6 +21,7 @@
       </div>
       <div class="layui-tab-item">金币</div>
     </div>
+
     <script src="/lib/layui/layui.js"></script>
     <script>
       layui.use(["element", "table"], function () {
@@ -31,7 +32,7 @@
 
         let heroTable = table.render({
           elem: "#heroTable",
-          url: "/api/game/role/heroList",
+          url: "/api/game/role/detail",
           where: { zoneId: parent.zoneid, roleId: parent.roleid },
           text: {
             none: '暂无相关数据',
@@ -46,9 +47,8 @@
             type: 'asc'
           },
           parseData: function (res) {
-            for (i = 0; i < res.data.length; ++i) {
-              res.data[i].id = res.data[i].iHeroId;
-            }
+            var obj = JSON.parse(res.data)
+            console.log(obj)
             return res;
           }
         });
