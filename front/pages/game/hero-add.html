@@ -49,8 +49,10 @@
     let laydate = layui.laydate;
     okLoading.close();
 
-    laydate.render({elem: "#startTime", type: "datetime"});
-    laydate.render({elem: "#endTime", type: "datetime"});
+    let now = new Date();
+    let lastweek = new Date(now.getTime() -7*86400*1000);
+    laydate.render({elem: "#startTime", type: "datetime", value: lastweek});
+    laydate.render({elem: "#endTime", type: "datetime", value: now});
 
     let zoneSelect = xmSelect.render({
       el: '#zoneSelect',
@@ -91,6 +93,7 @@
         none: '暂无相关数据',
       },
       limit: 30,
+      where: {startTime: okUtils.dateFormat(lastweek, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
       page: true,
       cols: [[
         {field: "id", title: "日志id"},
