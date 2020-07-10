@@ -1,8 +1,6 @@
 package game
 
 import (
-	"time"
-
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -18,9 +16,10 @@ type _onlineTime struct {
 func OnlineTime(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneid := ctx.QueryParam("zoneid")
-	date := ctx.QueryParam("date")
+	startTime := ctx.QueryParam("startTime")
+	endTime := ctx.QueryParam("endTime")
 
-	if zoneid == "" {
+	if zoneid == "" || startTime == "" || endTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
@@ -40,19 +39,15 @@ func OnlineTime(c echo.Context) error {
 		return err
 	}
 
-	if date == "" {
-		date = time.Now().Format("2006-01-02")
-	}
-	date = "logymd='" + date + "'"
 	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
-	sql += "WHERE " + date + " GROUP BY roleid ORDER BY sum(online_time)"
+	sql += "WHERE time BETWEEN '"+startTime+"' AND '"+endTime+"' GROUP BY roleid ORDER BY sum(online_time)"
 
+	c.Logger().Debug(sql)
 	rows, err := tx.Query(sql)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
-	c.Logger().Debug(sql)
 
 	mRole := make(map[uint64]uint32)
 	for rows.Next() {
@@ -73,6 +68,11 @@ func OnlineTime(c echo.Context) error {
 		return err
 	}
 	roleNum := uint32(len(mRole))
+
+	logs := make([]_onlineTime, 0)
+    if roleNum == 0 {
+	    return ctx.SendArray(logs, len(logs))
+    }
 
 	// 初始化一套时间轴
 	time := []uint32{300, 600, 1800, 3600, 7200, 3600 * 4, 3600 * 8, 3600 * 12, 3600 * 24, 3600*24 + 1}
@@ -103,7 +103,6 @@ func OnlineTime(c echo.Context) error {
 		}
 	}
 
-	logs := make([]_onlineTime, 0)
 	for k, t := range time {
 		r := _onlineTime{RoleNum: num[k], RoleNumTotal: roleNum}
 		switch {

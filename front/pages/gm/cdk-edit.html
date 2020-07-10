@@ -133,7 +133,7 @@
         },
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {all: true}, false).done(function (response) {
         let ids = [99999];
         if (parent.editCDK.sZoneLimit != '') {
           ids = parent.editCDK.sZoneLimit.split(',');

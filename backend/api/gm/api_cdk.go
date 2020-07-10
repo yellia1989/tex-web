@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
+	"github.com/yellia1989/tex-web/backend/common"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
@@ -13,11 +14,13 @@ func CDKList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
+    comm := common.GetLocator()
+
 	mpPrx := new(rpc.MPService)
-	comm.StringToProxy("aqua.MPServer.MPServiceObj", mpPrx)
+	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", mpPrx)
 
 	var vCDK []rpc.CDKeyConfig
-	str := "aqua"
+	str := common.GetApp()+""
 
 	var l uint32
     from := (page-1) * limit
@@ -47,13 +50,15 @@ func CDKAdd(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
+    comm := common.GetLocator()
+
 	MPPrx := new(rpc.MPService)
-	comm.StringToProxy("aqua.MPServer.MPServiceObj", MPPrx)
+	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", MPPrx)
 
 	projectConfig := rpc.MPProjectConfig{}
-	if ok, _ := MPPrx.GetProject("aqua", &projectConfig); ok != 0 {
-		projectConfig.SProjectId = "aqua"
-		projectConfig.SProjectName = "aqua"
+	if ok, _ := MPPrx.GetProject(common.GetApp()+"", &projectConfig); ok != 0 {
+		projectConfig.SProjectId = common.GetApp()+""
+		projectConfig.SProjectName = common.GetApp()+""
 
 		ret, err := MPPrx.CreateProject(projectConfig)
 		if err := checkRet(ret, err); err != nil {
@@ -61,7 +66,7 @@ func CDKAdd(c echo.Context) error {
 		}
 	}
 
-	CDKey.SProjectId = "aqua"
+	CDKey.SProjectId = common.GetApp()+""
 	var iCDKeyId uint32
 	ret, err := MPPrx.CreateCDKey(CDKey, &iCDKeyId)
 	if err := checkRet(ret, err); err != nil {
@@ -79,8 +84,10 @@ func CDKUpdate(c echo.Context) error {
 		return err
 	}
 
+    comm := common.GetLocator()
+
 	MPPrx := new(rpc.MPService)
-	comm.StringToProxy("aqua.MPServer.MPServiceObj", MPPrx)
+	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", MPPrx)
 
 	ret, err := MPPrx.ModifyCDKey(CDKey)
 	if err := checkRet(ret, err); err != nil {

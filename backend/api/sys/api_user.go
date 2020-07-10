@@ -10,6 +10,7 @@ import (
     "github.com/labstack/echo-contrib/session"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
+    "github.com/yellia1989/tex-web/backend/common"
 )
 
 func UserLogin(c echo.Context) error {
@@ -39,7 +40,9 @@ func UserLogin(c echo.Context) error {
     sess.Save(c.Request(), c.Response())
 
     cname := http.Cookie{Name: "username", Value: u.UserName, Expires: time.Now().Add(expire), Path: "/"}
+    logo := http.Cookie{Name: "logo", Value: common.GetLogo(), Expires: time.Now().Add(expire), Path: "/"}
     ctx.SetCookie(&cname)
+    ctx.SetCookie(&logo)
 
     return ctx.SendResponse("ok")
 }
