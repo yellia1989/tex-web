@@ -15,8 +15,10 @@ func NoticeList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
+    comm := common.GetLocator()
+
 	bulletinPrx := new(rpc.BulletinService)
-	comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	comm.StringToProxy(common.GetApp()+".BulletinServer.BulletinServiceObj", bulletinPrx)
 
 	var vNotice []rpc.NoticeDataInfo
 	ret, err := bulletinPrx.GetAllNotice(&vNotice)
@@ -52,8 +54,10 @@ func NoticeAdd(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
+    comm := common.GetLocator()
+
 	bulletinPrx := new(rpc.BulletinService)
-	comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	comm.StringToProxy(common.GetApp()+".BulletinServer.BulletinServiceObj", bulletinPrx)
 
 	ret, err := bulletinPrx.AddNotice(notice)
 	if err := checkRet(ret, err); err != nil {
@@ -72,8 +76,10 @@ func NoticeDel(c echo.Context) error {
 		return ctx.SendError(-1, "跑马灯不存在")
 	}
 
+    comm := common.GetLocator()
+
 	bulletinPrx := new(rpc.BulletinService)
-	comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	comm.StringToProxy(common.GetApp()+".BulletinServer.BulletinServiceObj", bulletinPrx)
 
 	for _, id := range ids {
 		id, _ := strconv.ParseUint(id, 10, 32)
@@ -94,8 +100,10 @@ func NoticeUpdate(c echo.Context) error {
 		return err
 	}
 
+    comm := common.GetLocator()
+
 	bulletinPrx := new(rpc.BulletinService)
-	comm.StringToProxy("aqua.BulletinServer.BulletinServiceObj", bulletinPrx)
+	comm.StringToProxy(common.GetApp()+".BulletinServer.BulletinServiceObj", bulletinPrx)
 
 	ret, err := bulletinPrx.ModifyNotice(notice)
 	if err := checkRet(ret, err); err != nil {

@@ -11,8 +11,10 @@ import (
 )
 
 func ZoneMap() map[uint32]rpc.ZoneInfo {
+    comm := common.GetLocator()
+
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
 
     mzone := make(map[uint32]rpc.ZoneInfo)
 
@@ -25,8 +27,10 @@ func ZoneMap() map[uint32]rpc.ZoneInfo {
 }
 
 func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
+    comm := common.GetLocator()
+
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
 
     var zones []rpc.ZoneInfo
     ret, err := dirPrx.GetAllZone(&zones)
@@ -38,6 +42,7 @@ func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
 func ZoneSimpleList(c echo.Context) error {
     ctx := c.(*mid.Context)
     gf := ctx.FormValue("gf")
+    all := ctx.FormValue("all")
 
     zones := zoneList(c)
 
@@ -50,7 +55,9 @@ func ZoneSimpleList(c echo.Context) error {
     }
 
     var zones2 []rpc.ZoneInfo
-    zones2 = append(zones2, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
+    if all != "" {
+        zones2 = append(zones2, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
+    }
     zones2 = append(zones2, zones...)
 
     return ctx.SendResponse(zones2)
@@ -75,31 +82,33 @@ func ZoneAdd(c echo.Context) error {
         return err
     }
 
-    sDivision := fmt.Sprintf("aqua.zone.%d", zone.IZoneId)
+    sDivision := fmt.Sprintf(common.GetApp()+".zone.%d", zone.IZoneId)
     sHandleConnEp := ctx.FormValue("sHandleConn")
     sConnServiceObjEp := ctx.FormValue("sConnServiceObj")
     sGameServiceObjEp := ctx.FormValue("sGameServiceObj")
 
-    if err := registryAdd("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
+    if err := registryAdd(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
         return err
     }
-    if err := registryAdd("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
-        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
+    if err := registryAdd(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
+        registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
         return err
     }
-    if err := registryAdd("aqua.GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
-        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
-        registryDel("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+    if err := registryAdd(common.GetApp()+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
+        registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
         return err
     }
 
+    comm := common.GetLocator()
+
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
     ret, err := dirPrx.CreateZone(*zone.Copy())
     if err := checkRet(ret, err); err != nil {
-        registryDel("aqua.ConnServer.HandleConn", sDivision, sHandleConnEp)
-        registryDel("aqua.ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
-        registryDel("aqua.GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
+        registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+        registryDel(common.GetApp()+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
         return err
     }
 
@@ -113,8 +122,10 @@ func ZoneDel(c echo.Context) error {
         return ctx.SendError(-1, "分区不存在")
     }
 
+    comm := common.GetLocator()
+
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
 
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)
@@ -135,8 +146,10 @@ func ZoneUpdate(c echo.Context) error {
         return err
     }
 
+    comm := common.GetLocator()
+
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
     ret, err := dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
     if err := checkRet(ret, err); err != nil {
         return err
@@ -162,8 +175,10 @@ func ZoneUpdateVersion(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    comm := common.GetLocator()
+
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy("aqua.DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
 
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)

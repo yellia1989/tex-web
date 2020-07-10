@@ -14,8 +14,10 @@ func ChannelList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
+    comm := common.GetLocator()
+
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy("aqua.LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
 
     var channels []rpc.ChannelAddr
     ret, err := loginPrx.GetAllChannel(&channels)
@@ -38,8 +40,10 @@ func ChannelAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    comm := common.GetLocator()
+
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy("aqua.LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
 
     ret, err := loginPrx.AddNewChannel(sChannel, sAddress, sRes)
     if err := checkRet(ret, err); err != nil {
@@ -57,8 +61,10 @@ func ChannelDel(c echo.Context) error {
         return ctx.SendError(-1, "渠道不存在")
     }
 
+    comm := common.GetLocator()
+
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy("aqua.LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
 
     for _, id := range ids {
         ret, err := loginPrx.DelChannel(id)
@@ -80,8 +86,10 @@ func ChannelUpdate(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    comm := common.GetLocator()
+
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy("aqua.LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
 
     ret, err := loginPrx.ModifyChannel(sChannel, sAddress, sRes)
     if err := checkRet(ret, err); err != nil {

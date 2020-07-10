@@ -2,10 +2,13 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>在线时长记录</title>
+  <title>充值记录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <style>
+.layui-table-cell{ display:table-cell; vertical-align: middle; }
+</style>
 </head>
 <body>
 <div class="ok-body">
@@ -16,6 +19,9 @@
           <div id="zoneSelect"></div>
         </div>
         <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required|number" lay-verType="tips" placeholder="请输入角色id" autocomplete="off" name="roleid">
+        </div>
+        <div class="layui-input-inline">
           <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
         </div>
         <div class="layui-input-inline">
@@ -23,7 +29,7 @@
         </div>
         <div class="layui-input-inline">
           <button class="layui-btn" lay-submit lay-filter="search">
-            <i class="layui-icon layui-icon-refresh-3"></i>
+            <i class="layui-icon layui-icon-search"></i>
           </button>
         </div>
       </div>
@@ -35,6 +41,8 @@
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
   var zoneid;
+  var roleid;
+  var flowid;
   layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
     let table = layui.table;
     let okUtils = layui.okUtils;
@@ -42,7 +50,7 @@
     let okLayer = layui.okLayer;
     let xmSelect = layui.xmSelect;
     let $ = layui.jquery;
-    let laydate = layui.laydate
+    let laydate = layui.laydate;
     okLoading.close();
 
     let now = new Date();
@@ -82,31 +90,61 @@
       console.log(error);
     });
 
-    let stageTable = table.render({
+    let logTable = table.render({
       elem: "#tableId",
-      url: "/api/game/online/time",
-      where: {zoneid: 1, startTime: okUtils.dateFormat(lastweek, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
       data:[],
       text: {
         none: '暂无相关数据',
       },
+      limit: 30,
+      where: {startTime: okUtils.dateFormat(lastweek, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
+      page: true,
       cols: [[
-        {field: "onlineTime_total", title: "累计在线时长"},
-        {field: "onlineTime_roleNum", title: "角色数量"},
-        {field: "onlineTime_roleNum_total", title: "角色总数量"},
-        {field: "onlineTime_roleNum_rate", title: "占比", templet: function(d) {
-            return (d.onlineTime_roleNum_rate * 100).toString().substring(0,5) + "%"
+        {field: "flow_id", title: "流水号", width: 200, templet: function(d) {
+          if (d.detail) {
+            return '<a href="javascript:void(0)" onclick="detail('+d.flow_id+')" class="layui-table-link">'+d.flow_id+'</a>';
+          }
+          return d.flow_id;
+        }},
+        {field: "extern_order_id", title: "外部订单号", width: 300},
+        {field: "product_id", title: "商品", width: 100},
+        {field: "steps", title: "步骤", templet: function(d) {
+          let ret = '';
+          for (let i = 0; d.steps && i < d.steps.length; ++i) {
+            ret += d.steps[i].time + " " + d.steps[i].status + '<br/>';
+          }
+          return ret;
         }},
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
+      parseData: function(res) {
+        for (let i = 0; res.data && i < res.data.length; ++i) {
+          for (let j = 0; res.data[i].steps && j < res.data[i].steps.length; ++j) {
+            if (res.data[i].steps[j].status.indexOf("receive-receipt") != -1) {
+              res.data[i].detail = true;
+              break;
+            }
+          }
+        }
+        return res;
+      }
     });
 
+    window.detail = function (flow_id) {
+      flowid = flow_id;
+      okLayer.open("充值详情", "iap-detail.html", "90%", "90%", null, function () {
+      })
+    };
+
     form.on("submit(search)", function (data) {
-      stageTable.reload({
-        url: "/api/game/online/time",
+      logTable.reload({
+        url: "/api/game/recharge/trace",
         where: data.field,
+        page: {
+          curr: 1,
+        }
       });
       return false;
     });

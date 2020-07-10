@@ -1,12 +1,15 @@
 package main
 
 import (
-    "net/http"
+    "os"
+    "fmt"
     "strings"
+    "net/http"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api"
+    "github.com/yellia1989/tex-web/backend/common"
     "github.com/yellia1989/tex-go/tools/log"
 )
 
@@ -63,9 +66,16 @@ func httpErrorHandler(err error, c echo.Context) {
 }
 
 func main() {
+    if err := common.ParseCfg("conf.cfg"); err != nil {
+        fmt.Printf("%s", err)
+        os.Exit(-1)
+    }
+    
+    debug := common.Cfg.GetBool("debug", false)
+
     // Echo instance
     e := echo.New()
-    e.Debug = true
+    e.Debug = debug
     e.HTTPErrorHandler = httpErrorHandler
     e.Logger.SetHeader("${time_custom}|${short_file}:${line}|${level}|")
 
@@ -87,10 +97,12 @@ func main() {
 
     api.RegisterHandler(e.Group("/api"))
 
-    log.SetFrameworkLevel(log.DEBUG)
+    if debug {
+        log.SetFrameworkLevel(log.DEBUG)
+    }
 
     // Start server
-    e.Logger.Fatal(e.Start(":8080"))
+    e.Logger.Fatal(e.Start(common.Cfg.GetCfg("listen", "")))
 
     log.FlushLogger()
 }

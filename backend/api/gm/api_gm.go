@@ -6,14 +6,10 @@ import (
     "bytes"
     "encoding/json"
     "github.com/labstack/echo"
-    tex "github.com/yellia1989/tex-go/service"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/api/sys"
-)
-
-var (
-    comm = tex.NewCommunicator("tex.mfwregistry.QueryObj@tcp -h 192.168.0.16 -p 2000 -t 3600000")
+    "github.com/yellia1989/tex-web/backend/common"
 )
 
 func checkRet(ret int32, err error) error {
@@ -40,14 +36,17 @@ func GameCmd(c echo.Context) error {
     buff := bytes.Buffer{}
     u := ctx.GetUser()
 
+    comm := common.GetLocator()
+    app := common.GetApp()
+
     zoneids := strings.Split(szoneid, ",")
     for _,zoneid := range zoneids {
         gamePrx := new(rpc.GameService)
         gfPrx := new(rpc.GFService)
         if zoneid != "0" {
-            comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
+            comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
         } else {
-            comm.StringToProxy("aqua.GFServer.GFServiceObj", gfPrx)
+            comm.StringToProxy(app+".GFServer.GFServiceObj", gfPrx)
         }
 
         cmds := strings.Split(scmd, "\n")
@@ -82,8 +81,11 @@ func GameCmd(c echo.Context) error {
 }
 
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
+    comm := common.GetLocator()
+    app := common.GetApp()
+
     gamePrx := new(rpc.GameService)
-    comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zoneid, gamePrx)
+    comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
 
     cmd = strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
 

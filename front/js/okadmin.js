@@ -154,6 +154,7 @@ layui.use(["element", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday
       okTab.removeTabStorage(function (res) {
         $.removeCookie("texweb_session");
         $.removeCookie("username");
+        $.removeCookie("logo");
         window.location.href = "/login.html";
       });
     });
@@ -163,4 +164,5 @@ layui.use(["element", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday
    * 设置用户名字
    */
   $("#uname").html($.cookie("username"));
+  $("#logo").html($.cookie("logo"));
 });
