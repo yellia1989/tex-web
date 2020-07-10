@@ -3,16 +3,10 @@ package game
 import (
 	"fmt"
 	"strconv"
-
 	"github.com/labstack/echo"
-	tex "github.com/yellia1989/tex-go/service"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
-)
-
-var (
-	comm = tex.NewCommunicator("tex.mfwregistry.QueryObj@tcp -h 192.168.0.16 -p 2000 -t 3600000")
 )
 
 type _role struct {
@@ -48,7 +42,7 @@ func RoleList(c echo.Context) error {
         return err
     }
 
-    sql := "SELECT uid,name,vip_level,last_login_time,reg_time FROM t_role"
+    sql := "SELECT uid,name,vip_level,this_login_time,reg_time FROM t_role"
     if name != "" {
         sql += " WHERE name like '%" + name + "%'"
     }
@@ -82,8 +76,11 @@ func RoleList(c echo.Context) error {
 }
 
 func getRoleDetail(zone, role string) string {
+    comm := common.GetLocator()
+    app := common.GetApp()
+
 	gamePrx := new(rpc.GameService)
-	comm.StringToProxy("aqua.GameServer.GameServiceObj%aqua.zone."+zone, gamePrx)
+	comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zone, gamePrx)
 
 	result := ""
 	var ret int32

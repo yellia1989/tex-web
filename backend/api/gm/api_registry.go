@@ -14,6 +14,8 @@ func RegistryList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
+    comm := common.GetLocator()
+
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
 
@@ -28,6 +30,8 @@ func RegistryList(c echo.Context) error {
 }
 
 func registryAdd(sObj string, sDivision string, sEp string) error {
+    comm := common.GetLocator()
+
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
 
@@ -40,6 +44,8 @@ func registryAdd(sObj string, sDivision string, sEp string) error {
 }
 
 func registryDel(sObj string, sDivision string, sEp string) error {
+    comm := common.GetLocator()
+
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
 
@@ -79,6 +85,8 @@ func RegistryDel(c echo.Context) error {
     if len(ids) == 0 {
         return ctx.SendError(-1, "registry不存在")
     }
+
+    comm := common.GetLocator()
 
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)

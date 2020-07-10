@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>充值详情</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">凭证状态</label>
+        <div class="layui-input-block">
+          <select name="iReceiptStatus" disabled>
+            <option value="1">等待验证</option>
+            <option value="2">验证失败</option>
+            <option value="3">等待发货</option>
+            <option value="4">发货成功</option>
+            <option value="5">发货失败</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">分区id</label>
+        <div class="layui-input-block">
+          <input name="iDeliverZoneId" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">玩家id</label>
+        <div class="layui-input-block">
+          <input name="iDeliverRoleId" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">收到凭证的时间</label>
+        <div class="layui-input-block">
+          <input name="iAddTime" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">验证凭证的时间</label>
+        <div class="layui-input-block">
+          <input name="iVerifyTime" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">发货的时间</label>
+        <div class="layui-input-block">
+          <input name="iDeliverTime" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">失败原因</label>
+        <div class="layui-input-block">
+          <input name="sFailReason" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">发货道具</label>
+        <div class="layui-input-block">
+          <input name="sDeliverItem" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">凭证详情</label>
+        <div class="layui-input-block">
+          <textarea name="sReceiptData" class="layui-textarea" rows=10 disabled></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(["element", "form", "okUtils"], function () {
+      let $ = layui.jquery;
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      okUtils.ajax("/api/game/recharge/receipt", "get", {flowid: parent.flowid}, false).done(function (response) {
+        let status = response.data.stStatus;
+        let receipt = response.data.stYokaReceipt;
+
+        $("select[name=iReceiptStatus]").val(status.iReceiptStatus);
+        $("input[name=iDeliverZoneId]").val(status.iDeliverZoneId);
+        $("input[name=iDeliverRoleId]").val(status.iDeliverRoleId);
+        $("input[name=iAddTime]").val(okUtils.dateFormat(new Date(status.iAddTime*1000), 'yyyy-MM-dd hh:mm:ss'));
+        $("input[name=iVerifyTime]").val(okUtils.dateFormat(new Date(status.iVerifyTime*1000), 'yyyy-MM-dd hh:mm:ss'));
+        $("input[name=iDeliverTime]").val(okUtils.dateFormat(new Date(status.iDeliverTime*1000), 'yyyy-MM-dd hh:mm:ss'));
+        $("input[name=sFailReason]").val(status.sFailReason);
+        $("input[name=sDeliverItem]").val(status.sDeliverItem);
+        $("textarea[name=sReceiptData]").val(okUtils.jsonToString(receipt));
+
+        form.render();
+      }).fail(function (error) {
+        console.log(error);
+      });
+    });
+  </script>
+</body>
+
+</html>

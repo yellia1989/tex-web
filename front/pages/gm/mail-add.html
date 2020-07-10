@@ -335,6 +335,28 @@
         layVerify: 'false',
         layVerType: 'tips',
         disabled: true,
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
       });
       okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
         zoneSelect1.update({

@@ -705,6 +705,20 @@
           3,
           4
         ]
+      },
+      {
+        "id": 812,
+        "title": "充值记录",
+        "href": "game/recharge-log.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
       }
     ],
     "role": [
