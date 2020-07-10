@@ -1,0 +1,56 @@
+module rpc
+{
+
+enum BulletinFlag
+{
+	BulletinFlag_Normal		= 0,
+	BulletinFlag_NotBegin	= 1,
+	BulletinFlag_HasOver	= 2,
+};
+
+struct BulletinDataInfo
+{
+	0 optional unsigned int		iBulletinId;
+	1 optional string			sTitle;
+	2 optional string			sContent;
+	3 optional unsigned int		iFlag;
+	5 optional string			sBeginTime;
+	6 optional string			sEndTime;
+	7 optional unsigned int		iDisplay;
+};
+
+struct NoticeDataInfo
+{
+	0 optional unsigned int		iNoticeId;
+	1 optional unsigned int		iType;
+	2 optional string			sContent;
+	3 optional string			sBeginTime;
+	4 optional string			sEndTime;
+	5 optional unsigned int		iDisplayInterval;
+	6 optional unsigned int		iDisplayType;
+	7 optional unsigned int		iDisplayNum;
+	8 optional unsigned int		iPause;
+	9 optional vector<unsigned int>		vZoneId;
+    10 optional unsigned int	iMaintenanceTime;
+};
+
+interface BulletinService
+{
+	// 管理端操作接口
+	int addBulletin(BulletinDataInfo info);
+	int modifyBulletin(BulletinDataInfo info);
+	int getAllBulletin(out vector<BulletinDataInfo> vInfo);
+	int delBulletin(unsigned int iBulletinId);
+	int getLatestInsertBulletin(out BulletinDataInfo stInfo);
+
+	int addNotice(NoticeDataInfo info);
+	int modifyNotice(NoticeDataInfo info);
+	int getAllNotice(out vector<NoticeDataInfo> vInfo);
+	int delNotice(unsigned int iNoticeId);
+
+	// 客户端调用
+	int getLatestBulletin(out vector<BulletinDataInfo> vInfo, bool bDisplay);
+	int getNotice(unsigned int iZoneId, unsigned int iLastNoticeId, out vector<NoticeDataInfo> vInfo, out vector<unsigned int> vDel);
+};
+
+}; 

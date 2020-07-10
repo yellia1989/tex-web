@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>活动管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <div class="layui-input-inline" style="width:250px">
+            <div id="activitySelect"></div>
+          </div>
+          <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="search">
+              <i class="layui-icon layui-icon-refresh-3"></i>
+            </button>
+          </div>
+        </div>
+        <table id="tableId" lay-filter="tableFilter"></table>
+      </div>
+    </form>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script src="/js/activity.config.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    var editActivity;
+    layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      let xmSelect = layui.xmSelect;
+      let form = layui.form;
+      okLoading.close();
+
+      let actType = [];
+      for (i in activity.config.activityTypeDefine) {
+        let act = activity.config.activityTypeDefine[i];
+        actType.push({value: i, name: act.name});
+      }
+
+      let activitySelect = xmSelect.render({
+        el: '#activitySelect',
+        name: 'activityType',
+        data: actType,
+        tips: '晒选活动类型',
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        },
+        autoRow: true,
+        toolbar: {
+          show: true,
+          list: ["ALL", "CLEAR", "REVERSE"]
+        }
+      });
+
+      let activityTable = table.render({
+        elem: "#tableId",
+        url: "/api/gm/activity/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "id", title: "活动ID", width: 90, fixed: 'left' },
+          { field: "apply_zone", title: "应用分区", width: 90, fixed: 'left' },
+          { field: "apply_user", title: "应用玩家", width: 90 },
+          { field: "activity_type", title: "活动类型", width: 90, align: "center", templet: function (d) {
+            let act = activity.config.activityTypeDefine[d.activity_type];
+            return act ? act.name : '未知类型';
+          }},
+          { field: "configure_desc", title: "活动备注", width: 150},
+          {
+            field: "begin_time", title: "开始时间", align: "center", width: 180, templet: function (d) {
+              let json = JSON.parse(d.configure_data);
+              return json.constrain.begin_time != undefined ? json.constrain.begin_time : "";
+            }
+          },
+          {
+            field: "end_time", title: "结束时间", align: "center", width: 180, templet: function (d) {
+              let json = JSON.parse(d.configure_data);
+              return json.constrain.end_time != undefined ? json.constrain.end_time : "";
+            }
+          },
+          { field: "configure_data", title: "配置数据", align: "center"},
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+        ]],
+        parseData: function (res) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].activity_id;
+          }
+          return res;
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "batchDel":
+            batchDel();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            editActivity = data;
+            edit(data.id);
+            break;
+          case "del":
+            del(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("添加活动", "/gm/activity-add.html", "90%", "90%", null, function () {
+          activityTable.reload();
+        })
+      }
+
+      function edit(id) {
+        okLayer.open("编辑活动", "/gm/activity-edit.html", "90%", "90%", null, function () {
+          activityTable.reload();
+        })
+      }
+
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/gm/activity/del", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/activity/del", "post", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.data);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
+
+      form.on("submit(search)", function (data) {
+        activityTable.reload({
+          url: "/api/gm/activity/list",
+          where: data.field,
+        });
+        return false;
+      });
+    });
+  </script>
+  <!-- 头工具栏模板 -->
+  <script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+  </div>
+</script>
+
+  <script type="text/html" id="operationTpl">
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>充值跟踪</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+  		  <div class="layui-input-inline">
+          <div id="zoneSelect"></div>
+        </div>
+	    	<div class="layui-input-inline">
+          <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+        </div>
+	    	<div class="layui-input-inline">
+          <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+        </div>
+			  <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="search">
+            <i class="layui-icon layui-icon-search"></i>
+          </button>
+        </div>
+      </div>
+	    <table id="tableId" lay-filter="tableFilter"></table>
+    </div>
+  </form>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+	layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+		let table = layui.table;
+		let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+    let xmSelect = layui.xmSelect;
+		okLoading.close();
+
+    laydate.render({elem: "#startTime", type: "datetime"});
+    laydate.render({elem: "#endTime", type: "datetime"});
+
+    let zoneSelect = xmSelect.render({
+      el: '#zoneSelect',
+      name: 'zoneid',
+      prop: {
+        value: 'iZoneId',
+        name: 'sZoneName',
+      },
+      tips: '请选择一个服务器',
+      autoRow: true,
+      model: {
+        label: {
+          type: 'block',
+          block: {
+            //是否显示删除图标
+            showIcon: false,
+          }
+        }
+      },
+      toolbar: {
+        show: true,
+      },
+    });
+
+    okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      zoneSelect.update({
+        data: response.data,
+      });
+    }).fail(function (error) {
+      console.log(error);
+    });
+
+		let incomeTable = table.render({
+			elem: "#tableId",
+      url: "/api/stat/income/track",
+      text: {
+        none: '暂无相关数据',
+      },
+			limit: 30,
+			page: true,
+      cellMinWidth: 78,
+			cols: [[
+				{field: "statymd", title: "日期", minWidth: '110', fixed: 'left'},
+		    {field: "zone_name", title: "服务器名", minWidth: '110', fixed: 'left', templet: function(d) { return d.zone_name == "" ? "全服" : d.zone_name;}},
+				{field: "zone_openday", title: "开服天数", fixed: 'left', templet: function(d) { return d.zone_openday == 0 ? "-": d.zone_openday;}},
+				{field: "newadd", title: "日新增", fixed: 'left'},
+				{field: "recharge_money", title: "累计充值", fixed: 'left'},
+				{field: "recharge_per", title: "平均贡献", fixed: 'left', templet: function(d) { return okUtils.number.percent(d.recharge_money, d.newadd, 2, '');}},
+				{field: "recharge_money3", title: "3日累计", fixed: 'left'},
+				{field: "recharge_money7", title: "7日累计", fixed: 'left'},
+				{field: "recharge_money14", title: "14累计", fixed: 'left'},
+				{field: "recharge_money30", title: "30累计", fixed: 'left'},
+				{field: "day1", title: "day1", templet: function(d) { return d.day1 != undefined ? d.day1.toFixed(2) : '-'}},
+				{field: "day2", title: "day2", templet: function(d) { return d.day2 != undefined ? d.day2.toFixed(2) : '-'}},
+				{field: "day3", title: "day3", templet: function(d) { return d.day3 != undefined ? d.day3.toFixed(2) : '-'}},
+				{field: "day4", title: "day4", templet: function(d) { return d.day4 != undefined ? d.day4.toFixed(2) : '-'}},
+				{field: "day5", title: "day5", templet: function(d) { return d.day5 != undefined ? d.day5.toFixed(2) : '-'}},
+				{field: "day6", title: "day6", templet: function(d) { return d.day6 != undefined ? d.day6.toFixed(2) : '-'}},
+				{field: "day7", title: "day7", templet: function(d) { return d.day7 != undefined ? d.day7.toFixed(2) : '-'}},
+				{field: "day8", title: "day8", templet: function(d) { return d.day8 != undefined ? d.day8.toFixed(2) : '-'}},
+				{field: "day9", title: "day9", templet: function(d) { return d.day9 != undefined ? d.day9.toFixed(2) : '-'}},
+				{field: "day10", title: "day10", templet: function(d) { return d.day10 != undefined ? d.day10.toFixed(2) : '-'}},
+				{field: "day11", title: "day11", templet: function(d) { return d.day11 != undefined ? d.day11.toFixed(2) : '-'}},
+				{field: "day12", title: "day12", templet: function(d) { return d.day12 != undefined ? d.day12.toFixed(2) : '-'}},
+				{field: "day13", title: "day13", templet: function(d) { return d.day13 != undefined ? d.day13.toFixed(2) : '-'}},
+				{field: "day14", title: "day14", templet: function(d) { return d.day14 != undefined ? d.day14.toFixed(2) : '-'}},
+				{field: "day15", title: "day15", templet: function(d) { return d.day15 != undefined ? d.day15.toFixed(2) : '-'}},
+				{field: "day16", title: "day16", templet: function(d) { return d.day16 != undefined ? d.day16.toFixed(2) : '-'}},
+				{field: "day17", title: "day17", templet: function(d) { return d.day17 != undefined ? d.day17.toFixed(2) : '-'}},
+				{field: "day18", title: "day18", templet: function(d) { return d.day18 != undefined ? d.day18.toFixed(2) : '-'}},
+				{field: "day19", title: "day19", templet: function(d) { return d.day19 != undefined ? d.day19.toFixed(2) : '-'}},
+				{field: "day20", title: "day20", templet: function(d) { return d.day20 != undefined ? d.day20.toFixed(2) : '-'}},
+				{field: "day21", title: "day21", templet: function(d) { return d.day21 != undefined ? d.day21.toFixed(2) : '-'}},
+				{field: "day22", title: "day22", templet: function(d) { return d.day22 != undefined ? d.day22.toFixed(2) : '-'}},
+				{field: "day23", title: "day23", templet: function(d) { return d.day23 != undefined ? d.day23.toFixed(2) : '-'}},
+				{field: "day24", title: "day24", templet: function(d) { return d.day24 != undefined ? d.day24.toFixed(2) : '-'}},
+				{field: "day25", title: "day25", templet: function(d) { return d.day25 != undefined ? d.day25.toFixed(2) : '-'}},
+				{field: "day26", title: "day26", templet: function(d) { return d.day26 != undefined ? d.day26.toFixed(2) : '-'}},
+				{field: "day27", title: "day27", templet: function(d) { return d.day27 != undefined ? d.day27.toFixed(2) : '-'}},
+				{field: "day28", title: "day28", templet: function(d) { return d.day28 != undefined ? d.day28.toFixed(2) : '-'}},
+				{field: "day29", title: "day29", templet: function(d) { return d.day29 != undefined ? d.day29.toFixed(2) : '-'}},
+				{field: "day30", title: "day30", templet: function(d) { return d.day30 != undefined ? d.day30.toFixed(2) : '-'}},
+				{field: "day31", title: "day31", templet: function(d) { return d.day31 != undefined ? d.day31.toFixed(2) : '-'}},
+				{field: "day32", title: "day32", templet: function(d) { return d.day32 != undefined ? d.day32.toFixed(2) : '-'}},
+				{field: "day33", title: "day33", templet: function(d) { return d.day33 != undefined ? d.day33.toFixed(2) : '-'}},
+				{field: "day34", title: "day34", templet: function(d) { return d.day34 != undefined ? d.day34.toFixed(2) : '-'}},
+				{field: "day35", title: "day35", templet: function(d) { return d.day35 != undefined ? d.day35.toFixed(2) : '-'}},
+				{field: "day36", title: "day36", templet: function(d) { return d.day36 != undefined ? d.day36.toFixed(2) : '-'}},
+				{field: "day37", title: "day37", templet: function(d) { return d.day37 != undefined ? d.day37.toFixed(2) : '-'}},
+				{field: "day38", title: "day38", templet: function(d) { return d.day38 != undefined ? d.day38.toFixed(2) : '-'}},
+				{field: "day39", title: "day39", templet: function(d) { return d.day39 != undefined ? d.day39.toFixed(2) : '-'}},
+				{field: "day40", title: "day40", templet: function(d) { return d.day40 != undefined ? d.day40.toFixed(2) : '-'}},
+				{field: "day41", title: "day41", templet: function(d) { return d.day41 != undefined ? d.day41.toFixed(2) : '-'}},
+				{field: "day42", title: "day42", templet: function(d) { return d.day42 != undefined ? d.day42.toFixed(2) : '-'}},
+				{field: "day43", title: "day43", templet: function(d) { return d.day43 != undefined ? d.day43.toFixed(2) : '-'}},
+				{field: "day44", title: "day44", templet: function(d) { return d.day44 != undefined ? d.day44.toFixed(2) : '-'}},
+				{field: "day45", title: "day45", templet: function(d) { return d.day45 != undefined ? d.day45.toFixed(2) : '-'}},
+				{field: "day46", title: "day46", templet: function(d) { return d.day46 != undefined ? d.day46.toFixed(2) : '-'}},
+				{field: "day47", title: "day47", templet: function(d) { return d.day47 != undefined ? d.day47.toFixed(2) : '-'}},
+				{field: "day48", title: "day48", templet: function(d) { return d.day48 != undefined ? d.day48.toFixed(2) : '-'}},
+				{field: "day49", title: "day49", templet: function(d) { return d.day49 != undefined ? d.day49.toFixed(2) : '-'}},
+				{field: "day50", title: "day50", templet: function(d) { return d.day50 != undefined ? d.day50.toFixed(2) : '-'}},
+        {field: "day51", title: "day51", templet: function(d) { return d.day51 != undefined ? d.day51.toFixed(2) : '-'}},
+				{field: "day52", title: "day52", templet: function(d) { return d.day52 != undefined ? d.day52.toFixed(2) : '-'}},
+				{field: "day53", title: "day53", templet: function(d) { return d.day53 != undefined ? d.day53.toFixed(2) : '-'}},
+				{field: "day54", title: "day54", templet: function(d) { return d.day54 != undefined ? d.day54.toFixed(2) : '-'}},
+				{field: "day55", title: "day55", templet: function(d) { return d.day55 != undefined ? d.day55.toFixed(2) : '-'}},
+				{field: "day56", title: "day56", templet: function(d) { return d.day56 != undefined ? d.day56.toFixed(2) : '-'}},
+				{field: "day57", title: "day57", templet: function(d) { return d.day57 != undefined ? d.day57.toFixed(2) : '-'}},
+				{field: "day58", title: "day58", templet: function(d) { return d.day58 != undefined ? d.day58.toFixed(2) : '-'}},
+				{field: "day59", title: "day59", templet: function(d) { return d.day59 != undefined ? d.day59.toFixed(2) : '-'}},
+				{field: "day60", title: "day60", templet: function(d) { return d.day60 != undefined ? d.day60.toFixed(2) : '-'}},
+				{field: "day61", title: "day61", templet: function(d) { return d.day61 != undefined ? d.day61.toFixed(2) : '-'}},
+				{field: "day62", title: "day62", templet: function(d) { return d.day62 != undefined ? d.day62.toFixed(2) : '-'}},
+				{field: "day63", title: "day63", templet: function(d) { return d.day63 != undefined ? d.day63.toFixed(2) : '-'}},
+				{field: "day64", title: "day64", templet: function(d) { return d.day64 != undefined ? d.day64.toFixed(2) : '-'}},
+				{field: "day65", title: "day65", templet: function(d) { return d.day65 != undefined ? d.day65.toFixed(2) : '-'}},
+				{field: "day66", title: "day66", templet: function(d) { return d.day66 != undefined ? d.day66.toFixed(2) : '-'}},
+				{field: "day67", title: "day67", templet: function(d) { return d.day67 != undefined ? d.day67.toFixed(2) : '-'}},
+				{field: "day68", title: "day68", templet: function(d) { return d.day68 != undefined ? d.day68.toFixed(2) : '-'}},
+				{field: "day69", title: "day69", templet: function(d) { return d.day69 != undefined ? d.day69.toFixed(2) : '-'}},
+				{field: "day70", title: "day70", templet: function(d) { return d.day70 != undefined ? d.day70.toFixed(2) : '-'}},
+				{field: "day71", title: "day71", templet: function(d) { return d.day71 != undefined ? d.day71.toFixed(2) : '-'}},
+				{field: "day72", title: "day72", templet: function(d) { return d.day72 != undefined ? d.day72.toFixed(2) : '-'}},
+				{field: "day73", title: "day73", templet: function(d) { return d.day73 != undefined ? d.day73.toFixed(2) : '-'}},
+				{field: "day74", title: "day74", templet: function(d) { return d.day74 != undefined ? d.day74.toFixed(2) : '-'}},
+				{field: "day75", title: "day75", templet: function(d) { return d.day75 != undefined ? d.day75.toFixed(2) : '-'}},
+				{field: "day76", title: "day76", templet: function(d) { return d.day76 != undefined ? d.day76.toFixed(2) : '-'}},
+				{field: "day77", title: "day77", templet: function(d) { return d.day77 != undefined ? d.day77.toFixed(2) : '-'}},
+				{field: "day78", title: "day78", templet: function(d) { return d.day78 != undefined ? d.day78.toFixed(2) : '-'}},
+				{field: "day79", title: "day79", templet: function(d) { return d.day79 != undefined ? d.day79.toFixed(2) : '-'}},
+				{field: "day80", title: "day80", templet: function(d) { return d.day80 != undefined ? d.day80.toFixed(2) : '-'}},
+				{field: "day81", title: "day81", templet: function(d) { return d.day81 != undefined ? d.day81.toFixed(2) : '-'}},
+				{field: "day82", title: "day82", templet: function(d) { return d.day82 != undefined ? d.day82.toFixed(2) : '-'}},
+				{field: "day83", title: "day83", templet: function(d) { return d.day83 != undefined ? d.day83.toFixed(2) : '-'}},
+				{field: "day84", title: "day84", templet: function(d) { return d.day84 != undefined ? d.day84.toFixed(2) : '-'}},
+				{field: "day85", title: "day85", templet: function(d) { return d.day85 != undefined ? d.day85.toFixed(2) : '-'}},
+				{field: "day86", title: "day86", templet: function(d) { return d.day86 != undefined ? d.day86.toFixed(2) : '-'}},
+				{field: "day87", title: "day87", templet: function(d) { return d.day87 != undefined ? d.day87.toFixed(2) : '-'}},
+				{field: "day88", title: "day88", templet: function(d) { return d.day88 != undefined ? d.day88.toFixed(2) : '-'}},
+				{field: "day89", title: "day89", templet: function(d) { return d.day89 != undefined ? d.day89.toFixed(2) : '-'}},
+				{field: "day90", title: "day90", templet: function(d) { return d.day90 != undefined ? d.day90.toFixed(2) : '-'}}
+			]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+      parseData: function(res){
+        let data = res.data;
+        for (let i = 0; data != null && i < data.length; ++i) {
+          let v = data[i];
+          for (let j = 0; v.days != null && j < v.days.length; ++j) {
+            data[i]["day"+(j+1)] = v.days[j];
+          }
+        }
+        return res;
+      }
+    });
+
+    form.on("submit(search)", function (data) {
+      incomeTable.reload({
+        where: data.field,
+        page: {
+          curr: 1,
+        }
+      });
+      return false;
+    });
+	})
+</script>
+</body>
+</html>

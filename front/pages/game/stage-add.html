@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>剧情通关记录</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+        <div class="layui-input-inline">
+          <div id="zoneSelect"></div>
+        </div>
+        <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required|number" lay-verType="tips" placeholder="请输入角色id" autocomplete="off" name="roleid">
+        </div>
+        <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+        </div>
+        <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+        </div>
+        <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="search">
+            <i class="layui-icon layui-icon-search"></i>
+          </button>
+        </div>
+      </div>
+  </form>
+  <table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+  var zoneid;
+  var roleid;
+  layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+    let table = layui.table;
+    let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let xmSelect = layui.xmSelect;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+    okLoading.close();
+
+    let now = new Date();
+    let lastweek = new Date(now.getTime() -7*86400*1000);
+    laydate.render({elem: "#startTime", type: "datetime", value: lastweek});
+    laydate.render({elem: "#endTime", type: "datetime", value: now});
+
+    let zoneSelect = xmSelect.render({
+      el: '#zoneSelect',
+      name: 'zoneid',
+      prop: {
+        value: 'iZoneId',
+        name: 'sZoneName',
+      },
+      tips: '请选择一个服务器',
+      layVerify: 'required',
+      layVerType: 'tips',
+      radio: true,
+      clickClose: true,
+      model: {
+        label: {
+          type: 'block',
+          block: {
+            //是否显示删除图标
+            showIcon: false,
+          }
+        }
+      }
+    });
+
+    okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      zoneSelect.update({
+        data: response.data,
+        initValue: [1],
+      });
+    }).fail(function (error) {
+      console.log(error);
+    });
+
+    let stageTable = table.render({
+      elem: "#tableId",
+      data:[],
+      text: {
+        none: '暂无相关数据',
+      },
+      limit: 30,
+      where: {startTime: okUtils.dateFormat(lastweek, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
+      page: true,
+      cols: [[
+        {field: "id", title: "日志id"},
+        {field: "time", title: "时间"},
+        {field: "stageid", title: "关卡id"},
+        {field: "win", title: "胜负结果", templet: function(d) {
+            return d.win == 1 ? '胜' : '负';
+        }},
+        {field: "first", title: "是否首次", templet: function(d) {
+            return d.first == 1 ? '是' : '否';
+        }},
+        {field: "star", title: "星级"},
+        {field: "cost_time", title: "消耗时间"},
+        {field: "revive_times", title: "战斗复活次数"},
+        {field: "give_up", title: "是否强制结束", templet: function(d) {
+            return d.give_up == 1 ? '是' : '否';
+        }},
+        {field: "consume_cards", title: "消耗卡牌数"},
+        {field: "left_cards", title: "剩余卡牌数"},
+        {field: "restore_times", title: "战斗恢复次数"},
+      ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+    });
+
+    form.on("submit(search)", function (data) {
+      stageTable.reload({
+        url: "/api/game/stage/addlog",
+        where: data.field,
+        page: {
+          curr: 1,
+        }
+      });
+      return false;
+    });
+  })
+</script>
+</body>
+</html>

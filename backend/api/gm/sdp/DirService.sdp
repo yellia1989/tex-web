@@ -1,0 +1,71 @@
+module rpc
+{
+
+enum ZoneFlagType
+{
+	ZoneFlagType_Normal			= 1,
+	ZoneFlagType_New			= 2,
+	ZoneFlagType_Close			= 3,
+	ZoneFlagType_Audit			= 4,
+};
+
+enum ZoneStatusType
+{
+	ZoneStatusType_Smooth		= 1,
+	ZoneStatusType_Crowd		= 2,
+	ZoneStatusType_Busy			= 3,
+	ZoneStatusType_Maintain		= 4,
+};
+
+struct ZoneInfo
+{
+	0 optional unsigned int		iZoneId;
+	1 optional string			sZoneName;
+	2 optional string			sConnServer;
+	3 optional string			sGameServer;
+	4 optional unsigned int		iZoneFlag;
+	5 optional unsigned int		iIsManual;
+	6 optional unsigned int		iManualZoneStatus;
+	7 optional unsigned int		iMaxNum;
+	8 optional unsigned int		iPublishTime;
+	9 optional string		sClientVersion;
+	11 optional string		sForceUpdateVersion;
+	12 optional string		sAndClientVersion;
+	13 optional string		sAndForceUpdateVersion;
+	14 optional unsigned int	iIsKick;
+
+	
+	20 optional unsigned int	iCurNum;
+	21 optional unsigned int	iLastReportTime;
+	22 optional unsigned int	iCurZoneStatus;
+};
+
+struct ZoneModifyInfo
+{
+	1 optional bool				bModifyZoneName;
+	2 optional bool				bModifyConnServer;
+	3 optional bool				bModifyGameServer;
+	4 optional bool				bModifyZoneFlag;
+	5 optional bool				bModifyIsManual;
+	6 optional bool				bModifyManualZoneStatus;
+	7 optional bool				bModifyMaxNum;
+	8 optional bool				bModifyPublishTime;
+	9 optional bool				bModifyClientVersion;
+	10 optional bool 			bModifyForceUpdateVersion;
+	11 optional bool			bModifyAndClientVersion;
+	12 optional bool 			bModifyAndForceUpdateVersion;
+	13 optional bool			bKick;
+};
+
+interface DirService
+{
+	int createZone(ZoneInfo stZoneInfo);
+	int modifyZone(ZoneInfo stZoneInfo, ZoneModifyInfo stModify);
+	int deleteZone(unsigned int iZoneId);
+	int reportZone(unsigned int iZoneId, unsigned int iCurNum);
+	
+	int getZone(unsigned int iZoneId, out ZoneInfo stZoneInfo);
+	int getAllZone(out vector<ZoneInfo> vZoneInfo);
+};
+
+}; 

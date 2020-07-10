@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>封号</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+          <label class="layui-form-label">时间</label>
+          <div class="layui-input-block">
+            <input type="text" name="time" placeholder="请输入时间" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
+          </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">单位</label>
+        <div class="layui-input-block">
+          <select name="type">
+            <option value="1" selected>分</option>
+            <option value="2">小时</option>
+            <option value="3">天</option>
+            <option value="4">年</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="add">封号</button>
+          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
+      let form = layui.form;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+
+      //监听提交
+      form.on('submit(add)', function (data) {
+        console.log(data.field);
+        time = data.field.time;
+        type = data.field.type;
+        switch (type) {
+        case "1":time = time * 60;break;
+        case "2":time = time * 3600;break;
+        case "3":time = time * 86400;break;
+        case "4":time = time * 86400 * 365;break;
+        }
+        param = {zoneid: parent.zoneid, roleid: parent.roleid, time: time};
+        okUtils.ajax("/api/gm/ban/login", "post", param, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>

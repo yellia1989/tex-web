@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>权限管理</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <style>
+    /* layui-table 表格内容允许换行 */
+    .layui-table-cell {
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="ok-body">
+	<table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script>
+  var permdata;
+	layui.use(["element", "table", "okLayer", "okUtils"], function () {
+		let table = layui.table;
+		let okLayer = layui.okLayer;
+		let okUtils = layui.okUtils;
+		okLoading.close();
+
+		let permTable = table.render({
+			elem: "#tableId",
+      url: "/api/perm/list",
+      text: {
+        none: '暂无相关数据',
+      },
+			limit: 30,
+			page: true,
+			toolbar: "#toolbarTpl",
+			cols: [[
+				{type: "checkbox", title: "序号"},
+				{field: "id", title: "权限ID", width: 90},
+				{field: "name", title: "权限描述"},
+        {field: "paths", title: "路径", templet: function(d) {
+          let ret = '';
+          for (i = 0; i < d.paths.length; ++i) {
+            ret += '<span class="layui-btn layui-btn-xs">'+d.paths[i]+'</span></br>';
+          }
+          return ret;
+        }},
+				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
+			]]
+		});
+
+		table.on("toolbar(tableFilter)", function (obj) {
+			switch (obj.event) {
+				case "add":
+					add();
+					break;
+				case "batchDel":
+					batchDel();
+					break;
+			}
+		});
+
+		table.on("tool(tableFilter)", function (obj) {
+			let data = obj.data;
+			switch (obj.event) {
+				case "edit":
+          permdata = data;
+					edit(data.id);
+					break;
+				case "del":
+					del(data.id);
+					break;
+			}
+		});
+
+		function add() {
+			okLayer.open("添加权限", "/system/perm-add.html", "90%", "90%", null, function () {
+				permTable.reload();
+			})
+		}
+
+		function batchDel() {
+			okLayer.confirm("确定要批量删除吗？", function (index) {
+				layer.close(index);
+				let idsStr = okUtils.tableBatchCheck(table);
+				if (idsStr) {
+					okUtils.ajax("/api/perm/del", "post", {idsStr: idsStr}, true).done(function (response) {
+						okUtils.tableSuccessMsg(response.data);
+					}).fail(function (error) {
+						console.log(error)
+					});
+				}
+			});
+		}
+
+		function edit(id) {
+			okLayer.open("编辑权限", "/system/perm-edit.html", "90%", "90%", null, function () {
+				permTable.reload();
+			})
+		}
+
+		function del(id) {
+			okLayer.confirm("确定要删除吗？", function () {
+				okUtils.ajax("/api/perm/del", "post", {idsStr: id}, true).done(function (response) {
+					okUtils.tableSuccessMsg(response.data);
+				}).fail(function (error) {
+					console.log(error)
+				});
+			})
+		}
+	})
+</script>
+<!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+	<div class="layui-btn-container">
+		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+	</div>
+</script>
+<script type="text/html" id="operationTpl">
+	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+</html>
