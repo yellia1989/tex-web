@@ -65,16 +65,27 @@
           },
           //{ field: "sCustomLimit", title: "自定义限制", width: 120 },
           { field: "sZoneLimit", title: "可用分区", align: "center", width: 90, templet: function (d) {
+            if (d.iActive == 1) {
+              return '-';
+            }
             return d.sZoneLimit == '' ? '全服' : d.sZoneLimit;
           }},
           { field: "iExchangeLimit", title: "账号使用次数", align: "center", width: 120, templet: function (d) {
+            if (d.iActive == 1) {
+              return '-';
+            }
             if (d.iExchangeLimit == 0) {
               return '无';
             } else {
               return d.iExchangeLimit + '次';
             }
           }},
-          { field: "sRewardInfo", title: "自定义奖励", align: "center", fixed: 'right' },
+          { field: "sRewardInfo", title: "自定义奖励", align: "center", fixed: 'right', templet: function (d) {
+            if (d.iActive == 1) {
+              return '-';
+            }
+            return d.sRewardInfo;
+          }},
           { field: "iGeneratedNum", title: "已生成", align: "center", width: 90, fixed: 'right' },
           { field: "iExchangedNum", title: "已兑换", align: "center", width: 90, fixed: 'right' },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
