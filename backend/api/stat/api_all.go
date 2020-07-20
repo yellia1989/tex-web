@@ -64,7 +64,7 @@ func AllList(c echo.Context) error {
         return err
     }
 
-    sql := "SELECT statymd,zoneid,sum(accountnum) as accountnum,sum(rolenum) as rolenum,sum(newadd) as newadd,sum(active) as active,sum(login_times) as login_times,sum(recharge_num) as recharge_num,sum(recharge_money) as recharge_money,sum(week_active) as week_active,sum(double_week_active) as double_week_active, sum(month_active) as month_active FROM t_all"
+    sql := "SELECT statymd,zoneid,sum(rolenum) as rolenum,sum(newadd) as newadd,sum(active) as active,sum(recharge_num) as recharge_num,sum(recharge_money) as recharge_money,sum(week_active) as week_active,sum(double_week_active) as double_week_active, sum(month_active) as month_active FROM t_all"
     sql += " WHERE statymd between '"+startTime+"' AND '"+endTime+"'" 
     if zoneid != "" {
         sql += " AND zoneid in ("+zoneid+")"
@@ -93,7 +93,7 @@ func AllList(c echo.Context) error {
     for rows.Next() {
         var r _alllog
         var zoneid uint32
-        if err := rows.Scan(&r.Statymd, &zoneid, &r.Accountnum, &r.Rolenum, &r.Newadd, &r.Active, &r.LoginTimes, &r.RechargeNum, &r.RechargeMoney, &r.WeekActive, &r.DoubleWeekActive, &r.MonthActive); err != nil {
+        if err := rows.Scan(&r.Statymd, &zoneid, &r.Rolenum, &r.Newadd, &r.Active, &r.RechargeNum, &r.RechargeMoney, &r.WeekActive, &r.DoubleWeekActive, &r.MonthActive); err != nil {
             return err
         }
         if v,ok := mzone[zoneid]; ok {
