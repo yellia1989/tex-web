@@ -463,7 +463,7 @@
       },
       {
         "id": 804,
-        "title": "武将记录",
+        "title": "英雄记录",
         "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -472,7 +472,7 @@
         "children": [
           {
             "id": 80401,
-            "title": "武将获得记录",
+            "title": "英雄获得记录",
             "href": "game/hero-add.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -528,20 +528,6 @@
             ]
           }
         ],
-        "role": [
-          3,
-          4
-        ]
-      },
-      {
-        "id": 810,
-        "title": "关卡",
-        "href": "game/stage-pass.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null,
         "role": [
           3,
           4
