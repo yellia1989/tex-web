@@ -377,7 +377,7 @@
       },
       {
         "id": 802,
-        "title": "银币记录",
+        "title": "金币记录",
         "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -386,7 +386,7 @@
         "children": [
           {
             "id": 80201,
-            "title": "银币获得记录",
+            "title": "金币获得记录",
             "href": "game/coin-add.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -400,7 +400,7 @@
           },
           {
             "id": 80202,
-            "title": "银币消耗记录",
+            "title": "金币消耗记录",
             "href": "game/coin-sub.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -420,7 +420,7 @@
       },
       {
         "id": 803,
-        "title": "元宝记录",
+        "title": "钻石记录",
         "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -429,7 +429,7 @@
         "children": [
           {
             "id": 80301,
-            "title": "元宝获得记录",
+            "title": "钻石获得记录",
             "href": "game/diamond-add.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -443,7 +443,7 @@
           },
           {
             "id": 80302,
-            "title": "元宝消耗记录",
+            "title": "钻石消耗记录",
             "href": "game/diamond-sub.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -463,7 +463,7 @@
       },
       {
         "id": 804,
-        "title": "武将记录",
+        "title": "英雄记录",
         "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -472,7 +472,7 @@
         "children": [
           {
             "id": 80401,
-            "title": "武将获得记录",
+            "title": "英雄获得记录",
             "href": "game/hero-add.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -528,165 +528,6 @@
             ]
           }
         ],
-        "role": [
-          3,
-          4
-        ]
-      },
-      {
-        "id": 805,
-        "title": "剧情记录",
-        "href": "",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": [
-          {
-            "id": 80501,
-            "title": "剧情通关记录",
-            "href": "game/stage-add.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
-          }
-        ],
-        "role": [
-          3,
-          4
-        ]
-      },
-      {
-        "id": 806,
-        "title": "列传记录",
-        "href": "",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": [
-          {
-            "id": 80601,
-            "title": "列传通关记录",
-            "href": "game/elite-add.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
-          }
-        ],
-        "role": [
-          3,
-          4
-        ]
-      },
-      {
-        "id": 807,
-        "title": "宝物记录",
-        "href": "",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": [
-          {
-            "id": 80701,
-            "title": "宝物获得记录",
-            "href": "game/treasure-add.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
-          }
-        ],
-        "role": [
-          3,
-          4
-        ]
-      },
-      {
-        "id": 808,
-        "title": "军备记录",
-        "href": "",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": [
-          {
-            "id": 80801,
-            "title": "军备获得记录",
-            "href": "game/weapon-add.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
-          }
-        ],
-        "role": [
-          3,
-          4
-        ]
-      },
-      {
-        "id": 809,
-        "title": "马匹记录",
-        "href": "",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": [
-          {
-            "id": 80901,
-            "title": "马匹获得记录",
-            "href": "game/horse-add.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
-          }
-        ],
-        "role": [
-          3,
-          4
-        ]
-      },
-      {
-        "id": 810,
-        "title": "关卡",
-        "href": "game/stage-pass.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null,
         "role": [
           3,
           4

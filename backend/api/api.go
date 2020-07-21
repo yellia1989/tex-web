@@ -94,18 +94,12 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/hero/addlog", game.HeroAddLog) // 英雄日志
 	group.GET("/game/item/addlog", game.ItemAddLog) // 道具日志
 	group.GET("/game/item/sublog", game.ItemSubLog)
-	group.GET("/game/stage/addlog", game.StageAddLog) // 关卡日志
-	group.GET("/game/elite/addlog", game.EliteStageAddLog)
-	group.GET("/game/treasure/addlog", game.TreasureAddLog) // 宝物日志
-	group.GET("/game/weapon/addlog", game.WeaponAddLog) // 武器日志
-	group.GET("/game/horse/addlog", game.HorseAddLog) // 马匹日志
 
 	group.GET("/game/real/online", game.RealOnline)
 	group.GET("/game/real/newadd", game.RealNewadd)
 	group.GET("/game/real/income", game.RealIncome)
 	group.GET("/game/real/stageverify", game.RealStageVerify)
 	group.GET("/game/real/stat", game.RealStat)
-	group.GET("/game/stage/pass", game.StagePass) // 通关记录
 	group.GET("/game/online/time", game.OnlineTime) // 在线时间记录
 	group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
 	group.GET("/game/recharge/trace", game.RechargeTrace)

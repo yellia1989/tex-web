@@ -37,7 +37,7 @@ func RoleList(c echo.Context) error {
     }
     defer tx.Rollback()
 
-    _, err = tx.Exec("USE db_zone_" + zoneid)
+    _, err = tx.Exec("USE herox_db_zone_" + zoneid)
     if err != nil {
         return err
     }
@@ -54,6 +54,7 @@ func RoleList(c echo.Context) error {
         return err
     }
     defer rows.Close()
+    c.Logger().Debug(sql)
 
     roles := make([]_role, 0)
     for rows.Next() {

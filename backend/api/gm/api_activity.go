@@ -39,7 +39,7 @@ func ActivityList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc FROM t_activity"
+	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_des FROM t_activity"
 	where := ""
     if stype != "" {
 		where += " activity_type IN (" + stype + ")"
