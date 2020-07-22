@@ -81,6 +81,37 @@ func MapList(c echo.Context) error {
 
 func MapAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("iMapId")
+    zoneids := ctx.FormValue("zoneids")
+
+    if mapid == "" || zoneids == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+	db := common.GetLogDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	if err != nil {
+		return err
+	}
+
+    _, err = tx.Exec("INSERT INTO t_maplist(mapid,zoneids) VALUES(?,?)", mapid, zoneids)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
     
     return ctx.SendResponse("添加地图成功")
 }
@@ -88,16 +119,72 @@ func MapAdd(c echo.Context) error {
 func MapDel(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    ids := strings.Split(ctx.FormValue("idsStr"), ",")
-    if len(ids) == 0 {
-        return ctx.SendError(-1, "地图不存在")
+    zoneids := ctx.FormValue("idsStr")
+    if zoneids == "" {
+		return ctx.SendError(-1, "参数非法")
     }
+
+	db := common.GetLogDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	if err != nil {
+		return err
+	}
+
+    _, err = tx.Exec("DELETE FROM t_maplist WHERE mapid IN (?)", zoneids)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
     return ctx.SendResponse("删除地图成功")
 }
 
 func MapEdit(c echo.Context) error {
     ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("iMapId")
+    zoneids := ctx.FormValue("zoneids")
+
+    if mapid == "" || zoneids == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+	db := common.GetLogDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	if err != nil {
+		return err
+	}
+
+    _, err = tx.Exec("UPDATE t_maplist SET zoneids=? WHERE mapid=?", zoneids, mapid)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
     return ctx.SendResponse("修改地图成功")
 }

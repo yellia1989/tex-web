@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>编辑地图</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">地图id</label>
+        <div class="layui-input-block">
+          <input type="text" name="iMapId" placeholder="请地图id(>1000)" class="layui-input layui-disabled" disabled lay-verify="required|integer" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">分区列表</label>
+        <div class="layui-input-block">
+          <div id="zoneSelect"></div>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="add">更新</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      $("input[name=iMapId]").val(parent.editData.iMapId);
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'zoneids',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择至少一个服务器',
+        layVerify: 'false',
+        layVerType: 'tips',
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect.update({
+          data: response.data,
+          initValue: parent.editData.vZoneId,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      //监听提交
+      form.on('submit(add)', function (data) {
+        okUtils.ajax("/api/gm/map/edit", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>

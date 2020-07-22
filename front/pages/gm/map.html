@@ -16,7 +16,7 @@
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
   <script>
-    var editdata;
+    var editData;
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
@@ -39,7 +39,7 @@
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {
-          for (i = 0; i < res.data && res.data.length; ++i) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iMapId;
           }
           return res;
@@ -61,7 +61,7 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
-            editdata = data;
+            editData = data;
             edit(data.iMapId);
             break;
           case "del":
@@ -90,11 +90,11 @@
 			});
 		}
 
-      function edit(id) {
-        okLayer.open("编辑地图", "map-edit.html", "90%", "90%", null, function () {
-          mapTable.reload();
-        })
-      }
+    function edit(id) {
+      okLayer.open("编辑地图", "map-edit.html", "90%", "90%", null, function () {
+        mapTable.reload();
+      })
+    }
 
 		function del(id) {
 			okLayer.confirm("确定要删除吗？", function () {
