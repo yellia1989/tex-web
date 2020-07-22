@@ -119,7 +119,7 @@
 
       function del(id) {
         okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/api/gm/bulletin/del", "delete", { idsStr: id }, true).done(function (response) {
+          okUtils.ajax("/api/gm/bulletin/del", "post", { idsStr: id }, true).done(function (response) {
             okUtils.tableSuccessMsg(response.msg);
           }).fail(function (error) {
             console.log(error)
