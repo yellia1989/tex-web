@@ -46,10 +46,12 @@ func GameCmd(c echo.Context) error {
         gamePrx := new(rpc.GameService)
         gfPrx := new(rpc.GFService)
         mapPrx := new(rpc.MapService)
-        if izoneid > 1000 {
-            comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+zoneid, mapPrx)
-        } else if izoneid <= 1000 {
-            comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+        if izoneid != 0 {
+            if izoneid > 1000 {
+                comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+zoneid, mapPrx)
+            } else if izoneid <= 1000 {
+                comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+            }
         } else {
             comm.StringToProxy(app+".GFServer.GFServiceObj", gfPrx)
         }
@@ -64,10 +66,12 @@ func GameCmd(c echo.Context) error {
 
             buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
 
-            if izoneid <= 1000 {
-                ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
-            } else if izoneid > 1000 {
-                ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)
+            if izoneid != 0 {
+                if izoneid <= 1000 {
+                    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+                } else if izoneid > 1000 {
+                    ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)
+                }
             } else {
                 ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
             }
