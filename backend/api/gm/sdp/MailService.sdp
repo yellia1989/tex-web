@@ -34,7 +34,6 @@ interface MailService
 	// 管理端操作接口
 	int addMail(MailDataInfo stInfo);
 	int addMails(vector<MailDataInfo> vInfo);
-	int modifyMail(MailDataInfo stInfo);
 	int delMail(unsigned int iMailId);
 	int getAllMail(out vector<MailDataInfo> vInfo);
 	int getZoneMail(unsigned int iZoneId, unsigned int iLastMailId, out vector<MailDataInfo> vInfo, out vector<unsigned int> vDelId);

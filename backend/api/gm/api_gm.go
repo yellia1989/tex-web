@@ -175,7 +175,7 @@ type _item struct {
 func ItemList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    zoneid := "1"
+    zoneid := "3"
     scmd := "item_list"
     var result string
     err := cmd(ctx, zoneid, scmd, &result)
