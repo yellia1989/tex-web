@@ -43,6 +43,7 @@ func ZoneSimpleList(c echo.Context) error {
     ctx := c.(*mid.Context)
     gf := ctx.FormValue("gf")
     all := ctx.FormValue("all")
+    mmap := ctx.FormValue("map")
 
     zones := zoneList(c)
 
@@ -60,7 +61,14 @@ func ZoneSimpleList(c echo.Context) error {
     }
     zones2 = append(zones2, zones...)
 
-    return ctx.SendResponse(zones2)
+    if mmap == "" {
+        return ctx.SendResponse(zones2)
+    }
+
+    data := make(map[string][]rpc.ZoneInfo,0)
+    data["game"] = zones2
+    data["map"] = MapSimpleList()
+    return ctx.SendResponse(data)
 }
 
 func ZoneList(c echo.Context) error {

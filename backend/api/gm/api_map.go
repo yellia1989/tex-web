@@ -1,16 +1,64 @@
 package gm
 
 import (
+    "fmt"
     "strings"
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/api/gm/rpc"
 )
 
 type _mapData struct {
     IMapId uint32 `json:"iMapId"`
     VZoneId []uint32 `json:"vZoneId"`
+}
+
+func MapSimpleList() []rpc.ZoneInfo {
+    l := make([]rpc.ZoneInfo, 0)
+
+	db := common.GetLogDb()
+	if db == nil {
+        return l
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+        return l
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	if err != nil {
+        return l
+	}
+
+	sql := "SELECT mapid FROM t_maplist ORDER BY mapid desc"
+	rows, err := tx.Query(sql)
+	if err != nil {
+        return l
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+        var r rpc.ZoneInfo
+		if err := rows.Scan(&r.IZoneId); err != nil {
+            return l
+		}
+        r.SZoneName = fmt.Sprintf("地图(%d)", r.IZoneId)
+		l = append(l, r)
+    }
+
+	if err := rows.Err(); err != nil {
+		return l
+	}
+
+	if err := tx.Commit(); err != nil {
+		return l
+	}
+
+    return l
 }
 
 func MapList(c echo.Context) error {

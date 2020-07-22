@@ -4,6 +4,7 @@ import (
     "fmt"
     "strings"
     "bytes"
+    "strconv"
     "encoding/json"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -41,9 +42,13 @@ func GameCmd(c echo.Context) error {
 
     zoneids := strings.Split(szoneid, ",")
     for _,zoneid := range zoneids {
+        izoneid,_ := strconv.Atoi(zoneid)
         gamePrx := new(rpc.GameService)
         gfPrx := new(rpc.GFService)
-        if zoneid != "0" {
+        mapPrx := new(rpc.MapService)
+        if izoneid > 1000 {
+            comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+zoneid, mapPrx)
+        } else if izoneid <= 1000 {
             comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
         } else {
             comm.StringToProxy(app+".GFServer.GFServiceObj", gfPrx)
@@ -59,8 +64,10 @@ func GameCmd(c echo.Context) error {
 
             buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
 
-            if zoneid != "0" {
+            if izoneid <= 1000 {
                 ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+            } else if izoneid > 1000 {
+                ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)
             } else {
                 ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
             }
@@ -69,7 +76,7 @@ func GameCmd(c echo.Context) error {
                 if err != nil {
                     serr = err.Error()
                 }
-                result = fmt.Sprintf("ret:%d, err:%s", ret, serr)
+                result = fmt.Sprintf("ret:%d, err:%s\n", ret, serr)
             }
             buff.WriteString(result+"\n")
         }
