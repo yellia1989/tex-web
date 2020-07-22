@@ -30,6 +30,9 @@ var app string
 // logo
 var logo string
 
+// gamedb prefix
+var gamedbPrefix string
+
 func init() {
     Cfg = util.NewConfig()
 }
@@ -76,6 +79,8 @@ func ParseCfg(file string) (err error) {
         err = fmt.Errorf("invalid logo str\n")
     }
 
+    gamedbPrefix = Cfg.GetCfg("gamedb-prefix", "")
+
     return
 }
 
@@ -101,4 +106,8 @@ func GetApp() string {
 
 func GetLogo() string {
     return logo
+}
+
+func GetDbPrefix() string {
+    return gamedbPrefix
 }

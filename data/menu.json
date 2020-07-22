@@ -266,6 +266,20 @@
           4,
           3
         ]
+      },
+      {
+        "id": 213,
+        "title": "地图管理",
+        "href": "gm/map.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
       }
     ],
     "role": [

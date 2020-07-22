@@ -34,7 +34,7 @@ func ActivityList(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func ActivityAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func ActivityEdit(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -189,7 +189,7 @@ func ActivityDel(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}
