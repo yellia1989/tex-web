@@ -14,7 +14,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">地图id</label>
         <div class="layui-input-block">
-          <input type="text" name="iMapId" placeholder="请地图id(>1000)" autocomplete="off" class="layui-input" lay-verify="required|integer" lay-verType="tips">
+          <input type="text" name="iMapId" placeholder="地图id(>1000)" autocomplete="off" class="layui-input" lay-verify="required|integer|mapid" lay-verType="tips">
         </div>
       </div>
 
@@ -58,6 +58,14 @@
         });
       }).fail(function (error) {
         console.log(error);
+      });
+
+      form.verify({
+        mapid: function(value, item) {
+          if (value < 1001) {
+            return '地图id(>1000)'
+          }
+        }
       });
 
       //监听提交
