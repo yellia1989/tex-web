@@ -641,6 +641,19 @@
         "role": [
           3
         ]
+      },
+      {
+        "id": 905,
+        "title": "实时战斗验证",
+        "href": "game/real-fightverify.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
       }
     ],
     "role": [

@@ -105,6 +105,7 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/real/newadd", game.RealNewadd)
 	group.GET("/game/real/income", game.RealIncome)
 	group.GET("/game/real/stageverify", game.RealStageVerify)
+	group.GET("/game/real/fightverify", game.RealFightVerify)
 	group.GET("/game/real/stat", game.RealStat)
 	group.GET("/game/online/time", game.OnlineTime) // 在线时间记录
 	group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
