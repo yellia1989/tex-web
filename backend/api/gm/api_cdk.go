@@ -2,7 +2,7 @@ package gm
 
 import (
 	"strconv"
-
+    "strings"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/common"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
@@ -95,4 +95,31 @@ func CDKUpdate(c echo.Context) error {
 	}
 
 	return ctx.SendResponse("修改CDK成功")
+}
+
+func CDKExport(c echo.Context) error {
+	ctx := c.(*mid.Context)
+    idsStr := ctx.FormValue("idsStr")
+
+    if idsStr == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    comm := common.GetLocator()
+
+	MPPrx := new(rpc.MPService)
+	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", MPPrx)
+
+    data := make(map[int]*string,0)
+    for _,ids := range strings.Split(idsStr, ",") {
+        id,_ := strconv.Atoi(ids)
+        var cdks string
+	    ret, err := MPPrx.ExportCDKey(uint32(id), &cdks)
+	    if err := checkRet(ret, err); err != nil {
+	    	return err
+	    }
+        data[id] = &cdks
+    }
+
+	return ctx.SendResponse(data)
 }

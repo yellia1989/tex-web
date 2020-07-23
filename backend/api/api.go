@@ -68,6 +68,7 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/gm/cdk/list", gm.CDKList)      // 获取cdk列表
 	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
+	group.POST("/gm/cdk/export", gm.CDKExport) // 导出cdk
 
 	group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
 	group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
