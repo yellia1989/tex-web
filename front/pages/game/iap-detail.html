@@ -25,6 +25,12 @@
         </div>
       </div>
       <div class="layui-form-item">
+        <label class="layui-form-label">凭证类型</label>
+        <div class="layui-input-block">
+          <input name="iReceiptType" class="layui-input" disabled>
+        </div>
+      </div>
+      <div class="layui-form-item">
         <label class="layui-form-label">分区id</label>
         <div class="layui-input-block">
           <input name="iDeliverZoneId" class="layui-input" disabled>
@@ -84,9 +90,15 @@
 
       okUtils.ajax("/api/game/recharge/receipt", "get", {flowid: parent.flowid}, false).done(function (response) {
         let status = response.data.stStatus;
-        let receipt = response.data.stYokaReceipt;
+        let receipt = null;
+        if (response.data.iReceiptType == 4) {
+          receipt = response.data.stHeePayReceipt;
+        } else if (response.data.iReceiptType == 5) {
+          receipt = response.data.stHeePayH5Receipt;
+        }
 
         $("select[name=iReceiptStatus]").val(status.iReceiptStatus);
+        $("input[name=iReceiptType]").val(response.data.iReceiptType);
         $("input[name=iDeliverZoneId]").val(status.iDeliverZoneId);
         $("input[name=iDeliverRoleId]").val(status.iDeliverRoleId);
         $("input[name=iAddTime]").val(okUtils.dateFormat(new Date(status.iAddTime*1000), 'yyyy-MM-dd hh:mm:ss'));
