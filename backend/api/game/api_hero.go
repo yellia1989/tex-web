@@ -14,7 +14,6 @@ type _herolog struct {
 	Id     uint32 `json:"id"`
 	Time   string `json:"time"`
 	HeroId uint32 `json:"heroid"`
-	Level  uint32 `json:"level"`
 	Star   uint32 `json:"star"`
     Step   uint32 `json:"step"`
     Quality uint32 `json:"quality"`
@@ -76,11 +75,10 @@ func HeroAddLog(c echo.Context) error {
 	logs := make([]_herolog, 0)
 	for rows.Next() {
 		var r _herolog
-		var star, level, quality, step Sql.NullInt32
-		if err := rows.Scan(&r.Id, &r.Time, &r.HeroId, &level, &star, &step, &quality, &r.Action); err != nil {
+		var star, quality, step Sql.NullInt32
+		if err := rows.Scan(&r.Id, &r.Time, &r.HeroId, &star, &step, &quality, &r.Action); err != nil {
 			return err
 		}
-		r.Level = uint32(level.Int32)
 		r.Star = uint32(star.Int32)
 		r.Step = uint32(step.Int32)
 		r.Quality = uint32(quality.Int32)
