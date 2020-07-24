@@ -230,3 +230,64 @@ func BanLogin(c echo.Context) error {
 
     return ctx.SendResponse(result)
 }
+
+func RealMap(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("mapid")
+
+    if mapid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    comm := common.GetLocator()
+    app := common.GetApp()
+
+    mapPrx := new(rpc.MapService)
+    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+
+    cmd := "map_json"
+
+    var result string
+    u := ctx.GetUser()
+    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("ret:%d, err:%s", ret, serr)
+    }
+
+    return ctx.SendResponse(result)
+}
+
+func RealMapObj(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("mapid")
+    objid := ctx.FormValue("objid")
+
+    if objid == "" || mapid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    comm := common.GetLocator()
+    app := common.GetApp()
+
+    mapPrx := new(rpc.MapService)
+    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+
+    cmd := "see_obj " + objid
+
+    var result string
+    u := ctx.GetUser()
+    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("ret:%d, err:%s", ret, serr)
+    }
+
+    return ctx.SendResponse(result)
+}

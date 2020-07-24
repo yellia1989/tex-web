@@ -41,33 +41,45 @@ func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
 
 func ZoneSimpleList(c echo.Context) error {
     ctx := c.(*mid.Context)
+    game := ctx.FormValue("game")
     gf := ctx.FormValue("gf")
     all := ctx.FormValue("all")
     mmap := ctx.FormValue("map")
 
-    zones := zoneList(c)
+    bgame := game != ""
+    bgf := gf != ""
+    bmap := mmap != ""
+    ball := all != ""
 
-    for i,_ := range zones {
-        zones[i].SZoneName = fmt.Sprintf("%s(%d)", zones[i].SZoneName, zones[i].IZoneId)
+    if game == "" && gf == "" && mmap == "" {
+        bgame = true
     }
 
-    if gf != "" {
+    var zones []rpc.ZoneInfo
+    if bgame {
+        zones := zoneList(c)
+        for i,_ := range zones {
+            zones[i].SZoneName = fmt.Sprintf("%s(%d)", zones[i].SZoneName, zones[i].IZoneId)
+        }
+    }
+
+    if bgf {
         zones = append(zones, rpc.ZoneInfo{IZoneId: 0, SZoneName: "GFServer"})
     }
 
     var zones2 []rpc.ZoneInfo
-    if all != "" {
+    if ball {
         zones2 = append(zones2, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
-    }
-    zones2 = append(zones2, zones...)
-
-    if mmap == "" {
-        return ctx.SendResponse(zones2)
+        zones2 = append(zones2, zones...)
     }
 
     data := make(map[string][]rpc.ZoneInfo,0)
     data["game"] = zones2
-    data["map"] = MapSimpleList()
+
+    if bmap {
+        data["map"] = MapSimpleList()
+    }
+
     return ctx.SendResponse(data)
 }
 

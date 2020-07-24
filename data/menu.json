@@ -654,6 +654,19 @@
         "role": [
           3
         ]
+      },
+      {
+        "id": 906,
+        "title": "实时地图",
+        "href": "game/real-map.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
       }
     ],
     "role": [

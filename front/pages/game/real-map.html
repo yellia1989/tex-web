@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>实时地图</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <div class="layui-fluid">
+  <div class="layui-row">
+    <div class="layui-col-md3">
+      <form>
+        <div id="zoneSelect"></div>
+        <textarea id="detail" cols="60" rows="30" class="layui-textarea"></textarea>
+      </form>
+    </div>
+    <div class="layui-col-md9">
+      <div id="main" style="width:840px;height:840px;"></div>
+    </div>
+  </div>
+  </div> 
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script src="/lib/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+  layui.use(["okUtils", "okLayer", "form"], function () {
+    let okUtils = layui.okUtils;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    okLoading.close();
+
+    let zoneSelect = xmSelect.render({
+      el: '#zoneSelect',
+      name: 'zoneid',
+      prop: {
+        value: 'iZoneId',
+        name: 'sZoneName',
+      },
+      tips: '请选择一个服务器',
+      layVerify: 'required',
+      layVerType: 'tips',
+      radio: true,
+      clickClose: true,
+      model: {
+        label: {
+          type: 'block',
+          block: {
+            //是否显示删除图标
+            showIcon: false,
+          }
+        }
+      },
+      on: function(data){
+        refreshMap(data.arr[0].iZoneId);
+      },
+    });
+
+    let myChart = echarts.init(document.getElementById('main'));
+    let option = {
+          xAxis: {
+            position: 'top',
+            interval: 100,
+          },
+          yAxis: {
+            inverse: true,
+            interval: 100,
+          },
+          legend:{
+            show: true,
+          },
+          dataZoom: [
+            {
+              type: 'inside',
+              xAxisIndex: [0],
+            },
+            {
+              type: 'inside',
+              yAxisIndex: [0],
+            },
+          ],
+      };
+    
+    myChart.setOption(option);
+    myChart.on('click', function (params) {
+      let objid = params.data.name;
+      let mapid = zoneSelect.getValue('valueStr');
+      okUtils.ajax("/api/game/real/mapobj", "post", {objid: objid, mapid: mapid}, false).done(function (response) {
+        $("#detail").val(response.data);
+      }).fail(function (error) {
+        console.log(error);
+      });
+    });
+
+    okUtils.ajax("/api/gm/zone/simplelist", "get", {map: true}, false).done(function (response) {
+      zoneSelect.update({
+        data: response.data.map,
+        initValue: [1003],
+      });
+      refreshMap(zoneSelect.getValue('valueStr'));
+    }).fail(function (error) {
+      console.log(error);
+    });
+
+    function refreshMap(mapid) {
+      okUtils.ajax("/api/game/real/map", "get", {mapid: mapid}, false).done(function (response) {
+        let data = okUtils.stringToJson(response.data);
+        myChart.setOption({
+          series: [{
+              name: '城市',
+              type: 'effectScatter',
+              symbolSize: 10,
+              itemStyle: {
+                color: '#FF2371',
+              },
+              data: data[100] ? data[100] : [],
+          }, {
+              name: '森林',
+              type: 'scatter',
+              itemStyle: {
+                color: '#9DE887',
+              },
+              data: data[203] ? data[203] : [],
+          }, {
+              name: '山脉',
+              type: 'scatter',
+              itemStyle: {
+                color: '#9DE887',
+              },
+              data: data[204] ? data[204] : [],
+          }, {
+              name: '矿洞',
+              type: 'scatter',
+              itemStyle: {
+                color: '#9DE887',
+              },
+              data: data[205] ? data[205] : [],
+          }, {
+              name: '怪物',
+              type: 'scatter',
+              itemStyle: {
+                color: '#FF9900',
+              },
+              data: data[300] ? data[300] : [],
+          }, {
+              name: '副本',
+              type: 'scatter',
+              itemStyle: {
+                color: '#8E7CC3',
+              },
+              data: data[400] ? data[400] : [],
+          }, {
+              name: 'Boss',
+              type: 'scatter',
+              itemStyle: {
+                color: '#0460F3',
+              },
+              data: data[501] ? data[501] : [],
+          }, {
+              name: '彩蛋Boss',
+              type: 'scatter',
+              itemStyle: {
+                color: '#803300',
+              },
+              data: data[503] ? data[503] : [],
+          }, {
+              name: '旗帜',
+              type: 'scatter',
+              itemStyle: {
+                color: '#660066',
+              },
+              data: data[600] ? data[600] : [],
+          }, {
+              name: '福利圈',
+              type: 'scatter',
+              itemStyle: {
+                color: '#09525D',
+              },
+              data: data[700] ? data[700] : [],
+          }, {
+              name: '宝箱',
+              type: 'scatter',
+              itemStyle: {
+                color: '#006600',
+              },
+              data: data[800] ? data[800] : [],
+          }, {
+              name: '传送点',
+              type: 'scatter',
+              itemStyle: {
+                color: '#330033',
+              },
+              data: data[900] ? data[900] : [],
+          }, {
+              name: '地雷',
+              type: 'scatter',
+              itemStyle: {
+                color: '#000000',
+              },
+              data: data[1000] ? data[1000] : [],
+          }]
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+    }
+
+    window.addEventListener("resize", function () {
+      myChart.resize();
+    });
+  });
+</script>
+</body>
+</html>
