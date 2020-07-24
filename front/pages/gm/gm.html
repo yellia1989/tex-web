@@ -56,7 +56,7 @@
         },
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", {gf: true, map: true}, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, gf: true, map: true}, false).done(function (response) {
         zoneSelect.update({
           data: [
             {sZoneName: '挂机服务器', children: response.data["game"]},

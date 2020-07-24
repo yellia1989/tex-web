@@ -98,7 +98,7 @@
 
     okUtils.ajax("/api/gm/zone/simplelist", "get", {map: true}, false).done(function (response) {
       zoneSelect.update({
-        data: response.data.map,
+        data: response.data["map"],
         initValue: [1003],
       });
       refreshMap(zoneSelect.getValue('valueStr'));

@@ -59,7 +59,7 @@
 
       okUtils.ajax("/api/gm/iap/list", "get", {zoneid: parent.zoneid}, false).done(function (response) {
         productSelect.update({
-          data: response.data,
+          data: response.data["game"],
         });
       }).fail(function (error) {
         console.log(error);
