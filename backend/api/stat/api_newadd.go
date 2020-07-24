@@ -3,6 +3,7 @@ package stat
 import (
     "fmt"
     "time"
+    s "database/sql"
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -78,9 +79,12 @@ func NewaddList(c echo.Context) error {
     logs := make([]_newaddlog, 0)
     for rows.Next() {
         var r _newaddlog
-        if err := rows.Scan(&r.Statymd, &r.Accountnum, &r.Rolenum, &r.Startgame, &r.Create2num, &r.AccountnumTotal, &r.RolenumTotal); err != nil {
+        var startGame,create2Num s.NullInt32
+        if err := rows.Scan(&r.Statymd, &r.Accountnum, &r.Rolenum, &startGame, &create2Num, &r.AccountnumTotal, &r.RolenumTotal); err != nil {
             return err
         }
+        r.Startgame = float32(startGame.Int32)
+        r.Create2num = float32(create2Num.Int32)
         r.RolenumTotalRate = "0.0%"
         r.AccountnumRate = "0.0%"
         r.RolenumRate = "0.0%"
