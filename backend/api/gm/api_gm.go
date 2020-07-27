@@ -80,7 +80,7 @@ func GameCmd(c echo.Context) error {
                 if err != nil {
                     serr = err.Error()
                 }
-                result = fmt.Sprintf("ret:%d, err:%s\n", ret, serr)
+                result = fmt.Sprintf("ret:%s, err:%s\n", rpc.ErrorCode(ret), serr)
             }
             buff.WriteString(result+"\n")
         }
