@@ -23,7 +23,7 @@ func ActivityList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -102,7 +102,7 @@ func ActivityAdd(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -146,7 +146,7 @@ func ActivityEdit(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -178,7 +178,7 @@ func ActivityDel(c echo.Context) error {
     ctx := c.(*mid.Context)
     ids := ctx.FormValue("idsStr")
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}

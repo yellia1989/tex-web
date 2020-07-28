@@ -18,7 +18,7 @@ type _mapData struct {
 func MapSimpleList() []rpc.ZoneInfo {
     l := make([]rpc.ZoneInfo, 0)
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
         return l
 	}
@@ -66,7 +66,7 @@ func MapList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -136,7 +136,7 @@ func MapAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -172,7 +172,7 @@ func MapDel(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
     }
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -209,7 +209,7 @@ func MapEdit(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
