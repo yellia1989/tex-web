@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>实时关卡验证</title>
+  <title>实时战斗验证</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -34,7 +34,7 @@
         right: '15%',
       },
       legend: {
-          data: ['在线人数', '次数', '欺骗次数', '验证时间'],
+          data: ['在线人数', '次数', '排队时间', '验证时间'],
       },
       toolbox: {
           feature: {
@@ -75,14 +75,14 @@
         },
         {
           type : 'value',
-          name: '欺骗次数',
+          name: '排队时间',
           axisLine: {
             lineStyle: {
               color: colors[2]
             }
           },
           axisLabel: {
-            formatter: '{value} 次'
+            formatter: '{value} us'
           },
           position:'right',
           offset:70,
@@ -116,7 +116,7 @@
               yAxisIndex:'1',
           },
           {
-              name: '欺骗次数',
+              name: '排队时间',
               type: 'line',
               smooth: true,
               yAxisIndex:'2',
@@ -131,10 +131,10 @@
     };
 
     myChart.setOption(option);
-    okUtils.ajax("/api/game/real/stageverify", "get", null, false).done(function (response) {
+    okUtils.ajax("/api/game/real/fightverify", "get", null, false).done(function (response) {
       let online = response.data.online;
       let times = response.data.times;
-      let cheattimes = response.data.cheattimes;
+      let queuetime = response.data.queuetime;
       let usetime = response.data.usetime;
       myChart.setOption({
         series: [
@@ -151,10 +151,10 @@
               data: times,
           },
           {
-              name: '欺骗次数',
+              name: '排队时间',
               type: 'line',
               smooth: true,
-              data: cheattimes,
+              data: queuetime,
           },
           {
               name: '验证时间',

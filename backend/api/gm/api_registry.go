@@ -49,7 +49,7 @@ func registryDel(sObj string, sDivision string, sEp string) error {
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
 
-    ret, err := queryPrx.AddEndpoint(sObj, sDivision, sEp)
+    ret, err := queryPrx.RemoveEndpoint(sObj, sDivision, sEp)
     if err := checkRet(ret, err); err != nil {
         return err
     }

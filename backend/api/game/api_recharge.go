@@ -121,7 +121,10 @@ func RechargeTrace(c echo.Context) error {
         return err
     }
 
-    rows3, err := tx.Query("SELECT flowid,extern_order_id FROM iap_recharge WHERE flowid in(?)", flowids2)
+    sql = "SELECT flowid,extern_order_id FROM iap_recharge WHERE flowid in("+string(flowids2)+")"
+    c.Logger().Debug(sql)
+
+    rows3, err := tx.Query(sql)
     if err != nil {
         return err
     }

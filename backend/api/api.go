@@ -68,6 +68,7 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/gm/cdk/list", gm.CDKList)      // 获取cdk列表
 	group.POST("/gm/cdk/add", gm.CDKAdd)       // 增加cdk
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
+	group.POST("/gm/cdk/export", gm.CDKExport) // 导出cdk
 
 	group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
 	group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
@@ -86,6 +87,11 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/ban/speak", gm.BanSpeak) // 禁言
 	group.POST("/gm/ban/login", gm.BanLogin) // 禁止登陆
 
+    group.GET("/gm/map/list", gm.MapList)   // 地图列表
+    group.POST("/gm/map/add", gm.MapAdd)    // 地图增加
+    group.POST("/gm/map/edit", gm.MapEdit)  // 地图编辑
+    group.POST("/gm/map/del", gm.MapDel)    // 地图删除
+
 	group.GET("/game/role/list", game.RoleList) // 玩家列表
 	group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志
 	group.GET("/game/coin/sublog", game.CoinSubLog)
@@ -99,7 +105,10 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/real/newadd", game.RealNewadd)
 	group.GET("/game/real/income", game.RealIncome)
 	group.GET("/game/real/stageverify", game.RealStageVerify)
+	group.GET("/game/real/fightverify", game.RealFightVerify)
 	group.GET("/game/real/stat", game.RealStat)
+	group.GET("/game/real/map", gm.RealMap)
+	group.POST("/game/real/mapobj", gm.RealMapObj)
 	group.GET("/game/online/time", game.OnlineTime) // 在线时间记录
 	group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
 	group.GET("/game/recharge/trace", game.RechargeTrace)

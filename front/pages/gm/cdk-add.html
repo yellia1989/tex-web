@@ -152,9 +152,9 @@
         },
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", {all: true}, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, all: true}, false).done(function (response) {
         zoneSelect.update({
-          data: response.data,
+          data: response.data["game"],
         });
       }).fail(function (error) {
         console.log(error);
@@ -181,11 +181,17 @@
           $('#customlimit').addClass('layui-hide');
           $('#zonelimit').addClass('layui-hide');
           $('#exchangelimit').addClass('layui-hide');
+          zoneSelect.update({
+            layVerify: false,
+          });
           $('#rewardinfo').addClass('layui-hide');
           $('textarea[name=sRewardInfo]').removeAttr('lay-verify');
         } else {
           $('#customlimit').removeClass('layui-hide');
           $('#zonelimit').removeClass('layui-hide');
+          zoneSelect.update({
+            layVerify: 'required',
+          });
           $('#exchangelimit').removeClass('layui-hide');
           $('#rewardinfo').removeClass('layui-hide');
           $('textarea[name=sRewardInfo]').attr('lay-verify', 'required');

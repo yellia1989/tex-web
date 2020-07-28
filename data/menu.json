@@ -266,6 +266,20 @@
           4,
           3
         ]
+      },
+      {
+        "id": 213,
+        "title": "地图管理",
+        "href": "gm/map.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
       }
     ],
     "role": [
@@ -619,6 +633,32 @@
         "id": 904,
         "title": "实时关卡验证",
         "href": "game/real-stageverify.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 905,
+        "title": "实时战斗验证",
+        "href": "game/real-fightverify.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 906,
+        "title": "实时地图",
+        "href": "game/real-map.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,

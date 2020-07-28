@@ -1,14 +1,25 @@
 package gm
 
 import (
+    "sort"
 	"strconv"
 	"strings"
-
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
+
+type NoticeSort []rpc.NoticeDataInfo
+func (s NoticeSort) Len() int {
+    return len(s)
+}
+func (s NoticeSort) Less(i, j int) bool {
+    return s[i].INoticeId < s[j].INoticeId
+}
+func (s NoticeSort) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
 
 func NoticeList(c echo.Context) error {
 	ctx := c.(*mid.Context)
@@ -25,6 +36,8 @@ func NoticeList(c echo.Context) error {
 	if err := checkRet(ret, err); err != nil {
 		return err
 	}
+
+    sort.Sort(sort.Reverse(NoticeSort(vNotice)))
 
 	vPage := common.GetPage(vNotice, page, limit)
 	return ctx.SendArray(vPage, len(vNotice))

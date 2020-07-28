@@ -23,7 +23,7 @@ func ActivityList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -34,12 +34,12 @@ func ActivityList(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}
 
-	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_des FROM t_activity"
+	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc FROM t_activity"
 	where := ""
     if stype != "" {
 		where += " activity_type IN (" + stype + ")"
@@ -102,7 +102,7 @@ func ActivityAdd(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -113,7 +113,7 @@ func ActivityAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func ActivityEdit(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -157,7 +157,7 @@ func ActivityEdit(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -178,7 +178,7 @@ func ActivityDel(c echo.Context) error {
     ctx := c.(*mid.Context)
     ids := ctx.FormValue("idsStr")
 
-	db := common.GetLogDb()
+	db := common.GetDb()
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -189,7 +189,7 @@ func ActivityDel(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
 	if err != nil {
 		return err
 	}

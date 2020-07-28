@@ -13,7 +13,7 @@
 		    <div class="layui-inline">
 		    	<label class="layui-form-label">分区ID</label>
 		    	<div class="layui-input-inline">
-		    		<input type="text" name="iZoneId" placeholder="请输入分区ID" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
+		    		<input type="text" name="iZoneId" placeholder="请输入分区ID(<=1000)" autocomplete="off" class="layui-input" lay-verify="required|integer|zoneid" lay-verType="tips">
 		    	</div>
 		    </div>
 		    <div class="layui-inline">
@@ -142,7 +142,6 @@
 		  <div class="layui-form-item">
 			  <div class="layui-input-block">
 				  <button class="layui-btn" lay-submit lay-filter="add">添加</button>
-				  <button type="reset" class="layui-btn layui-btn-primary">重置</button>
 			  </div>
 		  </div>
 	</form>
@@ -175,7 +174,7 @@
 
       //数据校验
       form.verify({
-        "version": function(value, item) {
+        version: function(value, item) {
           let v = value.split('.');
           let l = 5;
           if (item.name.indexOf('Force') != -1) {
@@ -183,6 +182,11 @@
           }
           if (v.length != l) {
               return '版本号格式不对';
+          }
+        },
+        zoneid: function(value, item) {
+          if (value != 8888 && value != 9999 && value > 1000) {
+            return '分区id<=1000';
           }
         }
       });

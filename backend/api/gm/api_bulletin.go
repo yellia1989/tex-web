@@ -1,6 +1,7 @@
 package gm
 
 import (
+    "sort"
     "strings"
     "strconv"
     "github.com/labstack/echo"
@@ -8,6 +9,17 @@ import (
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/common"
 )
+
+type BulletinSort []rpc.BulletinDataInfo
+func (s BulletinSort) Len() int {
+    return len(s)
+}
+func (s BulletinSort) Less(i, j int) bool {
+    return s[i].IBulletinId < s[j].IBulletinId
+}
+func (s BulletinSort) Swap(i, j int) {
+    s[i], s[j] = s[j], s[i]
+}
 
 func BulletinList(c echo.Context) error {
     ctx := c.(*mid.Context)
@@ -24,6 +36,8 @@ func BulletinList(c echo.Context) error {
     if err := checkRet(ret, err); err != nil {
         return err
     }
+
+    sort.Sort(sort.Reverse(BulletinSort(vBulletin)))
 
     vPage := common.GetPage(vBulletin, page, limit)
     return ctx.SendArray(vPage, len(vBulletin))

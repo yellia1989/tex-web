@@ -14,7 +14,7 @@
     <form class="layui-form">
       <div class="layui-form-item" style="margin:0px">
         <div class="layui-inline" style="margin:0px">
-          <div class="layui-input-inline">
+          <div class="layui-input-inline" style="width: 300px">
             <div id="zoneSelect"></div>
           </div>
           <div class="layui-input-inline">
@@ -51,24 +51,17 @@
         tips: '请选择一个服务器',
         layVerify: 'required',
         layVerType: 'tips',
-        autoRow: true,
-        model: {
-          label: {
-            type: 'block',
-            block: {
-              //是否显示删除图标
-              showIcon: false,
-            }
-          }
-        },
         toolbar: {
           show: true,
         },
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", {gf: true}, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, gf: true, map: true}, false).done(function (response) {
         zoneSelect.update({
-          data: response.data,
+          data: [
+            {sZoneName: '挂机服务器', children: response.data["game"]},
+            {sZoneName: 'slg服务器', children: response.data["map"]},
+          ],
           initValue: [1],
         });
       }).fail(function (error) {

@@ -203,20 +203,56 @@ func RealStageVerify(c echo.Context) error {
     }
     data["times"] = times
 
-    // 排队时间
-    queuetime, err := realtime(now.Format("2006-01-02"), "stageverify_queue")
+    // 欺骗次数
+    cheattimes, err := realtime(now.Format("2006-01-02"), "stageverify_queue")
     if err != nil {
         return err
     }
-    for i,v := range queuetime {
+    data["cheattimes"] = cheattimes
+
+    // 验证时间
+    usetime, err := realtime(now.Format("2006-01-02"), "stageverify_use")
+    if err != nil {
+        return err
+    }
+    for i,v := range usetime {
         if times[i] != 0 {
-            queuetime[i] = v/times[i]
+            usetime[i] = v/times[i]
         }
+    }
+    data["usetime"] = usetime
+    
+    return ctx.SendResponse(data)
+}
+
+func RealFightVerify(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    now := time.Now()
+
+    // 在线
+    data := make(map[string][]uint32,0)
+    online, err := realtime(now.Format("2006-01-02"), "online")
+    if err != nil {
+        return err
+    }
+    data["online"] = online
+
+    // 验证次数
+    times, err := realtime(now.Format("2006-01-02"), "fightverify")
+    if err != nil {
+        return err
+    }
+    data["times"] = times
+
+    // 排队时间
+    queuetime, err := realtime(now.Format("2006-01-02"), "fightverify_queue")
+    if err != nil {
+        return err
     }
     data["queuetime"] = queuetime
 
     // 验证时间
-    usetime, err := realtime(now.Format("2006-01-02"), "stageverify_use")
+    usetime, err := realtime(now.Format("2006-01-02"), "fightverify_use")
     if err != nil {
         return err
     }

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>补单</title>
+  <title>新增地图</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -12,15 +12,22 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
-        <label class="layui-form-label">补单商品</label>
+        <label class="layui-form-label">地图id</label>
         <div class="layui-input-block">
-          <div id="productSelect"></div>
+          <input type="text" name="iMapId" placeholder="地图id(>1000)" autocomplete="off" class="layui-input" lay-verify="required|integer|mapid" lay-verType="tips">
         </div>
       </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">分区列表</label>
+        <div class="layui-input-block">
+          <div id="zoneSelect"></div>
+        </div>
+      </div>
+
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="add">补单</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+          <button class="layui-btn" lay-submit lay-filter="add">添加</button>
         </div>
       </div>
     </form>
@@ -30,45 +37,40 @@
   <script>
     layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
-      let okLayer = layui.okLayer;
       let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
 
-      let productSelect = xmSelect.render({
-        el: '#productSelect',
-        name: 'productid',
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'zoneids',
         prop: {
-          value: 'id',
-          name: 'name',
+          value: 'iZoneId',
+          name: 'sZoneName',
         },
-        tips: '请选择一个补单商品',
-        layVerify: 'required',
+        tips: '请选择至少一个服务器',
+        layVerify: 'false',
         layVerType: 'tips',
-        model: {
-          label: {
-            type: 'block',
-            block: {
-              //是否显示删除图标
-              showIcon: false,
-            }
-          }
-        },
-        filterable: true,
-        radio: true,
-        clickClose: true,
       });
 
-      okUtils.ajax("/api/gm/iap/list", "get", {zoneid: parent.zoneid}, false).done(function (response) {
-        productSelect.update({
+      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+        zoneSelect.update({
           data: response.data["game"],
         });
       }).fail(function (error) {
         console.log(error);
       });
 
+      form.verify({
+        mapid: function(value, item) {
+          if (value < 1001) {
+            return '地图id(>1000)'
+          }
+        }
+      });
+
       //监听提交
       form.on('submit(add)', function (data) {
-        param = {zoneid: parent.zoneid, roleid: parent.roleid, productid: data.field.productid};
-        okUtils.ajax("/api/gm/iap/recharge", "post", param, true).done(function (response) {
+        okUtils.ajax("/api/gm/map/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });

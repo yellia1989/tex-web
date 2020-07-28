@@ -790,32 +790,6 @@ func (s *MailService) AddMails(vInfo []MailDataInfo) (int32, error) {
 	_ = length
 	return ret, nil
 }
-func (s *MailService) ModifyMail(stInfo MailDataInfo) (int32, error) {
-	p := codec.NewPacker()
-	var ret int32
-	var err error
-	var has bool
-	var ty uint32
-	var length uint32
-	err = stInfo.WriteStructFromTag(p, 1, true)
-	if err != nil {
-		return ret, err
-	}
-	var rsp *protocol.ResponsePacket
-	err = s.proxy.Invoke("modifyMail", p.ToBytes(), &rsp)
-	if err != nil {
-		return ret, err
-	}
-	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
-	err = up.ReadInt32(&ret, 0, true)
-	if err != nil {
-		return ret, err
-	}
-	_ = has
-	_ = ty
-	_ = length
-	return ret, nil
-}
 func (s *MailService) DelMail(iMailId uint32) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
@@ -970,7 +944,6 @@ func (s *MailService) GetZoneMail(iZoneId uint32, iLastMailId uint32, vInfo *[]M
 type _MailServiceImpl interface {
 	AddMail(ctx context.Context, stInfo MailDataInfo) (int32, error)
 	AddMails(ctx context.Context, vInfo []MailDataInfo) (int32, error)
-	ModifyMail(ctx context.Context, stInfo MailDataInfo) (int32, error)
 	DelMail(ctx context.Context, iMailId uint32) (int32, error)
 	GetAllMail(ctx context.Context, vInfo *[]MailDataInfo) (int32, error)
 	GetZoneMail(ctx context.Context, iZoneId uint32, iLastMailId uint32, vInfo *[]MailDataInfo, vDelId *[]uint32) (int32, error)
@@ -1034,33 +1007,6 @@ func _MailServiceAddMailsImpl(ctx context.Context, serviceImpl interface{}, up *
 	}
 	var ret int32
 	ret, err = impl.AddMails(ctx, p1)
-	if err != nil {
-		return err
-	}
-	if true || ret != 0 {
-		err = p.WriteInt32(0, ret)
-		if err != nil {
-			return err
-		}
-	}
-	_ = length
-	_ = ty
-	_ = has
-	return nil
-}
-func _MailServiceModifyMailImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
-	var err error
-	var length uint32
-	var ty uint32
-	var has bool
-	impl := serviceImpl.(_MailServiceImpl)
-	var p1 MailDataInfo
-	err = p1.ReadStructFromTag(up, 1, true)
-	if err != nil {
-		return err
-	}
-	var ret int32
-	ret, err = impl.ModifyMail(ctx, p1)
 	if err != nil {
 		return err
 	}
@@ -1235,12 +1181,6 @@ func (s *MailService) Dispatch(ctx context.Context, serviceImpl interface{}, req
 		texret = protocol.SDPSERVERSUCCESS
 	case "addMails":
 		err = _MailServiceAddMailsImpl(ctx, serviceImpl, up, p)
-		if err != nil {
-			break
-		}
-		texret = protocol.SDPSERVERSUCCESS
-	case "modifyMail":
-		err = _MailServiceModifyMailImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

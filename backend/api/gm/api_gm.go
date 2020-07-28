@@ -4,6 +4,7 @@ import (
     "fmt"
     "strings"
     "bytes"
+    "strconv"
     "encoding/json"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -41,10 +42,16 @@ func GameCmd(c echo.Context) error {
 
     zoneids := strings.Split(szoneid, ",")
     for _,zoneid := range zoneids {
+        izoneid,_ := strconv.Atoi(zoneid)
         gamePrx := new(rpc.GameService)
         gfPrx := new(rpc.GFService)
-        if zoneid != "0" {
-            comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+        mapPrx := new(rpc.MapService)
+        if izoneid != 0 {
+            if izoneid != 8888 && izoneid != 9999 && izoneid > 1000 {
+                comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+zoneid, mapPrx)
+            } else {
+                comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+            }
         } else {
             comm.StringToProxy(app+".GFServer.GFServiceObj", gfPrx)
         }
@@ -59,8 +66,12 @@ func GameCmd(c echo.Context) error {
 
             buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
 
-            if zoneid != "0" {
-                ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+            if izoneid != 0 {
+                if izoneid == 8888 || izoneid == 9999 || izoneid <= 1000 {
+                    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+                } else {
+                    ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)
+                }
             } else {
                 ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
             }
@@ -69,7 +80,7 @@ func GameCmd(c echo.Context) error {
                 if err != nil {
                     serr = err.Error()
                 }
-                result = fmt.Sprintf("ret:%d, err:%s", ret, serr)
+                result = fmt.Sprintf("ret:%s, err:%s\n", rpc.ErrorCode(ret), serr)
             }
             buff.WriteString(result+"\n")
         }
@@ -164,7 +175,7 @@ type _item struct {
 func ItemList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    zoneid := "1"
+    zoneid := "3"
     scmd := "item_list"
     var result string
     err := cmd(ctx, zoneid, scmd, &result)
@@ -215,6 +226,67 @@ func BanLogin(c echo.Context) error {
     err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
+    }
+
+    return ctx.SendResponse(result)
+}
+
+func RealMap(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("mapid")
+
+    if mapid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    comm := common.GetLocator()
+    app := common.GetApp()
+
+    mapPrx := new(rpc.MapService)
+    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+
+    cmd := "map_json"
+
+    var result string
+    u := ctx.GetUser()
+    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("ret:%d, err:%s", ret, serr)
+    }
+
+    return ctx.SendResponse(result)
+}
+
+func RealMapObj(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("mapid")
+    objid := ctx.FormValue("objid")
+
+    if objid == "" || mapid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    comm := common.GetLocator()
+    app := common.GetApp()
+
+    mapPrx := new(rpc.MapService)
+    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+
+    cmd := "see_obj " + objid
+
+    var result string
+    u := ctx.GetUser()
+    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("ret:%d, err:%s", ret, serr)
     }
 
     return ctx.SendResponse(result)

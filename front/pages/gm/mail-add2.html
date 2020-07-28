@@ -90,7 +90,7 @@
         <div class="layui-field-box">
           <div class="layui-field-box">
             <div class="layui-form-item">
-		          <label>每行格式(空格隔开): 分区ID 玩家ID 道具(id-num;id-num;不要有空格)(小于60k的txt文件)</label>
+		          <label>每行格式(空格隔开): 分区ID 玩家ID 道具(id,num;id,num;不要有空格)(小于60k的txt文件)</label>
               <button type="button" class="layui-btn layui-btn-disabled" disabled id="file">
                 <i class="layui-icon">&#xe67c;</i>上传文件
               </button>
@@ -145,7 +145,7 @@
       });
       okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
         zoneSelect1.update({
-          data: response.data,
+          data: response.data["game"],
         });
       }).fail(function (error) {
         console.log(error);

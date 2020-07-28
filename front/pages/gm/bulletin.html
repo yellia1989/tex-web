@@ -41,7 +41,7 @@
           { field: "sEndTime", title: "结束时间", align: "center" },
           {
             field: "iDisplay", title: "是否显示", align: "center", templet: function (d) {
-              return d.iIsDisplay == 1 ? '是' : '否';
+              return d.iDisplay == 1 ? '是' : '否';
             }
           },
           {
@@ -60,7 +60,7 @@
           { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
         parseData: function (res) {
-          for (i = 0; i < res.data.length; ++i) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iBulletinId;
           }
           return res;
@@ -119,7 +119,7 @@
 
       function del(id) {
         okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/api/gm/bulletin/del", "delete", { idsStr: id }, true).done(function (response) {
+          okUtils.ajax("/api/gm/bulletin/del", "post", { idsStr: id }, true).done(function (response) {
             okUtils.tableSuccessMsg(response.msg);
           }).fail(function (error) {
             console.log(error)

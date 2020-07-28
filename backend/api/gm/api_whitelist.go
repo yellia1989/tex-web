@@ -1,13 +1,10 @@
 package gm
 
 import (
-	"database/sql"
 	"regexp"
 	"strings"
-
-	_ "github.com/go-sql-driver/mysql"
-
 	"github.com/labstack/echo"
+	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -23,12 +20,23 @@ func parseIDStr(src, sep string, out *string) {
 func WhiteList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserver?charset=utf8")
-	defer db.Close()
+	db := common.GetDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
-	rows, err := db.Query("SELECT * FROM t_whitelist;")
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
+	if err != nil {
+		return err
+	}
+
+	rows, err := tx.Query("SELECT * FROM t_whitelist")
 	if err != nil {
 		return err
 	}
@@ -44,6 +52,14 @@ func WhiteList(c echo.Context) error {
 		vStr = append(vStr, id)
 	}
 
+    if err := rows.Err(); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
 	return ctx.SendResponse(strings.Join(vStr, ";"))
 }
 
@@ -56,16 +72,30 @@ func WhiteAdd(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserver?charset=utf8")
-	defer db.Close()
+	db := common.GetDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
 	if err != nil {
 		return err
 	}
 
 	parseIDStr(input, "),(", &input)
-	sql := "INSERT IGNORE INTO t_whitelist VALUES(" + input + ");"
-	_, err = db.Exec(sql)
+	sql := "INSERT IGNORE INTO t_whitelist VALUES(" + input + ")"
+	_, err = tx.Exec(sql)
 	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 
@@ -81,16 +111,30 @@ func WhiteDel(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserver?charset=utf8")
-	defer db.Close()
+	db := common.GetDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
 	if err != nil {
 		return err
 	}
 
 	parseIDStr(input, ",", &input)
 	sql := "DELETE FROM t_whitelist WHERE account_id IN(" + input + ");"
-	_, err = db.Exec(sql)
+	_, err = tx.Exec(sql)
 	if err != nil {
+		return err
+	}
+
+    if err := tx.Commit(); err != nil {
 		return err
 	}
 
@@ -102,18 +146,35 @@ func WhiteReplace(c echo.Context) error {
 
 	input := ctx.FormValue("input")
 
-	db, err := sql.Open("mysql", "dev:777777@tcp(192.168.0.16)/db_loginserver?charset=utf8")
-	defer db.Close()
+    db := common.GetDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
 	if err != nil {
 		return err
 	}
 
-	db.Exec("DELETE FROM t_whitelist;")
+	_, err = tx.Exec("DELETE FROM t_whitelist")
+	if err != nil {
+		return err
+	}
 
 	parseIDStr(input, "),(", &input)
 	sql := "INSERT IGNORE INTO t_whitelist VALUES(" + input + ");"
-	_, err = db.Exec(sql)
+	_, err = tx.Exec(sql)
 	if err != nil {
+		return err
+	}
+
+    if err := tx.Commit(); err != nil {
 		return err
 	}
 
