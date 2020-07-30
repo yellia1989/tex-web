@@ -40,6 +40,11 @@
           { field: "sBeginTime", title: "开始时间", align: "center" },
           { field: "sEndTime", title: "结束时间", align: "center" },
           {
+            field: "iType", title: "类型", align: "center", templet: function (d) {
+              return d.iType == 1 ? '爱贝勇士' : '默认';
+            }
+          },
+          {
             field: "iDisplay", title: "是否显示", align: "center", templet: function (d) {
               return d.iDisplay == 1 ? '是' : '否';
             }
