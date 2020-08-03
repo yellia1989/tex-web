@@ -92,6 +92,11 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/map/edit", gm.MapEdit)  // 地图编辑
     group.POST("/gm/map/del", gm.MapDel)    // 地图删除
 
+    group.GET("/gm/push/list", gm.PushList)   // 推送任务列表
+    group.POST("/gm/push/testsend", gm.PushTestSend)   // 增加测试推送任务
+    group.POST("/gm/push/send", gm.PushSend)    // 增加推送任务
+    group.POST("/gm/push/pause", gm.PushPause)  // 推送任务暂停
+
 	group.GET("/game/role/list", game.RoleList) // 玩家列表
 	group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志
 	group.GET("/game/coin/sublog", game.CoinSubLog)

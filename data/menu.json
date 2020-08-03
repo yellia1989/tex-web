@@ -319,6 +319,20 @@
           4,
           3
         ]
+      },
+      {
+        "id": 214,
+        "title": "推送管理",
+        "href": "gm/push.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
       }
     ],
     "role": [
