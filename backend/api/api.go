@@ -80,7 +80,8 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
     group.POST("/gm/activity/add", gm.ActivityAdd)       // 增加活动
     group.POST("/gm/activity/edit", gm.ActivityEdit)     // 编辑活动
-    group.POST("/gm/activity/del", gm.ActivityDel)     // 删除活动
+    group.POST("/gm/activity/del", gm.ActivityDel)       // 删除活动
+    group.POST("/gm/activity/import", gm.ActivityImport) // 批量导入活动
 
 	group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
 	group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
