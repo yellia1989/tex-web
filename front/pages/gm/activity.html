@@ -57,7 +57,7 @@
             type: 'block',
             block: {
               //是否显示删除图标
-              showIcon: false,
+              showIcon: true,
             }
           }
         },
@@ -77,6 +77,7 @@
         limit: 30,
         page: true,
         toolbar: "#toolbarTpl",
+        defaultToolbar: ['filter'],
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
           { field: "id", title: "活动ID", width: 90, fixed: 'left' },
@@ -90,13 +91,13 @@
           {
             field: "begin_time", title: "开始时间", align: "center", width: 180, templet: function (d) {
               let json = JSON.parse(d.configure_data);
-              return json.constrain.begin_time != undefined ? json.constrain.begin_time : "";
+              return json.constrain && json.constrain.begin_time != undefined ? json.constrain.begin_time : "";
             }
           },
           {
             field: "end_time", title: "结束时间", align: "center", width: 180, templet: function (d) {
               let json = JSON.parse(d.configure_data);
-              return json.constrain.end_time != undefined ? json.constrain.end_time : "";
+              return json.constrain && json.constrain.end_time != undefined ? json.constrain.end_time : "";
             }
           },
           { field: "configure_data", title: "配置数据", align: "center"},
@@ -117,6 +118,12 @@
             break;
           case "batchDel":
             batchDel();
+            break;
+          case "export":
+            eexport();
+            break;
+          case "import":
+            iimport();
             break;
         }
       });
@@ -170,10 +177,44 @@
         });
       }
 
+      function download (content, filename) {
+        let eleLink = document.createElement('a');
+        eleLink.download = filename;
+        eleLink.style.display = 'none';
+        let blob = new Blob([content]);
+        eleLink.href = URL.createObjectURL(blob);
+        document.body.appendChild(eleLink);
+        eleLink.click();
+        document.body.removeChild(eleLink);
+      }
+
+      function eexport() {
+        okLayer.confirm("确定要批量导出吗？", function (index) {
+          layer.close(index);
+          let acts = [];
+          let checkStatus = table.checkStatus('tableId');
+          for (i = 0; i < checkStatus.data.length; ++i) {
+            acts.push({id: checkStatus.data[i].id, type: checkStatus.data[i].activity_type, data: checkStatus.data[i].configure_data, desc: checkStatus.data[i].configure_desc});
+          }
+
+          let filename = okUtils.dateFormat(new Date(), 'yyyyMMddhhmmss');
+          download(okUtils.jsonToString(acts), "活动导出"+filename+".txt");
+        });
+      }
+
+      function iimport() {
+        okLayer.open("导入活动", "/gm/activity-import.html", "90%", "90%", null, function () {
+          activityTable.reload();
+        });
+      }
+
       form.on("submit(search)", function (data) {
         activityTable.reload({
           url: "/api/gm/activity/list",
           where: data.field,
+          page: {
+            curr: 1,
+          }
         });
         return false;
       });
@@ -182,8 +223,10 @@
   <!-- 头工具栏模板 -->
   <script type="text/html" id="toolbarTpl">
   <div class="layui-btn-container">
-    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
-    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+    <div class="layui-inline" lay-event="add"><a href="javascript:" title="新增"><i class="layui-icon layui-icon-add-1"></i></a></div>
+    <div class="layui-inline" lay-event="batchDel"><a href="javascript:" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a></div>
+    <div class="layui-inline" lay-event="export"><a href="javascript:" title="导出"><i class="layui-icon layui-icon-download-circle"></i></a></div>
+    <div class="layui-inline" lay-event="import"><a href="javascript:" title="导入"><i class="layui-icon layui-icon-upload-drag"></i></a></div>
   </div>
 </script>
 

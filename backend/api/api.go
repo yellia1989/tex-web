@@ -80,7 +80,8 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
     group.POST("/gm/activity/add", gm.ActivityAdd)       // 增加活动
     group.POST("/gm/activity/edit", gm.ActivityEdit)     // 编辑活动
-    group.POST("/gm/activity/del", gm.ActivityDel)     // 删除活动
+    group.POST("/gm/activity/del", gm.ActivityDel)       // 删除活动
+    group.POST("/gm/activity/import", gm.ActivityImport) // 批量导入活动
 
 	group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
 	group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
@@ -91,6 +92,11 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/map/add", gm.MapAdd)    // 地图增加
     group.POST("/gm/map/edit", gm.MapEdit)  // 地图编辑
     group.POST("/gm/map/del", gm.MapDel)    // 地图删除
+
+    group.GET("/gm/push/list", gm.PushList)   // 推送任务列表
+    group.POST("/gm/push/testsend", gm.PushTestSend)   // 增加测试推送任务
+    group.POST("/gm/push/send", gm.PushSend)    // 增加推送任务
+    group.POST("/gm/push/pause", gm.PushPause)  // 推送任务暂停
 
 	group.GET("/game/role/list", game.RoleList) // 玩家列表
 	group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志

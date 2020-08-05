@@ -1,9 +1,11 @@
 package gm
 
 import (
+    "fmt"
 	"strconv"
     "encoding/json"
 	"github.com/labstack/echo"
+	"github.com/yellia1989/tex-go/tools/util"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
@@ -204,4 +206,66 @@ func ActivityDel(c echo.Context) error {
 	}
 
     return ctx.SendResponse("删除活动成功")
+}
+
+type _importAct struct {
+    Id int `json:id`
+    Type int `json:type`
+    Data string `json:data`
+    Desc string `json:desc`
+}
+
+func ActivityImport(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    apply_zone := ctx.FormValue("apply_zone")
+    apply_user := ctx.FormValue("apply_user")
+    filename := ctx.FormValue("filepath")
+
+    content, err := util.LoadFromFile(filename)
+    if err != nil {
+        return err
+    }
+
+    var acts []_importAct
+    if err := json.Unmarshal(content, &acts); err != nil {
+        return err
+    }
+    if len(acts) == 0 {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    sql := "insert into t_activity(activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc) values"
+    for k, v := range acts {
+        if k != 0 {
+            sql += ","
+        }
+        sql += fmt.Sprintf("(%d,%d,'%s','%s','%s','%s')", v.Id, v.Type, apply_zone, apply_user, v.Data, v.Desc)
+    }
+
+	db := common.GetDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(sql)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    return ctx.SendResponse("批量导入活动成功")
 }
