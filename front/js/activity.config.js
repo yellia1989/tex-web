@@ -451,6 +451,10 @@
                     name: '背景',
                     type: 'longtext',
                 },
+                itemid: {
+                    name: '道具id(英雄)',
+                    type: 'text',
+                },
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
