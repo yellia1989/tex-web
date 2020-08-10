@@ -231,7 +231,7 @@ func ActivityImport(c echo.Context) error {
         return err
     }
     if len(acts) == 0 {
-        return ctx.SendError(-1, "参数非法")
+        return ctx.SendError(-1, "导入活动为空")
     }
 
     sql := "insert into t_activity(activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc) values"

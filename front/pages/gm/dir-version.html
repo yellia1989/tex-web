@@ -26,37 +26,7 @@
           </div>
         </div>
       </div>
-      <div class="layui-form-item">
-        <div class="layui-inline">
-          <label class="layui-form-label">IOS客户端版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input"
-              lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">IOS强制更新版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input"
-              lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">AND客户端版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sAndClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input"
-              lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">AND强制更新版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sAndForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off"
-              class="layui-input" lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-      </div>
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="versionFlag">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">更新版本号</button>
         </div>
@@ -118,26 +88,40 @@
         }
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true}, false).done(function (response) {
         zoneSelect.update({
-          data: response.data,
+          data: response.data["game"],
           initValue: parent.zoneids.split(","),
         });
 
         transfer.reload('transfer', {
-          data: response.data,
+          data: response.data["game"],
           value: zoneSelect.getValue('value'),
         });
       }).fail(function (error) {
         console.log(error);
       });
 
+		  okUtils.ajax("/api/gm/channel/list", "get", {page:1, limit: 1000}, false).done(function (response) {
+        let channelHtml = '';
+        for (i = 0; i < response.data.length; ++i) {
+          let channel = response.data[i];
+          channelHtml += '<fieldset class="layui-elem-field"><legend>'+channel.sChannel+'</legend><div class="layui-field-box"><div class="layui-form-item"><div class="layui-inline"><label class="layui-form-label">资源</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ResVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips"></div></div><div class="layui-inline"><label class="layui-form-label">exe</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ExeVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips"></div></div></div></div></fieldset>';
+        }
+        if (channelHtml != '') {
+          $("#versionFlag").before(channelHtml);
+          form.render();
+        }
+		  }).fail(function (error) {
+			  console.log(error)
+		  });
+
       //数据校验
       form.verify({
         "version": function (value, item) {
           let v = value.split('.');
           let l = 5;
-          if (item.name.indexOf('Force') != -1) {
+          if (item.name.indexOf('Exe') != -1) {
             l = 3;
           }
           if (v.length != l) {
@@ -148,13 +132,8 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
-        let param = {
-          idsStr: zoneSelect.getValue('valueStr'),
-          sClientVersion: data.field.sClientVersion,
-          sForceUpdateVersion: data.field.sForceUpdateVersion,
-          sAndClientVersion: data.field.sAndClientVersion,
-          sAndForceUpdateVersion: data.field.sAndForceUpdateVersion,
-        };
+        let param = data.field;
+        param["idsStr"] = zoneSelect.getValue('valueStr'),
         okUtils.ajax("/api/gm/zone/version", "post", param, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

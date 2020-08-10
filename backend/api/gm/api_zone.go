@@ -101,6 +101,31 @@ func ZoneAdd(c echo.Context) error {
         return err
     }
 
+    comm := common.GetLocator()
+
+    loginPrx := new(rpc.LoginService)
+    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+
+    var channels []rpc.ChannelAddr
+    ret, err := loginPrx.GetAllChannel(&channels)
+    if err := checkRet(ret, err); err != nil {
+        return err
+    }
+
+    // 填充每一个渠道的版本号信息
+    zone.MVersion = make(map[string]rpc.ZoneVersion)
+    for _, v := range channels {
+        sResVersion := ctx.FormValue(fmt.Sprintf("s%sResVersion", v.SChannel))
+        sExeVersion := ctx.FormValue(fmt.Sprintf("s%sExeVersion", v.SChannel))
+        if (sResVersion == "" || sExeVersion == "") {
+            return ctx.SendError(-1, "渠道版本号不能为空")
+        }
+        var ver rpc.ZoneVersion
+        ver.SRes = sResVersion
+        ver.SExe = sExeVersion
+        zone.MVersion[v.SChannel] = ver
+    }
+
     sDivision := fmt.Sprintf(common.GetApp()+".zone.%d", zone.IZoneId)
     sHandleConnEp := ctx.FormValue("sHandleConn")
     sConnServiceObjEp := ctx.FormValue("sConnServiceObj")
@@ -119,11 +144,9 @@ func ZoneAdd(c echo.Context) error {
         return err
     }
 
-    comm := common.GetLocator()
-
     dirPrx := new(rpc.DirService)
     comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
-    ret, err := dirPrx.CreateZone(*zone.Copy())
+    ret, err = dirPrx.CreateZone(*zone.Copy())
     if err := checkRet(ret, err); err != nil {
         registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
         registryDel(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
@@ -167,9 +190,32 @@ func ZoneUpdate(c echo.Context) error {
 
     comm := common.GetLocator()
 
+    loginPrx := new(rpc.LoginService)
+    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+
+    var channels []rpc.ChannelAddr
+    ret, err := loginPrx.GetAllChannel(&channels)
+    if err := checkRet(ret, err); err != nil {
+        return err
+    }
+
+    // 填充每一个渠道的版本号信息
+    zone.MVersion = make(map[string]rpc.ZoneVersion)
+    for _, v := range channels {
+        sResVersion := ctx.FormValue(fmt.Sprintf("s%sResVersion", v.SChannel))
+        sExeVersion := ctx.FormValue(fmt.Sprintf("s%sExeVersion", v.SChannel))
+        if (sResVersion == "" || sExeVersion == "") {
+            return ctx.SendError(-1, "渠道版本号不能为空")
+        }
+        var ver rpc.ZoneVersion
+        ver.SRes = sResVersion
+        ver.SExe = sExeVersion
+        zone.MVersion[v.SChannel] = ver
+    }
+
     dirPrx := new(rpc.DirService)
     comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
-    ret, err := dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
+    ret, err = dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
     if err := checkRet(ret, err); err != nil {
         return err
     }
@@ -185,16 +231,30 @@ func ZoneUpdateVersion(c echo.Context) error {
         return ctx.SendError(-1, "分区不存在")
     }
 
-    clientVersion := ctx.FormValue("sClientVersion")
-    forceUpdateVersion := ctx.FormValue("sForceUpdateVersion")
-    andClientVersion := ctx.FormValue("sAndClientVersion")
-    andForceUpdateVersion := ctx.FormValue("sAndForceUpdateVersion")
+    comm := common.GetLocator()
 
-    if len(strings.Split(clientVersion, ".")) != 5 || len(strings.Split(forceUpdateVersion, ".")) != 3 || len(strings.Split(andClientVersion, ".")) != 5 || len(strings.Split(andForceUpdateVersion, ".")) != 3 {
-        return ctx.SendError(-1, "参数非法")
+    loginPrx := new(rpc.LoginService)
+    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+
+    var channels []rpc.ChannelAddr
+    ret, err := loginPrx.GetAllChannel(&channels)
+    if err := checkRet(ret, err); err != nil {
+        return err
     }
 
-    comm := common.GetLocator()
+    // 填充每一个渠道的版本号信息
+    MVersion := make(map[string]rpc.ZoneVersion)
+    for _, v := range channels {
+        sResVersion := ctx.FormValue(fmt.Sprintf("s%sResVersion", v.SChannel))
+        sExeVersion := ctx.FormValue(fmt.Sprintf("s%sExeVersion", v.SChannel))
+        if (sResVersion == "" || sExeVersion == "") {
+            return ctx.SendError(-1, "渠道版本号不能为空")
+        }
+        var ver rpc.ZoneVersion
+        ver.SRes = sResVersion
+        ver.SExe = sExeVersion
+        MVersion[v.SChannel] = ver
+    }
 
     dirPrx := new(rpc.DirService)
     comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
@@ -206,11 +266,8 @@ func ZoneUpdateVersion(c echo.Context) error {
         if err := checkRet(ret, err); err != nil {
             return err
         }
+        zone.MVersion = MVersion
 
-        zone.SClientVersion = clientVersion
-        zone.SForceUpdateVersion = forceUpdateVersion
-        zone.SAndClientVersion = andClientVersion
-        zone.SAndForceUpdateVersion = andForceUpdateVersion
         ret, err = dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
         if err := checkRet(ret, err); err != nil {
             return err

@@ -120,17 +120,10 @@
             }
           },
           {
-            field: "sClientVersion", title: "IOS客户端版本", width: 120, fixed: 'right', templet: function (d) {
-              return formatVersionColumn(d.sClientVersion);
+            field: "mVersion", title: "版本", templet: function (d) {
+              return okUtils.jsonToString(d.mVersion);
             }
           },
-          { field: "sForceUpdateVersion", title: "IOS强制下线版本", width: 120, fixed: 'right' },
-          {
-            field: "sAndClientVersion", title: "AND客户端版本", width: 120, fixed: 'right', templet: function (d) {
-              return formatVersionColumn(d.sAndClientVersion);
-            }
-          },
-          { field: "sAndForceUpdateVersion", title: "AND强制下线版本", width: 120, fixed: 'right' },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {
