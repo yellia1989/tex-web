@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (d/192.168.0.7 t/101.133.141.46)"
+	echo "Usage: $0 env (d/192.168.0.7 t/101.132.43.124)"
 	exit 100
 fi
 
@@ -14,7 +14,7 @@ case "$env" in
     cp ../conf_d.cfg conf.cfg
     ;;
     t)
-    ip=101.133.141.46
+    ip=101.132.43.124
     cp ../conf_t.cfg conf.cfg
     ;;
     *)
@@ -36,10 +36,11 @@ if [ ! -f $web ]; then
 fi
 
 echo "拷贝文件时间较长， 请耐心等待。。。"
+putfile root@$ip ../update.sh /data/web/
 putfile root@$ip $web /data/web/backup/
 
 echo "更新web中。。。"
-runcmdroot root@$ip "cd /data/web && ./stop.sh && rm -rf front && tar -xjvf backup/$web && ./start.sh"
+runcmdroot root@$ip "cd /data/web && ./update.sh $web"
 
 rm -rf $web
 rm -rf conf.cfg
