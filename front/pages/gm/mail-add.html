@@ -484,7 +484,12 @@
 
         okUtils.ajax("/api/gm/mail/send", "post", mailparam, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
-            parent.layer.close(parent.layer.getFrameIndex(window.name));
+            $("#test").attr("class", "layui-btn");
+            $("#test").attr("disabled",false);
+            $("#send").attr("class", "layui-btn layui-btn-disabled");
+            $("#send").attr("disabled",true);
+            $("#file").attr("class", "layui-btn layui-btn-disabled");
+            $("#file").attr("disabled",true);
           });
         }).fail(function (error) {
           console.log(error);
