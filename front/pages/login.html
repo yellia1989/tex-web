@@ -28,21 +28,47 @@
       <div class="layui-form-item">
         <button class="layui-btn layui-block" lay-filter="login" lay-submit="">登录</button>
       </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">记住密码</label>
+        <div class="layui-input-block">
+          <input type="checkbox" name="remember" lay-skin="switch" lay-text="是|否">
+        </div>
+      </div>
     </form>
   </div>
   <!--js逻辑-->
   <script src="lib/layui/layui.js"></script>
   <script>
-    layui.use(["form", "okUtils", "okLayer"], function () {
+    layui.use(["form", "okUtils", "okLayer", "okCookie"], function () {
       let form = layui.form;
       let $ = layui.jquery;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
 
+      function savePwd(username, pwd) {
+        $.cookie("remember", "on");
+        $.cookie("uname", username);
+        $.cookie("pwd", pwd);
+      }
+
+      if ($.cookie("remember") == "on") {
+        $("input[name=username]").val($.cookie("uname"));
+        $("input[name=password]").val($.cookie("pwd"));
+        $("input[name=remember]").attr("checked", true);
+        form.render();
+      }
+
       /**
        * 表单提交
        */
       form.on("submit(login)", function (data) {
+        if (data.field.remember == 'on') {
+          savePwd(data.field.username, data.field.password);
+        } else {
+          $.removeCookie("remember");
+          $.removeCookie("uname");
+          $.removeCookie("pwd");
+        }
         okUtils.ajax("/api/login", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg("登陆成功", function () {
             window.location.href = "/index.html?r="+Math.random().toString(36);
