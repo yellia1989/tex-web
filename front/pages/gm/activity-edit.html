@@ -13,6 +13,12 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
+        <label class="layui-form-label">生效分区</label>
+        <div class="layui-inline" id="onlineZone" style="margin-top: 5px">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">应用分区</label>
         <div class="layui-input-block">
           <div id="zoneSelect"></div>
@@ -53,6 +59,7 @@
   <script>
     var json_data;
     var config_data;
+    var online_data;
     var $;
     layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
@@ -123,6 +130,20 @@
           data: response.data["game"],
           initValue: apply_zone.split(','),
         });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      okUtils.ajax("/api/gm/activity/onlineZone", "get", {activity_id: parent.editActivity.id}, false).done(function (response) {
+        let zones = response.data;
+        if (zones) {
+          let html = '';
+          for (i = 0; i < zones.length; ++i) {
+            html += '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger">'+zones[i]+'</button>';
+          }
+          $("#onlineZone").html(html);
+          online_data = true;
+        }
       }).fail(function (error) {
         console.log(error);
       });
