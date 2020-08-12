@@ -180,8 +180,8 @@ CREATE TABLE IF NOT EXISTS `t_newadd`  (
   `total_rolenum` int(10) NOT NULL,
   `country` char(2) NOT NULL,
   `ostype` int(1) NOT NULL,
-  `rolenum_startgame` int(10) NOT NULL,
-  `rolenum_create2` int(10) NOT NULL,
+  `rolenum_startgame` int(10) NOT NULL DEFAULT '0',
+  `rolenum_create2` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
 );
 
