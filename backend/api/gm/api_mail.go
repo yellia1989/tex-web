@@ -276,6 +276,7 @@ func MailSend2(c echo.Context) error {
         zoneid,_ := strconv.Atoi(tmp[0])
         roleid,_ := strconv.ParseUint(tmp[1], 10, 64)
         item1 := strings.Split(tmp[2], ";")
+        m.VItems = m.VItems[:0]
         for _,v := range item1 {
             item2 := strings.SplitN(v, ",", 2)
             id,_ := strconv.ParseUint(item2[0], 10, 32)
