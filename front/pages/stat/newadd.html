@@ -55,13 +55,19 @@
 				{field: "statymd", title: "日期"},
 				{field: "total_accountnum", title: "总注册账号"},
 				{field: "total_rolenum", title: "总创角"},
-				{field: "total_rolenum_rate", title: "总角色转化率"},
+				{field: "total_rolenum_rate", title: "总角色转化率", templet: function (d) {
+          return okUtils.number.percent(d.total_rolenum*100, d.total_accountnum);
+        }},
 				{field: "accountnum", title: "创建账号数"},
 				{field: "startgame", title: "首次点开始游戏数"},
-				{field: "accountnum_rate", title: "有效账号转化率"},
+				{field: "accountnum_rate", title: "有效账号转化率", templet: function (d) {
+          return okUtils.number.percent(d.startgame*100, d.accountnum);
+        }},
 				{field: "rolenum", title: "创建角色数"},
 				{field: "create2num", title: "有效角色数"},
-				{field: "rolenum_rate", title: "有效角色转化率"},
+				{field: "rolenum_rate", title: "有效角色转化率", templet: function (d) {
+          return okUtils.number.percent(d.create2num*100, d.rolenum);
+        }},
 			]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],

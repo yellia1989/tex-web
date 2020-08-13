@@ -450,8 +450,6 @@
         let param = {sFrom: data.field.sFrom, sTitle: data.field.sTitle, sContent: data.field.sContent, iCoin: data.field.iCoin, iDiamond: data.field.iDiamond, iDelTimeAfterOpen: data.field.iDelTimeAfterOpen, iDelTimeAfterRcvAttach: data.field.iDelTimeAfterRcvAttach, iZoneId: data.field.zoneid, iRoleId: data.field.iRoleId, items: itemstr};
         okUtils.ajax("/api/gm/mail/testsend", "post", param, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
-            $("#test").attr("class", "layui-btn layui-btn-disabled");
-            $("#test").attr("disabled",true);
             $("#send").attr("class", "layui-btn");
             $("#send").attr("disabled",false);
             $("#file").attr("class", "layui-btn");
@@ -484,12 +482,6 @@
 
         okUtils.ajax("/api/gm/mail/send", "post", mailparam, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
-            $("#test").attr("class", "layui-btn");
-            $("#test").attr("disabled",false);
-            $("#send").attr("class", "layui-btn layui-btn-disabled");
-            $("#send").attr("disabled",true);
-            $("#file").attr("class", "layui-btn layui-btn-disabled");
-            $("#file").attr("disabled",true);
           });
         }).fail(function (error) {
           console.log(error);

@@ -1,7 +1,6 @@
 package stat
 
 import (
-    "fmt"
     "time"
     s "database/sql"
     "strconv"
@@ -14,13 +13,10 @@ type _newaddlog struct {
     Statymd string `json:"statymd"`
     AccountnumTotal float32 `json:"total_accountnum"`
     RolenumTotal float32 `json:"total_rolenum"`
-    RolenumTotalRate string `json:"total_rolenum_rate"`
     Accountnum float32 `json:"accountnum"`
     Startgame float32 `json:"startgame"`
-    AccountnumRate string `json:"accountnum_rate"`
     Rolenum float32 `json:"rolenum"`
     Create2num float32 `json:"create2num"`
-    RolenumRate string `json:"rolenum_rate"`
 }
 
 func NewaddList(c echo.Context) error {
@@ -85,18 +81,6 @@ func NewaddList(c echo.Context) error {
         }
         r.Startgame = float32(startGame.Int32)
         r.Create2num = float32(create2Num.Int32)
-        r.RolenumTotalRate = "0.0%"
-        r.AccountnumRate = "0.0%"
-        r.RolenumRate = "0.0%"
-        if r.AccountnumTotal != 0 {
-            r.RolenumTotalRate = fmt.Sprintf("%.2f%%", r.RolenumTotal/r.AccountnumTotal)
-        }
-        if r.Accountnum != 0 {
-            r.AccountnumRate = fmt.Sprintf("%.2f%%", r.Startgame/r.Accountnum)
-        }
-        if r.Rolenum != 0 {
-            r.RolenumRate = fmt.Sprintf("%.2f%%", r.Create2num/r.Rolenum)
-        }
         logs = append(logs, r)
     }
     if err := rows.Err(); err != nil {
