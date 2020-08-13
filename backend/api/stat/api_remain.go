@@ -48,6 +48,8 @@ func RemainList(c echo.Context) error {
     endTime := ctx.QueryParam("endTime")
     datatype := ctx.QueryParam("datatype")
 
+    global := datatype == "2"
+
     now,_ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
     if startTime == "" {
         startTime = now.Add(-7*24*time.Hour).Format("2006-01-02 15:04:05")
@@ -115,6 +117,11 @@ func RemainList(c echo.Context) error {
             return err
         }
         v := statval{}
+        // 这里面记录的距离今天x天创角的登录人数
+        // x = 1表示今天创角人数
+        // x = 2表示昨天创角的今天登录人数
+        // x = 3表示前天创角的今天登录人数
+        // 依次类推
         v.active = make([]float32,90)
         copy(v.active, act)
         k := statkey{statymd:r.Statymd, zoneid:r.zoneid}
@@ -125,6 +132,7 @@ func RemainList(c echo.Context) error {
             r.Zoneopenday = uint32(now.Sub(time.Unix(int64(v.IPublishTime),0)).Hours()/24)
         }
         r.Newadd = act[0]
+        // 这里面记录的是今天创角的x天留存数据
         r.Days = append(r.Days,act[0])
         logs = append(logs, r)
     }
@@ -132,6 +140,8 @@ func RemainList(c echo.Context) error {
         return err
     }
 
+    // 这一次的查询是为了统计出上一个查询列表中最后一天创角的人90天后的登录情况
+    // 这样查询出来的数据才是完整的
     t2,_ := time.Parse("2006-01-02", logs[0].Statymd)
     startTime2 := t2.Add(24*time.Hour).Format("2006-01-02")
     endTime2 := t2.Add(90*24*time.Hour).Format("2006-01-02")
@@ -180,9 +190,12 @@ func RemainList(c echo.Context) error {
         if err := rows3.Scan(&k.statymd, &k.zoneid, &rolenum, &money); err != nil {
             return err
         }
+        if global {
+            k.zoneid = 0
+        }
         if v,ok := mdays[k]; ok {
-            v.rolenum = rolenum
-            v.money = money
+            v.rolenum += rolenum
+            v.money += money
         }
     }
     // 30ltv
@@ -202,7 +215,9 @@ func RemainList(c echo.Context) error {
         if err := rows4.Scan(&k.statymd, &k.zoneid, &days, &money); err != nil {
             return err
         }
-
+        if global {
+            k.zoneid = 0
+        }
         if v,ok := mdays[k]; ok {
             if days <= 7 {
                 v.money7 += money
@@ -228,7 +243,9 @@ func RemainList(c echo.Context) error {
         if err := rows5.Scan(&k.statymd, &k.zoneid, &money); err != nil {
             return err
         }
-
+        if global {
+            k.zoneid = 0
+        }
         if v,ok := mdays[k]; ok {
             v.rechargerolenum += 1
             if (money > 200) {

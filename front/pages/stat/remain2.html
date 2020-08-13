@@ -59,7 +59,7 @@
 				{field: "ltv7", title: "7日LTV", fixed: "left"},
 				{field: "ltv30", title: "30日LTV", fixed: "left"},
 				{field: "recharge_rolenum", title: "充值人数", fixed: "left"},
-				{field: "recharge_rate", title: "付费率", fixed: "left", templet: function(d) { return okUtils.number.percent(d.recharge_rolenum, d.newadd)}},
+				{field: "recharge_rate", title: "付费率", fixed: "left", templet: function(d) { return okUtils.number.percent(d.recharge_rolenum*100, d.newadd)}},
 				{field: "recharge_money", title: "充值金额", fixed: "left"},
 				{field: "recharge_per",  title: "付费人均付费", fixed: "left", templet: function(d) { return okUtils.number.percent(d.recharge_money, d.recharge_rolenum, 2, '')}},
 				{field: "recharge_per2", title: "人均付费", fixed: "left", templet: function(d) { return okUtils.number.percent(d.recharge_money, d.newadd, 2, '')}},
