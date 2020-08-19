@@ -7,6 +7,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <style>
+    .layui-table-cell {
+        font-size:14px;
+        padding:0 5px;
+        height:auto;
+        overflow:visible;
+        text-overflow:inherit;
+        white-space:normal;
+        word-break: break-all;
+    }
+  </style>
 </head>
 
 <body>
@@ -17,7 +28,7 @@
   <script src="/lib/layui/layui.js"></script>
   <script>
     versionMap = {};
-    versionMap.colours = ['#000000', '#d04949', '#474ead', '#3197bd', '#4aaa47', '#bd4ace', '#826006', '#017b5a', '    #ba2262', '#20ad83', '#6966ed'];
+    versionMap.colours = ['layui-btn-normal', 'layui-btn-warm', 'layui-btn-danger', ''];
     versionMap.iColourIndex = 0;
     versionMap.chooseColour = function (version) {
       if (typeof (versionMap[version]) == "undefined") {
@@ -30,8 +41,13 @@
       }
       return versionMap[version];
     };
-    function formatVersionColumn(data) {
-      return "<font color='" + versionMap.chooseColour(data) + "'>" + data + "</font>";
+    function formatVersionColumn(mVersion) {
+      let ret = '';
+      for (let k in mVersion) {
+        let v = mVersion[k]; 
+        ret += '<span class="layui-btn layui-btn-sm '+versionMap.chooseColour(v.sRes+v.sExe)+'">'+k+':'+v.sRes+'('+v.sExe+')'+'</span>';
+      }
+      return ret;
     }
 
     var zonedata;
@@ -52,8 +68,8 @@
         page: true,
         toolbar: "#toolbarTpl",
         cols: [[
-          { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "iZoneId", title: "分区ID", width: 90, fixed: 'left' },
+          { type: "checkbox", title: "序号"},
+          { field: "iZoneId", title: "分区ID", width: 90},
           { field: "sZoneName", title: "分区名字", width: 90 },
           { field: "sConnServer", title: "ConnServer", width: 120 },
           {
@@ -91,7 +107,7 @@
           },
           { field: "iMaxNum", title: "最大人数", width: 90 },
           {
-            field: "iPublishTime", title: "开区时间", templet: function (d) {
+            field: "iPublishTime", title: "开区时间", width: 170, templet: function (d) {
               let ret = okUtils.dateFormat(new Date(d.iPublishTime * 1000), 'yyyy-MM-dd hh:mm:ss');
               if (new Date().getTime() < d.iPublishTime * 1000) {
                 ret = '<span class="layui-btn layui-btn-warm layui-btn-xs">' + ret + '</span>';
@@ -121,7 +137,7 @@
           },
           {
             field: "mVersion", title: "版本", templet: function (d) {
-              return okUtils.jsonToString(d.mVersion);
+              return formatVersionColumn(d.mVersion);
             }
           },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
