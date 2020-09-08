@@ -1,7 +1,6 @@
 package middleware
 
 import (
-    "net/http"
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-web/backend/model"
 )
@@ -25,8 +24,8 @@ func RequireAuth() echo.MiddlewareFunc {
             user := model.GetUser(userid)
             if user == nil {
                 return &echo.HTTPError{
-                    Code:    http.StatusForbidden,
-                    Message: "玩家没有登陆",
+                    Code:    9999,
+                    Message: "登陆已过期，请重新登录",
                 }
             }
 

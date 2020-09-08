@@ -31,8 +31,6 @@ func httpErrorHandler(err error, c echo.Context) {
     code := he.Code
     message := he.Message
 
-    c.Logger().Error("error:"+he.Error())
-
     // Send response
     if !c.Response().Committed {
         if c.Request().Method == http.MethodHead { // Issue #608
@@ -48,14 +46,14 @@ func httpErrorHandler(err error, c echo.Context) {
             } else {
                 // 没有登陆的话重定位到登陆
                 if mid.GetUserId(c) == 0 {
-                    err = c.Redirect(http.StatusMovedPermanently, "/login.html")
+                    err = c.Redirect(http.StatusFound, "/login.html")
                 } else {
                     redirect := "/500.html"
                     switch code {
                     case http.StatusForbidden:redirect = "/403.html"
                     case http.StatusNotFound:redirect = "/404.html"
                     }
-                    err = c.Redirect(http.StatusMovedPermanently, redirect)
+                    err = c.Redirect(http.StatusFound, redirect)
                 }
             }
         }
