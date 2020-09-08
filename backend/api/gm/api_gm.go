@@ -28,7 +28,7 @@ func checkRet(ret int32, err error) error {
 func GameCmd(c echo.Context) error {
     ctx := c.(*mid.Context)
     szoneid := ctx.FormValue("zoneids")
-    scmd := ctx.FormValue("cmd")
+    scmd := strings.ReplaceAll(strings.TrimSpace(ctx.FormValue("cmd")), "\t", " ")
 
     if szoneid == "" || scmd == "" {
         return ctx.SendError(-1, "参数非法")
