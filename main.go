@@ -9,6 +9,7 @@ import (
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api"
+    "github.com/yellia1989/tex-web/backend/cron"
     "github.com/yellia1989/tex-web/backend/common"
     "github.com/yellia1989/tex-go/tools/log"
 )
@@ -70,6 +71,7 @@ func main() {
     }
     
     debug := common.Cfg.GetBool("debug", false)
+    framework_debug := common.Cfg.GetBool("framework-debug", false)
 
     // Echo instance
     e := echo.New()
@@ -96,11 +98,21 @@ func main() {
     api.RegisterHandler(e.Group("/api"))
 
     if debug {
+        log.SetLevel(log.DEBUG)
+    }
+
+    if framework_debug {
         log.SetFrameworkLevel(log.DEBUG)
     }
 
+    // Start Cron
+    cron.Start()
+
     // Start server
     e.Logger.Fatal(e.Start(common.Cfg.GetCfg("listen", "")))
+
+    // Stop Cron
+    cron.Stop()
 
     log.FlushLogger()
 }

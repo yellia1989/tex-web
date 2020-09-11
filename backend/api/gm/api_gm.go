@@ -86,12 +86,17 @@ func GameCmd(c echo.Context) error {
         }
     }
 
-    sys.LogAdd(ctx, "gm", "[" + szoneid + "]>" + scmd)
+    sys.LogAdd(u.UserName, "gm", "[" + szoneid + "]>" + scmd)
 
     return ctx.SendResponse(buff.String())
 }
 
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
+    u := ctx.GetUser()
+    return Cmd(u.UserName, zoneid, cmd, result)
+}
+
+func Cmd(userName string, zoneid string, cmd string, result *string) error {
     comm := common.GetLocator()
     app := common.GetApp()
 
@@ -103,8 +108,7 @@ func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     var ret int32
     var err error
 
-    u := ctx.GetUser()
-    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, result)
+    ret, err = gamePrx.DoGmCmd(userName, cmd, result)
     if ret != 0 || err != nil {
         serr := ""
         if err != nil {
@@ -114,7 +118,7 @@ func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     }
 
     if cmd != "iap_list" && cmd != "item_list" {
-        sys.LogAdd(ctx, "gm", "[" + zoneid + "]>" + cmd)
+        sys.LogAdd(userName, "gm", "[" + zoneid + "]>" + cmd)
     }
 
     return nil
