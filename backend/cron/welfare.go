@@ -163,7 +163,7 @@ func (task *wfTask) run(now time.Time) bool {
 
                 delete(task.roles, r.id)
 
- 	            _, err = tx.Exec("UPDATE welfare_roles SET status=1,exec_time='"+now.Format("2006-01-02 15:04:05")+"' WHERE id="+strconv.Itoa(r.id))
+ 	            _, err = tx.Exec("UPDATE welfare_roles SET status=1,exec_time='"+now.Format("2006-01-02 15:04:05")+"',exec_result='"+result+"' WHERE id="+strconv.Itoa(r.id))
 	            if err != nil {
                     log.Errorf("welfare update role status: %s, id: %d", err.Error(), r.id)
                     return false

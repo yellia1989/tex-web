@@ -52,8 +52,9 @@
 
     let now = new Date();
     let yesterday = new Date(now.getTime() - 86400*1000);
-    laydate.render({elem: "#startTime", type: "datetime", value: yesterday});
-    laydate.render({elem: "#endTime", type: "datetime", value: now});
+    let tomorrow = new Date(now.getTime() + 86400*1000);
+    laydate.render({elem: "#startTime", type: "date", value: yesterday});
+    laydate.render({elem: "#endTime", type: "date", value: tomorrow});
 
     let zoneSelect = xmSelect.render({
       el: '#zoneSelect',
@@ -126,7 +127,7 @@
         none: '暂无相关数据',
       },
       limit: 30,
-      where: {startTime: okUtils.dateFormat(yesterday, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
+      where: {startTime: okUtils.dateFormat(yesterday, 'yyyy-MM-dd'), endTime: okUtils.dateFormat(tomorrow, 'yyyy-MM-dd')},
       page: true,
       cols: [[
         {field: "taskname", title: "福利名字"},
@@ -135,6 +136,7 @@
         {field: "cmd", title: "gm命令"},
         {field: "time", title: "预计执行时间"},
         {field: "exec_time", title: "实际执行时间"},
+        {field: "exec_result", title: "执行结果"},
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],

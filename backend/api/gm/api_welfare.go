@@ -283,6 +283,7 @@ type _WelfareRole struct {
     Cmd string `json:"cmd"`
     Time    string `json:"time"`
     ExecTime    string `json:"exec_time"`
+    ExecResult  string `json:"exec_result"`
 }
 
 func WelfareRoleList(c echo.Context) error {
@@ -311,7 +312,7 @@ func WelfareRoleList(c echo.Context) error {
 		return err
 	}
 
-    sql := "SELECT welfare_task.name as taskname,a.roleid,a.zoneid,a.cmd,a.time,a.exec_time FROM (SELECT roleid,zoneid,cmd,time,exec_time,taskid_pk FROM welfare_roles WHERE time BETWEEN '"+begin_time+"' AND '"+end_time+"' and zoneid="+zoneid+" and taskid_pk="+taskid
+    sql := "SELECT welfare_task.name as taskname,a.roleid,a.zoneid,a.cmd,a.time,a.exec_time,a.exec_result FROM (SELECT roleid,zoneid,cmd,time,exec_time,exec_result,taskid_pk FROM welfare_roles WHERE time BETWEEN '"+begin_time+"' AND '"+end_time+"' and zoneid="+zoneid+" and taskid_pk="+taskid
     if roleid != "" {
         sql += " and roleid="+roleid
     }
@@ -335,10 +336,12 @@ func WelfareRoleList(c echo.Context) error {
     for rows.Next() {
         var r _WelfareRole
         var exec_time dsql.NullString
-        if err := rows.Scan(&r.TaskName, &r.Roleid, &r.Zoneid, &r.Cmd, &r.Time, &exec_time); err != nil {
+        var exec_result dsql.NullString
+        if err := rows.Scan(&r.TaskName, &r.Roleid, &r.Zoneid, &r.Cmd, &r.Time, &exec_time, &exec_result); err != nil {
             return err
         }
         r.ExecTime = exec_time.String
+        r.ExecResult = exec_result.String
         roles = append(roles, r)
     }
 
