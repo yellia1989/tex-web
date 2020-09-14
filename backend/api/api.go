@@ -82,6 +82,7 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/activity/edit", gm.ActivityEdit)     // 编辑活动
     group.POST("/gm/activity/del", gm.ActivityDel)       // 删除活动
     group.POST("/gm/activity/import", gm.ActivityImport) // 批量导入活动
+    group.GET("/gm/activity/onlineZone", gm.ActivityOnlineZone) // 查询活动生效分区
 
 	group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
 	group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
@@ -97,6 +98,14 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/push/testsend", gm.PushTestSend)   // 增加测试推送任务
     group.POST("/gm/push/send", gm.PushSend)    // 增加推送任务
     group.POST("/gm/push/pause", gm.PushPause)  // 推送任务暂停
+
+    group.GET("/gm/welfare/tasklist", gm.WelfareTaskList)   // 福利任务列表
+    group.POST("/gm/welfare/taskadd", gm.WelfareTaskAdd)    // 新增一个福利任务
+    group.POST("/gm/welfare/taskpause", gm.WelfareTaskPause)    // 暂停福利任务
+    group.POST("/gm/welfare/taskresume", gm.WelfareTaskResume)    // 恢复福利任务
+    group.POST("/gm/welfare/taskupdate", gm.WelfareTaskUpdate)    // 更新福利任务
+    group.POST("/gm/welfare/taskdel", gm.WelfareTaskDel)    // 删除福利任务
+    group.GET("/gm/welfare/rolelist", gm.WelfareRoleList)    // 玩家福利
 
 	group.GET("/game/role/list", game.RoleList) // 玩家列表
 	group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志

@@ -890,7 +890,7 @@
     };
     // 12
     activityTypeDefine[12] = {
-        name: '英雄众筹',
+        name: '商品团购',
         fieldOption: {
             comm_param: {
                 heroes: {

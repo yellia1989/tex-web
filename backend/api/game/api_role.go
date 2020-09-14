@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+    "strings"
 	"strconv"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
@@ -20,7 +21,7 @@ type _role struct {
 func RoleList(c echo.Context) error {
     ctx := c.(*mid.Context)
     zoneid := ctx.QueryParam("zoneid")
-    name := ctx.QueryParam("name")
+    name := strings.TrimSpace(ctx.QueryParam("name"))
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
     field := ctx.QueryParam("field")
@@ -44,7 +45,12 @@ func RoleList(c echo.Context) error {
 
     sql := "SELECT uid,name,vip_level,this_login_time,reg_time FROM t_role"
     if name != "" {
-        sql += " WHERE name like '%" + name + "%'"
+        uid, err := strconv.Atoi(name)
+        if err == nil && uid != 0 {
+            sql += " WHERE uid = " + strconv.Itoa(uid)
+        } else {
+            sql += " WHERE name like '%" + name + "%'"
+        }
     }
     if field != "" {
         sql += " ORDER BY " + field + " " + order

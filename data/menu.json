@@ -333,6 +333,48 @@
           4,
           3
         ]
+      },
+      {
+        "id": 215,
+        "title": "福利管理",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 21501,
+            "title": "任务管理",
+            "href": "gm/welfare.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              4,
+              3
+            ]
+          },
+          {
+            "id": 21502,
+            "title": "玩家福利记录",
+            "href": "gm/welfare-role.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              4,
+              3
+            ]
+          }
+        ],
+        "role": [
+          4,
+          3
+        ]
       }
     ],
     "role": [

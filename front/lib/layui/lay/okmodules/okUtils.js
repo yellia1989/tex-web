@@ -93,6 +93,11 @@ layui.define(["layer"], function (exprots) {
                     if (data.code == 0) {
                         // 业务正常
                         deferred.resolve(data)
+                    } else if (data.code == 9999) {
+                        // 需要登录
+                        layer.msg(data.msg, {icon: 7, time: 2000}, function() {
+                            parent.window.location.href = "/login.html";
+                        });
                     } else {
                         // 业务异常
                         layer.msg(data.msg, {icon: 7, time: 2000});

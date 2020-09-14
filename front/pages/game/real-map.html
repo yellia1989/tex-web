@@ -60,15 +60,17 @@
       },
     });
 
-    let myChart = echarts.init(document.getElementById('main'));
+    let myChart = echarts.init(document.getElementById('main'), null, {renderer:'svg'});
     let option = {
           xAxis: {
+            type: 'value',
             position: 'top',
-            interval: 100,
+            minInterval: 1,
           },
           yAxis: {
+            type: 'value',
             inverse: true,
-            interval: 100,
+            minInterval: 1,
           },
           legend:{
             show: true,
@@ -77,10 +79,12 @@
             {
               type: 'inside',
               xAxisIndex: [0],
+              fiterMode: 'none',
             },
             {
               type: 'inside',
               yAxisIndex: [0],
+              fiterMode: 'none',
             },
           ],
       };

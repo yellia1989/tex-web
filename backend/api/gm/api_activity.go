@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-go/tools/util"
 	"github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -268,4 +269,38 @@ func ActivityImport(c echo.Context) error {
 	}
 
     return ctx.SendResponse("批量导入活动成功")
+}
+
+func ActivityOnlineZone(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	activityId := ctx.QueryParam("activity_id")
+
+    comm := common.GetLocator()
+    app := common.GetApp()
+    u := ctx.GetUser()
+
+    dirPrx := new(rpc.DirService)
+    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+
+    var zones []rpc.ZoneInfo
+    ret, err := dirPrx.GetAllZone(&zones)
+    if err := checkRet(ret, err); err != nil {
+        return err
+    }
+
+    var onlinezones []uint32
+
+    var result string
+    for _, z := range zones {
+        cmd := "is_activity_online " + activityId
+        zoneid := fmt.Sprintf("%d", z.IZoneId)
+        gamePrx := new(rpc.GameService)
+        comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+        ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+        if ret == 0 && err == nil && result == "on" {
+            onlinezones = append(onlinezones, z.IZoneId)
+        }
+    }
+
+    return ctx.SendResponse(onlinezones)
 }

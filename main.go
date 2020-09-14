@@ -9,6 +9,7 @@ import (
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api"
+    "github.com/yellia1989/tex-web/backend/cron"
     "github.com/yellia1989/tex-web/backend/common"
     "github.com/yellia1989/tex-go/tools/log"
 )
@@ -31,8 +32,6 @@ func httpErrorHandler(err error, c echo.Context) {
     code := he.Code
     message := he.Message
 
-    c.Logger().Error("error:"+he.Error())
-
     // Send response
     if !c.Response().Committed {
         if c.Request().Method == http.MethodHead { // Issue #608
@@ -48,14 +47,14 @@ func httpErrorHandler(err error, c echo.Context) {
             } else {
                 // 没有登陆的话重定位到登陆
                 if mid.GetUserId(c) == 0 {
-                    err = c.Redirect(http.StatusMovedPermanently, "/login.html")
+                    err = c.Redirect(http.StatusFound, "/login.html")
                 } else {
                     redirect := "/500.html"
                     switch code {
                     case http.StatusForbidden:redirect = "/403.html"
                     case http.StatusNotFound:redirect = "/404.html"
                     }
-                    err = c.Redirect(http.StatusMovedPermanently, redirect)
+                    err = c.Redirect(http.StatusFound, redirect)
                 }
             }
         }
@@ -72,6 +71,7 @@ func main() {
     }
     
     debug := common.Cfg.GetBool("debug", false)
+    framework_debug := common.Cfg.GetBool("framework-debug", false)
 
     // Echo instance
     e := echo.New()
@@ -98,11 +98,21 @@ func main() {
     api.RegisterHandler(e.Group("/api"))
 
     if debug {
+        log.SetLevel(log.DEBUG)
+    }
+
+    if framework_debug {
         log.SetFrameworkLevel(log.DEBUG)
     }
 
+    // Start Cron
+    cron.Start()
+
     // Start server
     e.Logger.Fatal(e.Start(common.Cfg.GetCfg("listen", "")))
+
+    // Stop Cron
+    cron.Stop()
 
     log.FlushLogger()
 }

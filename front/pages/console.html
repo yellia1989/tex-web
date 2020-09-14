@@ -175,18 +175,26 @@
 				{field: "zone_openday", title: "开服天数"},
 				{field: "accountnum", title: "总注册"},
 				{field: "rolenum", title: "总创角"},
-				{field: "rolenum_increase", title: "总创角增幅"},
+				{field: "rolenum_increase", title: "总创角增幅", templet: function(d) {
+          return okUtils.number.percent(d.newadd*100, d.rolenum-d.newadd);
+        }},
 				{field: "newadd", title: "日新增"},
 				{field: "active", title: "日活跃"},
 				{field: "login_times", title: "登录次数"},
-				{field: "login_times_per", title: "人均登录次数"},
+				{field: "login_times_per", title: "人均登录次数", templet: function(d) {
+          return okUtils.number.percent(d.login_times, d.active, 1, '');
+        }},
 				{field: "recharge_num",  title: "日充值人数"},
 				{field: "recharge_money", title: "日充值金额"},
-				{field: "recharge_per", title: "日充值渗透率"},
+				{field: "recharge_per", title: "日充值渗透率", templet: function(d) {
+          return okUtils.number.percent(d.recharge_num*100, d.active);
+        }},
 				{field: "week_active", title: "周活跃"},
 				{field: "double_week_active", title: "双周活跃"},
 				{field: "month_active", title: "月活跃"},
-				{field: "active_per", title: "用户活跃度"},
+				{field: "active_per", title: "用户活跃度", templet: function(d) {
+          return okUtils.number.percent(d.active*100, d.month_active);
+        }},
 			]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],

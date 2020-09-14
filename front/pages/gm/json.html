@@ -309,6 +309,13 @@
         if (fieldValue !== null && typeof(fieldValue) == 'object') {
           fieldValue = okUtils.jsonToString(fieldValue);
         }
+
+        let online = false;
+        if (parent.online_data && fieldKey.indexOf('constrain.') != -1) {
+          if (fieldKey.indexOf('time') != -1 || fieldKey.indexOf('server_publish') != -1 || fieldKey.indexOf("reg_day") != -1) {
+            online = true;
+          }
+        }
         let input;
         if (fieldDesc.type === undefined || fieldDesc.type == 'text') {
           input = $('<input type="text" class="layui-input">');
@@ -371,6 +378,10 @@
           } else {
             setDisabled(false);
             ctlCheckBox.prop('checked', true);
+          }
+          if (online) {
+            ctlCheckBox.prop('disabled', true);
+            input.prop('disabled', true);
           }
         }
 

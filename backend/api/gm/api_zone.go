@@ -132,16 +132,16 @@ func ZoneAdd(c echo.Context) error {
     sGameServiceObjEp := ctx.FormValue("sGameServiceObj")
 
     if err := registryAdd(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
-        return err
+        return fmt.Errorf("增加ConnServer.HandleConn失败: %s", err.Error())
     }
     if err := registryAdd(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
         registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
-        return err
+        return fmt.Errorf("增加ConnServer.ConnServiceObj失败: %s", err.Error())
     }
     if err := registryAdd(common.GetApp()+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
         registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
         registryDel(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
-        return err
+        return fmt.Errorf("增加GameServer.GameServiceObj失败: %s", err.Error())
     }
 
     dirPrx := new(rpc.DirService)
@@ -151,7 +151,7 @@ func ZoneAdd(c echo.Context) error {
         registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
         registryDel(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
         registryDel(common.GetApp()+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
-        return err
+        return fmt.Errorf("增加新分区失败: %s", err.Error())
     }
 
     return ctx.SendResponse("添加分区成功")
