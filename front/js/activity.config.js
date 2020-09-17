@@ -1105,6 +1105,10 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                hot_hero: {
+                    name: '热点英雄',
+                    type: 'text'
                 }
             }
         }
