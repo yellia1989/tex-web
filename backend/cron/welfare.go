@@ -233,6 +233,9 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
             continue
         }
         for _, cmd := range vcmds {
+            if len(cmd)== 0 {
+                continue
+            }
             var r wfRole
             r.zoneid = zoneid
             r.roleid = roleid
