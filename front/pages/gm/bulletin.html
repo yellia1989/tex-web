@@ -50,6 +50,11 @@
             }
           },
           {
+            field: "iPopWindow", title: "是否弹窗显示", align: "center", templet: function (d) {
+              return d.iPopWindow == 1 ? '是' : '否';
+            }
+          },
+          {
             field: "iFlag", title: "状态", align: "center", templet: function (d) {
               var ret = '';
               switch (d.iFlag) {
