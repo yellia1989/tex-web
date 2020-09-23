@@ -46,6 +46,7 @@ type BulletinDataInfo struct {
 	SEndTime    string `json:"sEndTime"`
 	IDisplay    uint32 `json:"iDisplay"`
 	IType       uint32 `json:"iType"`
+	IPopWindow  uint32 `json:"iPopWindow"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -60,6 +61,7 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	ret.SEndTime = st.SEndTime
 	ret.IDisplay = st.IDisplay
 	ret.IType = st.IType
+	ret.IPopWindow = st.IPopWindow
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -76,6 +78,7 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sEndTime")+fmt.Sprintf("%v\n", st.SEndTime))
 	util.Tab(buff, t+1, util.Fieldname("iDisplay")+fmt.Sprintf("%v\n", st.IDisplay))
 	util.Tab(buff, t+1, util.Fieldname("iType")+fmt.Sprintf("%v\n", st.IType))
+	util.Tab(buff, t+1, util.Fieldname("iPopWindow")+fmt.Sprintf("%v\n", st.IPopWindow))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -112,6 +115,10 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.IType, 8, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IPopWindow, 9, false)
 	if err != nil {
 		return err
 	}
@@ -196,6 +203,12 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.IType != 0 {
 		err = p.WriteUint32(8, st.IType)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IPopWindow != 0 {
+		err = p.WriteUint32(9, st.IPopWindow)
 		if err != nil {
 			return err
 		}
