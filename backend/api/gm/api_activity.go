@@ -18,6 +18,7 @@ type _activityData struct {
 	ApplyUser     string `json:"apply_user"`
 	ConfigureData string `json:"configure_data"`
 	ConfigureDesc string `json:"configure_desc"`
+    Locked  bool    `json:"locked"`
 }
 
 func ActivityList(c echo.Context) error {
@@ -42,7 +43,7 @@ func ActivityList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc FROM t_activity"
+	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc,locked FROM t_activity"
 	where := ""
     if stype != "" {
 		where += " activity_type IN (" + stype + ")"
@@ -72,7 +73,7 @@ func ActivityList(c echo.Context) error {
 	logs := make([]_activityData, 0)
 	for rows.Next() {
 		var r _activityData
-		if err := rows.Scan(&r.ActivityID, &r.ActivityType, &r.ApplyZone, &r.ApplyUser, &r.ConfigureData, &r.ConfigureDesc); err != nil {
+		if err := rows.Scan(&r.ActivityID, &r.ActivityType, &r.ApplyZone, &r.ApplyUser, &r.ConfigureData, &r.ConfigureDesc, &r.Locked); err != nil {
 			return err
 		}
 		logs = append(logs, r)
@@ -165,14 +166,23 @@ func ActivityEdit(c echo.Context) error {
 		return err
 	}
 
-	_, err = tx.Exec("update t_activity set activity_type=?,apply_zone=?,apply_user=?,configure_data=?,configure_desc=? WHERE activity_id=?",activity_type, apply_zone, apply_user, config_data, config_desc, activity_id)
+	result, err := tx.Exec("update t_activity set activity_type=?,apply_zone=?,apply_user=?,configure_data=?,configure_desc=? WHERE activity_id=? and locked=0",activity_type, apply_zone, apply_user, config_data, config_desc, activity_id)
 	if err != nil {
 		return err
 	}
 
+    updateRows, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
+
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+
+    if updateRows == 0 {
+        return ctx.SendResponse("活动已锁定不能编辑");
+    }
 
     return ctx.SendResponse("更新活动成功")
 }
@@ -197,14 +207,23 @@ func ActivityDel(c echo.Context) error {
 		return err
 	}
 
-	_, err = tx.Exec("Delete FROM t_activity WHERE activity_id IN ("+ids+")")
+	result, err := tx.Exec("Delete FROM t_activity WHERE activity_id IN ("+ids+") and locked=0")
 	if err != nil {
 		return err
 	}
 
+    updateRows, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
+
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+
+    if updateRows == 0 {
+        return ctx.SendResponse("活动已锁定不能删除");
+    }
 
     return ctx.SendResponse("删除活动成功")
 }
@@ -303,4 +322,42 @@ func ActivityOnlineZone(c echo.Context) error {
     }
 
     return ctx.SendResponse(onlinezones)
+}
+
+func ActivityLock(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    ids := ctx.FormValue("idsStr")
+    locked,_ := strconv.Atoi(ctx.FormValue("locked"))
+
+    if len(ids) == 0 {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+	db := common.GetDb()
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	if err != nil {
+		return err
+	}
+
+    sql := "UPDATE t_activity SET locked=? WHERE activity_id IN("+ids+")"
+	_, err = tx.Exec(sql, locked)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    return ctx.SendResponse("操作成功")
 }

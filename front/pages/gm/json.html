@@ -18,12 +18,15 @@
   <script>
     var config_data;
     var json_data;
+    var locked;
     layui.use(['form', 'okUtils', 'okLayer', 'laydate'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let $ = layui.jquery;
       let laydate = layui.laydate;
       let okLayer = layui.okLayer;
+
+      locked = parent.locked;
 
       function jsonEditor(json, field) {
         try {
@@ -90,7 +93,7 @@
             $fieldbox = null;
           }
         }
-        $form.append('<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn" lay-submit lay-filter="save">保存</button></div></div>');
+        $form.append('<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn '+(locked?'layui-hide':'')+'" lay-submit lay-filter="save">保存</button></div></div>');
         form.render();
       }
       jsonEditor.prototype.createFormItem = function(fieldKey, fieldDesc, fieldValue) {
@@ -292,7 +295,7 @@
             if (!ctlCheckBox.prop('checked')) {
               return;
             }
-            let title = '编辑-'+fieldDesc.name;
+            let title = '编辑-'+fieldDesc.name+(locked?'[只读]':'');
             config_data = fieldDesc.subFieldOption;
             if (typeof(fieldDesc.subFieldOption) == 'function') {
               config_data = fieldDesc.subFieldOption(fieldKey);
