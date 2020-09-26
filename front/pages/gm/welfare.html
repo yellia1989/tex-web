@@ -41,6 +41,7 @@
           { field: "sDayTimeRange", title: "每日时间范围", width: 160, templet: function(d) {
             return d.sCmdBeginTime + "-" + d.sCmdEndTime;
           }},
+          { field: "iStep", title: "间隔天数", width: 80 },
           { field: "iStatus", title: "状态", width: 80, templet: function (d) {
             let ret = '';
             switch (d.iStatus) {
