@@ -19,6 +19,7 @@ type _WelfareTask struct {
     CmdBeginTime string `json:"sCmdBeginTime"`
     CmdEndTime string `json:"sCmdEndTime"`
     Status  uint32  `json:"iStatus"`
+    Step uint32  `json:"iStep"`
 }
 
 func WelfareTaskList(c echo.Context) error {
@@ -42,7 +43,7 @@ func WelfareTaskList(c echo.Context) error {
 		return err
 	}
 
-    sql := "SELECT id,name,roles,cmds,begin_time,end_time,cmd_time,status FROM welfare_task WHERE status != 2 order by id desc"
+    sql := "SELECT id,name,roles,cmds,begin_time,end_time,cmd_time,status,step FROM welfare_task WHERE status != 2 order by id desc"
     var total int
     err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
     if err != nil {
@@ -65,7 +66,7 @@ func WelfareTaskList(c echo.Context) error {
     var cmdTime string
     for rows.Next() {
         var task _WelfareTask
-        if err := rows.Scan(&task.ID, &task.Name, &task.Roles, &task.Cmds, &task.BeginTime, &task.EndTime, &cmdTime, &task.Status); err != nil {
+        if err := rows.Scan(&task.ID, &task.Name, &task.Roles, &task.Cmds, &task.BeginTime, &task.EndTime, &cmdTime, &task.Status, &task.Step); err != nil {
             return err
         }
         vCmdTime := strings.SplitN(cmdTime, "-", 2)
@@ -163,8 +164,9 @@ func WelfareTaskUpdate(c echo.Context) error {
     sCmdEndTime := ctx.FormValue("sCmdEndTime")
     sRoles := ctx.FormValue("sRoles")
     sCmds := ctx.FormValue("sCmds")
+    step,_ := strconv.ParseUint(ctx.FormValue("iStep"), 10, 32)
 
-    if sId == "" || sName == "" || sBeginTime == "" || sEndTime == "" || sCmdBeginTime == "" || sCmdEndTime == "" || sRoles == "" || sCmds == "" {
+    if sId == "" || sName == "" || sBeginTime == "" || sEndTime == "" || sCmdBeginTime == "" || sCmdEndTime == "" || sRoles == "" || sCmds == "" || step == 0 {
         return ctx.SendError(-1, "参数非法")
     }
 
@@ -184,8 +186,8 @@ func WelfareTaskUpdate(c echo.Context) error {
 		return err
 	}
 
-    sql := "UPDATE welfare_task SET name=?, roles=?, cmds=? ,cmd_time=? ,begin_time=?, end_time=? WHERE id=?"
-    _, err = tx.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, sBeginTime, sEndTime, sId)
+    sql := "UPDATE welfare_task SET name=?, roles=?, cmds=? ,cmd_time=? ,begin_time=?, end_time=?, step=? WHERE id=?"
+    _, err = tx.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, sBeginTime, sEndTime, step, sId)
     if err != nil {
         return err
     }
@@ -206,8 +208,9 @@ func WelfareTaskAdd(c echo.Context) error {
     sCmdEndTime := ctx.FormValue("sCmdEndTime")
     sRoles := ctx.FormValue("sRoles")
     sCmds := ctx.FormValue("sCmds")
+    step,_ := strconv.ParseUint(ctx.FormValue("iStep"), 10, 32)
 
-    if sName == "" || sBeginTime == "" || sEndTime == "" || sCmdBeginTime == "" || sCmdEndTime == "" || sRoles == "" || sCmds == "" {
+    if sName == "" || sBeginTime == "" || sEndTime == "" || sCmdBeginTime == "" || sCmdEndTime == "" || sRoles == "" || sCmds == "" || step == 0 {
         return ctx.SendError(-1, "参数非法")
     }
 
@@ -227,8 +230,8 @@ func WelfareTaskAdd(c echo.Context) error {
 		return err
 	}
 
-    sql := "INSERT INTO welfare_task(name,roles,cmds,cmd_time,status,begin_time,end_time) VALUES(?,?,?,?,?,?,?)"
-    _, err = tx.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, 1, sBeginTime, sEndTime)
+    sql := "INSERT INTO welfare_task(name,roles,cmds,cmd_time,status,begin_time,end_time,step) VALUES(?,?,?,?,?,?,?,?)"
+    _, err = tx.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, 1, sBeginTime, sEndTime, step)
     if err != nil {
         return err
     }

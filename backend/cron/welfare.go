@@ -31,9 +31,13 @@ type wfTask struct {
     sroles string
     scmds string
     cmd_time string
-    cur_time string
+    scur_time string
     roles map[int]*wfRole
     status int
+    begin_time time.Time
+    end_time time.Time
+    step int
+    cur_time time.Time
 }
 
 type wfRoleSorter []*wfRole
@@ -52,7 +56,17 @@ func (s wfRoleSorter) Less(i, j int) bool {
 
 func (task *wfTask) run(now time.Time) bool {
     // 生成今日福利
-    if task.status == 1 && len(task.roles) == 0 && task.cur_time != now.Format("2006-01-02") {
+    if task.status == 1 && len(task.roles) == 0 && task.scur_time != now.Format("2006-01-02") {
+        if now.After(task.end_time) {
+            // 已经过了福利期截止日期
+            return true
+        }
+
+        if now.Before(task.cur_time.Add(time.Duration(task.step*24) * time.Hour)) {
+            // 距离上次发奖日期没到
+            return true
+        }
+
         tx, err := task.db.Begin()
 	    if err != nil {
             log.Errorf("welfare开始事务失败:%s, taskid: %d", err.Error(), task.id)
@@ -87,7 +101,8 @@ func (task *wfTask) run(now time.Time) bool {
             return false
         }
 
-        task.cur_time = now.Format("2006-01-02")
+        task.scur_time = now.Format("2006-01-02")
+        task.cur_time = now
         log.Infof("welfare generate complete: %s, taskid: %d", now.Format("2006-01-02"), task.id)
         return true
     }
@@ -288,22 +303,32 @@ func (wf *welfare) run(now time.Time) {
         return
 	}
 
-    sql := "SELECT id,roles,cmds,cmd_time,cur_time,status FROM welfare_task WHERE ? between begin_time and end_time"
+    sql := "SELECT id,roles,cmds,cmd_time,cur_time,status,begin_time,end_time,step FROM welfare_task WHERE ? between begin_time and end_time"
 	rows, err := tx.Query(sql, now.Format("2006-01-02"))
 	if err != nil {
         log.Errorf("welfare query: %s", err.Error())
         return
 	}
 	defer rows.Close()
+
+    local, _ := time.LoadLocation("Local")
     for rows.Next() {
         var task wfTask
         task.db = wf.db
         task.roles = make(map[int]*wfRole,0)
         var cur_time dsql.NullString
-        if err := rows.Scan(&task.id, &task.sroles, &task.scmds, &task.cmd_time, &cur_time, &task.status); err != nil {
+        var beginTime string
+        var endTime string
+        if err := rows.Scan(&task.id, &task.sroles, &task.scmds, &task.cmd_time, &cur_time, &task.status, &beginTime, &endTime, &task.step); err != nil {
             log.Debugf("welfare scan: %s, taskid: %d", err.Error(), task.id)
         } else {
-            task.cur_time = cur_time.String
+            task.scur_time = cur_time.String
+            if task.scur_time != "" {
+                task.cur_time, _ = time.ParseInLocation("2006-01-02", task.scur_time, local)
+            }
+            task.begin_time, _ = time.ParseInLocation("2006-01-02", beginTime, local)
+            task.end_time, _ = time.ParseInLocation("2006-01-02", endTime, local)
+
             if oldtask,ok := wf.tasks[task.id]; !ok {
                 wf.tasks[task.id] = &task
             } else {
@@ -311,6 +336,9 @@ func (wf *welfare) run(now time.Time) {
                 oldtask.scmds = task.scmds
                 oldtask.cmd_time = task.cmd_time
                 oldtask.status = task.status
+                oldtask.begin_time = task.begin_time
+                oldtask.end_time = task.end_time
+                oldtask.step = task.step
             }
         }
     }
