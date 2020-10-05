@@ -5,7 +5,7 @@ import (
     "strconv"
     dsql "database/sql"
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/common"
+	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -27,7 +27,7 @@ func WelfareTaskList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetStatDb()
+	db := cfg.StatDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -89,7 +89,7 @@ func WelfareTaskPause(c echo.Context) error {
         return ctx.SendError(-1, "福利id不存在")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
@@ -125,7 +125,7 @@ func WelfareTaskResume(c echo.Context) error {
         return ctx.SendError(-1, "福利id不存在")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
@@ -170,7 +170,7 @@ func WelfareTaskUpdate(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
@@ -214,7 +214,7 @@ func WelfareTaskAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
@@ -250,7 +250,7 @@ func WelfareTaskDel(c echo.Context) error {
         return ctx.SendError(-1, "福利id不存在")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
@@ -299,7 +299,7 @@ func WelfareRoleList(c echo.Context) error {
     begin_time := ctx.QueryParam("startTime")
     end_time := ctx.QueryParam("endTime")
 
-	db := common.GetStatDb()
+	db := cfg.StatDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}

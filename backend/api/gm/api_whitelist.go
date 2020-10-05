@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/common"
+	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -20,7 +20,7 @@ func parseIDStr(src, sep string, out *string) {
 func WhiteList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -31,7 +31,7 @@ func WhiteList(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_loginserver")
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func WhiteAdd(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -83,7 +83,7 @@ func WhiteAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_loginserver")
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func WhiteDel(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -122,7 +122,7 @@ func WhiteDel(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_loginserver")
 	if err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func WhiteReplace(c echo.Context) error {
 
 	input := ctx.FormValue("input")
 
-    db := common.GetDb()
+    db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -157,7 +157,7 @@ func WhiteReplace(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_loginserver")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_loginserver")
 	if err != nil {
 		return err
 	}

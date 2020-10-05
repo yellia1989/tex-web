@@ -4,7 +4,7 @@ import (
 	"strconv"
     "strings"
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/common"
+	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
@@ -14,13 +14,13 @@ func CDKList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	mpPrx := new(rpc.MPService)
-	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", mpPrx)
+	comm.StringToProxy(cfg.App+".MPServer.MPServiceObj", mpPrx)
 
 	var vCDK []rpc.CDKeyConfig
-	str := common.GetApp()+""
+	str := cfg.App+""
 
 	var l uint32
     from := (page-1) * limit
@@ -50,15 +50,15 @@ func CDKAdd(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	MPPrx := new(rpc.MPService)
-	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", MPPrx)
+	comm.StringToProxy(cfg.App+".MPServer.MPServiceObj", MPPrx)
 
 	projectConfig := rpc.MPProjectConfig{}
-	if ok, _ := MPPrx.GetProject(common.GetApp()+"", &projectConfig); ok != 0 {
-		projectConfig.SProjectId = common.GetApp()+""
-		projectConfig.SProjectName = common.GetApp()+""
+	if ok, _ := MPPrx.GetProject(cfg.App+"", &projectConfig); ok != 0 {
+		projectConfig.SProjectId = cfg.App+""
+		projectConfig.SProjectName = cfg.App+""
 
 		ret, err := MPPrx.CreateProject(projectConfig)
 		if err := checkRet(ret, err); err != nil {
@@ -66,7 +66,7 @@ func CDKAdd(c echo.Context) error {
 		}
 	}
 
-	CDKey.SProjectId = common.GetApp()+""
+	CDKey.SProjectId = cfg.App+""
 	var iCDKeyId uint32
 	ret, err := MPPrx.CreateCDKey(CDKey, &iCDKeyId)
 	if err := checkRet(ret, err); err != nil {
@@ -84,10 +84,10 @@ func CDKUpdate(c echo.Context) error {
 		return err
 	}
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	MPPrx := new(rpc.MPService)
-	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", MPPrx)
+	comm.StringToProxy(cfg.App+".MPServer.MPServiceObj", MPPrx)
 
 	ret, err := MPPrx.ModifyCDKey(CDKey)
 	if err := checkRet(ret, err); err != nil {
@@ -105,10 +105,10 @@ func CDKExport(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	MPPrx := new(rpc.MPService)
-	comm.StringToProxy(common.GetApp()+".MPServer.MPServiceObj", MPPrx)
+	comm.StringToProxy(cfg.App+".MPServer.MPServiceObj", MPPrx)
 
     data := make(map[int]*string,0)
     for _,ids := range strings.Split(idsStr, ",") {

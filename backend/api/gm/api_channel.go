@@ -6,6 +6,7 @@ import (
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
+    "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/common"
 )
 
@@ -14,10 +15,10 @@ func ChannelList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
     var channels []rpc.ChannelAddr
     ret, err := loginPrx.GetAllChannel(&channels)
@@ -40,10 +41,10 @@ func ChannelAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
     ret, err := loginPrx.AddNewChannel(sChannel, sAddress, sRes)
     if err := checkRet(ret, err); err != nil {
@@ -61,10 +62,10 @@ func ChannelDel(c echo.Context) error {
         return ctx.SendError(-1, "渠道不存在")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
     for _, id := range ids {
         ret, err := loginPrx.DelChannel(id)
@@ -86,10 +87,10 @@ func ChannelUpdate(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
     ret, err := loginPrx.ModifyChannel(sChannel, sAddress, sRes)
     if err := checkRet(ret, err); err != nil {

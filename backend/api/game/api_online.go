@@ -1,12 +1,12 @@
 package game
 
 import (
+    "fmt"
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
-type _onlineTime struct {
+type onlineTime struct {
 	TotalTime    string  `json:"onlineTime_total"`
 	RoleNum      uint32  `json:"onlineTime_roleNum"`
 	RoleNumTotal uint32  `json:"onlineTime_roleNum_total"`
@@ -23,27 +23,17 @@ func OnlineTime(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := common.GetLogDb()
-	if db == nil {
-		return ctx.SendError(-1, "连接数据库失败")
-	}
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE log_zone_" + zoneid)
-	if err != nil {
-		return err
-	}
+    db, err := zoneLogDb(zoneid)
+    if err != nil {
+        return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
+    }
 
 	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
 	sql += "WHERE time BETWEEN '"+startTime+"' AND '"+endTime+"' GROUP BY roleid ORDER BY sum(online_time)"
 
 	c.Logger().Debug(sql)
-	rows, err := tx.Query(sql)
+
+	rows, err := db.Query(sql)
 	if err != nil {
 		return err
 	}
@@ -64,12 +54,8 @@ func OnlineTime(c echo.Context) error {
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 	roleNum := uint32(len(mRole))
-
-	logs := make([]_onlineTime, 0)
+	logs := make([]onlineTime, 0)
     if roleNum == 0 {
 	    return ctx.SendArray(logs, len(logs))
     }
@@ -104,7 +90,7 @@ func OnlineTime(c echo.Context) error {
 	}
 
 	for k, t := range time {
-		r := _onlineTime{RoleNum: num[k], RoleNumTotal: roleNum}
+		r := onlineTime{RoleNum: num[k], RoleNumTotal: roleNum}
 		switch {
 		case t == 300:
 			r.TotalTime = "0-5分钟"

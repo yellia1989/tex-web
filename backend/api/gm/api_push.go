@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/util"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
+	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
@@ -15,10 +16,10 @@ func PushList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	pushPrx := new(rpc.PushService)
-	comm.StringToProxy(common.GetApp()+".PushServer.PushServiceObj", pushPrx)
+	comm.StringToProxy(cfg.App+".PushServer.PushServiceObj", pushPrx)
 
 	var vTask []rpc.PushTaskInfo
 	ret, err := pushPrx.GetAllPushTaskInfo(&vTask)
@@ -37,10 +38,10 @@ func PushTestSend(c echo.Context) error {
     roleid, _ := strconv.Atoi(ctx.FormValue("iRoleId"))
     spayload := ctx.FormValue("payload")
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	pushPrx := new(rpc.PushService)
-	comm.StringToProxy(common.GetApp()+".PushServer.PushServiceObj", pushPrx)
+	comm.StringToProxy(cfg.App+".PushServer.PushServiceObj", pushPrx)
 
     var vTarget []rpc.PushTargetAccountInfo
     var payload rpc.PushPayloadInfo
@@ -82,10 +83,10 @@ func PushSend(c echo.Context) error {
     var payload rpc.PushPayloadInfo
     payload.SUPushPayload = spayload
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	pushPrx := new(rpc.PushService)
-	comm.StringToProxy(common.GetApp()+".PushServer.PushServiceObj", pushPrx)
+	comm.StringToProxy(cfg.App+".PushServer.PushServiceObj", pushPrx)
 
     var taskid uint32
 	ret, err := pushPrx.AddPushTask(vTarget, sTaskName, payload, &taskid)
@@ -109,10 +110,10 @@ func PushPause(c echo.Context) error {
         pause = true
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
 	pushPrx := new(rpc.PushService)
-	comm.StringToProxy(common.GetApp()+".PushServer.PushServiceObj", pushPrx)
+	comm.StringToProxy(cfg.App+".PushServer.PushServiceObj", pushPrx)
 
 	for _, id := range ids {
 		id, _ := strconv.ParseUint(id, 10, 32)

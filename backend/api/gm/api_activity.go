@@ -6,7 +6,7 @@ import (
     "encoding/json"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-go/tools/util"
-	"github.com/yellia1989/tex-web/backend/common"
+	"github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
@@ -27,7 +27,7 @@ func ActivityList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -38,7 +38,7 @@ func ActivityList(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func ActivityAdd(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -117,7 +117,7 @@ func ActivityAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func ActivityEdit(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -161,7 +161,7 @@ func ActivityEdit(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -191,7 +191,7 @@ func ActivityDel(c echo.Context) error {
     ctx := c.(*mid.Context)
     ids := ctx.FormValue("idsStr")
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -202,7 +202,7 @@ func ActivityDel(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -262,7 +262,7 @@ func ActivityImport(c echo.Context) error {
         sql += fmt.Sprintf("(%d,%d,'%s','%s','%s','%s')", v.Id, v.Type, apply_zone, apply_user, v.Data, v.Desc)
     }
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -273,7 +273,7 @@ func ActivityImport(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -294,12 +294,12 @@ func ActivityOnlineZone(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	activityId := ctx.QueryParam("activity_id")
 
-    comm := common.GetLocator()
-    app := common.GetApp()
+    comm := cfg.Comm
+    app := cfg.App
     u := ctx.GetUser()
 
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(app+".DirServer.DirServiceObj", dirPrx)
 
     var zones []rpc.ZoneInfo
     ret, err := dirPrx.GetAllZone(&zones)
@@ -333,7 +333,7 @@ func ActivityLock(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -344,7 +344,7 @@ func ActivityLock(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}

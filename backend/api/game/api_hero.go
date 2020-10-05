@@ -1,16 +1,14 @@
 package game
 
 import (
+    "fmt"
 	"strconv"
-
 	Sql "database/sql"
-
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
-type _herolog struct {
+type herolog struct {
 	Id     uint32 `json:"id"`
 	Time   string `json:"time"`
 	HeroId uint32 `json:"heroid"`
@@ -32,27 +30,16 @@ func HeroAddLog(c echo.Context) error {
 	if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
-
-	db := common.GetLogDb()
-	if db == nil {
-		return ctx.SendError(-1, "连接数据库失败")
-	}
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE log_zone_" + zoneid)
-	if err != nil {
-		return err
-	}
+	
+    db, err := zoneLogDb(zoneid)
+    if err != nil {
+        return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
+    }
 
 	sqlcount := "SELECT count(*) as total FROM add_hero"
 	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
-	err = tx.QueryRow(sqlcount).Scan(&total)
+	err = db.QueryRow(sqlcount).Scan(&total)
 	if err != nil {
 		return err
 	}
@@ -66,15 +53,15 @@ func HeroAddLog(c echo.Context) error {
 
 	c.Logger().Debug(sql)
 
-	rows, err := tx.Query(sql)
+	rows, err := db.Query(sql)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	logs := make([]_herolog, 0)
+	logs := make([]herolog, 0)
 	for rows.Next() {
-		var r _herolog
+		var r herolog
 		var star, quality, step Sql.NullInt32
 		if err := rows.Scan(&r.Id, &r.Time, &r.HeroId, &star, &step, &quality, &r.Action); err != nil {
 			return err
@@ -85,10 +72,6 @@ func HeroAddLog(c echo.Context) error {
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return err
 	}
 

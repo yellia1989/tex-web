@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>总况</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="stylesheet" href="/css/oksub.css" media="all" />
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body class="ok-body-scroll console">
+  <div class="ok-body home">
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-card">
+          <div class="ok-card-body">
+            <div class="img-box" ok-pc-in-show>
+              <img src="/images/home-01.png" alt="none" />
+            </div>
+            <div class="cart-r">
+              <div id="rgeToday" class="stat-text layui-inline">0</div>/
+              <div id="rgeTotal" class="stat-text layui-inline">0</div>
+              <div class="stat-heading">今日充值/累积充值</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-card">
+          <div class="ok-card-body">
+            <div class="img-box" ok-pc-in-show>
+              <img src="/images/home-01.png" alt="none" />
+            </div>
+            <div class="cart-r">
+              <div id="rgeRoleNumToday" class="stat-text layui-inline">0</div>/
+              <div id="rgeNewRoleNumToday" class="stat-text layui-inline">0</div>/
+              <div id="rgeRoleNumTotal" class="stat-text layui-inline">0</div>
+              <div class="stat-heading">今日充值人数/今日新增充值人数/累计充值人数</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-card">
+          <div class="ok-card-body">
+            <div class="img-box" ok-pc-in-show>
+              <img src="/images/home-04.png" alt="none" />
+            </div>
+            <div class="cart-r">
+              <div id="newaddToday" class="stat-text layui-inline">0</div>/
+              <div id="activeToday" class="stat-text layui-inline">0</div>/
+              <div id="newaddTotal" class="stat-text layui-inline">0</div>
+              <div class="stat-heading">今日新增/今日活跃/总创角</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layui-col-xs6 layui-col-md3">
+        <div class="layui-card">
+          <div class="ok-card-body">
+            <div class="img-box" ok-pc-in-show>
+              <img src="/images/home-04.png" alt="none" />
+            </div>
+            <div class="cart-r">
+              <div id="accountToday" class="stat-text layui-inline">0</div>/
+              <div id="accountTotal" class="stat-text layui-inline">0</div>
+              <div class="stat-heading">今日注册/总注册</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layui-row layui-col-space15">
+      <form class="layui-form">
+        <div class="layui-form-item">
+          <div class="layui-inline">
+	    		  <div class="layui-input-inline">
+              <div id="zoneSelect2"></div>
+            </div>
+	    		  <div class="layui-input-inline">
+              <button class="layui-btn" lay-submit lay-filter="search2">
+                <i class="layui-icon layui-icon-search"></i>
+              </button>
+            </div>
+          </div>
+      </form>
+	    <table id="tableId2" lay-filter="tableFilter2"></table>
+    </div>
+
+    <div class="layui-row layui-col-space15">
+      <form class="layui-form">
+        <div class="layui-form-item">
+          <div class="layui-inline">
+	    		  <div class="layui-input-inline">
+              <div id="zoneSelect"></div>
+            </div>
+	    	    <div class="layui-input-inline">
+              <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+            </div>
+	    	    <div class="layui-input-inline">
+              <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+            </div>
+	    		  <div class="layui-input-inline">
+              <button class="layui-btn" lay-submit lay-filter="search">
+                <i class="layui-icon layui-icon-search"></i>
+              </button>
+            </div>
+          </div>
+      </form>
+	    <table id="tableId" lay-filter="tableFilter"></table>
+    </div>
+  </div>
+</body>
+</html>
+<script type="text/javascript" src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/js/all.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script>
+	layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+		let table = layui.table;
+		let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let xmSelect = layui.xmSelect;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+		okLoading.close();
+
+    let zoneSelect = xmSelect.render({
+      el: '#zoneSelect',
+      name: 'zoneid',
+      prop: {
+        value: 'zoneid_fk',
+        name: 'zonename',
+      },
+      tips: '请选择一个服务器',
+      autoRow: true,
+      model: {
+        label: {
+          type: 'block',
+          block: {
+            //是否显示删除图标
+            showIcon: false,
+          }
+        }
+      },
+      toolbar: {
+        show: true,
+      },
+      layVerify: 'required',
+      layVerType: 'tips',
+    });
+
+    let zoneSelect2 = xmSelect.render({
+      el: '#zoneSelect2',
+      name: 'zoneid',
+      prop: {
+        value: 'zoneid_fk',
+        name: 'zonename',
+      },
+      tips: '请选择一个服务器',
+      autoRow: true,
+      model: {
+        label: {
+          type: 'block',
+          block: {
+            //是否显示删除图标
+            showIcon: false,
+          }
+        }
+      },
+      toolbar: {
+        show: true,
+      },
+      layVerify: 'required',
+      layVerType: 'tips',
+    });
+
+    okUtils.ajax("/api/stat/zone/list", "get", null, false).done(function (response) {
+      zoneSelect.update({
+        data: response.data,
+      });
+      zoneSelect2.update({
+        data: response.data,
+      });
+    }).fail(function (error) {
+      console.log(error);
+    });
+
+    okUtils.ajax("/api/stat/date/marklist", "get", null, false).done(function (response) {
+      laydate.render({elem: "#startTime", type: "date", format: "yyyyMMdd", min: response.data["min"], max: response.data["max"]});
+      laydate.render({elem: "#endTime", type: "date", format: "yyyyMMdd", min: response.data["min"], max: response.data["max"]});
+    }).fail(function (error) {
+      console.log(error);
+    });
+
+		let ltvTable = table.render({
+			elem: "#tableId2",
+      url: "/api/stat/all/ltv",
+      text: {
+        none: '暂无相关数据',
+      },
+      cellMinWidth: 40,
+			limit: 30,
+			page: true,
+			cols: [[
+				{field: "zone_name", title: "服务器名"},
+				{field: "zone_openday", title: "开服天数", templet: function(d) {
+          return d.zone_openday == 0 ? '<span class="layui-btn layui-btn-danger layui-btn-xs">未开服</span>' : d.zone_openday;
+        }},
+				{field: "rolenum", title: "总创角"},
+				{field: "rge_rolenum", title: "总充值人数"},
+				{title: "付费率", templet: function(d) {
+          return okUtils.number.percent(d.rge_rolenum*100, d.rolenum);
+        }},
+				{field: "rge_total", title: "总充值"},
+				{field: "ltv3", title: "3日ltv"},
+				{field: "ltv7", title: "7日ltv"},
+				{field: "ltv15", title: "15日ltv"},
+				{field: "ltv30", title: "30日ltv"},
+				{field: "ltv60", title: "60日ltv"},
+				{field: "ltv90", title: "90日ltv"},
+				{field: "ltv120", title: "120日ltv"},
+				{field: "ltv150", title: "150日ltv"},
+				{field: "ltv180", title: "180日ltv"},
+			]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+      parseData: function (res) {
+        for (i = 0; res.data && i < res.data.length; ++i) {
+          let d = res.data[i];
+          res.data[i].rge_total = okUtils.number.percent(d.rge_total, 100, 2, '');
+          res.data[i].ltv3 = okUtils.number.percent(d.rge3/100, d.rolenum3, 2, '');
+          res.data[i].ltv7 = okUtils.number.percent(d.rge7/100, d.rolenum7, 2, '');
+          res.data[i].ltv15 = okUtils.number.percent(d.rge15/100, d.rolenum15, 2, '');
+          res.data[i].ltv30 = okUtils.number.percent(d.rge30/100, d.rolenum30, 2, '');
+          res.data[i].ltv60 = okUtils.number.percent(d.rge60/100, d.rolenum60, 2, '');
+          res.data[i].ltv90 = okUtils.number.percent(d.rge90/100, d.rolenum90, 2, '');
+          res.data[i].ltv120 = okUtils.number.percent(d.rge120/100, d.rolenum120, 2, '');
+          res.data[i].ltv150 = okUtils.number.percent(d.rge150/100, d.rolenum150, 2, '');
+          res.data[i].ltv180 = okUtils.number.percent(d.rge180/100, d.rolenum180, 2, '');
+        }
+        return res;
+      }
+    });
+
+		let allTable = table.render({
+			elem: "#tableId",
+      url: "/api/stat/all/list",
+      text: {
+        none: '暂无相关数据',
+      },
+      cellMinWidth: 40,
+			limit: 30,
+			page: true,
+			cols: [[
+				{field: "statymd", minWidth:'110', title: "日期"},
+				{field: "zone_name", title: "服务器名"},
+				{field: "zone_openday", title: "开服天数", templet: function(d) {
+          return d.zone_openday == 0 ? '<span class="layui-btn layui-btn-danger layui-btn-xs">未开服</span>' : d.zone_openday;
+        }},
+				{field: "accountnum_total", title: "总注册"},
+				{field: "rolenum_total", title: "总创角"},
+				{title: "总创角增幅", templet: function(d) {
+          return okUtils.number.percent(d.newadd*100, d.rolenum_total-d.newadd);
+        }},
+				{field: "newadd", title: "日新增"},
+				{field: "active", title: "日活跃"},
+				{field: "login_times", title: "登录次数"},
+				{title: "人均登录次数", templet: function(d) {
+          return okUtils.number.percent(d.login_times, d.active, 1, '');
+        }},
+				{field: "rge_rolenum",  title: "日充值人数"},
+				{field: "rge_total", title: "日充值金额"},
+				{title: "日充值渗透率", templet: function(d) {
+          return okUtils.number.percent(d.rge_rolenum*100, d.active);
+        }},
+			]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+      parseData: function (res) {
+        for (i = 0; res.data && i < res.data.length; ++i) {
+          res.data[i].rge_total = okUtils.number.percent(res.data[i].rge_total, 100, 2, '');
+        }
+        return res;
+      }
+    });
+
+    form.on("submit(search)", function (data) {
+      allTable.reload({
+        where: data.field,
+        page: {
+          curr: 1,
+        }
+      });
+      return false;
+    });
+
+    form.on("submit(search2)", function (data) {
+      ltvTable.reload({
+        where: data.field,
+        page: {
+          curr: 1,
+        }
+      });
+      return false;
+    });
+	});
+</script>
