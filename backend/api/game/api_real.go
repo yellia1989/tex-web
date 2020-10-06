@@ -181,7 +181,7 @@ func RealStageVerify(c echo.Context) error {
     data["times"] = times
 
     // 欺骗次数
-    cheattimes, err := realtime(now.Format("2006-01-02"), "stageverify_queue")
+    cheattimes, err := realtime(now.Format("2006-01-02"), "stageverify_cheat")
     if err != nil {
         return err
     }
