@@ -34,6 +34,21 @@
         <div class="layui-card">
           <div class="ok-card-body">
             <div class="img-box" ok-pc-in-show>
+              <img src="/images/home-04.png" alt="none" />
+            </div>
+            <div class="cart-r">
+              <div id="accountToday" class="stat-text layui-inline">0</div>/
+              <div id="accountTotal" class="stat-text layui-inline">0</div>
+              <div class="stat-heading">今日注册/总注册</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layui-col-xs12 layui-col-md3">
+        <div class="layui-card">
+          <div class="ok-card-body">
+            <div class="img-box" ok-pc-in-show>
               <img src="/images/home-01.png" alt="none" />
             </div>
             <div class="cart-r">
@@ -46,7 +61,7 @@
         </div>
       </div>
 
-      <div class="layui-col-xs6 layui-col-md3">
+      <div class="layui-col-xs12 layui-col-md3">
         <div class="layui-card">
           <div class="ok-card-body">
             <div class="img-box" ok-pc-in-show>
@@ -61,26 +76,11 @@
           </div>
         </div>
       </div>
-
-      <div class="layui-col-xs6 layui-col-md3">
-        <div class="layui-card">
-          <div class="ok-card-body">
-            <div class="img-box" ok-pc-in-show>
-              <img src="/images/home-04.png" alt="none" />
-            </div>
-            <div class="cart-r">
-              <div id="accountToday" class="stat-text layui-inline">0</div>/
-              <div id="accountTotal" class="stat-text layui-inline">0</div>
-              <div class="stat-heading">今日注册/总注册</div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="layui-row layui-col-space15">
       <form class="layui-form">
-        <div class="layui-form-item">
+        <div class="layui-form-item" style="margin-bottom: 0px;">
           <div class="layui-inline">
 	    		  <div class="layui-input-inline">
               <div id="zoneSelect2"></div>
@@ -91,13 +91,17 @@
               </button>
             </div>
           </div>
+        </div>
       </form>
+    </div>
+
+    <div class="layui-row layui-col-space15">
 	    <table id="tableId2" lay-filter="tableFilter2"></table>
     </div>
 
     <div class="layui-row layui-col-space15">
       <form class="layui-form">
-        <div class="layui-form-item">
+        <div class="layui-form-item" style="margin-bottom: 0px;">
           <div class="layui-inline">
 	    		  <div class="layui-input-inline">
               <div id="zoneSelect"></div>
@@ -114,7 +118,11 @@
               </button>
             </div>
           </div>
+        </div>
       </form>
+    </div>
+
+    <div class="layui-row layui-col-space15">
 	    <table id="tableId" lay-filter="tableFilter"></table>
     </div>
   </div>
