@@ -87,7 +87,7 @@ func Cron(now time.Time) {
                 return
             }
         }
-        mu.Lock()
+        mu.Unlock()
 
         var t dsql.NullInt32
         if err := conn.QueryRowContext(ctx, "SELECT max(ymd) FROM date").Scan(&t); err != nil {
