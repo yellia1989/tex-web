@@ -17,13 +17,20 @@ var ctx context.Context
 var conn *dsql.Conn
 var dates gcache.Cache
 var dateMinError = errors.New("日期小于最小日期")
-var connError = errors.New("conn数据库没有准备好")
 var dateMax time.Time
 
 type Date struct {
     Id uint32
     Yyyymmdd string
     Ymd uint32
+}
+
+func createNewConn() (err error) {
+    if conn != nil {
+        conn.Close()
+    }
+    conn, err = cfg.StatDb.Conn(ctx)
+    return
 }
 
 func init() {
@@ -40,10 +47,16 @@ func init() {
             defer mu.Unlock()
 
             if conn == nil {
-                return nil, connError
+                err := createNewConn()
+                if err != nil {
+                    return nil, err
+                }
             }
             if err := conn.PingContext(ctx); err != nil {
-                return nil, err
+                err := createNewConn()
+                if err != nil {
+                    return nil, err
+                }
             }
             d := Date{}
             if err := conn.QueryRowContext(ctx, "SELECT id,yyyymmdd,ymd FROM date WHERE ymd=?", key).Scan(&d.Id, &d.Yyyymmdd, &d.Ymd); err != nil {
@@ -55,16 +68,27 @@ func init() {
 }
 
 func Cron(now time.Time) {
+    mu.Lock()
     if conn == nil {
-        var err error
-        conn, err = cfg.StatDb.Conn(ctx)
-        if err != nil {
+        if err := createNewConn(); err != nil {
+            mu.Unlock()
             log.Errorf("create date conn err: %s", err.Error())
             return
         }
     }
+    mu.Unlock()
+
     if dateMax.IsZero() {
-        conn.PingContext(ctx)
+        mu.Lock()
+        if err := conn.PingContext(ctx); err != nil {
+            if err := createNewConn(); err != nil {
+                mu.Unlock()
+                log.Errorf("create date conn err: %s", err.Error())
+                return
+            }
+        }
+        mu.Lock()
+
         var t dsql.NullInt32
         if err := conn.QueryRowContext(ctx, "SELECT max(ymd) FROM date").Scan(&t); err != nil {
             log.Errorf("date cron: %s", err.Error())
@@ -92,11 +116,6 @@ func Cron(now time.Time) {
         }
 
         // 需要创建新的date
-        if err := conn.PingContext(ctx); err != nil {
-            log.Errorf("date conn err: %s", err.Error())
-            return
-        }
-
         yyyymmdd := i.Format("2006-01-02")
         ymd := common.Atou32(i.Format("20060102"))
         year,month,day := i.Date()

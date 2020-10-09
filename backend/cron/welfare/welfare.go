@@ -226,6 +226,14 @@ var ctx context.Context
 var conn *dsql.Conn
 var tasks map[int]*wfTask
 
+func createNewConn() (err error) {
+    if conn != nil {
+        conn.Close()
+    }
+    conn, err = cfg.StatDb.Conn(ctx)
+    return err
+}
+
 func init() {
     ctx = context.Background()
     tasks = make(map[int]*wfTask,0)
@@ -233,9 +241,14 @@ func init() {
 
 func Cron(now time.Time) {
     if conn == nil {
-        var err error
-        conn, err = cfg.StatDb.Conn(ctx)
-        if err != nil {
+        if err := createNewConn(); err != nil {
+            log.Errorf("create welfare conn err: %s", err.Error())
+            return
+        }
+    }
+
+    if err := conn.PingContext(ctx); err != nil {
+        if err := createNewConn(); err != nil {
             log.Errorf("create welfare conn err: %s", err.Error())
             return
         }

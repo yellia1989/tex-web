@@ -3,7 +3,6 @@ package zone
 import (
     "time"
     "sync"
-    "errors"
     "context"
     dsql "database/sql"
     "github.com/bluele/gcache"
@@ -26,7 +25,14 @@ var mu sync.Mutex
 var ctx context.Context
 var conn *dsql.Conn
 var zones gcache.Cache
-var connError = errors.New("conn数据库没有准备好")
+
+func createNewConn() (err error) {
+    if conn != nil {
+        conn.Close()
+    }
+    conn, err = cfg.StatDb.Conn(ctx)
+    return err
+}
 
 func init() {
     ctx = context.Background()
@@ -37,10 +43,14 @@ func init() {
             defer mu.Unlock()
 
             if conn == nil {
-                return nil, connError
+                if err := createNewConn(); err != nil {
+                    return nil, err
+                }
             }
             if err := conn.PingContext(ctx); err != nil {
-                return nil, err
+                if err := createNewConn(); err != nil {
+                    return nil, err
+                }
             }
             z := Zone{}
             if err := conn.QueryRowContext(ctx, "SELECT zone.id,zoneid,zonename,openday_fk,logdbhost FROM zone WHERE zoneid=?", key).Scan(&z.Id, &z.ZoneId, &z.Name, &z.OpenDay, &z.DbHost); err != nil {
@@ -52,14 +62,15 @@ func init() {
 }
 
 func Cron(now time.Time) {
+    mu.Lock()
     if conn == nil {
-        var err error
-        conn, err = cfg.StatDb.Conn(ctx)
-        if err != nil {
+        if err := createNewConn(); err != nil {
+            mu.Unlock()
             log.Errorf("create zone conn err: %s", err.Error())
             return
         }
     }
+    mu.Unlock()
 
     mzoneip, _ := gm.RegistryIp()
     mzone := gm.ZoneMap()
@@ -79,7 +90,15 @@ func Cron(now time.Time) {
             if err == gcache.KeyNotFoundError || err == dsql.ErrNoRows {
                 // 新增了分区，需要同步
                 // 获取开服时间
-                conn.PingContext(ctx)
+                mu.Lock()
+                if err := conn.PingContext(ctx); err != nil {
+                    if err := createNewConn(); err != nil {
+                        mu.Unlock()
+                        log.Errorf("zone create new conn: %s", err.Error())
+                        return
+                    }
+                }
+                mu.Unlock()
                 sql := "INSERT INTO zone(zoneid,zonename,openday_fk,logdbhost) VALUES(?,?,?,?)"
                 if _,err := conn.ExecContext(ctx, sql, zoneid, new.SZoneName, d.Id, ip); err != nil {
                     log.Errorf("zone cron: %s", err.Error())

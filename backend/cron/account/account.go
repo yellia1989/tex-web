@@ -2,7 +2,6 @@ package account
 
 import (
     "sync"
-    "errors"
     "context"
     dsql "database/sql"
     "github.com/bluele/gcache"
@@ -12,9 +11,16 @@ import (
 
 var ctx context.Context
 var conn *dsql.Conn
-var connError = errors.New("account连接有准备好")
 var accounts gcache.Cache
 var mu sync.Mutex
+
+func createNewConn() (err error) {
+    if conn != nil {
+        conn.Close()
+    }
+    conn, err = cfg.StatDb.Conn(ctx)
+    return
+}
 
 type Account struct {
     Id uint32
@@ -30,15 +36,15 @@ func init() {
             defer mu.Unlock()
 
             if conn == nil {
-                var err error
-                conn, err = cfg.StatDb.Conn(ctx)
-                if err != nil {
+                if err := createNewConn(); err != nil {
                     return nil, err
                 }
             }
 
             if err := conn.PingContext(ctx); err != nil {
-                return nil, err
+                if err := createNewConn(); err != nil {
+                    return nil, err
+                }
             }
             a := Account{}
             if err := conn.QueryRowContext(ctx, "SELECT id,accountid FROM account WHERE accountid=?", key).Scan(&a.Id, &a.AccountId); err != nil {
