@@ -15,6 +15,14 @@ var mu sync.Mutex
 var rge90 []uint32
 var conn *dsql.Conn
 
+func createNewConn() (err error) {
+    if conn != nil {
+        conn.Close()
+    }
+    conn, err = cfg.StatDb.Conn(ctx)
+    return
+}
+
 type zoneAccountKey struct {
     zoneidFk uint32
     accountidFk uint32
@@ -122,15 +130,15 @@ func init() {
             defer mu.Unlock()
 
             if conn == nil {
-                var err error
-                conn, err = cfg.StatDb.Conn(ctx)
-                if err != nil {
+                if err := createNewConn(); err != nil {
                     return nil, err
                 }
             }
 
             if err := conn.PingContext(ctx); err != nil {
-                return nil, err
+                if err := createNewConn(); err != nil {
+                    return nil, err
+                }
             }
             zaKey := key.(zoneAccountKey)
             r := role{}
