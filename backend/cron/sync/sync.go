@@ -69,7 +69,14 @@ func Cron(now time.Time) {
     log.Debugf("db stat: %v", cfg.StatDb.Stats())
 
     if err := conn.PingContext(ctx); err != nil {
-        return
+        conn.Close()
+        log.Debugf("sync ping err: %s, try to create conn again", err.Error())
+
+        conn, err = cfg.StatDb.Conn(ctx)
+        if err != nil {
+            log.Errorf("create sync conn err: %s", err.Error())
+            return
+        }
     }
 
     sql := "SELECT id,zoneid,logdbhost FROM zone"

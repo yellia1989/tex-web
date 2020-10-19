@@ -77,6 +77,7 @@ func (l *login) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uin
                 continue
             }
             // 账号还没准备好
+            log.Errorf("account not ready, accountid: %d, time: %s", roleid, regst)
             return nil
         }
         r := rrole.Get(zoneidFk, account.Id)
@@ -86,6 +87,8 @@ func (l *login) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uin
                 log.Errorf("role create log missed, zoneid: %d, roleid: %d, time: %s", zoneid, roleid, st)
                 continue
             }
+            // 角色信息还没准备好
+            log.Errorf("role not ready, zoneid: %d, roleid: %d, time: %s", zoneid, roleid, st)
             return nil
         }
         if d.Id < r.RegDateFk {
