@@ -736,12 +736,6 @@
                     options: options.optYesNo,
                     parser: parseInt
                 },
-                skillpoint_0: {
-                    name: '技能点是否为0',
-                    type: 'select',
-                    options: options.optYesNo,
-                    parser: parseInt
-                },
                 no_heroids: {
                     name: '没有英雄(;区分)',
                     type: 'midtext',
