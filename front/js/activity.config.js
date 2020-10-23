@@ -848,6 +848,22 @@
                     name: '当前经验药水量小于(药水礼盒所得药水的倍率)',
                     type: 'midtext',
                     parser: parseInt,
+                },
+                coin_less_skillcost: {
+                    name: '当前金币量小于上次技能升级所消耗的金币量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                exp_less_herolevelcost: {
+                    name: '当前药水量小于上次英雄升级所消耗的药水量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                rune_level: {
+                    name: '购买符文的等级(-区分)',
+                    type: 'midtext'
                 }
             }
         }
