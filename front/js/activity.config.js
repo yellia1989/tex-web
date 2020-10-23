@@ -61,6 +61,10 @@
             6: '英雄试练胜利次数',
             7: '巅峰竞技场胜利次数',
             8: '关卡进度',
+            12: '龙域探险加速次数',
+            13: '天赋点购买次数',
+            14: '宝石购买次数',
+            15: '符文碎片购买次数',
         },
         ActType4:{
             1: '王者竞技场',
@@ -736,12 +740,6 @@
                     options: options.optYesNo,
                     parser: parseInt
                 },
-                skillpoint_0: {
-                    name: '技能点是否为0',
-                    type: 'select',
-                    options: options.optYesNo,
-                    parser: parseInt
-                },
                 no_heroids: {
                     name: '没有英雄(;区分)',
                     type: 'midtext',
@@ -850,6 +848,22 @@
                     name: '当前经验药水量小于(药水礼盒所得药水的倍率)',
                     type: 'midtext',
                     parser: parseInt,
+                },
+                coin_less_skillcost: {
+                    name: '当前金币量小于上次技能升级所消耗的金币量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                exp_less_herolevelcost: {
+                    name: '当前药水量小于上次英雄升级所消耗的药水量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                rune_level: {
+                    name: '购买符文的等级(-区分)',
+                    type: 'midtext'
                 }
             }
         }
