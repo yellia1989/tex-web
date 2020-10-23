@@ -5,7 +5,7 @@ import (
     "strconv"
     dsql "database/sql"
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/common"
+	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -27,25 +27,14 @@ func WelfareTaskList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetStatDb()
+	db := cfg.StatDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-		return err
-	}
-
     sql := "SELECT id,name,roles,cmds,begin_time,end_time,cmd_time,status,step FROM welfare_task WHERE status != 2 order by id desc"
     var total int
-    err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
+    err := db.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
     if err != nil {
         return err
     }
@@ -56,7 +45,7 @@ func WelfareTaskList(c echo.Context) error {
 
 	c.Logger().Debug(sql)
 
-	rows, err := tx.Query(sql)
+	rows, err := db.Query(sql)
 	if err != nil {
 		return err
 	}
@@ -75,7 +64,7 @@ func WelfareTaskList(c echo.Context) error {
         tasks = append(tasks, task)
     }
 
-	if err := tx.Commit(); err != nil {
+	if err := rows.Err(); err != nil {
 		return err
 	}
 
@@ -89,31 +78,16 @@ func WelfareTaskPause(c echo.Context) error {
         return ctx.SendError(-1, "福利id不存在")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-		return err
-	}
-
     sql := "UPDATE welfare_task SET status=0 WHERE id in (?)"
-    _, err = tx.Exec(sql, strings.Join(ids, ","))
+    _, err := db.Exec(sql, strings.Join(ids, ","))
     if err != nil {
         return err
     }
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 
     return ctx.SendResponse("暂停福利成功")
 }
@@ -125,31 +99,16 @@ func WelfareTaskResume(c echo.Context) error {
         return ctx.SendError(-1, "福利id不存在")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-		return err
-	}
-
     sql := "UPDATE welfare_task SET status=1 WHERE id in (?)"
-    _, err = tx.Exec(sql, strings.Join(ids, ","))
+    _, err := db.Exec(sql, strings.Join(ids, ","))
     if err != nil {
         return err
     }
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 
     return ctx.SendResponse("恢复福利成功")
 }
@@ -170,31 +129,16 @@ func WelfareTaskUpdate(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-		return err
-	}
-
     sql := "UPDATE welfare_task SET name=?, roles=?, cmds=? ,cmd_time=? ,begin_time=?, end_time=?, step=? WHERE id=?"
-    _, err = tx.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, sBeginTime, sEndTime, step, sId)
+    _, err := db.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, sBeginTime, sEndTime, step, sId)
     if err != nil {
         return err
     }
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 
     return ctx.SendResponse("更新福利成功")
 }
@@ -214,31 +158,16 @@ func WelfareTaskAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-		return err
-	}
-
     sql := "INSERT INTO welfare_task(name,roles,cmds,cmd_time,status,begin_time,end_time,step) VALUES(?,?,?,?,?,?,?,?)"
-    _, err = tx.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, 1, sBeginTime, sEndTime, step)
+    _, err := db.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, 1, sBeginTime, sEndTime, step)
     if err != nil {
         return err
     }
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 
     return ctx.SendResponse("添加福利成功")
 }
@@ -250,31 +179,16 @@ func WelfareTaskDel(c echo.Context) error {
         return ctx.SendError(-1, "福利id不存在")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
     }
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-		return err
-	}
-
     sql := "UPDATE welfare_task SET status=2 WHERE id in(?)"
-    _, err = tx.Exec(sql, strings.Join(ids, ","))
+    _, err := db.Exec(sql, strings.Join(ids, ","))
     if err != nil {
         return err
     }
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 
     return ctx.SendResponse("删除福利成功")
 }
@@ -299,20 +213,9 @@ func WelfareRoleList(c echo.Context) error {
     begin_time := ctx.QueryParam("startTime")
     end_time := ctx.QueryParam("endTime")
 
-	db := common.GetStatDb()
+	db := cfg.StatDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
-	}
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-		return err
 	}
 
     sql := "SELECT welfare_task.name as taskname,a.roleid,a.zoneid,a.cmd,a.time,a.exec_time,a.exec_result FROM (SELECT roleid,zoneid,cmd,time,exec_time,exec_result,taskid_pk FROM welfare_roles WHERE time BETWEEN '"+begin_time+"' AND '"+end_time+"' and zoneid="+zoneid+" and taskid_pk="+taskid
@@ -321,7 +224,7 @@ func WelfareRoleList(c echo.Context) error {
     }
     sql += ") a LEFT JOIN welfare_task on welfare_task.id = a.taskid_pk"
     var total int
-    err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
+    err := db.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
     if err != nil {
         return err
     }
@@ -329,7 +232,7 @@ func WelfareRoleList(c echo.Context) error {
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
     sql += " LIMIT "+limitstart+","+limitrow
-	rows, err := tx.Query(sql)
+	rows, err := db.Query(sql)
 	if err != nil {
 		return err
 	}
@@ -347,10 +250,6 @@ func WelfareRoleList(c echo.Context) error {
         r.ExecResult = exec_result.String
         roles = append(roles, r)
     }
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
 
 	return ctx.SendArray(roles, total)
 }

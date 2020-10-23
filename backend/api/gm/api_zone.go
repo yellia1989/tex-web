@@ -8,13 +8,14 @@ import (
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
 )
 
 func ZoneMap() map[uint32]rpc.ZoneInfo {
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
 
     mzone := make(map[uint32]rpc.ZoneInfo)
 
@@ -27,10 +28,10 @@ func ZoneMap() map[uint32]rpc.ZoneInfo {
 }
 
 func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
 
     var zones []rpc.ZoneInfo
     ret, err := dirPrx.GetAllZone(&zones)
@@ -101,10 +102,10 @@ func ZoneAdd(c echo.Context) error {
         return err
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
     var channels []rpc.ChannelAddr
     ret, err := loginPrx.GetAllChannel(&channels)
@@ -126,31 +127,31 @@ func ZoneAdd(c echo.Context) error {
         zone.MVersion[v.SChannel] = ver
     }
 
-    sDivision := fmt.Sprintf(common.GetApp()+".zone.%d", zone.IZoneId)
+    sDivision := fmt.Sprintf(cfg.App+".zone.%d", zone.IZoneId)
     sHandleConnEp := ctx.FormValue("sHandleConn")
     sConnServiceObjEp := ctx.FormValue("sConnServiceObj")
     sGameServiceObjEp := ctx.FormValue("sGameServiceObj")
 
-    if err := registryAdd(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
+    if err := registryAdd(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
         return fmt.Errorf("增加ConnServer.HandleConn失败: %s", err.Error())
     }
-    if err := registryAdd(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
-        registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
+    if err := registryAdd(cfg.App+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
+        registryDel(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp)
         return fmt.Errorf("增加ConnServer.ConnServiceObj失败: %s", err.Error())
     }
-    if err := registryAdd(common.GetApp()+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
-        registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
-        registryDel(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+    if err := registryAdd(cfg.App+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
+        registryDel(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel(cfg.App+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
         return fmt.Errorf("增加GameServer.GameServiceObj失败: %s", err.Error())
     }
 
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
     ret, err = dirPrx.CreateZone(*zone.Copy())
     if err := checkRet(ret, err); err != nil {
-        registryDel(common.GetApp()+".ConnServer.HandleConn", sDivision, sHandleConnEp)
-        registryDel(common.GetApp()+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
-        registryDel(common.GetApp()+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
+        registryDel(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp)
+        registryDel(cfg.App+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
+        registryDel(cfg.App+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
         return fmt.Errorf("增加新分区失败: %s", err.Error())
     }
 
@@ -164,10 +165,10 @@ func ZoneDel(c echo.Context) error {
         return ctx.SendError(-1, "分区不存在")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
 
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)
@@ -188,10 +189,10 @@ func ZoneUpdate(c echo.Context) error {
         return err
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
     var channels []rpc.ChannelAddr
     ret, err := loginPrx.GetAllChannel(&channels)
@@ -214,7 +215,7 @@ func ZoneUpdate(c echo.Context) error {
     }
 
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
     ret, err = dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
     if err := checkRet(ret, err); err != nil {
         return err
@@ -231,10 +232,10 @@ func ZoneUpdateVersion(c echo.Context) error {
         return ctx.SendError(-1, "分区不存在")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     loginPrx := new(rpc.LoginService)
-    comm.StringToProxy(common.GetApp()+".LoginServer.LoginServiceObj", loginPrx)
+    comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
     var channels []rpc.ChannelAddr
     ret, err := loginPrx.GetAllChannel(&channels)
@@ -257,7 +258,7 @@ func ZoneUpdateVersion(c echo.Context) error {
     }
 
     dirPrx := new(rpc.DirService)
-    comm.StringToProxy(common.GetApp()+".DirServer.DirServiceObj", dirPrx)
+    comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
 
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)

@@ -1,4 +1,4 @@
-package cron
+package welfare
 
 import (
     "time"
@@ -7,15 +7,13 @@ import (
     "sort"
     "strconv"
     "math/rand"
+    "context"
     dsql "database/sql"
+	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
 	"github.com/yellia1989/tex-web/backend/api/gm"
 	"github.com/yellia1989/tex-go/tools/log"
 )
-
-func newWelfare() *welfare {
-    return &welfare{}
-}
 
 type wfRole struct {
     id int
@@ -26,7 +24,7 @@ type wfRole struct {
 }
 
 type wfTask struct {
-    db *dsql.DB
+    conn *dsql.Conn
     id int
     sroles string
     scmds string
@@ -67,18 +65,12 @@ func (task *wfTask) run(now time.Time) bool {
             return true
         }
 
-        tx, err := task.db.Begin()
+        tx, err := task.conn.BeginTx(ctx, nil)
 	    if err != nil {
             log.Errorf("welfare开始事务失败:%s, taskid: %d", err.Error(), task.id)
             return false
 	    }
 	    defer tx.Rollback()
-
-	    _, err = tx.Exec("USE db_stat")
-	    if err != nil {
-            log.Errorf("welfare exec: %s, taskid: %d", err.Error(), task.id)
-            return false
-	    }
 
         var buff bytes.Buffer
         if !task.generate(now, &buff) {
@@ -109,21 +101,8 @@ func (task *wfTask) run(now time.Time) bool {
 
     // 读取今日福利
     if len(task.roles) == 0 {
-        tx, err := task.db.Begin()
-	    if err != nil {
-            log.Errorf("welfare开始事务失败:%s, taskid: %d", err.Error(), task.id)
-            return false
-	    }
-	    defer tx.Rollback()
-
-	    _, err = tx.Exec("USE db_stat")
-	    if err != nil {
-            log.Errorf("welfare exec: %s, taskid: %d", err.Error(), task.id)
-            return false
-	    }
-
         sql := "SELECT id,zoneid,roleid,time,cmd FROM welfare_roles WHERE status = 0 and taskid_pk = ? order by time asc limit 100"
-	    rows, err := tx.Query(sql, task.id)
+	    rows, err := task.conn.QueryContext(ctx, sql, task.id)
 	    if err != nil {
             log.Errorf("welfare query: %s, taskid: %d", err.Error(), task.id)
             return false
@@ -137,15 +116,9 @@ func (task *wfTask) run(now time.Time) bool {
                 log.Errorf("welfare scan: %s, taskid: %d", err.Error(), task.id)
                 return false
             } else {
-                local, _ := time.LoadLocation("Local")
-                r.t,_ = time.ParseInLocation("2006-01-02 15:04:05", t, local)
+                r.t = common.ParseTimeInLocal("2006-01-02 15:04:05", t)
                 task.roles[r.id] = &r
             }
-        }
-
-        if err := tx.Commit(); err != nil {
-            log.Errorf("welfare commit: %s, taskid: %d", err.Error(), task.id)
-            return false
         }
     } else {
         // 调用gm发奖
@@ -157,19 +130,6 @@ func (task *wfTask) run(now time.Time) bool {
             roles = append(roles, r)
         }
         if len(roles) != 0 {
-            tx, err := task.db.Begin()
-	        if err != nil {
-                log.Errorf("welfare开始事务失败:%s, taskid: %d", err.Error(), task.id)
-                return false
-	        }
-	        defer tx.Rollback()
-
-	        _, err = tx.Exec("USE db_stat")
-	        if err != nil {
-                log.Errorf("welfare exec: %s, taskid: %d", err.Error(), task.id)
-                return false
-	        }
-
             var result string
             for _, r := range roles {
                 if err := gm.Cmd("welfare", strconv.Itoa(r.zoneid), r.cmd, &result); err != nil {
@@ -178,16 +138,11 @@ func (task *wfTask) run(now time.Time) bool {
 
                 delete(task.roles, r.id)
 
- 	            _, err = tx.Exec("UPDATE welfare_roles SET status=1,exec_time='"+now.Format("2006-01-02 15:04:05")+"',exec_result='"+result+"' WHERE id="+strconv.Itoa(r.id))
+ 	            _, err := task.conn.ExecContext(ctx, "UPDATE welfare_roles SET status=1,exec_time='"+now.Format("2006-01-02 15:04:05")+"',exec_result='"+result+"' WHERE id="+strconv.Itoa(r.id))
 	            if err != nil {
                     log.Errorf("welfare update role status: %s, id: %d", err.Error(), r.id)
                     return false
 	            }
-            }
-
-            if err := tx.Commit(); err != nil {
-                log.Errorf("welfare commit update role status: %s, taskid: %d", err.Error(), task.id)
-                return false
             }
         }
     }
@@ -201,17 +156,8 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
         return false
     }
 
-    local, _ := time.LoadLocation("Local")
-    cmd_begin_time, err := time.ParseInLocation("2006-01-02 15:04:05", now.Format("2006-01-02") + " " + vcmdtime[0], local)
-    if err != nil {
-        log.Errorf("invalid cmd_time format: %s, taskid: %d", task.cmd_time, task.id)
-        return false
-    }
-    cmd_end_time, err := time.ParseInLocation("2006-01-02 15:04:05", now.Format("2006-01-02") + " " + vcmdtime[1], local)
-    if err != nil {
-        log.Errorf("invalid cmd_time format: %s, taskid: %d", task.cmd_time, task.id)
-        return false
-    }
+    cmd_begin_time := common.ParseTimeInLocal("2006-01-02 15:04:05", now.Format("2006-01-02") + " " + vcmdtime[0])
+    cmd_end_time := common.ParseTimeInLocal("2006-01-02 15:04:05", now.Format("2006-01-02") + " " + vcmdtime[1])
     if cmd_begin_time.After(cmd_end_time) {
         cmd_begin_time, cmd_end_time = cmd_end_time, cmd_begin_time
     }
@@ -230,6 +176,7 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
         return false
     }
 
+    var err error
     role2cmd := make([]*wfRole, 0)
     for _, r := range vroles {
         vr := strings.Split(r, ",")
@@ -275,46 +222,49 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
     return true
 }
 
-type welfare struct {
-    db *dsql.DB
-    tasks map[int]*wfTask
+var ctx context.Context
+var conn *dsql.Conn
+var tasks map[int]*wfTask
+
+func createNewConn() (err error) {
+    if conn != nil {
+        conn.Close()
+    }
+    conn, err = cfg.StatDb.Conn(ctx)
+    return err
 }
 
-func (wf *welfare) run(now time.Time) {
-    if wf.db == nil {
-        wf.db = common.GetStatDb()
-        if wf.db == nil {
-            log.Error("welfare连接数据库异常")
+func init() {
+    ctx = context.Background()
+    tasks = make(map[int]*wfTask,0)
+}
+
+func Cron(now time.Time) {
+    if conn == nil {
+        if err := createNewConn(); err != nil {
+            log.Errorf("create welfare conn err: %s", err.Error())
             return
         }
-        wf.tasks = make(map[int]*wfTask,0)
     }
 
-    tx, err := wf.db.Begin()
-	if err != nil {
-        log.Errorf("welfare开始事务失败:%s", err.Error())
-        return
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE db_stat")
-	if err != nil {
-        log.Errorf("welfare exec: %s", err.Error())
-        return
-	}
+    if err := conn.PingContext(ctx); err != nil {
+        if err := createNewConn(); err != nil {
+            log.Errorf("create welfare conn err: %s", err.Error())
+            return
+        }
+    }
 
     sql := "SELECT id,roles,cmds,cmd_time,cur_time,status,begin_time,end_time,step FROM welfare_task WHERE ? between begin_time and end_time"
-	rows, err := tx.Query(sql, now.Format("2006-01-02"))
+	rows, err := conn.QueryContext(ctx, sql, now.Format("2006-01-02"))
 	if err != nil {
         log.Errorf("welfare query: %s", err.Error())
         return
 	}
 	defer rows.Close()
 
-    local, _ := time.LoadLocation("Local")
     for rows.Next() {
         var task wfTask
-        task.db = wf.db
+        task.conn = conn
         task.roles = make(map[int]*wfRole,0)
         var cur_time dsql.NullString
         var beginTime string
@@ -324,13 +274,13 @@ func (wf *welfare) run(now time.Time) {
         } else {
             task.scur_time = cur_time.String
             if task.scur_time != "" {
-                task.cur_time, _ = time.ParseInLocation("2006-01-02", task.scur_time, local)
+                task.cur_time = common.ParseTimeInLocal("2006-01-02", task.scur_time)
             }
-            task.begin_time, _ = time.ParseInLocation("2006-01-02", beginTime, local)
-            task.end_time, _ = time.ParseInLocation("2006-01-02", endTime, local)
+            task.begin_time = common.ParseTimeInLocal("2006-01-02", beginTime)
+            task.end_time = common.ParseTimeInLocal("2006-01-02", endTime)
 
-            if oldtask,ok := wf.tasks[task.id]; !ok {
-                wf.tasks[task.id] = &task
+            if oldtask,ok := tasks[task.id]; !ok {
+                tasks[task.id] = &task
             } else {
                 oldtask.sroles = task.sroles
                 oldtask.scmds = task.scmds
@@ -342,12 +292,8 @@ func (wf *welfare) run(now time.Time) {
             }
         }
     }
-    if err := tx.Commit(); err != nil {
-        log.Errorf("welfare commit: %s", err.Error())
-        return;
-    }
 
-    for _, task := range wf.tasks {
+    for _, task := range tasks {
         task.run(now)
     }
 }

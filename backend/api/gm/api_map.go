@@ -6,7 +6,7 @@ import (
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
 )
 
@@ -18,7 +18,7 @@ type _mapData struct {
 func MapSimpleList() []rpc.ZoneInfo {
     l := make([]rpc.ZoneInfo, 0)
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
         return l
 	}
@@ -29,7 +29,7 @@ func MapSimpleList() []rpc.ZoneInfo {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
         return l
 	}
@@ -66,7 +66,7 @@ func MapList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -77,7 +77,7 @@ func MapList(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func MapAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -147,7 +147,7 @@ func MapAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -172,7 +172,7 @@ func MapDel(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
     }
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -183,7 +183,7 @@ func MapDel(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -209,7 +209,7 @@ func MapEdit(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := common.GetDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -220,7 +220,7 @@ func MapEdit(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE "+common.GetDbPrefix()+"db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}

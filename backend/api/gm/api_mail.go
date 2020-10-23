@@ -11,6 +11,7 @@ import (
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-go/tools/util"
 )
 
@@ -32,10 +33,10 @@ func MailList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     mailPrx := new(rpc.MailService)
-    comm.StringToProxy(common.GetApp()+".MailServer.MailServiceObj", mailPrx)
+    comm.StringToProxy(cfg.App+".MailServer.MailServiceObj", mailPrx)
 
     var vMail []rpc.MailDataInfo
     ret, err := mailPrx.GetAllMail(&vMail)
@@ -82,10 +83,10 @@ func MailTestSend(c echo.Context) error {
     m.VSendZoneIds = append(m.VSendZoneIds, uint32(iZoneId))
     m.VToUser = append(m.VToUser, iRoleId)
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     mailPrx := new(rpc.MailService)
-    comm.StringToProxy(common.GetApp()+".MailServer.MailServiceObj", mailPrx)
+    comm.StringToProxy(cfg.App+".MailServer.MailServiceObj", mailPrx)
 
     ret, err := mailPrx.AddMail(*m.Copy())
     if err := checkRet(ret, err); err != nil {
@@ -125,10 +126,10 @@ func MailSend(c echo.Context) error {
         }
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     mailPrx := new(rpc.MailService)
-    comm.StringToProxy(common.GetApp()+".MailServer.MailServiceObj", mailPrx)
+    comm.StringToProxy(cfg.App+".MailServer.MailServiceObj", mailPrx)
 
     zonestr := ctx.FormValue("zoneids")
     filename := ctx.FormValue("filepath")
@@ -220,10 +221,10 @@ func MailDel(c echo.Context) error {
         return ctx.SendError(-1, "邮件不存在")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     mailPrx := new(rpc.MailService)
-    comm.StringToProxy(common.GetApp()+".MailServer.MailServiceObj", mailPrx)
+    comm.StringToProxy(cfg.App+".MailServer.MailServiceObj", mailPrx)
 
     for _, id := range ids {
         id, _ := strconv.ParseUint(id, 10, 32)
@@ -252,10 +253,10 @@ func MailSend2(c echo.Context) error {
     m.IDelTimeAfterOpen = uint32(iDelTimeAfterOpen)
     m.IDelTimeAfterRcvAttach = uint32(iDelTimeAfterRcvAttach)
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     mailPrx := new(rpc.MailService)
-    comm.StringToProxy(common.GetApp()+".MailServer.MailServiceObj", mailPrx)
+    comm.StringToProxy(cfg.App+".MailServer.MailServiceObj", mailPrx)
 
     // 指定玩家发送
     filename := ctx.FormValue("filepath")

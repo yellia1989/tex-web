@@ -7,13 +7,16 @@ layui.use(["okUtils", "okCountUp"], function () {
   function realText() {
     okUtils.ajax("/api/game/real/stat", "get", null, false).done(function (response) {
       let data = response.data;
-      $("#today-income").text(data.todayIncome);
-      $("#total-income").text(data.totalIncome);
-      $("#today-active").text(data.todayActive);
-      $("#today-newadd").text(data.todayNewadd);
-      $("#total-newadd").text(data.totalNewadd);
-      $("#today-account").text(data.todayAccount);
-      $("#total-account").text(data.totalAccount);
+      $("#accountToday").text(data.accountToday);
+      $("#accountTotal").text(data.accountTotal);
+      $("#activeToday").text(data.activeToday);
+      $("#newaddToday").text(data.newaddToday);
+      $("#newaddTotal").text(data.newaddTotal);
+      $("#rgeNewRoleNumToday").text(data.rgeNewRoleNumToday);
+      $("#rgeRoleNumToday").text(data.rgeRoleNumToday);
+      $("#rgeRoleNumTotal").text(data.rgeRoleNumTotal);
+      $("#rgeToday").text(data.rgeToday/100);
+      $("#rgeTotal").text(data.rgeTotal/100);
 
       let elem_nums = $(".stat-text");
       elem_nums.each(function (i, j) {

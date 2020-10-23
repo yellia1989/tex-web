@@ -9,8 +9,9 @@ import (
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api"
+    "github.com/yellia1989/tex-web/backend/api/stat"
     "github.com/yellia1989/tex-web/backend/cron"
-    "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-go/tools/log"
 )
 
@@ -65,13 +66,13 @@ func httpErrorHandler(err error, c echo.Context) {
 }
 
 func main() {
-    if err := common.ParseCfg("conf.cfg"); err != nil {
+    if err := cfg.ParseCfg("conf.cfg"); err != nil {
         fmt.Printf("%s", err)
         os.Exit(-1)
     }
     
-    debug := common.Cfg.GetBool("debug", false)
-    framework_debug := common.Cfg.GetBool("framework-debug", false)
+    debug := cfg.Debug
+    framework_debug := cfg.FrameworkDebug
 
     // Echo instance
     e := echo.New()
@@ -105,11 +106,13 @@ func main() {
         log.SetFrameworkLevel(log.DEBUG)
     }
 
+    stat.InitCondition()
+
     // Start Cron
     cron.Start()
 
     // Start server
-    e.Logger.Fatal(e.Start(common.Cfg.GetCfg("listen", "")))
+    e.Logger.Fatal(e.Start(cfg.Listen))
 
     // Stop Cron
     cron.Stop()

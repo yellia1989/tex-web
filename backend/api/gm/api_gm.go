@@ -10,7 +10,7 @@ import (
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/api/sys"
-    "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
 )
 
 func checkRet(ret int32, err error) error {
@@ -37,8 +37,8 @@ func GameCmd(c echo.Context) error {
     buff := bytes.Buffer{}
     u := ctx.GetUser()
 
-    comm := common.GetLocator()
-    app := common.GetApp()
+    comm := cfg.Comm
+    app := cfg.App
 
     zoneids := strings.Split(szoneid, ",")
     for _,zoneid := range zoneids {
@@ -97,8 +97,8 @@ func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
 }
 
 func Cmd(userName string, zoneid string, cmd string, result *string) error {
-    comm := common.GetLocator()
-    app := common.GetApp()
+    comm := cfg.Comm
+    app := cfg.App
 
     gamePrx := new(rpc.GameService)
     comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
@@ -243,8 +243,8 @@ func RealMap(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    comm := common.GetLocator()
-    app := common.GetApp()
+    comm := cfg.Comm
+    app := cfg.App
 
     mapPrx := new(rpc.MapService)
     comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
@@ -274,8 +274,8 @@ func RealMapObj(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    comm := common.GetLocator()
-    app := common.GetApp()
+    comm := cfg.Comm
+    app := cfg.App
 
     mapPrx := new(rpc.MapService)
     comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)

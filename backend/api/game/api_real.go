@@ -1,30 +1,15 @@
 package game
 
 import (
-    "fmt"
     "time"
-    "database/sql"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
 )
 
 func realtime(day string, table string) ([]uint32,error) {
-    db := common.GetLogDb()
-    if db == nil {
-        return nil,fmt.Errorf("连接数据库失败")
-    }
-
-    tx, err := db.Begin()
-    if err != nil {
-        return nil,err
-    }
-    defer tx.Rollback()
-
-    _, err = tx.Exec("USE log_global")
-    if err != nil {
-        return nil,err
-    }
+    db := cfg.LogDb
 
     sql := "SELECT time, sum(num) as num FROM realtime_"+table+" WHERE left(time,10)="
     if table == "income" {
@@ -34,7 +19,7 @@ func realtime(day string, table string) ([]uint32,error) {
     sql += "'"+day+"'"
     sql += " GROUP BY time ORDER BY time"
 
-    rows, err := tx.Query(sql)
+    rows, err := db.Query(sql)
     if err != nil {
         return nil,err
     }
@@ -53,15 +38,7 @@ func realtime(day string, table string) ([]uint32,error) {
         return nil,err
     }
 
-    if err := tx.Commit(); err != nil {
-        return nil,err
-    }
-
-    daytime, err := time.Parse("2006-01-02 15:04:05", day + " 00:00:00")
-    if err != nil {
-        return nil,err
-    }
-
+    daytime := common.ParseTimeInLocal("2006-01-02", day)
     ret := make([]uint32,288)
     for i,_ := range ret {
         t := daytime.Add(time.Duration(i*300)*time.Second).Format("2006-01-02 15:04:05")
@@ -204,7 +181,7 @@ func RealStageVerify(c echo.Context) error {
     data["times"] = times
 
     // 欺骗次数
-    cheattimes, err := realtime(now.Format("2006-01-02"), "stageverify_queue")
+    cheattimes, err := realtime(now.Format("2006-01-02"), "stageverify_cheat")
     if err != nil {
         return err
     }
@@ -263,92 +240,5 @@ func RealFightVerify(c echo.Context) error {
     }
     data["usetime"] = usetime
     
-    return ctx.SendResponse(data)
-}
-
-func stat(ssql string) (int32,error) {
-    var total sql.NullInt32
-    db := common.GetLogDb()
-    if db == nil {
-        return total.Int32,fmt.Errorf("连接数据库失败")
-    }
-
-    tx, err := db.Begin()
-    if err != nil {
-        return total.Int32,err
-    }
-    defer tx.Rollback()
-
-    _, err = tx.Exec("USE log_global")
-    if err != nil {
-        return total.Int32,err
-    }
-
-    err = tx.QueryRow(ssql).Scan(&total)
-    if err != nil {
-        return total.Int32,err
-    }
-
-    if err := tx.Commit(); err != nil {
-        return total.Int32,err
-    }
-
-    return total.Int32,nil
-}
-
-func RealStat(c echo.Context) error {
-    ctx := c.(*mid.Context)
-    now := time.Now()
-
-    data := make(map[string]int32, 0)
-
-    // 今日充值
-    todayIncome, err := stat("SELECT round(sum(price)) as total FROM iap_recharge WHERE logymd='"+now.Format("2006-01-02")+"'")
-    if err != nil {
-        return err
-    }
-    data["todayIncome"] = todayIncome
-    // 累计充值
-    totalIncome, err := stat("SELECT round(sum(price)) as total FROM iap_recharge")
-    if err != nil {
-        return err
-    }
-    data["totalIncome"] = totalIncome
-
-    // 今日活跃
-    todayActive, err := stat("SELECT count(distinct roleid) as total FROM login WHERE logymd='"+now.Format("2006-01-02")+"'")
-    if err != nil {
-        return err
-    }
-    data["todayActive"] = todayActive
-
-    // 今日新增
-    todayNewadd, err := stat("SELECT count(distinct roleid) as total FROM create_role WHERE logymd='"+now.Format("2006-01-02")+"'")
-    if err != nil {
-        return err
-    }
-    data["todayNewadd"] = todayNewadd
-
-    // 累计新增
-    totalNewadd, err := stat("SELECT count(distinct roleid) as total FROM create_role")
-    if err != nil {
-        return err
-    }
-    data["totalNewadd"] = totalNewadd
-
-    // 今日注册
-    todayAccount, err := stat("SELECT count(accountid) as total FROM account_create WHERE timeymd='"+now.Format("2006-01-02")+"'")
-    if err != nil {
-        return err
-    }
-    data["todayAccount"] = todayAccount
-
-    // 累计注册
-    totalAccount, err := stat("SELECT count(accountid) as total FROM account_create")
-    if err != nil {
-        return err
-    }
-    data["totalAccount"] = totalAccount
-
     return ctx.SendResponse(data)
 }

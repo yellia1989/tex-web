@@ -5,7 +5,7 @@ import (
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
 )
 
 type _syslog struct {
@@ -28,7 +28,7 @@ func LogList(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
         return ctx.SendError(-1, "连接数据库失败")
     }
@@ -100,7 +100,7 @@ func LogList(c echo.Context) error {
 
 func LogAdd(userName string, action string, desc string) {
     var err error
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
         return
     }
