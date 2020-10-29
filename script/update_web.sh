@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (d/192.168.0.7 u/101.133.141.46 t/8.210.60.236)"
+	echo "Usage: $0 env (d/192.168.0.7 u/101.133.141.46 t/101.132.43.124)"
 	exit 100
 fi
 
@@ -18,7 +18,7 @@ case "$env" in
     cp ../conf_u.cfg conf.cfg
     ;;
     t)
-    ip=8.210.60.236
+    ip=101.132.43.124
     cp ../conf_t.cfg conf.cfg
     ;;
     *)
