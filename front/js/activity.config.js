@@ -305,6 +305,10 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                show_step: {
+                    name: '显示档位',
+                    type: "text"
                 }
             }
         }
