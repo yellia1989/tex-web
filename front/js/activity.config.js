@@ -430,6 +430,16 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                every_day_pos: {
+                    name: '每日充值档位',
+                    type: 'text',
+                    parser: parseInt,
+                },
+                total_money_pos: {
+                    name: '累计充值档位',
+                    type: 'text',
+                    parser: parseInt,
                 }
             }
         }
