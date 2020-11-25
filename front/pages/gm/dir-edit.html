@@ -74,9 +74,16 @@
           </div>
         </div>
         <div class="layui-inline">
-          <label class="layui-form-label">最大人数</label>
+          <label class="layui-form-label">最大创角</label>
           <div class="layui-input-inline">
             <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
+              lay-verify="required|number" lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">最大在线</label>
+          <div class="layui-input-inline">
+            <input type="text" name="iMaxOnline" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
               lay-verify="required|number" lay-verType="tips">
           </div>
         </div>
@@ -137,6 +144,7 @@
       $("select[name='iIsManual']").val(parent.zonedata.iIsManual);
       $("select[name='iManualZoneStatus']").val(parent.zonedata.iManualZoneStatus);
       $("input[name='iMaxNum']").val(parent.zonedata.iMaxNum);
+      $("input[name='iMaxOnline']").val(parent.zonedata.iMaxOnline);
       $("select[name='iIsKick']").val(parent.zonedata.iIsKick);
       form.render('select');
 

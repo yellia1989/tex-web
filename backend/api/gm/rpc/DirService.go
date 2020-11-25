@@ -206,9 +206,11 @@ type ZoneInfo struct {
 	IPublishTime      uint32                 `json:"iPublishTime"`
 	IIsKick           uint32                 `json:"iIsKick"`
 	MVersion          map[string]ZoneVersion `json:"mVersion"`
+	IMaxOnline        uint32                 `json:"iMaxOnline"`
 	ICurNum           uint32                 `json:"iCurNum"`
 	ILastReportTime   uint32                 `json:"iLastReportTime"`
 	ICurZoneStatus    uint32                 `json:"iCurZoneStatus"`
+	ICurOnline        uint32                 `json:"iCurOnline"`
 }
 
 func (st *ZoneInfo) resetDefault() {
@@ -229,9 +231,11 @@ func (st *ZoneInfo) Copy() *ZoneInfo {
 	for k, v := range st.MVersion {
 		ret.MVersion[k] = *(v.Copy())
 	}
+	ret.IMaxOnline = st.IMaxOnline
 	ret.ICurNum = st.ICurNum
 	ret.ILastReportTime = st.ILastReportTime
 	ret.ICurZoneStatus = st.ICurZoneStatus
+	ret.ICurOnline = st.ICurOnline
 	return ret
 }
 func NewZoneInfo() *ZoneInfo {
@@ -267,9 +271,11 @@ func (st *ZoneInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.MVersion) != 0 {
 		util.Tab(buff, t+1, "}\n")
 	}
+	util.Tab(buff, t+1, util.Fieldname("iMaxOnline")+fmt.Sprintf("%v\n", st.IMaxOnline))
 	util.Tab(buff, t+1, util.Fieldname("iCurNum")+fmt.Sprintf("%v\n", st.ICurNum))
 	util.Tab(buff, t+1, util.Fieldname("iLastReportTime")+fmt.Sprintf("%v\n", st.ILastReportTime))
 	util.Tab(buff, t+1, util.Fieldname("iCurZoneStatus")+fmt.Sprintf("%v\n", st.ICurZoneStatus))
+	util.Tab(buff, t+1, util.Fieldname("iCurOnline")+fmt.Sprintf("%v\n", st.ICurOnline))
 }
 func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -346,6 +352,10 @@ func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 			st.MVersion[k] = v
 		}
 	}
+	err = up.ReadUint32(&st.IMaxOnline, 16, false)
+	if err != nil {
+		return err
+	}
 	err = up.ReadUint32(&st.ICurNum, 20, false)
 	if err != nil {
 		return err
@@ -355,6 +365,10 @@ func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.ICurZoneStatus, 22, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.ICurOnline, 23, false)
 	if err != nil {
 		return err
 	}
@@ -479,6 +493,12 @@ func (st *ZoneInfo) WriteStruct(p *codec.Packer) error {
 			}
 		}
 	}
+	if false || st.IMaxOnline != 0 {
+		err = p.WriteUint32(16, st.IMaxOnline)
+		if err != nil {
+			return err
+		}
+	}
 	if false || st.ICurNum != 0 {
 		err = p.WriteUint32(20, st.ICurNum)
 		if err != nil {
@@ -493,6 +513,12 @@ func (st *ZoneInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.ICurZoneStatus != 0 {
 		err = p.WriteUint32(22, st.ICurZoneStatus)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.ICurOnline != 0 {
+		err = p.WriteUint32(23, st.ICurOnline)
 		if err != nil {
 			return err
 		}
@@ -909,7 +935,41 @@ func (s *DirService) DeleteZone(iZoneId uint32) (int32, error) {
 	_ = length
 	return ret, nil
 }
-func (s *DirService) ReportZone(iZoneId uint32, iCurNum uint32) (int32, error) {
+func (s *DirService) ReportZone(iZoneId uint32, iCurOnline uint32) (int32, error) {
+	p := codec.NewPacker()
+	var ret int32
+	var err error
+	var has bool
+	var ty uint32
+	var length uint32
+	if true || iZoneId != 0 {
+		err = p.WriteUint32(1, iZoneId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || iCurOnline != 0 {
+		err = p.WriteUint32(2, iCurOnline)
+		if err != nil {
+			return ret, err
+		}
+	}
+	var rsp *protocol.ResponsePacket
+	err = s.proxy.Invoke("reportZone", p.ToBytes(), &rsp)
+	if err != nil {
+		return ret, err
+	}
+	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
+	err = up.ReadInt32(&ret, 0, true)
+	if err != nil {
+		return ret, err
+	}
+	_ = has
+	_ = ty
+	_ = length
+	return ret, nil
+}
+func (s *DirService) ReportZone2(iZoneId uint32, iCurNum uint32) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
 	var err error
@@ -929,7 +989,7 @@ func (s *DirService) ReportZone(iZoneId uint32, iCurNum uint32) (int32, error) {
 		}
 	}
 	var rsp *protocol.ResponsePacket
-	err = s.proxy.Invoke("reportZone", p.ToBytes(), &rsp)
+	err = s.proxy.Invoke("reportZone2", p.ToBytes(), &rsp)
 	if err != nil {
 		return ret, err
 	}
@@ -1024,7 +1084,8 @@ type _DirServiceImpl interface {
 	CreateZone(ctx context.Context, stZoneInfo ZoneInfo) (int32, error)
 	ModifyZone(ctx context.Context, stZoneInfo ZoneInfo, stModify ZoneModifyInfo) (int32, error)
 	DeleteZone(ctx context.Context, iZoneId uint32) (int32, error)
-	ReportZone(ctx context.Context, iZoneId uint32, iCurNum uint32) (int32, error)
+	ReportZone(ctx context.Context, iZoneId uint32, iCurOnline uint32) (int32, error)
+	ReportZone2(ctx context.Context, iZoneId uint32, iCurNum uint32) (int32, error)
 	GetZone(ctx context.Context, iZoneId uint32, stZoneInfo *ZoneInfo) (int32, error)
 	GetAllZone(ctx context.Context, vZoneInfo *[]ZoneInfo) (int32, error)
 }
@@ -1147,6 +1208,38 @@ func _DirServiceReportZoneImpl(ctx context.Context, serviceImpl interface{}, up 
 	_ = has
 	return nil
 }
+func _DirServiceReportZone2Impl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+	var err error
+	var length uint32
+	var ty uint32
+	var has bool
+	impl := serviceImpl.(_DirServiceImpl)
+	var p1 uint32
+	err = up.ReadUint32(&p1, 1, true)
+	if err != nil {
+		return err
+	}
+	var p2 uint32
+	err = up.ReadUint32(&p2, 2, true)
+	if err != nil {
+		return err
+	}
+	var ret int32
+	ret, err = impl.ReportZone2(ctx, p1, p2)
+	if err != nil {
+		return err
+	}
+	if true || ret != 0 {
+		err = p.WriteInt32(0, ret)
+		if err != nil {
+			return err
+		}
+	}
+	_ = length
+	_ = ty
+	_ = has
+	return nil
+}
 func _DirServiceGetZoneImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length uint32
@@ -1252,6 +1345,12 @@ func (s *DirService) Dispatch(ctx context.Context, serviceImpl interface{}, req 
 		texret = protocol.SDPSERVERSUCCESS
 	case "reportZone":
 		err = _DirServiceReportZoneImpl(ctx, serviceImpl, up, p)
+		if err != nil {
+			break
+		}
+		texret = protocol.SDPSERVERSUCCESS
+	case "reportZone2":
+		err = _DirServiceReportZone2Impl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

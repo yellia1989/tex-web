@@ -69,7 +69,7 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号"},
-          { field: "iZoneId", title: "分区ID", width: 90},
+          { field: "iZoneId", title: "分区ID", width: 70},
           { field: "sZoneName", title: "分区名字", width: 90 },
           { field: "sConnServer", title: "ConnServer", width: 120 },
           {
@@ -105,7 +105,6 @@
               return ret;
             }
           },
-          { field: "iMaxNum", title: "最大人数", width: 90 },
           {
             field: "iPublishTime", title: "开区时间", width: 170, templet: function (d) {
               let ret = okUtils.dateFormat(new Date(d.iPublishTime * 1000), 'yyyy-MM-dd hh:mm:ss');
@@ -115,7 +114,10 @@
               return ret;
             }
           },
-          { field: "iCurNum", title: "当前在线", width: 90 },
+          { field: "iMaxNum", title: "最大创角", width: 90 },
+          { field: "iCurNum", title: "当前创角", width: 90 },
+          { field: "iMaxOnline", title: "最大在线", width: 90 },
+          { field: "iCurOnline", title: "当前在线", width: 90 },
           {
             field: "iCurZoneStatus", title: "当前状态", width: 90, templet: function (d) {
               let ret = '';
