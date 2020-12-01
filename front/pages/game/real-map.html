@@ -25,7 +25,7 @@
 </div>
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
-<script src="/lib/echarts/echarts.min.js"></script>
+<script src="/lib/echarts/echarts.js"></script>
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
 <script>
   layui.use(["okUtils", "okLayer", "form"], function () {
@@ -60,7 +60,7 @@
       },
     });
 
-    let myChart = echarts.init(document.getElementById('main'), null, {renderer:'svg'});
+    let myChart = echarts.init(document.getElementById('main'), null, {renderer:'canvas'});
     let option = {
           xAxis: {
             type: 'value',
@@ -116,7 +116,7 @@
         myChart.setOption({
           series: [{
               name: '城市',
-              type: 'effectScatter',
+              type: 'scatter',
               symbolSize: 10,
               itemStyle: {
                 color: '#FF2371',
