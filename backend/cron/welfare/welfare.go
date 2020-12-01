@@ -19,6 +19,7 @@ type wfRole struct {
     id int
     zoneid int
     roleid int
+    mapid int
     t time.Time
     cmd string
 }
@@ -36,6 +37,7 @@ type wfTask struct {
     end_time time.Time
     step int
     cur_time time.Time
+    slg int
 }
 
 type wfRoleSorter []*wfRole
@@ -101,7 +103,7 @@ func (task *wfTask) run(now time.Time) bool {
 
     // 读取今日福利
     if len(task.roles) == 0 {
-        sql := "SELECT id,zoneid,roleid,time,cmd FROM welfare_roles WHERE status = 0 and taskid_pk = ? order by time asc limit 100"
+        sql := "SELECT id,zoneid,roleid,mapid,time,cmd FROM welfare_roles WHERE status = 0 and taskid_pk = ? order by time asc limit 100"
 	    rows, err := task.conn.QueryContext(ctx, sql, task.id)
 	    if err != nil {
             log.Errorf("welfare query: %s, taskid: %d", err.Error(), task.id)
@@ -112,7 +114,7 @@ func (task *wfTask) run(now time.Time) bool {
         var t string
         for rows.Next() {
             var r wfRole
-            if err := rows.Scan(&r.id, &r.zoneid, &r.roleid, &t, &r.cmd); err != nil {
+            if err := rows.Scan(&r.id, &r.zoneid, &r.roleid, &r.mapid, &t, &r.cmd); err != nil {
                 log.Errorf("welfare scan: %s, taskid: %d", err.Error(), task.id)
                 return false
             } else {
@@ -132,7 +134,7 @@ func (task *wfTask) run(now time.Time) bool {
         if len(roles) != 0 {
             var result string
             for _, r := range roles {
-                if err := gm.Cmd("welfare", strconv.Itoa(r.zoneid), r.cmd, &result); err != nil {
+                if err := gm.Cmd("welfare", strconv.Itoa(r.zoneid), strconv.Itoa(r.mapid), r.cmd, &result); err != nil {
                     log.Errorf("welfare gm failed: %s, result: %s", err.Error(), result)
                 }
 
@@ -180,12 +182,17 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
     role2cmd := make([]*wfRole, 0)
     for _, r := range vroles {
         vr := strings.Split(r, ",")
-        if len(vr) != 2 {
+        if task.slg == 0 && len(vr) != 2 {
+            log.Errorf("invalid format role: %s, taskid: %d", r, task.id)
+            continue
+        }
+        if task.slg == 1 && len(vr) != 3 {
             log.Errorf("invalid format role: %s, taskid: %d", r, task.id)
             continue
         }
         var zoneid int
         var roleid int
+        var mapid int
         if zoneid, err = strconv.Atoi(vr[0]); err != nil {
             log.Errorf("invalid format role: %s, taskid: %d", r, task.id)
             continue
@@ -194,6 +201,12 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
             log.Errorf("invalid format role: %s, taskid: %d", r, task.id)
             continue
         }
+        if task.slg == 1 {
+            if mapid, err = strconv.Atoi(vr[2]); err != nil {
+                log.Errorf("invalid format role: %s, taskid: %d", r, task.id)
+                continue
+            }
+        }
         for _, cmd := range vcmds {
             if len(cmd)== 0 {
                 continue
@@ -201,9 +214,11 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
             var r wfRole
             r.zoneid = zoneid
             r.roleid = roleid
+            r.mapid = mapid
             r.t = cmd_begin_time.Add(time.Duration(rand.Int63n(d))*time.Second)
             r.cmd = strings.ReplaceAll(strings.TrimSpace(cmd), "\t", " ")
             r.cmd = strings.ReplaceAll(r.cmd, "{roleid}", vr[1])
+            r.cmd = strings.ReplaceAll(r.cmd, "{zoneid}", vr[0])
             role2cmd = append(role2cmd, &r)
         }
     }
@@ -211,13 +226,13 @@ func (task *wfTask) generate(now time.Time, buff *bytes.Buffer) bool {
     if len(role2cmd) == 0 {
         return false
     }
-    buff.WriteString("INSERT INTO welfare_roles(zoneid,roleid,time,cmd,status,taskid_pk) VALUES")
+    buff.WriteString("INSERT INTO welfare_roles(zoneid,roleid,mapid,time,cmd,status,taskid_pk) VALUES")
     sort.Sort(wfRoleSorter(role2cmd))
     for i, r := range role2cmd {
         if i != 0 {
             buff.WriteString(",")
         }
-        buff.WriteString("("+strconv.Itoa(r.zoneid)+","+strconv.Itoa(r.roleid)+",'"+r.t.Format("2006-01-02 15:04:05")+"','"+r.cmd+"',0,"+strconv.Itoa(task.id)+")")
+        buff.WriteString("("+strconv.Itoa(r.zoneid)+","+strconv.Itoa(r.roleid)+","+strconv.Itoa(r.mapid)+",'"+r.t.Format("2006-01-02 15:04:05")+"','"+r.cmd+"',0,"+strconv.Itoa(task.id)+")")
     }
     return true
 }
@@ -254,7 +269,7 @@ func Cron(now time.Time) {
         }
     }
 
-    sql := "SELECT id,roles,cmds,cmd_time,cur_time,status,begin_time,end_time,step FROM welfare_task WHERE ? between begin_time and end_time"
+    sql := "SELECT id,roles,cmds,cmd_time,cur_time,status,begin_time,end_time,step,slg FROM welfare_task WHERE ? between begin_time and end_time"
 	rows, err := conn.QueryContext(ctx, sql, now.Format("2006-01-02"))
 	if err != nil {
         log.Errorf("welfare query: %s", err.Error())
@@ -269,7 +284,7 @@ func Cron(now time.Time) {
         var cur_time dsql.NullString
         var beginTime string
         var endTime string
-        if err := rows.Scan(&task.id, &task.sroles, &task.scmds, &task.cmd_time, &cur_time, &task.status, &beginTime, &endTime, &task.step); err != nil {
+        if err := rows.Scan(&task.id, &task.sroles, &task.scmds, &task.cmd_time, &cur_time, &task.status, &beginTime, &endTime, &task.step, &task.slg); err != nil {
             log.Debugf("welfare scan: %s, taskid: %d", err.Error(), task.id)
         } else {
             task.scur_time = cur_time.String
@@ -289,6 +304,7 @@ func Cron(now time.Time) {
                 oldtask.begin_time = task.begin_time
                 oldtask.end_time = task.end_time
                 oldtask.step = task.step
+                oldtask.slg = task.slg
             }
         }
     }
