@@ -29,6 +29,8 @@ func DiamondAddLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
+    defer db.Close()
+
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
@@ -85,6 +87,8 @@ func DiamondSubLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
+    defer db.Close()
+
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }

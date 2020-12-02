@@ -44,6 +44,8 @@ func MailSendLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
+    defer db.Close()
+
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
@@ -100,6 +102,8 @@ func MailRevLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
+    defer db.Close()
+
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
@@ -156,6 +160,8 @@ func MailDelLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
+    defer db.Close()
+
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
