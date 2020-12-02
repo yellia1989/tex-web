@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>json</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form" id="json">
+    </form>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    var config_data;
+    var json_data;
+    var locked;
+    layui.use(['form', 'okUtils', 'okLayer', 'laydate'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let $ = layui.jquery;
+      let laydate = layui.laydate;
+      let okLayer = layui.okLayer;
+
+      locked = parent.locked;
+
+      function jsonEditor(json, field) {
+        try {
+          this.fieldOption = field;
+          if (this.parseJson(json)) {
+            this.createEditor();
+          }
+        } catch (e) {
+          console.log(e);
+          this.error(e);
+        }
+      }
+      jsonEditor.prototype.escape = function (txt) {
+        if (!txt) return "";
+        return $('<div/>').text(txt).html();
+      },
+      jsonEditor.prototype.error = function(msg) {
+        okLayer.redCrossMsg(this.escape(msg));
+      },
+      jsonEditor.prototype.createEditor = function() {
+        let $form = $('#json');
+        let fieldKey, fieldDesc, fieldValue;
+        let $fieldset;
+        let $fieldbox;
+        for (fieldKey in this.fieldOption) {
+          fieldDesc = this.fieldOption[fieldKey];
+          fieldValue = fieldDesc.useWholeValue ? this.json : okUtils.getJsonValue(this.json, fieldKey);
+
+          if (fieldKey == 'constrain.begin_time') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>绝对时间填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          } else if (fieldKey == 'constrain.server_publish_day_begin') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>按开服时间计算活动时间填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          } else if (fieldKey == 'constrain.server_publish_day_last_time') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>按排期表计算活动时间填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          } else if (fieldKey == 'constrain.reg_day_begin') {
+            $fieldset = $('<fieldset class="layui-elem-field">');
+            $fieldset.append('<legend> >>个性化活动填这里<< </legend>');
+            $fieldbox = $('<div class="layui-field-box">');
+            $fieldset.append($fieldbox);
+            $form.append($fieldset);
+          }
+ 
+          let formItem = this.createFormItem(fieldKey, fieldDesc, fieldValue);
+          if ($fieldbox) {
+            $fieldbox.append(formItem);
+          } else {
+            $form.append(formItem);
+          }
+ 
+          if (fieldKey == 'constrain.reg_day_show_end') {
+            $fieldset = null;
+            $fieldbox = null;
+          }
+        }
+        $form.append('<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn '+(locked?'layui-hide':'')+'" lay-submit lay-filter="save">保存</button></div></div>');
+        form.render();
+      }
+      jsonEditor.prototype.createFormItem = function(fieldKey, fieldDesc, fieldValue) {
+        if (fieldDesc.printer) {
+          fieldValue = fieldDesc.printer(fieldValue);
+        }
+
+        let formItem = $('<div class="layui-form-item"></div>');
+        let cb = $('<input type="checkbox" title="覆盖"/>');
+        cb.attr("inputname", fieldKey.replace(".","-"));
+        cb.attr("id", 'cb-'+fieldKey.replace(".","-"));
+        formItem.append($('<div class="layui-input-inline" style="width:80px">').append(cb));
+
+        if (fieldDesc.type == 'map' || fieldDesc.type == 'array') {
+          if (this.checkGroupFieldOption(fieldKey, fieldDesc)) {
+            this.createFormGroupItem(formItem, fieldKey, fieldDesc, fieldValue, cb);
+          }
+        } else {
+          this.createFormSimpleItem(formItem, fieldKey, fieldDesc, fieldValue, cb);
+        }
+        return formItem;
+      }
+      jsonEditor.prototype.createFormGroupItem = function(formItem, fieldKey, fieldDesc, fieldValue, cb) {
+        let ctlHiddenInput = $('<input type="hidden">');
+        ctlHiddenInput.attr("name", fieldKey.replace(".","-"));
+        ctlHiddenInput.attr("id", fieldKey.replace(".","-"));
+        formItem.append(ctlHiddenInput);
+        let label = $('<div style="width:120px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
+        label.append(fieldDesc.name);
+        formItem.append(label);
+        let group = $('<div class="group">');
+        formItem.append(group);
+        let that = this;
+        ctlBtnAdd = $('<input type="button" class="layui-btn layui-btn-xs" value="+">').click(function() {
+          let row = that.createGroupInputRow(fieldDesc, undefined, undefined);
+          row.find(':input').each(function() {
+            let input = $(this);
+            input.attr('lay-verify', 'required');
+          });
+          group.prepend(row);
+        });
+        label.append(ctlBtnAdd);
+
+        let dataKey, dataVal, num = 0;
+        for (dataKey in fieldValue) {
+            dataVal = fieldValue[dataKey];
+            ++num;
+            group.append(this.createGroupInputRow(fieldDesc, dataKey, dataVal));
+        }
+
+        function setDisabled(disabled) {
+          if (disabled) {
+            group.addClass('layui-hide');
+            ctlBtnAdd.addClass('layui-hide');
+            group.find(':input').each(function(){
+              let input = $(this);
+              input.removeAttr('lay-verify');
+            });
+          } else {
+            group.removeClass('layui-hide');
+            ctlBtnAdd.removeClass('layui-hide');
+            group.find(':input').each(function() {
+              let input = $(this);
+              input.attr('lay-verify', 'required');
+            });
+          }
+        }
+
+        if (num == 0) {
+          setDisabled(true);
+        } else {
+          setDisabled(false);
+          cb.prop('checked', true);
+        }
+      }
+      jsonEditor.prototype.createGroupInputRow = function(fieldDesc, dataKey, dataVal) {
+        let self = this;
+        let isMap = fieldDesc.type == 'map' ? true : false;
+        let ctlGroupRow = $('<div class="group-row layui-form-item" />');
+        let btnGroup = $('<div class="layui-btn-group" style="margin-right:8px">');
+        let ctlBtnAdd = $('<input type="button" class="layui-btn layui-btn-xs" value="+">').click(function () {
+          let row = self.createGroupInputRow(fieldDesc, undefined, undefined);
+          row.find(':input').each(function() {
+            let input = $(this);
+            input.attr('lay-verify', 'required');
+          });
+          ctlGroupRow.after(row);
+        });
+        let ctlBtnDel = $('<input type="button" class="layui-btn layui-btn-xs" value="-">').click(function () {
+          ctlGroupRow.remove();
+        });
+        btnGroup.append(ctlBtnAdd, ctlBtnDel);
+        ctlGroupRow.append(btnGroup);
+
+        let inline = $('<div class="layui-inline">');
+        $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
+          let grpFieldValue;
+          if (grpFieldDesc.isMapKey) {
+            grpFieldValue = dataKey;
+          } else if (grpFieldDesc.useWholeValue) {
+            grpFieldValue = dataVal;
+          } else if (grpFieldDesc.arrayIndex !== undefined) {
+            grpFieldValue = okUtils.getJsonValue(dataVal, grpFieldDesc.arrayIndex);
+          } else {
+            grpFieldValue = okUtils.getJsonValue(dataVal, grpFieldKey);
+          }
+
+          if (grpFieldDesc.printer) {
+            grpFieldValue = grpFieldDesc.printer(grpFieldValue);
+          }
+
+          let input = self.createInputField(grpFieldKey, grpFieldDesc, grpFieldValue);
+          inline.append(input.label);
+          inline.append(input.input);
+        });
+
+        ctlGroupRow.append(inline);
+        return ctlGroupRow;
+      }
+      jsonEditor.prototype.checkGroupFieldOption = function (fieldKey, fieldDesc) {
+        let mapKeyNum = 0, useWholeNum = 0, arrayEntryNum = 0, mapEntryNum = 0;
+        let errMsg;
+        function addErrMsg(msg) {
+          if (errMsg == undefined) {
+            errMsg = msg;
+          } else {
+            errMsg += '\n';
+            errMsg += msg;
+          }
+        }
+        $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
+            if (grpFieldDesc.isMapKey) {
+              ++mapKeyNum;
+            }
+            if (grpFieldDesc.useWholeValue) {
+              ++useWholeNum;
+            }
+            if (grpFieldDesc.arrayIndex !== undefined) {
+              ++arrayEntryNum;
+            }
+            if (!grpFieldDesc.isMapKey && !grpFieldDesc.useWholeValue && grpFieldDesc.arrayIndex === undefined) {
+              ++mapEntryNum;
+            }
+
+            if (grpFieldDesc.isMapKey && grpFieldDesc.useWholeValue) {
+              addErrMsg('不能同时包含isMapKey和useWholeValue：' + grpFieldKey);
+            } else if (grpFieldDesc.isMapKey && grpFieldDesc.arrayIndex !== undefined) {
+              addErrMsg('不能同时包含isMapKey和arrayIndex：' + grpFieldKey);
+            } else if (grpFieldDesc.useWholeValue && grpFieldDesc.arrayIndex !== undefined) {
+              addErrMsg('不能同时包含useWholeValue和arrayIndex：' + grpFieldKey);
+            }
+        });
+
+        if (useWholeNum > 1) {
+          addErrMsg('useWholeValue不能大于1个');
+        }
+        if (useWholeNum != 0 && (arrayEntryNum != 0 || mapEntryNum != 0)) {
+          addErrMsg('有useWholeValue后不能再配置其他字段');
+        }
+        if (useWholeNum == 0 && arrayEntryNum == 0 && mapEntryNum == 0) {
+          addErrMsg('必须配置至少一条map字段，或者一条arrayIndex，或者useWholeValue');
+        } else if ((useWholeNum != 0) + (arrayEntryNum != 0) + (mapEntryNum != 0) != 1) {
+          addErrMsg('不能同时配置map字段、arrayIndex、useWholeValue');
+        }
+
+        if (fieldDesc.type == 'map') {
+            if (mapKeyNum != 1) {
+              addErrMsg('map类型必须有且仅有一个isMapKey');
+            }
+        }
+        if (fieldDesc.type == 'array') {
+            if (mapKeyNum != 0) {
+              addErrMsg('array类型不能配置isMapKey');
+            }
+        }
+
+        if (errMsg !== undefined) {
+            this.error(fieldKey + '\n' + errMsg);
+            return false;
+        }
+        return true;
+      },
+      jsonEditor.prototype.createFormSimpleItem = function(formItem, fieldKey, fieldDesc, fieldValue, cb) {
+        let line = this.createInputField(fieldKey, fieldDesc, fieldValue, cb);
+        formItem.append(line.label);
+        formItem.append(line.input);
+        return formItem;
+      }
+      jsonEditor.prototype.createInputField = function(fieldKey, fieldDesc, fieldValue, ctlCheckBox) {
+        let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
+        label.append(fieldDesc.name);
+
+        if (fieldDesc.subFieldOption) {
+          let a = $('<a href="javascript:void(0)"></a>');
+          a.append($('<i class="layui-icon layui-icon-set" style="font-size: 18px; color: #1E9FFF;"></i>'));
+          label.append(a);
+          let that = this;
+          a.on('click', function() {
+            if (!ctlCheckBox.prop('checked')) {
+              return;
+            }
+            let title = '编辑-'+fieldDesc.name+(locked?'[只读]':'');
+            config_data = fieldDesc.subFieldOption;
+            if (typeof(fieldDesc.subFieldOption) == 'function') {
+              config_data = fieldDesc.subFieldOption(fieldKey);
+            }
+            if (config_data === undefined) {
+              that.error('没有定义字段，请手动编辑');
+              return;
+            }
+            json_data = "#"+fieldKey.replace(".","-");
+            okLayer.open(title, "/gm/json.html", "90%", "90%", null, null, function (index, layero) { 
+	      let newValue = okUtils.jsonToString(json_editor.getValue());
+	      let oldValue = $(json_data).val();
+	      if (newValue == oldValue) {
+                layer.close(index);
+              } else {
+  	        if (confirm('有修改未保存，确定要关闭么')) {
+                  layer.close(index);
+  	        }
+	      }
+	      return false;
+      	    });
+          });
+        }
+
+        if (fieldValue !== null && typeof(fieldValue) == 'object') {
+          fieldValue = okUtils.jsonToString(fieldValue);
+        }
+
+        let online = false;
+        if (parent.online_data && fieldKey.indexOf('constrain.') != -1) {
+          if (fieldKey.indexOf('time') != -1 || fieldKey.indexOf('server_publish') != -1 || fieldKey.indexOf("reg_day") != -1) {
+            online = true;
+          }
+        }
+        let input;
+        if (fieldDesc.type === undefined || fieldDesc.type == 'text') {
+          input = $('<input type="text" class="layui-input">');
+        } else if (fieldDesc.type == 'midtext') {
+          input = $('<input type="text" class="layui-input" style="width:300px">');
+        } else if (fieldDesc.type == 'longtext') {
+          input = $('<input type="text" class="layui-input" style="width:400px">');
+        } else if (fieldDesc.type == 'textarea') {
+          input = $('<textarea class="layui-textarea"></textarea>');
+          if (fieldDesc.subFieldOption) {
+            input.attr('rows', 18);
+            input.attr('style','width:600px');
+          } else {
+            input.attr('style','width:400px');
+          }
+        } else if (fieldDesc.type == 'number') {
+          input = $('<input type="text" class="layui-input">');
+        } else if (fieldDesc.type == 'datetime') {
+          input = $('<input type="text" class="layui-input">');
+          laydate.render({
+            elem: input.get(0),
+            type: 'datetime',
+          });
+        } else if (fieldDesc.type == 'select') {
+          input = $('<select></select>');
+          for (let opt in fieldDesc.options) {
+            input.append($('<option></option>').attr('value', opt).text(fieldDesc.options[opt]));
+          }
+        } else {
+          throw('未知类型: ' + fieldDesc.type);
+          return;
+        }
+
+        input.attr("name", fieldKey.replace(".","-"));
+        input.attr("id", fieldKey.replace(".","-"));
+        if (fieldValue !== undefined && fieldValue !== null) {
+          input.val(fieldValue);
+        }
+
+        if (ctlCheckBox !== undefined) {
+          function setDisabled(disabled) {
+            input.prop('disabled', disabled);
+            if (disabled) {
+              input.addClass("layui-disabled");
+              input.removeAttr('lay-verify');
+            } else {
+              input.removeClass("layui-disabled");
+              let verify = 'required';
+              if (fieldDesc.type == 'number') {
+                verify += '|integer';
+              } else if (fieldDesc.type == 'datetime') {
+                verify += '|datetime';
+              }
+              input.attr('lay-verify', verify);
+            }
+          }
+
+          if (fieldValue === undefined || fieldValue === null) {
+            setDisabled(true);
+          } else {
+            setDisabled(false);
+            ctlCheckBox.prop('checked', true);
+          }
+          if (online) {
+            ctlCheckBox.prop('disabled', true);
+            input.prop('disabled', true);
+          }
+        }
+
+        if (fieldDesc.onChange) {
+          fieldDesc.onChange(input.val());
+        }
+
+        let inputLine = $('<div class="layui-input-inline">');
+        inputLine.append(input);
+
+        return {label: label, input: inputLine};
+      },
+      jsonEditor.prototype.parseJson = function(json) {
+        json = typeof(json) == 'object' ? json : okUtils.stringToJson(json);
+        let fieldKey;
+        for (fieldKey in this.fieldOption) {
+          let fieldDesc = this.fieldOption[fieldKey];
+          if (fieldDesc.type != 'map' && fieldDesc.type != 'array') {
+            if (!fieldDesc.checkValid) continue;
+            let checkResult = fieldDesc.checkValid(okUtils.getJsonValue(json, fieldKey), json);
+            if (checkResult !== true) {
+              this.error('不是有效的Json格式配置:'+checkResult);
+              return false;
+            }
+          } else {
+            let fieldValue = okUtils.getJsonValue(this.json, fieldKey);
+            for (mfield in fieldDesc.groupFieldOption) {
+              mfieldDesc = fieldDesc.groupFieldOption[mfield];
+              if (!mfieldDesc.checkValid) continue;
+              for (k in fieldValue) {
+                let v = fieldValue[k];
+                checkResult = mfieldDesc.checkValid(v[mfield]);
+                if (checkResult !== true) {
+                  this.error('不是有效的Json格式配置:'+checkResult);
+                  return false;
+                }
+              }
+            }
+          }
+        }
+        // 检查活动时间配置
+        if (json.constrain) {
+          let absTime = 0,zoneOpenTime = 0,lastTime = 0,roleTime = 0;
+          if (json.constrain.begin_time || json.constrain.end_time || json.constrain.show_begin_time || json.constrain.show_end_time) {
+            absTime += 1;
+          }
+          if (json.constrain.server_publish_day_begin || json.constrain.server_publish_day_end || json.constrain.server_publish_day_show_begin || json.constrain.server_publish_day_show_end) {
+            zoneOpenTime += 1;
+          }
+          if (json.constrain.server_publish_day_last_time) {
+            lastTime += 1;
+          }
+          if (json.constrain.reg_day_begin || json.constrain.reg_day_end || json.constrain.reg_day_show_begin || json.constrain.reg_day_show_end) {
+            roleTime += 1;
+          }
+          if (absTime != 0 && (zoneOpenTime != 0 || lastTime != 0 || roleTime != 0)) {
+            this.error('配置了绝对时间不需要再配置其他时间');
+            return false;
+          }
+          if (zoneOpenTime != 0 && (absTime != 0 || lastTime != 0 || roleTime != 0)) {
+            this.error('配置了开服时间不需要再配置其他时间');
+            return false;
+          }
+          if (lastTime != 0 && (absTime != 0 || zoneOpenTime != 0 || roleTime != 0)) {
+            this.error('配置了排期表持续时间不需要再配置其他时间');
+            return false;
+          }
+          if (roleTime != 0 && (absTime != 0 || zoneOpenTime != 0 || lastTime != 0)) {
+            this.error('个性化活动不需要再配置其他时间');
+            return false;
+          }
+        }
+        this.json = json;
+        return true;
+      }
+      jsonEditor.prototype.getValue = function() {
+        let json = {};
+        for (fieldKey in this.fieldOption) {
+          let fieldDesc = this.fieldOption[fieldKey];
+          let cb = $('#cb-'+fieldKey.replace('.', '-'))
+          if (!cb.is(":checked")) continue;
+          let input = $('#'+fieldKey.replace('.', '-'))
+          let fieldValue = '';
+
+          let isMap = fieldDesc.type == 'map';
+          let isArray = fieldDesc.type == 'array';
+          let isGroup = isMap || isArray;
+          if (!isGroup) {
+            fieldValue = this.parseValue(fieldDesc, input.val());
+            if (fieldValue == undefined) {
+              return undefined;
+            }
+          } else {
+            let group = input.next().next();
+            let self = this;
+            fieldValue = isMap ? {} : [];
+            let failed = false;
+            group.find('.group-row').each(function () {
+              if (failed) return;
+
+              let ctlGroupRow = $(this);
+              let mapKey, valEntry;
+              $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
+                if (failed) return;
+
+                var ctlInput = ctlGroupRow.find('[name="' + grpFieldKey + '"]');
+                var grpFieldValue = ctlInput.val();
+                if (grpFieldDesc.isMapKey) {
+                  mapKey = grpFieldValue;
+                  return;
+                }
+
+                grpFieldValue = self.parseValue(grpFieldDesc, grpFieldValue);
+                if (grpFieldValue === undefined) {
+                  failed = true;
+                  return;
+                }
+                if (grpFieldDesc.useWholeValue) {
+                  valEntry = grpFieldValue;
+                } else if (grpFieldDesc.arrayIndex !== undefined) {
+                  if (valEntry === undefined) {
+                    valEntry = [];
+                  }
+                  valEntry[grpFieldDesc.arrayIndex] = grpFieldValue;
+                } else {
+                  if (valEntry === undefined) {
+                    valEntry = {};
+                  }
+                  valEntry[grpFieldKey] = grpFieldValue;
+                }
+              });
+
+              if (failed) return;
+
+              if (valEntry !== undefined) {
+                if (isMap) {
+                  fieldValue[mapKey] = valEntry;
+                } else {
+                  fieldValue.push(valEntry);
+                }
+              }
+            });
+
+            if (failed) return undefined;
+          }
+
+          okUtils.setJsonValue(json, fieldKey, fieldValue);
+        }
+
+        if (!this.parseJson(json)) {
+          return false;
+        }
+
+        return json;
+      }
+      jsonEditor.prototype.parseValue = function(fieldDesc, fieldValue) {
+        try {
+          if (!fieldDesc.parser) return fieldValue;
+
+          if (fieldDesc.parser.name == 'parse') {
+            fieldValue = $.trim(fieldValue) == '' ? {} : fieldDesc.parser(fieldValue);
+          } else if (fieldDesc.parser.name == 'parseInt') {
+            if (!$.isNumeric(fieldValue)) {
+              throw 'Not a Number';
+            }
+            fieldValue = fieldDesc.parser(fieldValue);
+          } else if (fieldDesc.parser) {
+            fieldValue = fieldDesc.parser(fieldValue);
+          }
+        } catch (e) {
+          this.error(fieldDesc.name + ' parse error:' + e);
+          console.log(e);
+          return undefined;
+        }
+        return fieldValue;
+      }
+
+      let editor = new jsonEditor(parent.layui.$(parent.json_data).val(), parent.config_data);
+      parent.json_editor = editor;
+
+      form.on('checkbox', function(data) {
+        let checked = data.elem.checked;
+        let inputname = data.elem.getAttribute("inputname");
+        if (inputname == "") return;
+        let fieldDesc = editor.fieldOption[inputname.replace('-','.')];
+        if (!fieldDesc) return;
+
+        let disabled = !checked;
+        let isGroup = fieldDesc.type == 'map' || fieldDesc.type == "array";
+        if (!isGroup) {
+          let input = $('#'+inputname);
+          if (disabled) {
+            input.addClass('layui-disabled');
+            input.removeAttr('lay-verify');
+          } else {
+            input.removeClass('layui-disabled');
+            let verify = 'required';
+            if (fieldDesc.type == 'number') {
+              verify += '|integer';
+            } else if (fieldDesc.type == 'datetime') {
+              verify += '|datetime';
+            }
+            input.attr('lay-verify', verify);
+          }
+          $('#'+inputname).prop('disabled', disabled);
+        } else {
+          let btn = $('#'+inputname).next().find("input");
+          let group = $('#'+inputname).next().next();
+          if (disabled) {
+            btn.addClass('layui-hide');
+            group.addClass('layui-hide');
+          } else {
+            btn.removeClass('layui-hide');
+            group.removeClass('layui-hide');
+          }
+        }
+        form.render();
+      });
+
+      form.on('select', function(data){
+        let fieldDesc = editor.fieldOption[data.elem.id];
+        if (!fieldDesc) return;
+        if (fieldDesc.onChange) {
+          fieldDesc.onChange(data.value);
+        }
+      });
+
+      form.on('submit(save)', function(data){
+        let fields = editor.getValue();
+        if (fields != undefined) {
+       	  parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
+        }
+        parent.layer.close(parent.layer.getFrameIndex(window.name));
+        return false;
+      });
+   });
+  </script>
+</body>
+
+</html>

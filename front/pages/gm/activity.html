@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>活动管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <div class="layui-input-inline" style="width:250px">
+            <div id="activitySelect"></div>
+          </div>
+          <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="search">
+              <i class="layui-icon layui-icon-refresh-3"></i>
+            </button>
+          </div>
+        </div>
+        <table id="tableId" lay-filter="tableFilter"></table>
+      </div>
+    </form>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script src="/js/activity.config.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    var editActivity;
+    layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      let xmSelect = layui.xmSelect;
+      let form = layui.form;
+      okLoading.close();
+
+      let actType = [];
+      for (i in activity.config.activityTypeDefine) {
+        let act = activity.config.activityTypeDefine[i];
+        actType.push({value: i, name: act.name});
+      }
+
+      let activitySelect = xmSelect.render({
+        el: '#activitySelect',
+        name: 'activityType',
+        data: actType,
+        tips: '晒选活动类型',
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: true,
+            }
+          }
+        },
+        autoRow: true,
+        toolbar: {
+          show: true,
+          list: ["ALL", "CLEAR", "REVERSE"]
+        }
+      });
+
+      let activityTable = table.render({
+        elem: "#tableId",
+        url: "/api/gm/activity/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        defaultToolbar: ['filter'],
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "id", title: "活动ID", width: 90, fixed: 'left' },
+          { field: "apply_zone", title: "应用分区", width: 90, fixed: 'left' },
+          { field: "apply_user", title: "应用玩家", width: 90 },
+          { field: "activity_type", title: "活动类型", width: 90, align: "center", templet: function (d) {
+            let act = activity.config.activityTypeDefine[d.activity_type];
+            return act ? act.name : '未知类型';
+          }},
+          { field: "configure_desc", title: "活动备注", width: 150},
+          {
+            field: "begin_time", title: "开始时间", align: "center", width: 180, templet: function (d) {
+              let json = JSON.parse(d.configure_data);
+              return json.constrain && json.constrain.begin_time != undefined ? json.constrain.begin_time : "";
+            }
+          },
+          {
+            field: "end_time", title: "结束时间", align: "center", width: 180, templet: function (d) {
+              let json = JSON.parse(d.configure_data);
+              return json.constrain && json.constrain.end_time != undefined ? json.constrain.end_time : "";
+            }
+          },
+          { field: "configure_data", title: "配置数据", align: "center"},
+          { title: "操作", align: "center", templet: "#operationTpl", width: 100, fixed: 'right' }
+        ]],
+        parseData: function (res) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].activity_id;
+          }
+          return res;
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "batchDel":
+            batchDel();
+            break;
+          case "export":
+            eexport();
+            break;
+          case "import":
+            iimport();
+            break;
+          case "batchLock":
+            batchLock(1);
+            break;
+          case "batchUnLock":
+            batchLock(0);
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            editActivity = data;
+            edit(data.id);
+            break;
+          case "del":
+            del(data.id);
+            break;
+          case "unlock":
+            lock(data.id, false);
+            break;
+          case "lock":
+            lock(data.id, true);
+            break;
+        }
+      });
+
+      table.on('rowDouble(tableFilter)', function(obj){
+        editActivity = obj.data;
+        edit(obj.data.id);
+      });
+
+      function lock(id, locked) {
+        let msg = "加锁";
+        if (locked == false) {
+          msg = "解锁";
+        }
+        okLayer.confirm("确定要"+msg+"吗？", function () {
+          okUtils.ajax("/api/gm/activity/lock", "post", { idsStr: id, locked: locked?1:0 }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+
+      function add() {
+        okLayer.open("添加活动", "/gm/activity-add.html", "90%", "90%", null, function () {
+          activityTable.reload();
+        })
+      }
+
+      function edit(id) {
+        let readonly = "";
+        if (editActivity.locked) {
+          readonly = "[只读]";
+        }
+        okLayer.open("编辑活动"+readonly, "/gm/activity-edit.html", "90%", "90%", null, function () {
+          activityTable.reload();
+        })
+      }
+
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/gm/activity/del", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/activity/del", "post", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.data);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
+
+      function batchLock(lock) {
+	let msg = "确定要批量加锁吗？";
+	if (lock == 0) {
+	  msg = "确定要批量解锁吗？";
+	}
+        okLayer.confirm(msg, function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/activity/lock", "post", { idsStr: idsStr, locked: lock }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.data);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
+
+      function download(content, filename) {
+        let eleLink = document.createElement('a');
+        eleLink.download = filename;
+        eleLink.style.display = 'none';
+        let blob = new Blob([content]);
+        eleLink.href = URL.createObjectURL(blob);
+        document.body.appendChild(eleLink);
+        eleLink.click();
+        document.body.removeChild(eleLink);
+      }
+
+      function eexport() {
+        okLayer.confirm("确定要批量导出吗？", function (index) {
+          layer.close(index);
+          let acts = [];
+          let checkStatus = table.checkStatus('tableId');
+          for (i = 0; i < checkStatus.data.length; ++i) {
+            acts.push({id: checkStatus.data[i].id, type: checkStatus.data[i].activity_type, data: checkStatus.data[i].configure_data, desc: checkStatus.data[i].configure_desc});
+          }
+
+          let filename = okUtils.dateFormat(new Date(), 'yyyyMMddhhmmss');
+          download(okUtils.jsonToString(acts), "活动导出"+filename+".txt");
+        });
+      }
+
+      function iimport() {
+        okLayer.open("导入活动", "/gm/activity-import.html", "90%", "90%", null, function () {
+          activityTable.reload();
+        });
+      }
+
+      form.on("submit(search)", function (data) {
+        activityTable.reload({
+          url: "/api/gm/activity/list",
+          where: data.field,
+          page: {
+            curr: 1,
+          }
+        });
+        return false;
+      });
+    });
+  </script>
+  <!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><a href="javascript:" title="新增"><i class="layui-icon layui-icon-add-1"></i></a></div>
+    <div class="layui-inline" lay-event="batchDel"><a href="javascript:" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a></div>
+    <div class="layui-inline" lay-event="export"><a href="javascript:" title="导出"><i class="layui-icon layui-icon-download-circle"></i></a></div>
+    <div class="layui-inline" lay-event="import"><a href="javascript:" title="导入"><i class="layui-icon layui-icon-upload-drag"></i></a></div>
+    <div class="layui-inline" lay-event="batchLock"><a href="javascript:" title="一键加锁"><i class="layui-icon">&#xe673;</i></a></div>
+    <div class="layui-inline" lay-event="batchUnLock"><a href="javascript:" title="一键解锁"><i class="layui-icon">&#xe673;</i></a></div>
+  </div>
+</script>
+
+<script type="text/html" id="operationTpl">
+  {{#  if(d.locked){ }}
+    <a href="javascript:" title="解锁" lay-event="unlock"><i class="layui-icon">&#xe673;</i></a>
+  {{#  } else { }}
+    <a href="javascript:" title="锁定" lay-event="lock"><i class="layui-icon">&#xe673;</i></a>
+    <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+    <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+  {{#  } }}
+</script>
+</body>
+
+</html>

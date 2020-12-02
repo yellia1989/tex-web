@@ -1,0 +1,83 @@
+module rpc
+{
+
+struct MPProjectConfig
+{
+	0 optional string		sProjectId;
+	1 optional string		sProjectName;
+	2 optional string		sDeliveryServer;
+};
+
+enum CDKeyCreateMode
+{
+	CDKeyCreateMode_PreAllocate = 1, // 预先生成
+};
+
+enum CDKeyDeliveryMode
+{
+	CDKeyDeliveryMode_Automatic = 1, // 自动通过Project配置发放
+};
+
+struct CDKeyConfig
+{
+	0 optional string		sProjectId;
+	1 optional unsigned int iCDKeyId;
+	2 optional string		sCDKeyName;
+	3 optional unsigned int	iCDKeyNum;
+	4 optional unsigned int	iCreateMode;
+	5 optional unsigned int iDeliveryMode;
+	6 optional unsigned int	iBeginTime;
+	7 optional unsigned int	iEndTime;
+	8 optional string		sRewardInfo;	// 分号分隔的奖励 (类型:参数;类型:参数...)
+
+	9 optional unsigned int iExchangeLimit;	// 每个账号兑换个数限制
+	10 optional string		sZoneLimit;		// 分区ID限制 (分号分隔，空为不限制)
+	11 optional string		sCustomLimit;	// 其他限制条件(类型:参数;类型:参数;...)[需各接入项目GameServer自己实现]
+	
+	20 optional unsigned int iGeneratedNum;
+	21 optional unsigned int iExchangedNum;
+    22 optional unsigned int iCommon;   // 是否是通用兑换码 1是 0不是
+    23 optional string sCommonCdk; // 通用兑换码指定cdk
+    24 optional unsigned int iActive;   // 是否是激活码 1是 0不是
+};
+
+struct CDKeyInfo
+{
+	0 optional string		sCDKey;
+	1 optional string		sBindAccount;
+	2 optional unsigned int	iExchangeTime;
+	3 optional string		sExchangeAccount;
+};
+
+struct ExchangedCDKeyInfo
+{
+	0 optional string		sCDKey;
+	1 optional unsigned int	iExchangeTime;
+};
+
+struct AccountExchangeInfo
+{
+	0 optional string		sAccount;
+	1 optional unsigned int	iCDKeyId;
+	2 optional vector<ExchangedCDKeyInfo> vExchangedCDKey;
+};
+
+interface MPService
+{
+	int createProject(MPProjectConfig stProjectConfig);
+	int modifyProject(MPProjectConfig stProjectConfig);
+	int getProject(string sProjectId, out MPProjectConfig stProjectConfig);
+	int getProjectList(out vector<MPProjectConfig> vProjectConfig);
+	
+	int createCDKey(CDKeyConfig stCDKeyConfig, out unsigned int iCDKeyId);
+	int modifyCDKey(CDKeyConfig stCDKeyConfig);
+	int getCDKey(unsigned int iCDKeyId, out CDKeyConfig stCDKeyConfig);
+	int getCDKeyList(string sProjectId, unsigned int iOffset, unsigned int iNum, out vector<CDKeyConfig> vCDKeyConfig, out unsigned int iTotalNum);
+	
+	int getCDKeyInfo(string sCDKey, out CDKeyConfig stCDKeyConfig, out CDKeyInfo stCDKeyInfo);
+	int exchangeCDKey(string sAccount, string sApp, string sDivision, string sCDKey, bool bActive);
+	int getAccountExchangeInfo(string sAccount, unsigned int iCDKeyId, out AccountExchangeInfo stAccountExchangeInfo);
+	int exportCDKey(unsigned int iCDKeyId, out string sAllCDKeys);
+};
+
+};

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1001,
+    "username": "admin",
+    "password": "$2a$10$qagHB4idcO.JXyapRGdm9eE4kqGcw/09V8ammDdElVDf555YzKCxe",
+    "role": 1
+  },
+  {
+    "id": 1002,
+    "username": "dev",
+    "password": "$2a$10$AOpce2OI8jILWrryDvBWS.qOREsws1lzwg/Qo5k1tLGjwWEJ/Fhs.",
+    "role": 3
+  },
+  {
+    "id": 1004,
+    "username": "kefu001",
+    "password": "$2a$10$QqevnqbjmRBnxuQia03ioOdPxJAng53nhNkj0HW83iWQYRsfnOWQy",
+    "role": 4
+  }
+]

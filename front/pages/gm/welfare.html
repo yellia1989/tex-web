@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>福利管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    var welfaredata;
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      let welfareTable = table.render({
+        elem: "#tableId",
+        url: '/api/gm/welfare/tasklist',
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 20,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "iId", title: "任务ID", width: 80 },
+          { field: "sName", title: "任务名字", width: 200 },
+          { field: "sBeginTime", title: "开始日期", width: 160 },
+          { field: "sEndTime", title: "截止日期", width: 160 },
+          { field: "sDayTimeRange", title: "每日时间范围", width: 160, templet: function(d) {
+            return d.sCmdBeginTime + "-" + d.sCmdEndTime;
+          }},
+          { field: "iStep", title: "间隔天数", width: 80 },
+          { field: "iStatus", title: "状态", width: 80, templet: function (d) {
+            let ret = '';
+            switch (d.iStatus) {
+            case 0: ret = '暂停';break;
+            case 1: ret = '进行中';break;
+            }
+            return ret;
+          }},
+          { field: "sRoles", title: "玩家列表"},
+          { field: "sCmds", title: "gm命令"},
+          { title: "操作", width: 100, align: "center", templet: "#operationTpl", fixed: 'right' },
+        ]],
+        parseData: function (res) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iId;
+          }
+          return res;
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "add2":
+            add2();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "pause":
+            pause(data.id);
+            break;
+          case "resume":
+            resume(data.id);
+            break;
+          case "edit":
+            welfaredata = data;
+            if (data.slg) {
+              edit2(data.id);
+            } else {
+              edit(data.id);
+            }
+            break;
+          case "del":
+            del(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("新增福利", "welfare-add.html", "90%", "90%", null, function () {
+          welfareTable.reload();
+        })
+      }
+
+      function add2() {
+        okLayer.open("新增SLG福利", "welfare-add2.html", "90%", "90%", null, function () {
+          welfareTable.reload();
+        })
+      }
+
+      function edit(id) {
+        okLayer.open("编辑福利", "welfare-edit.html", "90%", "90%", null, function () {
+          welfareTable.reload();
+        })
+      }
+
+      function edit2(id) {
+        okLayer.open("编辑SLG福利", "welfare-edit2.html", "90%", "90%", null, function () {
+          welfareTable.reload();
+        })
+      }
+
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/gm/welfare/taskdel", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+
+      function pause(id) {
+        okLayer.confirm("确定要暂停吗？", function () {
+          okUtils.ajax("/api/gm/welfare/taskpause", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+
+      function resume(id) {
+        okLayer.confirm("确定要恢复吗？", function () {
+          okUtils.ajax("/api/gm/welfare/taskresume", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+  <script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="add2"><i class="layui-icon layui-icon-add-2"></i></div>
+  </div>
+</script>
+
+  <script type="text/html" id="operationTpl">
+   {{#  if(d.iStatus == 1){ }}
+      <a href="javascript:" title="暂停" lay-event="pause"><i class="layui-icon layui-icon-pause"></i></a>
+   {{#  } else { }}
+      <a href="javascript:" title="恢复" lay-event="resume"><i class="layui-icon layui-icon-loading"></i></a>
+   {{#  } }}
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+
+</html>

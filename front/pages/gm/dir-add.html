@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增分区</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+	    <div class="layui-form-item">
+		    <div class="layui-inline">
+		    	<label class="layui-form-label">分区ID</label>
+		    	<div class="layui-input-inline">
+		    		<input type="text" name="iZoneId" placeholder="请输入分区ID(<=1000)" autocomplete="off" class="layui-input" lay-verify="required|integer|zoneid" lay-verType="tips">
+		    	</div>
+		    </div>
+		    <div class="layui-inline">
+		    	<label class="layui-form-label">分区名字</label>
+		    	<div class="layui-input-inline">
+		    		<input type="text" name="sZoneName" placeholder="请输入分区名字" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		    	</div>
+		    </div>
+	      <div class="layui-inline">
+			    <label class="layui-form-label">内网ip</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sInternalIp" class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+		    </div>
+	      <div class="layui-inline">
+			    <label class="layui-form-label">外网ip</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="sExternalIp" class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+		    </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">开服时间</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="iPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
+			    </div>
+        </div>
+      </div>
+	    <div class="layui-form-item">
+        <div class="layui-inline">
+			    <label class="layui-form-label">分区标识</label>
+			    <div class="layui-input-inline">
+            <select name="iZoneFlag">
+              <option value="1" selected>正常</option>
+              <option value="2">新区</option>
+              <option value="3">关闭</option>
+              <option value="4">审核</option>
+            </select>
+			    </div>
+        </div>
+	      <div class="layui-inline">
+			    <label class="layui-form-label">是否手动</label>
+			    <div class="layui-input-inline">
+            <select name="iIsManual">
+              <option value="0">否</option>
+              <option value="1" selected>是</option>
+            </select>
+			    </div>
+        </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">手动状态</label>
+			    <div class="layui-input-inline">
+            <select name="iManualZoneStatus">
+              <option value="1" selected>畅通</option>
+              <option value="2">拥挤</option>
+              <option value="3">繁忙</option>
+              <option value="4">维护</option>
+            </select>
+			    </div>
+        </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">最大创角</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
+			    </div>
+        </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">最大在线</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="iMaxOnline" placeholder="请输入最大人数" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
+			    </div>
+        </div>
+	      <div class="layui-inline">
+			    <label class="layui-form-label">是否强制下线</label>
+			    <div class="layui-input-inline">
+            <select name="iIsKick">
+              <option value="0">否</option>
+              <option value="1" selected>是</option>
+            </select>
+			    </div>
+        </div>
+		  </div>
+	    <div class="layui-form-item">
+			  <label class="layui-form-label">ConnServer</label>
+			  <div class="layui-input-block">
+				  <input type="text" name="sConnServer" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			  </div>
+		  </div>
+      <div class="layui-form-item">
+			    <label class="layui-form-label">HandleConn</label>
+			    <div class="layui-input-block">
+				    <input type="text" name="sHandleConn" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+      </div>
+      <div class="layui-form-item">
+			    <label class="layui-form-label">ConnServiceObj</label>
+			    <div class="layui-input-block">
+				    <input type="text" name="sConnServiceObj" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+      </div>
+      <div class="layui-form-item">
+			    <label class="layui-form-label">GameServiceObj</label>
+			    <div class="layui-input-block">
+				    <input type="text" name="sGameServiceObj" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			    </div>
+      </div>
+		  <div class="layui-form-item" id="versionFlag">
+			  <div class="layui-input-block">
+				  <button class="layui-btn" lay-submit lay-filter="add">添加</button>
+			  </div>
+		  </div>
+	</form>
+</div>
+<script src="/lib/layui/layui.js"></script>
+<script>
+    // https://www.layui.com/doc/modules/form.html
+    layui.use(['form', 'laydate', 'okUtils', 'okLayer'], function(){
+      let form = layui.form;
+	    let laydate = layui.laydate;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      laydate.render({elem: "#iPublishTime", type: "datetime"});
+
+      $("input[name='sInternalIp']").change(function () {
+        zoneid = parseInt($("input[name='iZoneId']").val());
+        v = $(this).val();
+        $("input[name='sHandleConn']").val("tcp -h "+v+" -p "+(4000+zoneid)+" -t 60000");
+        $("input[name='sConnServiceObj']").val("tcp -h "+v+" -p "+(6000+zoneid)+" -t 3600000");
+        $("input[name='sGameServiceObj']").val("tcp -h "+v+" -p "+(5000+zoneid)+" -t 3600000");
+      });
+
+      $("input[name='sExternalIp']").change(function () {
+        zoneid = parseInt($("input[name='iZoneId']").val());
+        v = $(this).val();
+        $("input[name='sConnServer']").val(v+":"+(4000+zoneid));
+      });
+
+		  okUtils.ajax("/api/gm/channel/list", "get", {page:1, limit: 1000}, false).done(function (response) {
+        let channelHtml = '';
+        for (i = 0; i < response.data.length; ++i) {
+          let channel = response.data[i];
+          channelHtml += '<fieldset class="layui-elem-field"><legend>'+channel.sChannel+'</legend><div class="layui-field-box"><div class="layui-form-item"><div class="layui-inline"><label class="layui-form-label">资源</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ResVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips"></div></div><div class="layui-inline"><label class="layui-form-label">exe</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ExeVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips"></div></div></div></div></fieldset>';
+        }
+        if (channelHtml != '') {
+          $("#versionFlag").before(channelHtml);
+          form.render();
+        }
+		  }).fail(function (error) {
+			  console.log(error)
+		  });
+
+      //数据校验
+      form.verify({
+        version: function(value, item) {
+          let v = value.split('.');
+          let l = 5;
+          if (item.name.indexOf('Exe') != -1) {
+              l = 3;
+          }
+          if (v.length != l) {
+              return '版本号格式不对';
+          }
+        },
+        zoneid: function(value, item) {
+          if (value != 8888 && value != 9999 && value > 1000) {
+            return '分区id<=1000';
+          }
+        }
+      });
+
+      //监听提交
+      form.on('submit(add)', function(data){
+        data.field.iPublishTime = Date.parse(data.field.iPublishTime)/1000;
+        okUtils.ajax("/api/gm/zone/add", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+			  		parent.layer.close(parent.layer.getFrameIndex(window.name));
+			  	});
+		    }).fail(function (error) {
+            console.log(error);
+        });
+        return false;
+      });
+    });
+</script>
+</body>
+</html>

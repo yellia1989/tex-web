@@ -1,0 +1,42 @@
+module rpc
+{
+
+struct CmdIDNum
+{
+	0	optional unsigned int	iId;
+	1	optional unsigned int	iNum;
+};
+
+struct MailDataInfo
+{
+	0	optional unsigned int		iMailId;
+	1	optional string				sFrom;
+	2	optional vector<unsigned long>		vToUser;
+	3	optional string				sTime;
+	4	optional string				sTitle;
+	5	optional string				sContent;
+	7	optional unsigned int		iDiamond;
+	8	optional unsigned int 		iCoin;
+	9	optional vector<CmdIDNum>	vItems;				
+	10	optional vector<unsigned int>	vSendZoneIds;			// 发送区列表
+	11	optional unsigned int		iFlag;
+	12	optional vector<unsigned int>	vRcvZoneIds;			// 已接收区列表
+	14	optional unsigned int 		iArenaCoin;					
+	15	optional unsigned int 		iDelTimeAfterOpen;			// 阅读后删除时间 
+	16	optional string			 	sUserFileName;				// 玩家列表
+	17	optional unsigned int 		iKingCoin;
+	19	optional vector<string> 	vCustomItem;				// 多玩家发送时 各自的道具
+	20	optional unsigned int 		iDelTimeAfterRcvAttach;		// 领取附件后删除时间 
+};
+
+interface MailService
+{
+	// 管理端操作接口
+	int addMail(MailDataInfo stInfo);
+	int addMails(vector<MailDataInfo> vInfo);
+	int delMail(unsigned int iMailId);
+	int getAllMail(out vector<MailDataInfo> vInfo);
+	int getZoneMail(unsigned int iZoneId, unsigned int iLastMailId, out vector<MailDataInfo> vInfo, out vector<unsigned int> vDelId);
+};
+
+}; 

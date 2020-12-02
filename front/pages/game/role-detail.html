@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>用户详情</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="layui-tab layui-tab-brief">
+    <ul class="layui-tab-title">
+      <li>基础信息</li>
+      <li class="layui-this">英雄列表</li>
+    </ul>
+    <div class="layui-tab-content">
+      <div class="layui-tab-item">金币</div>
+      <div class="layui-tab-item layui-show">
+        <table id="heroTable" lay-filter="hero_table"></table>
+      </div>
+    </div>
+
+    <script src="/lib/layui/layui.js"></script>
+    <script>
+      layui.use(["element", "table"], function () {
+        let element = layui.element;
+        let table = layui.table;
+        let $ = layui.jquery;
+        okLoading.close();
+
+        let heroTable = table.render({
+          elem: "#heroTable",
+          url: "/api/game/role/detail",
+          where: { zoneId: parent.zoneid, roleId: parent.roleid },
+          text: {
+            none: '暂无相关数据',
+          },
+          cols: [[
+            { field: "id", title: "英雄ID" },
+            { field: "level", title: "英雄等级", sort: true },
+            { field: "star", title: "英雄星级", sort: true },
+          ]],
+          initSort: {
+            field: 'id',
+            type: 'asc'
+          },
+          parseData: function (res) {
+            obj = JSON.parse(res.data);
+            vHeroList = obj.stAllHero.vHeroList;
+            res.data = [];
+            for (const val of vHeroList) {
+              hero = {};
+              hero.id = val.iHeroId;
+              hero.level = val.iLevel;
+              hero.star = val.iStar;
+              res.data.push(hero);
+            }
+            return res;
+          }
+        });
+      })
+    </script>
+  </div>
+</body>
+
+</html>

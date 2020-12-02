@@ -1,0 +1,21 @@
+panic: cron start err: dial tcp 172.19.248.171:3306: connect: connection timed out
+
+goroutine 1 [running]:
+github.com/yellia1989/tex-web/backend/cron.Start()
+	/home/lzhang/go/src/github.com/yellia1989/tex-web/backend/cron/cron.go:77 +0x8cd
+main.main()
+	/home/lzhang/go/src/github.com/yellia1989/tex-web/main.go:112 +0x75a
+panic: cron start err: dial tcp 172.19.248.171:3306: connect: connection timed out
+
+goroutine 1 [running]:
+github.com/yellia1989/tex-web/backend/cron.Start()
+	/home/lzhang/go/src/github.com/yellia1989/tex-web/backend/cron/cron.go:77 +0x8cd
+main.main()
+	/home/lzhang/go/src/github.com/yellia1989/tex-web/main.go:112 +0x75a
+panic: cron start err: dial tcp 172.19.248.171:3306: connect: connection timed out
+
+goroutine 1 [running]:
+github.com/yellia1989/tex-web/backend/cron.Start()
+	/home/lzhang/go/src/github.com/yellia1989/tex-web/backend/cron/cron.go:77 +0x8cd
+main.main()
+	/home/lzhang/go/src/github.com/yellia1989/tex-web/main.go:112 +0x75a

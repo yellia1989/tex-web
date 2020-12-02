@@ -1,0 +1,814 @@
+[
+  {
+    "id": 1,
+    "title": "每日数据",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe722;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 101,
+        "title": "注册",
+        "href": "stat/newadd.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 102,
+        "title": "新增留存",
+        "href": "stat/remain.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 103,
+        "title": "新增留存(全服去重)",
+        "href": "stat/remain2.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 104,
+        "title": "流失",
+        "href": "stat/loss.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 105,
+        "title": "充值总况",
+        "href": "stat/recharge.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe7d1;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 106,
+        "title": "充值跟踪",
+        "href": "stat/recharge-track.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe7d1;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      }
+    ],
+    "role": [
+      3
+    ]
+  },
+  {
+    "id": 2,
+    "title": "GM工具",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe654;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 201,
+        "title": "GM",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+          "id": 20101,
+          "title": "GM1",
+          "href": "gm/gm.html",
+          "fontFamily": "ok-icon",
+          "icon": "&#xe654;",
+          "spread": false,
+          "checked": false,
+          "role": [
+            4,
+            3
+          ]
+          },
+          {
+          "id": 20102,
+          "title": "GM2",
+          "href": "gm/gm.html",
+          "fontFamily": "ok-icon",
+          "icon": "&#xe654;",
+          "spread": false,
+          "checked": false,
+          "role": [
+            4,
+            3
+          ]
+          },
+          {
+          "id": 20103,
+          "title": "GM3",
+          "href": "gm/gm.html",
+          "fontFamily": "ok-icon",
+          "icon": "&#xe654;",
+          "spread": false,
+          "checked": false,
+          "role": [
+            4,
+            3
+          ]
+          }
+        ],
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 202,
+        "title": "分区管理",
+        "href": "gm/dir.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": true,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 203,
+        "title": "渠道管理",
+        "href": "gm/channel.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 204,
+        "title": "Registry管理",
+        "href": "gm/registry.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 205,
+        "title": "邮件管理",
+        "href": "gm/mail.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 206,
+        "title": "公告管理",
+        "href": "gm/bulletin.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 207,
+        "title": "跑马灯",
+        "href": "gm/notice.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 208,
+        "title": "白名单",
+        "href": "gm/whitelist.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 209,
+        "title": "CDK管理",
+        "href": "gm/cdk.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 210,
+        "title": "活动管理",
+        "href": "gm/activity.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 212,
+        "title": "屏蔽字测试",
+        "href": "gm/dirty.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 213,
+        "title": "地图管理",
+        "href": "gm/map.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 214,
+        "title": "推送管理",
+        "href": "gm/push.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 215,
+        "title": "福利管理",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 21501,
+            "title": "任务管理",
+            "href": "gm/welfare.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              4,
+              3
+            ]
+          },
+          {
+            "id": 21502,
+            "title": "玩家福利记录",
+            "href": "gm/welfare-role.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              4,
+              3
+            ]
+          }
+        ],
+        "role": [
+          4,
+          3
+        ]
+      }
+    ],
+    "role": [
+      4,
+      3
+    ]
+  },
+  {
+    "id": 7,
+    "title": "系统管理",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "\u0026#xe68a;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 701,
+        "title": "菜单管理",
+        "href": "system/menu.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 702,
+        "title": "用户管理",
+        "href": "system/user.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 703,
+        "title": "角色管理",
+        "href": "system/role.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 704,
+        "title": "权限管理",
+        "href": "system/perm.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      },
+      {
+        "id": 705,
+        "title": "日志管理",
+        "href": "system/log.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          1
+        ]
+      }
+    ],
+    "role": [
+      1
+    ]
+  },
+  {
+    "id": 8,
+    "title": "游戏数据查询",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe7c5;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 801,
+        "title": "玩家列表",
+        "href": "game/role.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 802,
+        "title": "金币记录",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 80201,
+            "title": "金币获得记录",
+            "href": "game/coin-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 80202,
+            "title": "金币消耗记录",
+            "href": "game/coin-sub.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 803,
+        "title": "钻石记录",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 80301,
+            "title": "钻石获得记录",
+            "href": "game/diamond-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 80302,
+            "title": "钻石消耗记录",
+            "href": "game/diamond-sub.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 804,
+        "title": "英雄记录",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 80401,
+            "title": "英雄获得记录",
+            "href": "game/hero-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 804,
+        "title": "道具记录",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 80401,
+            "title": "道具获得记录",
+            "href": "game/item-add.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 80402,
+            "title": "道具消耗记录",
+            "href": "game/item-sub.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 813,
+        "title": "邮件记录",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 81301,
+            "title": "邮件发送记录",
+            "href": "game/mail-send.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81302,
+            "title": "邮件领取记录",
+            "href": "game/mail-rev.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81303,
+            "title": "邮件删除记录",
+            "href": "game/mail-del.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 811,
+        "title": "在线时长",
+        "href": "game/online-time.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 812,
+        "title": "充值记录",
+        "href": "game/recharge-log.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
+      }
+    ],
+    "role": [
+      3,
+      4
+    ]
+  },
+  {
+    "id": 9,
+    "title": "实时数据",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe660;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 901,
+        "title": "实时在线",
+        "href": "game/real-online.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 902,
+        "title": "实时新增",
+        "href": "game/real-newadd.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 903,
+        "title": "实时充值",
+        "href": "game/real-income.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 904,
+        "title": "实时关卡验证",
+        "href": "game/real-stageverify.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 905,
+        "title": "实时战斗验证",
+        "href": "game/real-fightverify.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      },
+      {
+        "id": 906,
+        "title": "实时地图",
+        "href": "game/real-map.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3
+        ]
+      }
+    ],
+    "role": [
+      3
+    ]
+  }
+]

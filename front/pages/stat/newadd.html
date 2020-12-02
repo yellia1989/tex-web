@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>注册</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/css/oksub.css">
+	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+	    	<div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+        </div>
+	    	<div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+        </div>
+			  <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="search">
+            <i class="layui-icon layui-icon-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+	  <table id="tableId" lay-filter="tableFilter"></table>
+  </form>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script>
+	layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+		let table = layui.table;
+		let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+		okLoading.close();
+
+    okUtils.ajax("/api/stat/date/marklist", "get", null, false).done(function (response) {
+      laydate.render({elem: "#startTime", type: "date", format: "yyyyMMdd", min: response.data["min"], max: response.data["max"]});
+      laydate.render({elem: "#endTime", type: "date", format: "yyyyMMdd", min: response.data["min"], max: response.data["max"]});
+    }).fail(function (error) {
+      console.log(error);
+    });
+
+		let newaddTable = table.render({
+			elem: "#tableId",
+      url: "/api/stat/newadd/list",
+      text: {
+        none: '暂无相关数据',
+      },
+			limit: 30,
+			page: true,
+			cols: [[
+				{field: "statymd", title: "日期"},
+				{field: "accountnum_total", title: "总注册账号"},
+				{field: "rolenum_total", title: "总创角"},
+				{title: "总角色转化率", templet: function (d) {
+          return okUtils.number.percent(d.rolenum_total*100, d.accountnum_total);
+        }},
+				{field: "accountnum", title: "创建账号数"},
+				{field: "rolenum", title: "创建角色数"},
+				{title: "角色转化率", templet: function (d) {
+          return okUtils.number.percent(d.rolenum*100, d.accountnum);
+        }},
+			]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+    });
+
+    form.on("submit(search)", function (data) {
+      newaddTable.reload({
+        where: data.field,
+        page: {
+          curr: 1,
+        }
+      });
+      return false;
+    });
+	})
+</script>
+</body>
+</html>

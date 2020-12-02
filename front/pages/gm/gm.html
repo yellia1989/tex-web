@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>GM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <p style="margin:20px; color: #FF0000;">Tips: 修改时间时 请两边同时修改 例: 1服,1001服 add_server_day 1</p>
+    <div class="layui-row">
+      <div class="layui-col-md6">
+        <form class="layui-form">
+          <div class="layui-form-item" style="margin:0px">
+            <div class="layui-inline" style="margin:0px">
+              <div class="layui-input-inline" style="width: 300px">
+                <div id="zoneSelect"></div>
+              </div>
+              <div class="layui-input-inline">
+                <button class="layui-btn" lay-submit lay-filter="gm">执行</button>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item" style="margin:0px">
+            <textarea name="cmd" lay-verify="required" lay-verType="tips" class="layui-textarea" rows="5">help</textarea>
+          </div>
+          <div class="layui-form-item" style="margin:0px">
+            <textarea name="result" class="layui-textarea" rows="30"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="layui-col-md6">
+        <form class="layui-form">
+          <div class="layui-form-item" style="margin:0px">
+            <div class="layui-inline" style="margin:0px">
+              <div class="layui-input-inline" style="width: 300px">
+                <div id="zoneSelect2"></div>
+              </div>
+              <div class="layui-input-inline">
+                <button class="layui-btn" lay-submit lay-filter="gm2">执行</button>
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item" style="margin:0px">
+            <textarea name="cmd2" lay-verify="required" lay-verType="tips" class="layui-textarea" rows="5">help</textarea>
+          </div>
+          <div class="layui-form-item" style="margin:0px">
+            <textarea name="result2" class="layui-textarea" rows="30"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let $ = layui.jquery;
+      let xmSelect = layui.xmSelect;
+      okLoading.close();
+
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'zoneid',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        toolbar: {
+          show: true,
+        },
+      });
+      let zoneSelect2 = xmSelect.render({
+        el: '#zoneSelect2',
+        name: 'zoneid',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        toolbar: {
+          show: true,
+        },
+      });
+
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, gf: true, map: true}, false).done(function (response) {
+        zoneSelect.update({
+          data: [
+            {sZoneName: '挂机服务器', children: response.data["game"]},
+            {sZoneName: 'slg服务器', children: response.data["map"]},
+          ],
+          initValue: [1],
+        });
+        zoneSelect2.update({
+          data: [
+            {sZoneName: 'slg服务器', children: response.data["map"]},
+            {sZoneName: '挂机服务器', children: response.data["game"]},
+          ],
+          initValue: [1001],
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      form.on('submit(gm)', function (data) {
+        let zoneids = zoneSelect.getValue('valueStr');
+        let cmd = $("textarea[name='cmd']").val();
+        okUtils.ajax("/api/gm/game/cmd", "post", { zoneids: zoneids, cmd: cmd }, true).done(function (response) {
+          $("textarea[name=result]").val(response.data);
+        }).fail(function (error) {
+          $("textarea[name=result]").val(error.msg);
+        });
+        return false;
+      });
+
+      form.on('submit(gm2)', function (data) {
+        let zoneids = zoneSelect2.getValue('valueStr');
+        let cmd = $("textarea[name='cmd2']").val();
+        okUtils.ajax("/api/gm/game/cmd", "post", { zoneids: zoneids, cmd: cmd }, true).done(function (response) {
+          $("textarea[name=result2]").val(response.data);
+        }).fail(function (error) {
+          $("textarea[name=result2]").val(error.msg);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>
