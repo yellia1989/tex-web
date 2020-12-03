@@ -27,8 +27,8 @@ case "$env" in
     ;;
 esac
 
-runcmdroot root@$ip "[ ! -f /data/web2 ] && mkdir /data/web2"
-runcmdroot root@$ip "mkdir /data/web2/backup"
+runcmdroot root@$ip "[ ! -f /data/web ] && mkdir /data/web"
+runcmdroot root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
@@ -40,11 +40,11 @@ if [ ! -f $web ]; then
 fi
 
 echo "拷贝文件时间较长， 请耐心等待。。。"
-putfile root@$ip ../update.sh /data/web2/
-putfile root@$ip $web /data/web2/backup/
+putfile root@$ip ../update.sh /data/web/
+putfile root@$ip $web /data/web/backup/
 
 echo "更新web中。。。"
-runcmdroot root@$ip "cd /data/web2 && ./update.sh $web"
+runcmdroot root@$ip "cd /data/web && ./update.sh $web"
 
 rm -rf $web
 rm -rf conf.cfg

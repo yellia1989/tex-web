@@ -44,11 +44,11 @@ func MailSendLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
-    defer db.Close()
 
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
     sqlcount := "SELECT count(*) as total FROM send_mail"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
@@ -102,11 +102,11 @@ func MailRevLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
-    defer db.Close()
 
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
     sqlcount := "SELECT count(*) as total FROM rcv_mail"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
@@ -160,11 +160,11 @@ func MailDelLog(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
-    defer db.Close()
 
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
     sqlcount := "SELECT count(*) as total FROM del_mail"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
