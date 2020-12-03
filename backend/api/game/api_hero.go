@@ -32,9 +32,11 @@ func HeroAddLog(c echo.Context) error {
 	}
 	
     db, err := zoneLogDb(zoneid)
+
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
 	sqlcount := "SELECT count(*) as total FROM add_hero"
 	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"

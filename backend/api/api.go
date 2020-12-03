@@ -116,6 +116,9 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/hero/addlog", game.HeroAddLog) // 英雄日志
 	group.GET("/game/item/addlog", game.ItemAddLog) // 道具日志
 	group.GET("/game/item/sublog", game.ItemSubLog)
+	group.GET("/game/mail/sendlog", game.MailSendLog) // 邮件日志
+	group.GET("/game/mail/revlog", game.MailRevLog)
+	group.GET("/game/mail/dellog", game.MailDelLog)
 
 	group.GET("/game/real/online", game.RealOnline)
 	group.GET("/game/real/newadd", game.RealNewadd)
