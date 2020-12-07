@@ -79,7 +79,7 @@
 
     okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
       zoneSelect.update({
-        data: response.data,
+        data: response.data["game"],
         initValue: [1],
       });
     }).fail(function (error) {
@@ -99,8 +99,9 @@
         {field: "id", title: "日志id"},
         {field: "time", title: "时间"},
         {field: "heroid", title: "英雄id"},
-        {field: "level", title: "等级"},
         {field: "star", title: "星级"},
+        {field: "step", title: "阶级"},
+        {field: "quality", title: "品质"},
         {field: "action", title: "来源"},
       ]],
       toolbar: true,

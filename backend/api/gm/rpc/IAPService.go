@@ -18,11 +18,32 @@ import (
 type IAPReceiptType int32
 
 const (
-	IAPReceiptType_Apple  = 1
-	IAPReceiptType_Google = 2
-	IAPReceiptType_AB     = 4
-	IAPReceiptType_Yoka   = 5
+	IAPReceiptType_Apple    = 1
+	IAPReceiptType_Google   = 2
+	IAPReceiptType_Fy       = 3
+	IAPReceiptType_HeePay   = 4
+	IAPReceiptType_HeePayH5 = 5
+	IAPReceiptType_GameHub  = 6
 )
+
+func (en IAPReceiptType) String() string {
+	ret := ""
+	switch en {
+	case IAPReceiptType_Apple:
+		ret = "IAPReceiptType_Apple"
+	case IAPReceiptType_Google:
+		ret = "IAPReceiptType_Google"
+	case IAPReceiptType_Fy:
+		ret = "IAPReceiptType_Fy"
+	case IAPReceiptType_HeePay:
+		ret = "IAPReceiptType_HeePay"
+	case IAPReceiptType_HeePayH5:
+		ret = "IAPReceiptType_HeePayH5"
+	case IAPReceiptType_GameHub:
+		ret = "IAPReceiptType_GameHub"
+	}
+	return ret
+}
 
 type IAPReceiptStatus int32
 
@@ -33,6 +54,23 @@ const (
 	IAPReceiptStatus_Deliver_Success = 4
 	IAPReceiptStatus_Deliver_Fail    = 5
 )
+
+func (en IAPReceiptStatus) String() string {
+	ret := ""
+	switch en {
+	case IAPReceiptStatus_Pending:
+		ret = "IAPReceiptStatus_Pending"
+	case IAPReceiptStatus_Verify_Fail:
+		ret = "IAPReceiptStatus_Verify_Fail"
+	case IAPReceiptStatus_Delivering:
+		ret = "IAPReceiptStatus_Delivering"
+	case IAPReceiptStatus_Deliver_Success:
+		ret = "IAPReceiptStatus_Deliver_Success"
+	case IAPReceiptStatus_Deliver_Fail:
+		ret = "IAPReceiptStatus_Deliver_Fail"
+	}
+	return ret
+}
 
 type IAPStatus struct {
 	IReceiptId      uint32 `json:"iReceiptId"`
@@ -1282,7 +1320,7 @@ func (st *GoogleReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require
 	return nil
 }
 
-type ABPurchase struct {
+type FyPurchase struct {
 	SPurchaseData   string `json:"sPurchaseData"`
 	SSignature      string `json:"sSignature"`
 	IConnId         uint32 `json:"iConnId"`
@@ -1291,10 +1329,10 @@ type ABPurchase struct {
 	STraceFlowId    string `json:"sTraceFlowId"`
 }
 
-func (st *ABPurchase) resetDefault() {
+func (st *FyPurchase) resetDefault() {
 }
-func (st *ABPurchase) Copy() *ABPurchase {
-	ret := NewABPurchase()
+func (st *FyPurchase) Copy() *FyPurchase {
+	ret := NewFyPurchase()
 	ret.SPurchaseData = st.SPurchaseData
 	ret.SSignature = st.SSignature
 	ret.IConnId = st.IConnId
@@ -1303,12 +1341,12 @@ func (st *ABPurchase) Copy() *ABPurchase {
 	ret.STraceFlowId = st.STraceFlowId
 	return ret
 }
-func NewABPurchase() *ABPurchase {
-	ret := &ABPurchase{}
+func NewFyPurchase() *FyPurchase {
+	ret := &FyPurchase{}
 	ret.resetDefault()
 	return ret
 }
-func (st *ABPurchase) Visit(buff *bytes.Buffer, t int) {
+func (st *FyPurchase) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sPurchaseData")+fmt.Sprintf("%v\n", st.SPurchaseData))
 	util.Tab(buff, t+1, util.Fieldname("sSignature")+fmt.Sprintf("%v\n", st.SSignature))
 	util.Tab(buff, t+1, util.Fieldname("iConnId")+fmt.Sprintf("%v\n", st.IConnId))
@@ -1316,25 +1354,25 @@ func (st *ABPurchase) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sTraceProductId")+fmt.Sprintf("%v\n", st.STraceProductId))
 	util.Tab(buff, t+1, util.Fieldname("sTraceFlowId")+fmt.Sprintf("%v\n", st.STraceFlowId))
 }
-func (st *ABPurchase) ReadStruct(up *codec.UnPacker) error {
+func (st *FyPurchase) ReadStruct(up *codec.UnPacker) error {
 	var err error
 	var length uint32
 	var has bool
 	var ty uint32
 	st.resetDefault()
-	err = up.ReadString(&st.SPurchaseData, 0, false)
+	err = up.ReadString(&st.SPurchaseData, 1, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SSignature, 1, false)
+	err = up.ReadString(&st.SSignature, 2, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.IConnId, 2, false)
+	err = up.ReadUint32(&st.IConnId, 3, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SChannel, 3, false)
+	err = up.ReadString(&st.SChannel, 4, false)
 	if err != nil {
 		return err
 	}
@@ -1353,7 +1391,7 @@ func (st *ABPurchase) ReadStruct(up *codec.UnPacker) error {
 
 	return err
 }
-func (st *ABPurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+func (st *FyPurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
 	var err error
 	var has bool
 	var ty uint32
@@ -1380,29 +1418,29 @@ func (st *ABPurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require 
 	_ = ty
 	return nil
 }
-func (st *ABPurchase) WriteStruct(p *codec.Packer) error {
+func (st *FyPurchase) WriteStruct(p *codec.Packer) error {
 	var err error
 	var length uint32
 	if false || st.SPurchaseData != "" {
-		err = p.WriteString(0, st.SPurchaseData)
+		err = p.WriteString(1, st.SPurchaseData)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.SSignature != "" {
-		err = p.WriteString(1, st.SSignature)
+		err = p.WriteString(2, st.SSignature)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.IConnId != 0 {
-		err = p.WriteUint32(2, st.IConnId)
+		err = p.WriteUint32(3, st.IConnId)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.SChannel != "" {
-		err = p.WriteString(3, st.SChannel)
+		err = p.WriteString(4, st.SChannel)
 		if err != nil {
 			return err
 		}
@@ -1423,7 +1461,7 @@ func (st *ABPurchase) WriteStruct(p *codec.Packer) error {
 	_ = length
 	return err
 }
-func (st *ABPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+func (st *FyPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
 	var err error
 
 	if require {
@@ -1464,502 +1502,44 @@ func (st *ABPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bo
 	return nil
 }
 
-type ABReceipt struct {
-	STransid   string  `json:"sTransid"`
-	ITranstype uint32  `json:"iTranstype"`
-	SCporderid string  `json:"sCporderid"`
-	SAppuserid string  `json:"sAppuserid"`
-	SAppid     string  `json:"sAppid"`
-	IWaresid   uint32  `json:"iWaresid"`
-	IFeetype   uint32  `json:"iFeetype"`
-	FMoney     float32 `json:"fMoney"`
-	SCurrency  string  `json:"sCurrency"`
-	IResult    uint32  `json:"iResult"`
-	ITranstime uint32  `json:"iTranstime"`
-	SCpprivate string  `json:"sCpprivate"`
-	IPaytype   uint32  `json:"iPaytype"`
+type FyReceipt struct {
+	SOrderId        string `json:"sOrderId"`
+	SUuid           string `json:"sUuid"`
+	SAppCallbackExt string `json:"sAppCallbackExt"`
+	IPayAmount      uint32 `json:"iPayAmount"`
+	ISandBox        uint32 `json:"iSandBox"`
+	IPayTime        uint32 `json:"iPayTime"`
+	ITime           uint32 `json:"iTime"`
 }
 
-func (st *ABReceipt) resetDefault() {
+func (st *FyReceipt) resetDefault() {
 }
-func (st *ABReceipt) Copy() *ABReceipt {
-	ret := NewABReceipt()
-	ret.STransid = st.STransid
-	ret.ITranstype = st.ITranstype
-	ret.SCporderid = st.SCporderid
-	ret.SAppuserid = st.SAppuserid
-	ret.SAppid = st.SAppid
-	ret.IWaresid = st.IWaresid
-	ret.IFeetype = st.IFeetype
-	ret.FMoney = st.FMoney
-	ret.SCurrency = st.SCurrency
-	ret.IResult = st.IResult
-	ret.ITranstime = st.ITranstime
-	ret.SCpprivate = st.SCpprivate
-	ret.IPaytype = st.IPaytype
-	return ret
-}
-func NewABReceipt() *ABReceipt {
-	ret := &ABReceipt{}
-	ret.resetDefault()
-	return ret
-}
-func (st *ABReceipt) Visit(buff *bytes.Buffer, t int) {
-	util.Tab(buff, t+1, util.Fieldname("sTransid")+fmt.Sprintf("%v\n", st.STransid))
-	util.Tab(buff, t+1, util.Fieldname("iTranstype")+fmt.Sprintf("%v\n", st.ITranstype))
-	util.Tab(buff, t+1, util.Fieldname("sCporderid")+fmt.Sprintf("%v\n", st.SCporderid))
-	util.Tab(buff, t+1, util.Fieldname("sAppuserid")+fmt.Sprintf("%v\n", st.SAppuserid))
-	util.Tab(buff, t+1, util.Fieldname("sAppid")+fmt.Sprintf("%v\n", st.SAppid))
-	util.Tab(buff, t+1, util.Fieldname("iWaresid")+fmt.Sprintf("%v\n", st.IWaresid))
-	util.Tab(buff, t+1, util.Fieldname("iFeetype")+fmt.Sprintf("%v\n", st.IFeetype))
-	util.Tab(buff, t+1, util.Fieldname("fMoney")+fmt.Sprintf("%v\n", st.FMoney))
-	util.Tab(buff, t+1, util.Fieldname("sCurrency")+fmt.Sprintf("%v\n", st.SCurrency))
-	util.Tab(buff, t+1, util.Fieldname("iResult")+fmt.Sprintf("%v\n", st.IResult))
-	util.Tab(buff, t+1, util.Fieldname("iTranstime")+fmt.Sprintf("%v\n", st.ITranstime))
-	util.Tab(buff, t+1, util.Fieldname("sCpprivate")+fmt.Sprintf("%v\n", st.SCpprivate))
-	util.Tab(buff, t+1, util.Fieldname("iPaytype")+fmt.Sprintf("%v\n", st.IPaytype))
-}
-func (st *ABReceipt) ReadStruct(up *codec.UnPacker) error {
-	var err error
-	var length uint32
-	var has bool
-	var ty uint32
-	st.resetDefault()
-	err = up.ReadString(&st.STransid, 0, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.ITranstype, 1, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SCporderid, 2, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SAppuserid, 3, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SAppid, 4, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.IWaresid, 5, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.IFeetype, 6, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadFloat32(&st.FMoney, 7, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SCurrency, 8, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.IResult, 9, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.ITranstime, 10, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SCpprivate, 11, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.IPaytype, 12, false)
-	if err != nil {
-		return err
-	}
-
-	_ = length
-	_ = has
-	_ = ty
-
-	return err
-}
-func (st *ABReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
-	var err error
-	var has bool
-	var ty uint32
-
-	has, ty, err = up.SkipToTag(tag, require)
-	if !has || err != nil {
-		return err
-	}
-
-	if ty != codec.SdpType_StructBegin {
-		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
-	}
-
-	err = st.ReadStruct(up)
-	if err != nil {
-		return err
-	}
-	err = up.SkipStruct()
-	if err != nil {
-		return err
-	}
-
-	_ = has
-	_ = ty
-	return nil
-}
-func (st *ABReceipt) WriteStruct(p *codec.Packer) error {
-	var err error
-	var length uint32
-	if false || st.STransid != "" {
-		err = p.WriteString(0, st.STransid)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.ITranstype != 0 {
-		err = p.WriteUint32(1, st.ITranstype)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SCporderid != "" {
-		err = p.WriteString(2, st.SCporderid)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SAppuserid != "" {
-		err = p.WriteString(3, st.SAppuserid)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SAppid != "" {
-		err = p.WriteString(4, st.SAppid)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IWaresid != 0 {
-		err = p.WriteUint32(5, st.IWaresid)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IFeetype != 0 {
-		err = p.WriteUint32(6, st.IFeetype)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.FMoney != 0 {
-		err = p.WriteFloat32(7, st.FMoney)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SCurrency != "" {
-		err = p.WriteString(8, st.SCurrency)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IResult != 0 {
-		err = p.WriteUint32(9, st.IResult)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.ITranstime != 0 {
-		err = p.WriteUint32(10, st.ITranstime)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SCpprivate != "" {
-		err = p.WriteString(11, st.SCpprivate)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IPaytype != 0 {
-		err = p.WriteUint32(12, st.IPaytype)
-		if err != nil {
-			return err
-		}
-	}
-
-	_ = length
-	return err
-}
-func (st *ABReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
-	var err error
-
-	if require {
-		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
-		if err != nil {
-			return err
-		}
-		err = st.WriteStruct(p)
-		if err != nil {
-			return err
-		}
-		err = p.WriteHeader(0, codec.SdpType_StructEnd)
-		if err != nil {
-			return err
-		}
-	} else {
-		p2 := codec.NewPacker()
-		err = st.WriteStruct(p2)
-		if err != nil {
-			return err
-		}
-		if p2.Len() != 0 {
-			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
-			if err != nil {
-				return err
-			}
-			err = p.WriteData(p2.ToBytes())
-			if err != nil {
-				return err
-			}
-			err = p.WriteHeader(0, codec.SdpType_StructEnd)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-type YokaPurchase struct {
-	SPurchaseData   string `json:"sPurchaseData"`
-	SSignature      string `json:"sSignature"`
-	IConnId         uint32 `json:"iConnId"`
-	SChannel        string `json:"sChannel"`
-	STraceProductId string `json:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId"`
-}
-
-func (st *YokaPurchase) resetDefault() {
-}
-func (st *YokaPurchase) Copy() *YokaPurchase {
-	ret := NewYokaPurchase()
-	ret.SPurchaseData = st.SPurchaseData
-	ret.SSignature = st.SSignature
-	ret.IConnId = st.IConnId
-	ret.SChannel = st.SChannel
-	ret.STraceProductId = st.STraceProductId
-	ret.STraceFlowId = st.STraceFlowId
-	return ret
-}
-func NewYokaPurchase() *YokaPurchase {
-	ret := &YokaPurchase{}
-	ret.resetDefault()
-	return ret
-}
-func (st *YokaPurchase) Visit(buff *bytes.Buffer, t int) {
-	util.Tab(buff, t+1, util.Fieldname("sPurchaseData")+fmt.Sprintf("%v\n", st.SPurchaseData))
-	util.Tab(buff, t+1, util.Fieldname("sSignature")+fmt.Sprintf("%v\n", st.SSignature))
-	util.Tab(buff, t+1, util.Fieldname("iConnId")+fmt.Sprintf("%v\n", st.IConnId))
-	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
-	util.Tab(buff, t+1, util.Fieldname("sTraceProductId")+fmt.Sprintf("%v\n", st.STraceProductId))
-	util.Tab(buff, t+1, util.Fieldname("sTraceFlowId")+fmt.Sprintf("%v\n", st.STraceFlowId))
-}
-func (st *YokaPurchase) ReadStruct(up *codec.UnPacker) error {
-	var err error
-	var length uint32
-	var has bool
-	var ty uint32
-	st.resetDefault()
-	err = up.ReadString(&st.SPurchaseData, 0, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SSignature, 1, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.IConnId, 2, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SChannel, 3, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.STraceProductId, 10, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.STraceFlowId, 11, false)
-	if err != nil {
-		return err
-	}
-
-	_ = length
-	_ = has
-	_ = ty
-
-	return err
-}
-func (st *YokaPurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
-	var err error
-	var has bool
-	var ty uint32
-
-	has, ty, err = up.SkipToTag(tag, require)
-	if !has || err != nil {
-		return err
-	}
-
-	if ty != codec.SdpType_StructBegin {
-		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
-	}
-
-	err = st.ReadStruct(up)
-	if err != nil {
-		return err
-	}
-	err = up.SkipStruct()
-	if err != nil {
-		return err
-	}
-
-	_ = has
-	_ = ty
-	return nil
-}
-func (st *YokaPurchase) WriteStruct(p *codec.Packer) error {
-	var err error
-	var length uint32
-	if false || st.SPurchaseData != "" {
-		err = p.WriteString(0, st.SPurchaseData)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SSignature != "" {
-		err = p.WriteString(1, st.SSignature)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IConnId != 0 {
-		err = p.WriteUint32(2, st.IConnId)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SChannel != "" {
-		err = p.WriteString(3, st.SChannel)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.STraceProductId != "" {
-		err = p.WriteString(10, st.STraceProductId)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.STraceFlowId != "" {
-		err = p.WriteString(11, st.STraceFlowId)
-		if err != nil {
-			return err
-		}
-	}
-
-	_ = length
-	return err
-}
-func (st *YokaPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
-	var err error
-
-	if require {
-		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
-		if err != nil {
-			return err
-		}
-		err = st.WriteStruct(p)
-		if err != nil {
-			return err
-		}
-		err = p.WriteHeader(0, codec.SdpType_StructEnd)
-		if err != nil {
-			return err
-		}
-	} else {
-		p2 := codec.NewPacker()
-		err = st.WriteStruct(p2)
-		if err != nil {
-			return err
-		}
-		if p2.Len() != 0 {
-			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
-			if err != nil {
-				return err
-			}
-			err = p.WriteData(p2.ToBytes())
-			if err != nil {
-				return err
-			}
-			err = p.WriteHeader(0, codec.SdpType_StructEnd)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-type YokaReceipt struct {
-	SOrderId       string  `json:"sOrderId"`
-	SAppOrderId    string  `json:"sAppOrderId"`
-	FOrderAmount   float64 `json:"fOrderAmount"`
-	IProductId     uint32  `json:"iProductId"`
-	SSndaId        string  `json:"sSndaId"`
-	SSuccessTime   string  `json:"sSuccessTime"`
-	SExtendAccount string  `json:"sExtendAccount"`
-	SChannel       string  `json:"sChannel"`
-}
-
-func (st *YokaReceipt) resetDefault() {
-}
-func (st *YokaReceipt) Copy() *YokaReceipt {
-	ret := NewYokaReceipt()
+func (st *FyReceipt) Copy() *FyReceipt {
+	ret := NewFyReceipt()
 	ret.SOrderId = st.SOrderId
-	ret.SAppOrderId = st.SAppOrderId
-	ret.FOrderAmount = st.FOrderAmount
-	ret.IProductId = st.IProductId
-	ret.SSndaId = st.SSndaId
-	ret.SSuccessTime = st.SSuccessTime
-	ret.SExtendAccount = st.SExtendAccount
-	ret.SChannel = st.SChannel
+	ret.SUuid = st.SUuid
+	ret.SAppCallbackExt = st.SAppCallbackExt
+	ret.IPayAmount = st.IPayAmount
+	ret.ISandBox = st.ISandBox
+	ret.IPayTime = st.IPayTime
+	ret.ITime = st.ITime
 	return ret
 }
-func NewYokaReceipt() *YokaReceipt {
-	ret := &YokaReceipt{}
+func NewFyReceipt() *FyReceipt {
+	ret := &FyReceipt{}
 	ret.resetDefault()
 	return ret
 }
-func (st *YokaReceipt) Visit(buff *bytes.Buffer, t int) {
+func (st *FyReceipt) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sOrderId")+fmt.Sprintf("%v\n", st.SOrderId))
-	util.Tab(buff, t+1, util.Fieldname("sAppOrderId")+fmt.Sprintf("%v\n", st.SAppOrderId))
-	util.Tab(buff, t+1, util.Fieldname("fOrderAmount")+fmt.Sprintf("%v\n", st.FOrderAmount))
-	util.Tab(buff, t+1, util.Fieldname("iProductId")+fmt.Sprintf("%v\n", st.IProductId))
-	util.Tab(buff, t+1, util.Fieldname("sSndaId")+fmt.Sprintf("%v\n", st.SSndaId))
-	util.Tab(buff, t+1, util.Fieldname("sSuccessTime")+fmt.Sprintf("%v\n", st.SSuccessTime))
-	util.Tab(buff, t+1, util.Fieldname("sExtendAccount")+fmt.Sprintf("%v\n", st.SExtendAccount))
-	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
+	util.Tab(buff, t+1, util.Fieldname("sUuid")+fmt.Sprintf("%v\n", st.SUuid))
+	util.Tab(buff, t+1, util.Fieldname("sAppCallbackExt")+fmt.Sprintf("%v\n", st.SAppCallbackExt))
+	util.Tab(buff, t+1, util.Fieldname("iPayAmount")+fmt.Sprintf("%v\n", st.IPayAmount))
+	util.Tab(buff, t+1, util.Fieldname("iSandBox")+fmt.Sprintf("%v\n", st.ISandBox))
+	util.Tab(buff, t+1, util.Fieldname("iPayTime")+fmt.Sprintf("%v\n", st.IPayTime))
+	util.Tab(buff, t+1, util.Fieldname("iTime")+fmt.Sprintf("%v\n", st.ITime))
 }
-func (st *YokaReceipt) ReadStruct(up *codec.UnPacker) error {
+func (st *FyReceipt) ReadStruct(up *codec.UnPacker) error {
 	var err error
 	var length uint32
 	var has bool
@@ -1969,31 +1549,27 @@ func (st *YokaReceipt) ReadStruct(up *codec.UnPacker) error {
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SAppOrderId, 1, false)
+	err = up.ReadString(&st.SUuid, 1, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadFloat64(&st.FOrderAmount, 2, false)
+	err = up.ReadString(&st.SAppCallbackExt, 2, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.IProductId, 3, false)
+	err = up.ReadUint32(&st.IPayAmount, 3, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SSndaId, 4, false)
+	err = up.ReadUint32(&st.ISandBox, 4, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SSuccessTime, 5, false)
+	err = up.ReadUint32(&st.IPayTime, 5, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SExtendAccount, 6, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SChannel, 7, false)
+	err = up.ReadUint32(&st.ITime, 6, false)
 	if err != nil {
 		return err
 	}
@@ -2004,7 +1580,7 @@ func (st *YokaReceipt) ReadStruct(up *codec.UnPacker) error {
 
 	return err
 }
-func (st *YokaReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+func (st *FyReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
 	var err error
 	var has bool
 	var ty uint32
@@ -2031,7 +1607,7 @@ func (st *YokaReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require
 	_ = ty
 	return nil
 }
-func (st *YokaReceipt) WriteStruct(p *codec.Packer) error {
+func (st *FyReceipt) WriteStruct(p *codec.Packer) error {
 	var err error
 	var length uint32
 	if false || st.SOrderId != "" {
@@ -2040,44 +1616,38 @@ func (st *YokaReceipt) WriteStruct(p *codec.Packer) error {
 			return err
 		}
 	}
-	if false || st.SAppOrderId != "" {
-		err = p.WriteString(1, st.SAppOrderId)
+	if false || st.SUuid != "" {
+		err = p.WriteString(1, st.SUuid)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.FOrderAmount != 0 {
-		err = p.WriteFloat64(2, st.FOrderAmount)
+	if false || st.SAppCallbackExt != "" {
+		err = p.WriteString(2, st.SAppCallbackExt)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.IProductId != 0 {
-		err = p.WriteUint32(3, st.IProductId)
+	if false || st.IPayAmount != 0 {
+		err = p.WriteUint32(3, st.IPayAmount)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.SSndaId != "" {
-		err = p.WriteString(4, st.SSndaId)
+	if false || st.ISandBox != 0 {
+		err = p.WriteUint32(4, st.ISandBox)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.SSuccessTime != "" {
-		err = p.WriteString(5, st.SSuccessTime)
+	if false || st.IPayTime != 0 {
+		err = p.WriteUint32(5, st.IPayTime)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.SExtendAccount != "" {
-		err = p.WriteString(6, st.SExtendAccount)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SChannel != "" {
-		err = p.WriteString(7, st.SChannel)
+	if false || st.ITime != 0 {
+		err = p.WriteUint32(6, st.ITime)
 		if err != nil {
 			return err
 		}
@@ -2086,7 +1656,1398 @@ func (st *YokaReceipt) WriteStruct(p *codec.Packer) error {
 	_ = length
 	return err
 }
-func (st *YokaReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+func (st *FyReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type HeePayPurchase struct {
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
+	ICreateTime     uint32 `json:"iCreateTime"`
+}
+
+func (st *HeePayPurchase) resetDefault() {
+}
+func (st *HeePayPurchase) Copy() *HeePayPurchase {
+	ret := NewHeePayPurchase()
+	ret.SPurchaseData = st.SPurchaseData
+	ret.SSignature = st.SSignature
+	ret.IConnId = st.IConnId
+	ret.SChannel = st.SChannel
+	ret.STraceProductId = st.STraceProductId
+	ret.STraceFlowId = st.STraceFlowId
+	ret.ICreateTime = st.ICreateTime
+	return ret
+}
+func NewHeePayPurchase() *HeePayPurchase {
+	ret := &HeePayPurchase{}
+	ret.resetDefault()
+	return ret
+}
+func (st *HeePayPurchase) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sPurchaseData")+fmt.Sprintf("%v\n", st.SPurchaseData))
+	util.Tab(buff, t+1, util.Fieldname("sSignature")+fmt.Sprintf("%v\n", st.SSignature))
+	util.Tab(buff, t+1, util.Fieldname("iConnId")+fmt.Sprintf("%v\n", st.IConnId))
+	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
+	util.Tab(buff, t+1, util.Fieldname("sTraceProductId")+fmt.Sprintf("%v\n", st.STraceProductId))
+	util.Tab(buff, t+1, util.Fieldname("sTraceFlowId")+fmt.Sprintf("%v\n", st.STraceFlowId))
+	util.Tab(buff, t+1, util.Fieldname("iCreateTime")+fmt.Sprintf("%v\n", st.ICreateTime))
+}
+func (st *HeePayPurchase) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SPurchaseData, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SSignature, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IConnId, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SChannel, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceProductId, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceFlowId, 11, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.ICreateTime, 12, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *HeePayPurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *HeePayPurchase) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SPurchaseData != "" {
+		err = p.WriteString(0, st.SPurchaseData)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SSignature != "" {
+		err = p.WriteString(1, st.SSignature)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IConnId != 0 {
+		err = p.WriteUint32(2, st.IConnId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SChannel != "" {
+		err = p.WriteString(3, st.SChannel)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceProductId != "" {
+		err = p.WriteString(10, st.STraceProductId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceFlowId != "" {
+		err = p.WriteString(11, st.STraceFlowId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.ICreateTime != 0 {
+		err = p.WriteUint32(12, st.ICreateTime)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *HeePayPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type HeePayReceipt struct {
+	IResult      int32   `json:"iResult"`
+	SPayMessage  string  `json:"sPayMessage"`
+	SAgentId     string  `json:"sAgentId"`
+	SJnetBillNo  string  `json:"sJnetBillNo"`
+	SAgentBillId string  `json:"sAgentBillId"`
+	IPayType     uint32  `json:"iPayType"`
+	FPayAmt      float32 `json:"fPayAmt"`
+	SRemark      string  `json:"sRemark"`
+}
+
+func (st *HeePayReceipt) resetDefault() {
+}
+func (st *HeePayReceipt) Copy() *HeePayReceipt {
+	ret := NewHeePayReceipt()
+	ret.IResult = st.IResult
+	ret.SPayMessage = st.SPayMessage
+	ret.SAgentId = st.SAgentId
+	ret.SJnetBillNo = st.SJnetBillNo
+	ret.SAgentBillId = st.SAgentBillId
+	ret.IPayType = st.IPayType
+	ret.FPayAmt = st.FPayAmt
+	ret.SRemark = st.SRemark
+	return ret
+}
+func NewHeePayReceipt() *HeePayReceipt {
+	ret := &HeePayReceipt{}
+	ret.resetDefault()
+	return ret
+}
+func (st *HeePayReceipt) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("iResult")+fmt.Sprintf("%v\n", st.IResult))
+	util.Tab(buff, t+1, util.Fieldname("sPayMessage")+fmt.Sprintf("%v\n", st.SPayMessage))
+	util.Tab(buff, t+1, util.Fieldname("sAgentId")+fmt.Sprintf("%v\n", st.SAgentId))
+	util.Tab(buff, t+1, util.Fieldname("sJnetBillNo")+fmt.Sprintf("%v\n", st.SJnetBillNo))
+	util.Tab(buff, t+1, util.Fieldname("sAgentBillId")+fmt.Sprintf("%v\n", st.SAgentBillId))
+	util.Tab(buff, t+1, util.Fieldname("iPayType")+fmt.Sprintf("%v\n", st.IPayType))
+	util.Tab(buff, t+1, util.Fieldname("fPayAmt")+fmt.Sprintf("%v\n", st.FPayAmt))
+	util.Tab(buff, t+1, util.Fieldname("sRemark")+fmt.Sprintf("%v\n", st.SRemark))
+}
+func (st *HeePayReceipt) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadInt32(&st.IResult, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SPayMessage, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SAgentId, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SJnetBillNo, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SAgentBillId, 4, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IPayType, 5, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadFloat32(&st.FPayAmt, 6, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SRemark, 7, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *HeePayReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *HeePayReceipt) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.IResult != 0 {
+		err = p.WriteInt32(0, st.IResult)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SPayMessage != "" {
+		err = p.WriteString(1, st.SPayMessage)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SAgentId != "" {
+		err = p.WriteString(2, st.SAgentId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SJnetBillNo != "" {
+		err = p.WriteString(3, st.SJnetBillNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SAgentBillId != "" {
+		err = p.WriteString(4, st.SAgentBillId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IPayType != 0 {
+		err = p.WriteUint32(5, st.IPayType)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.FPayAmt != 0 {
+		err = p.WriteFloat32(6, st.FPayAmt)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SRemark != "" {
+		err = p.WriteString(7, st.SRemark)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *HeePayReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type HeePayH5Purchase struct {
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
+}
+
+func (st *HeePayH5Purchase) resetDefault() {
+}
+func (st *HeePayH5Purchase) Copy() *HeePayH5Purchase {
+	ret := NewHeePayH5Purchase()
+	ret.SPurchaseData = st.SPurchaseData
+	ret.SSignature = st.SSignature
+	ret.IConnId = st.IConnId
+	ret.SChannel = st.SChannel
+	ret.STraceProductId = st.STraceProductId
+	ret.STraceFlowId = st.STraceFlowId
+	return ret
+}
+func NewHeePayH5Purchase() *HeePayH5Purchase {
+	ret := &HeePayH5Purchase{}
+	ret.resetDefault()
+	return ret
+}
+func (st *HeePayH5Purchase) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sPurchaseData")+fmt.Sprintf("%v\n", st.SPurchaseData))
+	util.Tab(buff, t+1, util.Fieldname("sSignature")+fmt.Sprintf("%v\n", st.SSignature))
+	util.Tab(buff, t+1, util.Fieldname("iConnId")+fmt.Sprintf("%v\n", st.IConnId))
+	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
+	util.Tab(buff, t+1, util.Fieldname("sTraceProductId")+fmt.Sprintf("%v\n", st.STraceProductId))
+	util.Tab(buff, t+1, util.Fieldname("sTraceFlowId")+fmt.Sprintf("%v\n", st.STraceFlowId))
+}
+func (st *HeePayH5Purchase) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SPurchaseData, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SSignature, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IConnId, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SChannel, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceProductId, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceFlowId, 11, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *HeePayH5Purchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *HeePayH5Purchase) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SPurchaseData != "" {
+		err = p.WriteString(0, st.SPurchaseData)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SSignature != "" {
+		err = p.WriteString(1, st.SSignature)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IConnId != 0 {
+		err = p.WriteUint32(2, st.IConnId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SChannel != "" {
+		err = p.WriteString(3, st.SChannel)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceProductId != "" {
+		err = p.WriteString(10, st.STraceProductId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceFlowId != "" {
+		err = p.WriteString(11, st.STraceFlowId)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *HeePayH5Purchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type HeePayH5Receipt struct {
+	SMethod        string `json:"sMethod"`
+	SVersion       string `json:"sVersion"`
+	SCharset       string `json:"sCharset"`
+	SSignType      string `json:"sSignType"`
+	SReturnCode    string `json:"sReturnCode"`
+	SReturnMsg     string `json:"sReturnMsg"`
+	SAppId         string `json:"sAppId"`
+	SMchId         string `json:"sMchId"`
+	SNonceStr      string `json:"sNonceStr"`
+	SResultCode    string `json:"sResultCode"`
+	SErrCode       string `json:"sErrCode"`
+	SErrCodeDesc   string `json:"sErrCodeDesc"`
+	SOpenId        string `json:"sOpenId"`
+	SFeeType       string `json:"sFeeType"`
+	ITotalFee      uint32 `json:"iTotalFee"`
+	ICouponFee     uint32 `json:"iCouponFee"`
+	STransactionId string `json:"sTransactionId"`
+	SOutTradeNo    string `json:"sOutTradeNo"`
+	STimeEnd       string `json:"sTimeEnd"`
+	SBuyerLogonId  string `json:"sBuyerLogonId"`
+	SFundBillList  string `json:"sFundBillList"`
+}
+
+func (st *HeePayH5Receipt) resetDefault() {
+}
+func (st *HeePayH5Receipt) Copy() *HeePayH5Receipt {
+	ret := NewHeePayH5Receipt()
+	ret.SMethod = st.SMethod
+	ret.SVersion = st.SVersion
+	ret.SCharset = st.SCharset
+	ret.SSignType = st.SSignType
+	ret.SReturnCode = st.SReturnCode
+	ret.SReturnMsg = st.SReturnMsg
+	ret.SAppId = st.SAppId
+	ret.SMchId = st.SMchId
+	ret.SNonceStr = st.SNonceStr
+	ret.SResultCode = st.SResultCode
+	ret.SErrCode = st.SErrCode
+	ret.SErrCodeDesc = st.SErrCodeDesc
+	ret.SOpenId = st.SOpenId
+	ret.SFeeType = st.SFeeType
+	ret.ITotalFee = st.ITotalFee
+	ret.ICouponFee = st.ICouponFee
+	ret.STransactionId = st.STransactionId
+	ret.SOutTradeNo = st.SOutTradeNo
+	ret.STimeEnd = st.STimeEnd
+	ret.SBuyerLogonId = st.SBuyerLogonId
+	ret.SFundBillList = st.SFundBillList
+	return ret
+}
+func NewHeePayH5Receipt() *HeePayH5Receipt {
+	ret := &HeePayH5Receipt{}
+	ret.resetDefault()
+	return ret
+}
+func (st *HeePayH5Receipt) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sMethod")+fmt.Sprintf("%v\n", st.SMethod))
+	util.Tab(buff, t+1, util.Fieldname("sVersion")+fmt.Sprintf("%v\n", st.SVersion))
+	util.Tab(buff, t+1, util.Fieldname("sCharset")+fmt.Sprintf("%v\n", st.SCharset))
+	util.Tab(buff, t+1, util.Fieldname("sSignType")+fmt.Sprintf("%v\n", st.SSignType))
+	util.Tab(buff, t+1, util.Fieldname("sReturnCode")+fmt.Sprintf("%v\n", st.SReturnCode))
+	util.Tab(buff, t+1, util.Fieldname("sReturnMsg")+fmt.Sprintf("%v\n", st.SReturnMsg))
+	util.Tab(buff, t+1, util.Fieldname("sAppId")+fmt.Sprintf("%v\n", st.SAppId))
+	util.Tab(buff, t+1, util.Fieldname("sMchId")+fmt.Sprintf("%v\n", st.SMchId))
+	util.Tab(buff, t+1, util.Fieldname("sNonceStr")+fmt.Sprintf("%v\n", st.SNonceStr))
+	util.Tab(buff, t+1, util.Fieldname("sResultCode")+fmt.Sprintf("%v\n", st.SResultCode))
+	util.Tab(buff, t+1, util.Fieldname("sErrCode")+fmt.Sprintf("%v\n", st.SErrCode))
+	util.Tab(buff, t+1, util.Fieldname("sErrCodeDesc")+fmt.Sprintf("%v\n", st.SErrCodeDesc))
+	util.Tab(buff, t+1, util.Fieldname("sOpenId")+fmt.Sprintf("%v\n", st.SOpenId))
+	util.Tab(buff, t+1, util.Fieldname("sFeeType")+fmt.Sprintf("%v\n", st.SFeeType))
+	util.Tab(buff, t+1, util.Fieldname("iTotalFee")+fmt.Sprintf("%v\n", st.ITotalFee))
+	util.Tab(buff, t+1, util.Fieldname("iCouponFee")+fmt.Sprintf("%v\n", st.ICouponFee))
+	util.Tab(buff, t+1, util.Fieldname("sTransactionId")+fmt.Sprintf("%v\n", st.STransactionId))
+	util.Tab(buff, t+1, util.Fieldname("sOutTradeNo")+fmt.Sprintf("%v\n", st.SOutTradeNo))
+	util.Tab(buff, t+1, util.Fieldname("sTimeEnd")+fmt.Sprintf("%v\n", st.STimeEnd))
+	util.Tab(buff, t+1, util.Fieldname("sBuyerLogonId")+fmt.Sprintf("%v\n", st.SBuyerLogonId))
+	util.Tab(buff, t+1, util.Fieldname("sFundBillList")+fmt.Sprintf("%v\n", st.SFundBillList))
+}
+func (st *HeePayH5Receipt) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SMethod, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SVersion, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SCharset, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SSignType, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SReturnCode, 4, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SReturnMsg, 5, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SAppId, 6, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SMchId, 7, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SNonceStr, 8, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SResultCode, 9, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SErrCode, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SErrCodeDesc, 11, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SOpenId, 12, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SFeeType, 13, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.ITotalFee, 14, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.ICouponFee, 15, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STransactionId, 16, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SOutTradeNo, 17, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STimeEnd, 18, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SBuyerLogonId, 19, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SFundBillList, 20, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *HeePayH5Receipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *HeePayH5Receipt) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SMethod != "" {
+		err = p.WriteString(0, st.SMethod)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SVersion != "" {
+		err = p.WriteString(1, st.SVersion)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SCharset != "" {
+		err = p.WriteString(2, st.SCharset)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SSignType != "" {
+		err = p.WriteString(3, st.SSignType)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SReturnCode != "" {
+		err = p.WriteString(4, st.SReturnCode)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SReturnMsg != "" {
+		err = p.WriteString(5, st.SReturnMsg)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SAppId != "" {
+		err = p.WriteString(6, st.SAppId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SMchId != "" {
+		err = p.WriteString(7, st.SMchId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SNonceStr != "" {
+		err = p.WriteString(8, st.SNonceStr)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SResultCode != "" {
+		err = p.WriteString(9, st.SResultCode)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SErrCode != "" {
+		err = p.WriteString(10, st.SErrCode)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SErrCodeDesc != "" {
+		err = p.WriteString(11, st.SErrCodeDesc)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SOpenId != "" {
+		err = p.WriteString(12, st.SOpenId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SFeeType != "" {
+		err = p.WriteString(13, st.SFeeType)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.ITotalFee != 0 {
+		err = p.WriteUint32(14, st.ITotalFee)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.ICouponFee != 0 {
+		err = p.WriteUint32(15, st.ICouponFee)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STransactionId != "" {
+		err = p.WriteString(16, st.STransactionId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SOutTradeNo != "" {
+		err = p.WriteString(17, st.SOutTradeNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STimeEnd != "" {
+		err = p.WriteString(18, st.STimeEnd)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SBuyerLogonId != "" {
+		err = p.WriteString(19, st.SBuyerLogonId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SFundBillList != "" {
+		err = p.WriteString(20, st.SFundBillList)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *HeePayH5Receipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type GameHubPurchase struct {
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
+}
+
+func (st *GameHubPurchase) resetDefault() {
+}
+func (st *GameHubPurchase) Copy() *GameHubPurchase {
+	ret := NewGameHubPurchase()
+	ret.SPurchaseData = st.SPurchaseData
+	ret.SSignature = st.SSignature
+	ret.IConnId = st.IConnId
+	ret.SChannel = st.SChannel
+	ret.STraceProductId = st.STraceProductId
+	ret.STraceFlowId = st.STraceFlowId
+	return ret
+}
+func NewGameHubPurchase() *GameHubPurchase {
+	ret := &GameHubPurchase{}
+	ret.resetDefault()
+	return ret
+}
+func (st *GameHubPurchase) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sPurchaseData")+fmt.Sprintf("%v\n", st.SPurchaseData))
+	util.Tab(buff, t+1, util.Fieldname("sSignature")+fmt.Sprintf("%v\n", st.SSignature))
+	util.Tab(buff, t+1, util.Fieldname("iConnId")+fmt.Sprintf("%v\n", st.IConnId))
+	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
+	util.Tab(buff, t+1, util.Fieldname("sTraceProductId")+fmt.Sprintf("%v\n", st.STraceProductId))
+	util.Tab(buff, t+1, util.Fieldname("sTraceFlowId")+fmt.Sprintf("%v\n", st.STraceFlowId))
+}
+func (st *GameHubPurchase) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SPurchaseData, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SSignature, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IConnId, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SChannel, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceProductId, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceFlowId, 11, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *GameHubPurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *GameHubPurchase) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SPurchaseData != "" {
+		err = p.WriteString(0, st.SPurchaseData)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SSignature != "" {
+		err = p.WriteString(1, st.SSignature)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IConnId != 0 {
+		err = p.WriteUint32(2, st.IConnId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SChannel != "" {
+		err = p.WriteString(3, st.SChannel)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceProductId != "" {
+		err = p.WriteString(10, st.STraceProductId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceFlowId != "" {
+		err = p.WriteString(11, st.STraceFlowId)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *GameHubPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type GameHubReceipt struct {
+	SChannelId      string  `json:"sChannelId"`
+	SChannelUid     string  `json:"sChannelUid"`
+	SOrderNo        string  `json:"sOrderNo"`
+	SCpOrderNo      string  `json:"sCpOrderNo"`
+	SZoneId         string  `json:"sZoneId"`
+	SRoleId         string  `json:"sRoleId"`
+	SGoodsId        string  `json:"sGoodsId"`
+	FAmount         float32 `json:"fAmount"`
+	IPayTime        uint32  `json:"iPayTime"`
+	SPassbackParams string  `json:"sPassbackParams"`
+	IIsTest         uint32  `json:"iIsTest"`
+}
+
+func (st *GameHubReceipt) resetDefault() {
+}
+func (st *GameHubReceipt) Copy() *GameHubReceipt {
+	ret := NewGameHubReceipt()
+	ret.SChannelId = st.SChannelId
+	ret.SChannelUid = st.SChannelUid
+	ret.SOrderNo = st.SOrderNo
+	ret.SCpOrderNo = st.SCpOrderNo
+	ret.SZoneId = st.SZoneId
+	ret.SRoleId = st.SRoleId
+	ret.SGoodsId = st.SGoodsId
+	ret.FAmount = st.FAmount
+	ret.IPayTime = st.IPayTime
+	ret.SPassbackParams = st.SPassbackParams
+	ret.IIsTest = st.IIsTest
+	return ret
+}
+func NewGameHubReceipt() *GameHubReceipt {
+	ret := &GameHubReceipt{}
+	ret.resetDefault()
+	return ret
+}
+func (st *GameHubReceipt) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sChannelId")+fmt.Sprintf("%v\n", st.SChannelId))
+	util.Tab(buff, t+1, util.Fieldname("sChannelUid")+fmt.Sprintf("%v\n", st.SChannelUid))
+	util.Tab(buff, t+1, util.Fieldname("sOrderNo")+fmt.Sprintf("%v\n", st.SOrderNo))
+	util.Tab(buff, t+1, util.Fieldname("sCpOrderNo")+fmt.Sprintf("%v\n", st.SCpOrderNo))
+	util.Tab(buff, t+1, util.Fieldname("sZoneId")+fmt.Sprintf("%v\n", st.SZoneId))
+	util.Tab(buff, t+1, util.Fieldname("sRoleId")+fmt.Sprintf("%v\n", st.SRoleId))
+	util.Tab(buff, t+1, util.Fieldname("sGoodsId")+fmt.Sprintf("%v\n", st.SGoodsId))
+	util.Tab(buff, t+1, util.Fieldname("fAmount")+fmt.Sprintf("%v\n", st.FAmount))
+	util.Tab(buff, t+1, util.Fieldname("iPayTime")+fmt.Sprintf("%v\n", st.IPayTime))
+	util.Tab(buff, t+1, util.Fieldname("sPassbackParams")+fmt.Sprintf("%v\n", st.SPassbackParams))
+	util.Tab(buff, t+1, util.Fieldname("iIsTest")+fmt.Sprintf("%v\n", st.IIsTest))
+}
+func (st *GameHubReceipt) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SChannelId, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SChannelUid, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SOrderNo, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SCpOrderNo, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SZoneId, 4, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SRoleId, 5, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SGoodsId, 6, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadFloat32(&st.FAmount, 7, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IPayTime, 8, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SPassbackParams, 9, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IIsTest, 10, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *GameHubReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *GameHubReceipt) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SChannelId != "" {
+		err = p.WriteString(0, st.SChannelId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SChannelUid != "" {
+		err = p.WriteString(1, st.SChannelUid)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SOrderNo != "" {
+		err = p.WriteString(2, st.SOrderNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SCpOrderNo != "" {
+		err = p.WriteString(3, st.SCpOrderNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SZoneId != "" {
+		err = p.WriteString(4, st.SZoneId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SRoleId != "" {
+		err = p.WriteString(5, st.SRoleId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SGoodsId != "" {
+		err = p.WriteString(6, st.SGoodsId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.FAmount != 0 {
+		err = p.WriteFloat32(7, st.FAmount)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IPayTime != 0 {
+		err = p.WriteUint32(8, st.IPayTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SPassbackParams != "" {
+		err = p.WriteString(9, st.SPassbackParams)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IIsTest != 0 {
+		err = p.WriteUint32(10, st.IIsTest)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *GameHubReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
 	var err error
 
 	if require {
@@ -2128,20 +3089,24 @@ func (st *YokaReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require b
 }
 
 type IAPReceiptInAll struct {
-	IReceiptType    uint32        `json:"iReceiptType"`
-	StStatus        IAPStatus     `json:"stStatus"`
-	StAppleReceipt  AppleReceipt  `json:"stAppleReceipt"`
-	StGoogleReceipt GoogleReceipt `json:"stGoogleReceipt"`
-	StABReceipt     ABReceipt     `json:"stABReceipt"`
-	StYokaReceipt   YokaReceipt   `json:"stYokaReceipt"`
+	IReceiptType      uint32          `json:"iReceiptType"`
+	StStatus          IAPStatus       `json:"stStatus"`
+	StAppleReceipt    AppleReceipt    `json:"stAppleReceipt"`
+	StGoogleReceipt   GoogleReceipt   `json:"stGoogleReceipt"`
+	StFyReceipt       FyReceipt       `json:"stFyReceipt"`
+	StHeePayReceipt   HeePayReceipt   `json:"stHeePayReceipt"`
+	StHeePayH5Receipt HeePayH5Receipt `json:"stHeePayH5Receipt"`
+	StGameHubReceipt  GameHubReceipt  `json:"stGameHubReceipt"`
 }
 
 func (st *IAPReceiptInAll) resetDefault() {
 	st.StStatus.resetDefault()
 	st.StAppleReceipt.resetDefault()
 	st.StGoogleReceipt.resetDefault()
-	st.StABReceipt.resetDefault()
-	st.StYokaReceipt.resetDefault()
+	st.StFyReceipt.resetDefault()
+	st.StHeePayReceipt.resetDefault()
+	st.StHeePayH5Receipt.resetDefault()
+	st.StGameHubReceipt.resetDefault()
 }
 func (st *IAPReceiptInAll) Copy() *IAPReceiptInAll {
 	ret := NewIAPReceiptInAll()
@@ -2149,8 +3114,10 @@ func (st *IAPReceiptInAll) Copy() *IAPReceiptInAll {
 	ret.StStatus = *(st.StStatus.Copy())
 	ret.StAppleReceipt = *(st.StAppleReceipt.Copy())
 	ret.StGoogleReceipt = *(st.StGoogleReceipt.Copy())
-	ret.StABReceipt = *(st.StABReceipt.Copy())
-	ret.StYokaReceipt = *(st.StYokaReceipt.Copy())
+	ret.StFyReceipt = *(st.StFyReceipt.Copy())
+	ret.StHeePayReceipt = *(st.StHeePayReceipt.Copy())
+	ret.StHeePayH5Receipt = *(st.StHeePayH5Receipt.Copy())
+	ret.StGameHubReceipt = *(st.StGameHubReceipt.Copy())
 	return ret
 }
 func NewIAPReceiptInAll() *IAPReceiptInAll {
@@ -2169,11 +3136,17 @@ func (st *IAPReceiptInAll) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("stGoogleReceipt")+"{\n")
 	st.StGoogleReceipt.Visit(buff, t+1+1)
 	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stABReceipt")+"{\n")
-	st.StABReceipt.Visit(buff, t+1+1)
+	util.Tab(buff, t+1, util.Fieldname("stFyReceipt")+"{\n")
+	st.StFyReceipt.Visit(buff, t+1+1)
 	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stYokaReceipt")+"{\n")
-	st.StYokaReceipt.Visit(buff, t+1+1)
+	util.Tab(buff, t+1, util.Fieldname("stHeePayReceipt")+"{\n")
+	st.StHeePayReceipt.Visit(buff, t+1+1)
+	util.Tab(buff, t+1, "}\n")
+	util.Tab(buff, t+1, util.Fieldname("stHeePayH5Receipt")+"{\n")
+	st.StHeePayH5Receipt.Visit(buff, t+1+1)
+	util.Tab(buff, t+1, "}\n")
+	util.Tab(buff, t+1, util.Fieldname("stGameHubReceipt")+"{\n")
+	st.StGameHubReceipt.Visit(buff, t+1+1)
 	util.Tab(buff, t+1, "}\n")
 }
 func (st *IAPReceiptInAll) ReadStruct(up *codec.UnPacker) error {
@@ -2198,11 +3171,19 @@ func (st *IAPReceiptInAll) ReadStruct(up *codec.UnPacker) error {
 	if err != nil {
 		return err
 	}
-	err = st.StABReceipt.ReadStructFromTag(up, 5, false)
+	err = st.StFyReceipt.ReadStructFromTag(up, 4, false)
 	if err != nil {
 		return err
 	}
-	err = st.StYokaReceipt.ReadStructFromTag(up, 6, false)
+	err = st.StHeePayReceipt.ReadStructFromTag(up, 5, false)
+	if err != nil {
+		return err
+	}
+	err = st.StHeePayH5Receipt.ReadStructFromTag(up, 6, false)
+	if err != nil {
+		return err
+	}
+	err = st.StGameHubReceipt.ReadStructFromTag(up, 7, false)
 	if err != nil {
 		return err
 	}
@@ -2261,11 +3242,19 @@ func (st *IAPReceiptInAll) WriteStruct(p *codec.Packer) error {
 	if err != nil {
 		return err
 	}
-	err = st.StABReceipt.WriteStructFromTag(p, 5, false)
+	err = st.StFyReceipt.WriteStructFromTag(p, 4, false)
 	if err != nil {
 		return err
 	}
-	err = st.StYokaReceipt.WriteStructFromTag(p, 6, false)
+	err = st.StHeePayReceipt.WriteStructFromTag(p, 5, false)
+	if err != nil {
+		return err
+	}
+	err = st.StHeePayH5Receipt.WriteStructFromTag(p, 6, false)
+	if err != nil {
+		return err
+	}
+	err = st.StGameHubReceipt.WriteStructFromTag(p, 7, false)
 	if err != nil {
 		return err
 	}
@@ -2780,7 +3769,7 @@ func (s *IAPService) GetGoogleReceiptStatus(sOrderId string, stReceipt *GoogleRe
 	_ = length
 	return ret, nil
 }
-func (s *IAPService) DeliverABReceipt(iRoleId uint64, iZoneId uint32, stPurchase ABPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error) {
+func (s *IAPService) DeliverFyReceipt(iRoleId uint64, iZoneId uint32, stPurchase FyPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
 	var err error
@@ -2816,7 +3805,7 @@ func (s *IAPService) DeliverABReceipt(iRoleId uint64, iZoneId uint32, stPurchase
 		}
 	}
 	var rsp *protocol.ResponsePacket
-	err = s.proxy.Invoke("deliverABReceipt", p.ToBytes(), &rsp)
+	err = s.proxy.Invoke("deliverFyReceipt", p.ToBytes(), &rsp)
 	if err != nil {
 		return ret, err
 	}
@@ -2830,7 +3819,7 @@ func (s *IAPService) DeliverABReceipt(iRoleId uint64, iZoneId uint32, stPurchase
 	_ = length
 	return ret, nil
 }
-func (s *IAPService) DeliverYokaReceipt(iRoleId uint64, iZoneId uint32, stPurchase YokaPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error) {
+func (s *IAPService) DeliverHeePayReceipt(iRoleId uint64, iZoneId uint32, stPurchase HeePayPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
 	var err error
@@ -2866,7 +3855,107 @@ func (s *IAPService) DeliverYokaReceipt(iRoleId uint64, iZoneId uint32, stPurcha
 		}
 	}
 	var rsp *protocol.ResponsePacket
-	err = s.proxy.Invoke("deliverYokaReceipt", p.ToBytes(), &rsp)
+	err = s.proxy.Invoke("deliverHeePayReceipt", p.ToBytes(), &rsp)
+	if err != nil {
+		return ret, err
+	}
+	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
+	err = up.ReadInt32(&ret, 0, true)
+	if err != nil {
+		return ret, err
+	}
+	_ = has
+	_ = ty
+	_ = length
+	return ret, nil
+}
+func (s *IAPService) DeliverHeePayH5Receipt(iRoleId uint64, iZoneId uint32, stPurchase HeePayH5Purchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error) {
+	p := codec.NewPacker()
+	var ret int32
+	var err error
+	var has bool
+	var ty uint32
+	var length uint32
+	if true || iRoleId != 0 {
+		err = p.WriteUint64(1, iRoleId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || iZoneId != 0 {
+		err = p.WriteUint32(2, iZoneId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	err = stPurchase.WriteStructFromTag(p, 3, true)
+	if err != nil {
+		return ret, err
+	}
+	if true || iProxyRoleId != 0 {
+		err = p.WriteUint64(4, iProxyRoleId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || iProxyZoneId != 0 {
+		err = p.WriteUint32(5, iProxyZoneId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	var rsp *protocol.ResponsePacket
+	err = s.proxy.Invoke("deliverHeePayH5Receipt", p.ToBytes(), &rsp)
+	if err != nil {
+		return ret, err
+	}
+	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
+	err = up.ReadInt32(&ret, 0, true)
+	if err != nil {
+		return ret, err
+	}
+	_ = has
+	_ = ty
+	_ = length
+	return ret, nil
+}
+func (s *IAPService) DeliverGameHubReceipt(iRoleId uint64, iZoneId uint32, stPurchase GameHubPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error) {
+	p := codec.NewPacker()
+	var ret int32
+	var err error
+	var has bool
+	var ty uint32
+	var length uint32
+	if true || iRoleId != 0 {
+		err = p.WriteUint64(1, iRoleId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || iZoneId != 0 {
+		err = p.WriteUint32(2, iZoneId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	err = stPurchase.WriteStructFromTag(p, 3, true)
+	if err != nil {
+		return ret, err
+	}
+	if true || iProxyRoleId != 0 {
+		err = p.WriteUint64(4, iProxyRoleId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || iProxyZoneId != 0 {
+		err = p.WriteUint32(5, iProxyZoneId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	var rsp *protocol.ResponsePacket
+	err = s.proxy.Invoke("deliverGameHubReceipt", p.ToBytes(), &rsp)
 	if err != nil {
 		return ret, err
 	}
@@ -3031,8 +4120,10 @@ type _IAPServiceImpl interface {
 	VerifyGoogleReceipt(ctx context.Context, stPurchase GooglePurchase, stReceipt *GoogleReceipt, sErrorInfo *string) (int32, error)
 	DeliverGoogleReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase GooglePurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
 	GetGoogleReceiptStatus(ctx context.Context, sOrderId string, stReceipt *GoogleReceipt, stStatus *IAPStatus) (int32, error)
-	DeliverABReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase ABPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
-	DeliverYokaReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase YokaPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
+	DeliverFyReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase FyPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
+	DeliverHeePayReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase HeePayPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
+	DeliverHeePayH5Receipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase HeePayH5Purchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
+	DeliverGameHubReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase GameHubPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
 	GetReceiptStatusByFlow(ctx context.Context, sFlowId string, stIAPReceiptInAll *IAPReceiptInAll) (int32, error)
 	GetReceiptStatusList(ctx context.Context, stQueryParam ReceiptQueryParam, vIAPReceiptInAll *[]IAPReceiptInAll) (int32, error)
 	CreateOrder(ctx context.Context, iReceiptType uint32, sFlowId string, iProductId uint32, iRoleId uint64, iZoneId uint32, sPayload string, stOrder *IAPTmpOrder) (int32, error)
@@ -3321,7 +4412,7 @@ func _IAPServiceGetGoogleReceiptStatusImpl(ctx context.Context, serviceImpl inte
 	_ = has
 	return nil
 }
-func _IAPServiceDeliverABReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _IAPServiceDeliverFyReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length uint32
 	var ty uint32
@@ -3337,7 +4428,7 @@ func _IAPServiceDeliverABReceiptImpl(ctx context.Context, serviceImpl interface{
 	if err != nil {
 		return err
 	}
-	var p3 ABPurchase
+	var p3 FyPurchase
 	err = p3.ReadStructFromTag(up, 3, true)
 	if err != nil {
 		return err
@@ -3353,7 +4444,7 @@ func _IAPServiceDeliverABReceiptImpl(ctx context.Context, serviceImpl interface{
 		return err
 	}
 	var ret int32
-	ret, err = impl.DeliverABReceipt(ctx, p1, p2, p3, p4, p5)
+	ret, err = impl.DeliverFyReceipt(ctx, p1, p2, p3, p4, p5)
 	if err != nil {
 		return err
 	}
@@ -3368,7 +4459,7 @@ func _IAPServiceDeliverABReceiptImpl(ctx context.Context, serviceImpl interface{
 	_ = has
 	return nil
 }
-func _IAPServiceDeliverYokaReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+func _IAPServiceDeliverHeePayReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length uint32
 	var ty uint32
@@ -3384,7 +4475,7 @@ func _IAPServiceDeliverYokaReceiptImpl(ctx context.Context, serviceImpl interfac
 	if err != nil {
 		return err
 	}
-	var p3 YokaPurchase
+	var p3 HeePayPurchase
 	err = p3.ReadStructFromTag(up, 3, true)
 	if err != nil {
 		return err
@@ -3400,7 +4491,101 @@ func _IAPServiceDeliverYokaReceiptImpl(ctx context.Context, serviceImpl interfac
 		return err
 	}
 	var ret int32
-	ret, err = impl.DeliverYokaReceipt(ctx, p1, p2, p3, p4, p5)
+	ret, err = impl.DeliverHeePayReceipt(ctx, p1, p2, p3, p4, p5)
+	if err != nil {
+		return err
+	}
+	if true || ret != 0 {
+		err = p.WriteInt32(0, ret)
+		if err != nil {
+			return err
+		}
+	}
+	_ = length
+	_ = ty
+	_ = has
+	return nil
+}
+func _IAPServiceDeliverHeePayH5ReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+	var err error
+	var length uint32
+	var ty uint32
+	var has bool
+	impl := serviceImpl.(_IAPServiceImpl)
+	var p1 uint64
+	err = up.ReadUint64(&p1, 1, true)
+	if err != nil {
+		return err
+	}
+	var p2 uint32
+	err = up.ReadUint32(&p2, 2, true)
+	if err != nil {
+		return err
+	}
+	var p3 HeePayH5Purchase
+	err = p3.ReadStructFromTag(up, 3, true)
+	if err != nil {
+		return err
+	}
+	var p4 uint64
+	err = up.ReadUint64(&p4, 4, true)
+	if err != nil {
+		return err
+	}
+	var p5 uint32
+	err = up.ReadUint32(&p5, 5, true)
+	if err != nil {
+		return err
+	}
+	var ret int32
+	ret, err = impl.DeliverHeePayH5Receipt(ctx, p1, p2, p3, p4, p5)
+	if err != nil {
+		return err
+	}
+	if true || ret != 0 {
+		err = p.WriteInt32(0, ret)
+		if err != nil {
+			return err
+		}
+	}
+	_ = length
+	_ = ty
+	_ = has
+	return nil
+}
+func _IAPServiceDeliverGameHubReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+	var err error
+	var length uint32
+	var ty uint32
+	var has bool
+	impl := serviceImpl.(_IAPServiceImpl)
+	var p1 uint64
+	err = up.ReadUint64(&p1, 1, true)
+	if err != nil {
+		return err
+	}
+	var p2 uint32
+	err = up.ReadUint32(&p2, 2, true)
+	if err != nil {
+		return err
+	}
+	var p3 GameHubPurchase
+	err = p3.ReadStructFromTag(up, 3, true)
+	if err != nil {
+		return err
+	}
+	var p4 uint64
+	err = up.ReadUint64(&p4, 4, true)
+	if err != nil {
+		return err
+	}
+	var p5 uint32
+	err = up.ReadUint32(&p5, 5, true)
+	if err != nil {
+		return err
+	}
+	var ret int32
+	ret, err = impl.DeliverGameHubReceipt(ctx, p1, p2, p3, p4, p5)
 	if err != nil {
 		return err
 	}
@@ -3604,14 +4789,26 @@ func (s *IAPService) Dispatch(ctx context.Context, serviceImpl interface{}, req 
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
-	case "deliverABReceipt":
-		err = _IAPServiceDeliverABReceiptImpl(ctx, serviceImpl, up, p)
+	case "deliverFyReceipt":
+		err = _IAPServiceDeliverFyReceiptImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
-	case "deliverYokaReceipt":
-		err = _IAPServiceDeliverYokaReceiptImpl(ctx, serviceImpl, up, p)
+	case "deliverHeePayReceipt":
+		err = _IAPServiceDeliverHeePayReceiptImpl(ctx, serviceImpl, up, p)
+		if err != nil {
+			break
+		}
+		texret = protocol.SDPSERVERSUCCESS
+	case "deliverHeePayH5Receipt":
+		err = _IAPServiceDeliverHeePayH5ReceiptImpl(ctx, serviceImpl, up, p)
+		if err != nil {
+			break
+		}
+		texret = protocol.SDPSERVERSUCCESS
+	case "deliverGameHubReceipt":
+		err = _IAPServiceDeliverGameHubReceiptImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

@@ -17,6 +17,12 @@ enum ZoneStatusType
 	ZoneStatusType_Maintain		= 4,
 };
 
+struct ZoneVersion
+{
+    0   optional string sRes;
+    1   optional string sExe;
+};
+
 struct ZoneInfo
 {
 	0 optional unsigned int		iZoneId;
@@ -28,16 +34,15 @@ struct ZoneInfo
 	6 optional unsigned int		iManualZoneStatus;
 	7 optional unsigned int		iMaxNum;
 	8 optional unsigned int		iPublishTime;
-	9 optional string		sClientVersion;
-	11 optional string		sForceUpdateVersion;
-	12 optional string		sAndClientVersion;
-	13 optional string		sAndForceUpdateVersion;
 	14 optional unsigned int	iIsKick;
+    15 optional map<string, ZoneVersion> mVersion;
+	16 optional unsigned int	iMaxOnline;
 
 	
 	20 optional unsigned int	iCurNum;
 	21 optional unsigned int	iLastReportTime;
 	22 optional unsigned int	iCurZoneStatus;
+    23 optional unsigned int    iCurOnline;
 };
 
 struct ZoneModifyInfo
@@ -62,7 +67,8 @@ interface DirService
 	int createZone(ZoneInfo stZoneInfo);
 	int modifyZone(ZoneInfo stZoneInfo, ZoneModifyInfo stModify);
 	int deleteZone(unsigned int iZoneId);
-	int reportZone(unsigned int iZoneId, unsigned int iCurNum);
+	int reportZone(unsigned int iZoneId, unsigned int iCurOnline);
+	int reportZone2(unsigned int iZoneId, unsigned int iCurNum);
 	
 	int getZone(unsigned int iZoneId, out ZoneInfo stZoneInfo);
 	int getAllZone(out vector<ZoneInfo> vZoneInfo);

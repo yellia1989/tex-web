@@ -5,7 +5,7 @@ import (
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
 )
 
 type _syslog struct {
@@ -28,7 +28,7 @@ func LogList(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
         return ctx.SendError(-1, "连接数据库失败")
     }
@@ -98,19 +98,10 @@ func LogList(c echo.Context) error {
     return ctx.SendArray(logs, total)
 }
 
-func LogAdd(c echo.Context, action string, desc string) {
-    ctx := c.(*mid.Context)
-
+func LogAdd(userName string, action string, desc string) {
     var err error
-    defer func() {
-        if err != nil {
-            c.Logger().Errorf("add sys log failed, %v", err)
-        }
-    }()
-
-    db := common.GetStatDb()
+    db := cfg.StatDb
     if db == nil {
-        ctx.Logger().Error("connect stat db failed")
         return
     }
 
@@ -125,12 +116,7 @@ func LogAdd(c echo.Context, action string, desc string) {
         return
     }
 
-    u := ctx.GetUser()
-    if u == nil {
-        return
-    }
-
-    _, err = tx.Exec("insert into t_log(time, username, action, `desc`) values(?,?,?,?)", time.Now().Format("2006-01-02 15:04:05"), u.UserName, action, desc)
+    _, err = tx.Exec("insert into t_log(time, username, action, `desc`) values(?,?,?,?)", time.Now().Format("2006-01-02 15:04:05"), userName, action, desc)
     if err != nil {
         return
     }

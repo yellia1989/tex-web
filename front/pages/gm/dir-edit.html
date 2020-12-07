@@ -74,9 +74,16 @@
           </div>
         </div>
         <div class="layui-inline">
-          <label class="layui-form-label">最大人数</label>
+          <label class="layui-form-label">最大创角</label>
           <div class="layui-input-inline">
             <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
+              lay-verify="required|number" lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">最大在线</label>
+          <div class="layui-input-inline">
+            <input type="text" name="iMaxOnline" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
               lay-verify="required|number" lay-verType="tips">
           </div>
         </div>
@@ -90,40 +97,9 @@
           </div>
         </div>
       </div>
-      <div class="layui-form-item">
-        <div class="layui-inline">
-          <label class="layui-form-label">IOS客户端版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input"
-              lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">IOS强制更新版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input"
-              lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">AND客户端版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sAndClientVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input"
-              lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-        <div class="layui-inline">
-          <label class="layui-form-label">AND强制更新版本</label>
-          <div class="layui-input-inline">
-            <input type="text" name="sAndForceUpdateVersion" placeholder="请输入3位版本号" autocomplete="off"
-              class="layui-input" lay-verify="required|version" lay-verType="tips">
-          </div>
-        </div>
-      </div>
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="versionFlag">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">更新</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
       </div>
     </form>
@@ -140,6 +116,27 @@
 
       laydate.render({ elem: "#iPublishTime", type: "datetime", value: new Date(parent.zonedata.iPublishTime * 1000) });
 
+		  okUtils.ajax("/api/gm/channel/list", "get", {page:1, limit: 1000}, false).done(function (response) {
+        let channelHtml = '';
+        for (i = 0; i < response.data.length; ++i) {
+          let channel = response.data[i];
+          let v = parent.zonedata.mVersion[channel.sChannel];
+          let sRes = '';
+          let sExe = '';
+          if (v) {
+            sRes = v.sRes;
+            sExe = v.sExe;
+          }
+          channelHtml += '<fieldset class="layui-elem-field"><legend>'+channel.sChannel+'</legend><div class="layui-field-box"><div class="layui-form-item"><div class="layui-inline"><label class="layui-form-label">资源</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ResVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips" value="'+sRes+'"></div></div><div class="layui-inline"><label class="layui-form-label">exe</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ExeVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips" value="'+sExe+'"></div></div></div></div></fieldset>';
+        }
+        if (channelHtml != '') {
+          $("#versionFlag").before(channelHtml);
+          form.render();
+        }
+		  }).fail(function (error) {
+			  console.log(error)
+		  });
+
       $("input[name='iZoneId']").val(parent.zonedata.iZoneId);
       $("input[name='sZoneName']").val(parent.zonedata.sZoneName);
       $("input[name='sConnServer']").val(parent.zonedata.sConnServer);
@@ -147,11 +144,8 @@
       $("select[name='iIsManual']").val(parent.zonedata.iIsManual);
       $("select[name='iManualZoneStatus']").val(parent.zonedata.iManualZoneStatus);
       $("input[name='iMaxNum']").val(parent.zonedata.iMaxNum);
+      $("input[name='iMaxOnline']").val(parent.zonedata.iMaxOnline);
       $("select[name='iIsKick']").val(parent.zonedata.iIsKick);
-      $("input[name='sClientVersion']").val(parent.zonedata.sClientVersion);
-      $("input[name='sForceUpdateVersion']").val(parent.zonedata.sForceUpdateVersion);
-      $("input[name='sAndClientVersion']").val(parent.zonedata.sAndClientVersion);
-      $("input[name='sAndForceUpdateVersion']").val(parent.zonedata.sAndForceUpdateVersion);
       form.render('select');
 
       //数据校验
@@ -159,7 +153,7 @@
         "version": function (value, item) {
           let v = value.split('.');
           let l = 5;
-          if (item.name.indexOf('Force') != -1) {
+          if (item.name.indexOf('Exe') != -1) {
             l = 3;
           }
           if (v.length != l) {

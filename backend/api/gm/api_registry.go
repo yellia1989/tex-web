@@ -7,6 +7,7 @@ import (
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-go/sdp/rpc"
     "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
 )
 
 func RegistryList(c echo.Context) error {
@@ -14,7 +15,7 @@ func RegistryList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
@@ -30,7 +31,7 @@ func RegistryList(c echo.Context) error {
 }
 
 func registryAdd(sObj string, sDivision string, sEp string) error {
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
@@ -44,12 +45,12 @@ func registryAdd(sObj string, sDivision string, sEp string) error {
 }
 
 func registryDel(sObj string, sDivision string, sEp string) error {
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
 
-    ret, err := queryPrx.AddEndpoint(sObj, sDivision, sEp)
+    ret, err := queryPrx.RemoveEndpoint(sObj, sDivision, sEp)
     if err := checkRet(ret, err); err != nil {
         return err
     }
@@ -86,7 +87,7 @@ func RegistryDel(c echo.Context) error {
         return ctx.SendError(-1, "registry不存在")
     }
 
-    comm := common.GetLocator()
+    comm := cfg.Comm
 
     queryPrx := new(rpc.Query)
     comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
@@ -103,4 +104,35 @@ func RegistryDel(c echo.Context) error {
     }
 
     return ctx.SendResponse("删除registry成功")
+}
+
+func RegistryIp() (map[uint32]string,error) {
+    comm := cfg.Comm
+
+    queryPrx := new(rpc.Query)
+    comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
+
+    var vObj []rpc.ObjEndpoint
+    ret, err := queryPrx.GetAllEndpoints(&vObj)
+    if err := checkRet(ret, err); err != nil {
+        return nil, err
+    }
+
+    m := make(map[uint32]string)
+    for _, o := range vObj {
+        if len(o.SDivision) == 0 {
+            continue
+        }
+        vzone := strings.Split(o.SDivision, ".")
+        if len(vzone) != 3 || vzone[1] != "zone" {
+            continue
+        }
+        vep := strings.Split(o.SEp, " ")
+        if len(vep) != 7 {
+            continue
+        }
+        m[common.Atou32(vzone[2])] = vep[2]
+    }
+
+    return m, nil
 }

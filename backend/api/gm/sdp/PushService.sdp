@@ -1,0 +1,61 @@
+module rpc
+{
+
+enum PushTaskStatus
+{
+	PushTaskStatus_Resolving		= 1,
+	PushTaskStatus_Sorting			= 2,
+	PushTaskStatus_Pushing			= 3,
+	PushTaskStatus_Finished			= 4,
+	PushTaskStatus_Paused			= 5,
+};
+
+struct PushTargetAccountInfo
+{
+	0 optional unsigned long		iAccountId;
+	1 optional vector<string>		vDeviceToken; // hex表示,不填就从AccountServer获取
+	2 optional vector<string>		vRegistrationId;
+};
+
+struct PushTargetDeviceInfo
+{
+	0 optional unsigned long		iAccountId;
+	1 optional string				sDeviceToken; // hex表示
+	2 optional string				sRegistrationId;
+};
+
+struct PushPayloadInfo
+{
+	0 optional string				sApplePayload;
+	1 optional string				sGooglePayload;
+    2 optional string               sUPushPayload;
+};
+
+struct PushTaskInfo
+{
+	0 optional unsigned int			iTaskId;
+	1 optional string				sTaskName;
+	2 optional PushPayloadInfo		stPayload;
+	3 optional unsigned int			iAddTime;
+	4 optional unsigned int			iFinishTime;
+	5 optional unsigned int			iStatus;
+	6 optional unsigned int			iResolveTotalNum;
+	7 optional unsigned int			iResolveDoneNum;
+	8 optional unsigned int			iResolveFailNum;
+	9 optional unsigned int			iPushTotalNum;
+	10 optional unsigned int		iPushDoneNum;
+	11 optional unsigned int		iPushFailNum;
+};
+
+interface PushService
+{
+	int push(PushTargetAccountInfo stTargetAccount, PushPayloadInfo stPayload);
+	int pushBatch(vector<PushTargetAccountInfo> vTargetAccount, PushPayloadInfo stPayload);
+	
+	int addPushTask(vector<PushTargetAccountInfo> vPushTargetAccount, string sTaskName, PushPayloadInfo stPayload, out unsigned int iTaskId);
+	int getPushTaskInfo(unsigned int iTaskId, out PushTaskInfo stPushTaskInfo);
+	int getAllPushTaskInfo(out vector<PushTaskInfo> vPushTaskInfo);
+	int pausePushTask(unsigned int iTaskId, bool bPause);
+};
+
+};

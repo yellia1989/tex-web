@@ -4,12 +4,13 @@ import (
     "fmt"
     "strings"
     "bytes"
+    "strconv"
     "encoding/json"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/api/sys"
-    "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/cfg"
 )
 
 func checkRet(ret int32, err error) error {
@@ -27,7 +28,7 @@ func checkRet(ret int32, err error) error {
 func GameCmd(c echo.Context) error {
     ctx := c.(*mid.Context)
     szoneid := ctx.FormValue("zoneids")
-    scmd := ctx.FormValue("cmd")
+    scmd := strings.ReplaceAll(strings.TrimSpace(ctx.FormValue("cmd")), "\t", " ")
 
     if szoneid == "" || scmd == "" {
         return ctx.SendError(-1, "参数非法")
@@ -36,15 +37,21 @@ func GameCmd(c echo.Context) error {
     buff := bytes.Buffer{}
     u := ctx.GetUser()
 
-    comm := common.GetLocator()
-    app := common.GetApp()
+    comm := cfg.Comm
+    app := cfg.App
 
     zoneids := strings.Split(szoneid, ",")
     for _,zoneid := range zoneids {
+        izoneid,_ := strconv.Atoi(zoneid)
         gamePrx := new(rpc.GameService)
         gfPrx := new(rpc.GFService)
-        if zoneid != "0" {
-            comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+        mapPrx := new(rpc.MapService)
+        if izoneid != 0 {
+            if izoneid != 8888 && izoneid != 9999 && izoneid > 1000 {
+                comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+zoneid, mapPrx)
+            } else {
+                comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+            }
         } else {
             comm.StringToProxy(app+".GFServer.GFServiceObj", gfPrx)
         }
@@ -59,8 +66,12 @@ func GameCmd(c echo.Context) error {
 
             buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
 
-            if zoneid != "0" {
-                ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+            if izoneid != 0 {
+                if izoneid == 8888 || izoneid == 9999 || izoneid <= 1000 {
+                    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+                } else {
+                    ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)
+                }
             } else {
                 ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
             }
@@ -69,31 +80,45 @@ func GameCmd(c echo.Context) error {
                 if err != nil {
                     serr = err.Error()
                 }
-                result = fmt.Sprintf("ret:%d, err:%s", ret, serr)
+                result = fmt.Sprintf("ret:%s, err:%s\n", rpc.ErrorCode(ret), serr)
             }
             buff.WriteString(result+"\n")
         }
     }
 
-    sys.LogAdd(ctx, "gm", "[" + szoneid + "]>" + scmd)
+    sys.LogAdd(u.UserName, "gm", "[" + szoneid + "]>" + scmd)
 
     return ctx.SendResponse(buff.String())
 }
 
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
-    comm := common.GetLocator()
-    app := common.GetApp()
+    u := ctx.GetUser()
+    return Cmd(u.UserName, zoneid, "0", cmd, result)
+}
+
+func Cmd(userName string, zoneid string, mapid string, cmd string, result *string) error {
+    comm := cfg.Comm
+    app := cfg.App
 
     gamePrx := new(rpc.GameService)
-    comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+    mapPrx := new(rpc.MapService)
+
+    if mapid == "0" {
+        comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+    } else {
+        comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+    }
 
     cmd = strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
 
     var ret int32
     var err error
 
-    u := ctx.GetUser()
-    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, result)
+    if mapid == "0" {
+        ret, err = gamePrx.DoGmCmd(userName, cmd, result)
+    } else {
+        ret, err = mapPrx.DoGmCmd(userName, cmd, result)
+    }
     if ret != 0 || err != nil {
         serr := ""
         if err != nil {
@@ -103,7 +128,7 @@ func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     }
 
     if cmd != "iap_list" && cmd != "item_list" {
-        sys.LogAdd(ctx, "gm", "[" + zoneid + "]>" + cmd)
+        sys.LogAdd(userName, "gm", "[" + zoneid + "]>" + cmd)
     }
 
     return nil
@@ -215,6 +240,67 @@ func BanLogin(c echo.Context) error {
     err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
+    }
+
+    return ctx.SendResponse(result)
+}
+
+func RealMap(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("mapid")
+
+    if mapid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    comm := cfg.Comm
+    app := cfg.App
+
+    mapPrx := new(rpc.MapService)
+    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+
+    cmd := "map_json"
+
+    var result string
+    u := ctx.GetUser()
+    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("ret:%d, err:%s", ret, serr)
+    }
+
+    return ctx.SendResponse(result)
+}
+
+func RealMapObj(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    mapid := ctx.FormValue("mapid")
+    objid := ctx.FormValue("objid")
+
+    if objid == "" || mapid == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    comm := cfg.Comm
+    app := cfg.App
+
+    mapPrx := new(rpc.MapService)
+    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+
+    cmd := "see_obj " + objid
+
+    var result string
+    u := ctx.GetUser()
+    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
+    if ret != 0 || err != nil {
+        serr := ""
+        if err != nil {
+            serr = err.Error()
+        }
+        return fmt.Errorf("ret:%d, err:%s", ret, serr)
     }
 
     return ctx.SendResponse(result)

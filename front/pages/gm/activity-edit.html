@@ -13,6 +13,12 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
+        <label class="layui-form-label">生效分区</label>
+        <div class="layui-inline" id="onlineZone" style="margin-top: 5px">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">应用分区</label>
         <div class="layui-input-block">
           <div id="zoneSelect"></div>
@@ -42,7 +48,7 @@
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="add">保存</button>
+          <button class="layui-btn" lay-submit lay-filter="add" id="add">保存</button>
         </div>
       </div>
     </form>
@@ -53,6 +59,8 @@
   <script>
     var json_data;
     var config_data;
+    var online_data;
+    var locked;
     var $;
     layui.use(['form', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
@@ -62,9 +70,15 @@
       let xmSelect = layui.xmSelect;
       okLoading.close();
 
+      locked = parent.editActivity.locked;
+
       $("input[name='apply_user']").val(parent.editActivity.apply_user);
       $("textarea[name='configure_desc']").val(parent.editActivity.configure_desc);
       $("textarea[name='configure_data']").val(parent.editActivity.configure_data);
+
+      if (locked) {
+        $("#add").addClass("layui-hide");
+      }
 
       let apply_zone = parent.editActivity.apply_zone;
       if (apply_zone == '') {
@@ -118,17 +132,37 @@
         },
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", {all: true}, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, all: true}, false).done(function (response) {
         zoneSelect.update({
-          data: response.data,
+          data: response.data["game"],
           initValue: apply_zone.split(','),
         });
       }).fail(function (error) {
         console.log(error);
       });
 
+      okUtils.ajax("/api/gm/activity/onlineZone", "get", {activity_id: parent.editActivity.id}, false).done(function (response) {
+        let zones = response.data;
+        if (zones) {
+          let html = '';
+          for (i = 0; i < zones.length; ++i) {
+            html += '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger">'+zones[i]+'</button>';
+          }
+          $("#onlineZone").html(html);
+          online_data = true;
+        }
+      }).fail(function (error) {
+        console.log(error);
+      });
+
       //监听提交
       form.on('submit(add)', function (data) {
+        if (parent.editActivity.locked) {
+          okLayer.greenTickMsg("活动数据已锁定不能编辑", function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+          return false;
+        }
         if (data.field.apply_zone == '99999') {
           data.field.apply_zone = '';
         }
@@ -146,7 +180,23 @@
       $('#editconfig').click(function(e) {
         json_data = "textarea[name='configure_data']";
         config_data = activity.config.mainFieldOption;
-        okLayer.open("编辑配置", "/gm/json.html", "90%", "90%", null, null);
+        let readonly = '';
+        if (locked) {
+          readonly = '[只读]';
+        }
+        okLayer.open("编辑配置"+readonly, "/gm/json.html", "90%", "90%", null, null, function (index, layero) { 
+	  let newValue = okUtils.jsonToString(json_editor.getValue());
+	  let oldValue = $(json_data).val();
+	  if (newValue == oldValue) {
+            layer.close(index);
+          } else {
+  	    if (confirm('有修改未保存，确定要关闭么')) {
+              layer.close(index);
+  	    } else {
+	      return false;
+	    }
+	  }
+      	});
       });
     });
   </script>

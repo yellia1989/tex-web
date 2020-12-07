@@ -1,10 +1,13 @@
 package gm
 
 import (
+    "fmt"
 	"strconv"
     "encoding/json"
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/common"
+	"github.com/yellia1989/tex-go/tools/util"
+	"github.com/yellia1989/tex-web/backend/cfg"
+    "github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -15,6 +18,7 @@ type _activityData struct {
 	ApplyUser     string `json:"apply_user"`
 	ConfigureData string `json:"configure_data"`
 	ConfigureDesc string `json:"configure_desc"`
+    Locked  bool    `json:"locked"`
 }
 
 func ActivityList(c echo.Context) error {
@@ -23,7 +27,7 @@ func ActivityList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := common.GetLogDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -34,12 +38,12 @@ func ActivityList(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
 
-	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc FROM t_activity"
+	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc,locked FROM t_activity"
 	where := ""
     if stype != "" {
 		where += " activity_type IN (" + stype + ")"
@@ -69,7 +73,7 @@ func ActivityList(c echo.Context) error {
 	logs := make([]_activityData, 0)
 	for rows.Next() {
 		var r _activityData
-		if err := rows.Scan(&r.ActivityID, &r.ActivityType, &r.ApplyZone, &r.ApplyUser, &r.ConfigureData, &r.ConfigureDesc); err != nil {
+		if err := rows.Scan(&r.ActivityID, &r.ActivityType, &r.ApplyZone, &r.ApplyUser, &r.ConfigureData, &r.ConfigureDesc, &r.Locked); err != nil {
 			return err
 		}
 		logs = append(logs, r)
@@ -102,7 +106,7 @@ func ActivityAdd(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetLogDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -113,7 +117,7 @@ func ActivityAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
@@ -146,7 +150,7 @@ func ActivityEdit(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := common.GetLogDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -157,19 +161,28 @@ func ActivityEdit(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec("update t_activity set activity_type=?,apply_zone=?,apply_user=?,configure_data=?,configure_desc=? WHERE activity_id=?",activity_type, apply_zone, apply_user, config_data, config_desc, activity_id)
+	result, err := tx.Exec("update t_activity set activity_type=?,apply_zone=?,apply_user=?,configure_data=?,configure_desc=? WHERE activity_id=? and locked=0",activity_type, apply_zone, apply_user, config_data, config_desc, activity_id)
 	if err != nil {
 		return err
 	}
+
+    updateRows, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
 
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+
+    if updateRows == 0 {
+        return ctx.SendResponse("活动已锁定不能编辑");
+    }
 
     return ctx.SendResponse("更新活动成功")
 }
@@ -178,7 +191,7 @@ func ActivityDel(c echo.Context) error {
     ctx := c.(*mid.Context)
     ids := ctx.FormValue("idsStr")
 
-	db := common.GetLogDb()
+	db := cfg.GameDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -189,12 +202,83 @@ func ActivityDel(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE db_zone_global")
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.Exec("Delete FROM t_activity WHERE activity_id IN ("+ids+")")
+	result, err := tx.Exec("Delete FROM t_activity WHERE activity_id IN ("+ids+") and locked=0")
+	if err != nil {
+		return err
+	}
+
+    updateRows, err := result.RowsAffected()
+    if err != nil {
+        return err
+    }
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    if updateRows == 0 {
+        return ctx.SendResponse("活动已锁定不能删除");
+    }
+
+    return ctx.SendResponse("删除活动成功")
+}
+
+type _importAct struct {
+    Id int `json:id`
+    Type int `json:type`
+    Data string `json:data`
+    Desc string `json:desc`
+}
+
+func ActivityImport(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    apply_zone := ctx.FormValue("apply_zone")
+    apply_user := ctx.FormValue("apply_user")
+    filename := ctx.FormValue("filepath")
+
+    content, err := util.LoadFromFile(filename)
+    if err != nil {
+        return err
+    }
+
+    var acts []_importAct
+    if err := json.Unmarshal(content, &acts); err != nil {
+        return err
+    }
+    if len(acts) == 0 {
+        return ctx.SendError(-1, "导入活动为空")
+    }
+
+    sql := "insert into t_activity(activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc) values"
+    for k, v := range acts {
+        if k != 0 {
+            sql += ","
+        }
+        sql += fmt.Sprintf("(%d,%d,'%s','%s','%s','%s')", v.Id, v.Type, apply_zone, apply_user, v.Data, v.Desc)
+    }
+
+	db := cfg.GameDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
 	}
@@ -203,5 +287,77 @@ func ActivityDel(c echo.Context) error {
 		return err
 	}
 
-    return ctx.SendResponse("删除活动成功")
+    return ctx.SendResponse("批量导入活动成功")
+}
+
+func ActivityOnlineZone(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	activityId := ctx.QueryParam("activity_id")
+
+    comm := cfg.Comm
+    app := cfg.App
+    u := ctx.GetUser()
+
+    dirPrx := new(rpc.DirService)
+    comm.StringToProxy(app+".DirServer.DirServiceObj", dirPrx)
+
+    var zones []rpc.ZoneInfo
+    ret, err := dirPrx.GetAllZone(&zones)
+    if err := checkRet(ret, err); err != nil {
+        return err
+    }
+
+    var onlinezones []uint32
+
+    var result string
+    for _, z := range zones {
+        cmd := "is_activity_online " + activityId
+        zoneid := fmt.Sprintf("%d", z.IZoneId)
+        gamePrx := new(rpc.GameService)
+        comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+        ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+        if ret == 0 && err == nil && result == "on" {
+            onlinezones = append(onlinezones, z.IZoneId)
+        }
+    }
+
+    return ctx.SendResponse(onlinezones)
+}
+
+func ActivityLock(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    ids := ctx.FormValue("idsStr")
+    locked,_ := strconv.Atoi(ctx.FormValue("locked"))
+
+    if len(ids) == 0 {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+	db := cfg.GameDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+		return err
+	}
+
+    sql := "UPDATE t_activity SET locked=? WHERE activity_id IN("+ids+")"
+	_, err = tx.Exec(sql, locked)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    return ctx.SendResponse("操作成功")
 }

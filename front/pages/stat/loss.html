@@ -16,10 +16,10 @@
           <div id="zoneSelect"></div>
         </div>
 	    	<div class="layui-input-inline">
-          <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
         </div>
 	    	<div class="layui-input-inline">
-          <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
         </div>
 			  <div class="layui-input-inline">
           <button class="layui-btn" lay-submit lay-filter="search">
@@ -45,15 +45,12 @@
     let xmSelect = layui.xmSelect;
 		okLoading.close();
 
-    laydate.render({elem: "#startTime", type: "datetime"});
-    laydate.render({elem: "#endTime", type: "datetime"});
-
     let zoneSelect = xmSelect.render({
       el: '#zoneSelect',
       name: 'zoneid',
       prop: {
-        value: 'iZoneId',
-        name: 'sZoneName',
+        value: 'zoneid_fk',
+        name: 'zonename',
       },
       tips: '请选择一个服务器',
       autoRow: true,
@@ -71,13 +68,21 @@
       },
     });
 
-    okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+    okUtils.ajax("/api/stat/zone/list", "get", null, false).done(function (response) {
       zoneSelect.update({
         data: response.data,
       });
     }).fail(function (error) {
       console.log(error);
     });
+
+    okUtils.ajax("/api/stat/date/marklist", "get", null, false).done(function (response) {
+      laydate.render({elem: "#startTime", type: "date", format: "yyyyMMdd", min: response.data["min"], max: response.data["max"]});
+      laydate.render({elem: "#endTime", type: "date", format: "yyyyMMdd", min: response.data["min"], max: response.data["max"]});
+    }).fail(function (error) {
+      console.log(error);
+    });
+
 
 		let lossTable = table.render({
 			elem: "#tableId",
@@ -91,23 +96,32 @@
 				{align: 'center', field: "statymd", title: "日期", rowspan: 2},
 				{align: 'center', field: "zone_name", title: "服务器名", rowspan: 2},
 				{align: 'center', field: "zone_openday", title: "开服天数", rowspan: 2},
-				{align: 'center', title: "非消费用户", colspan: 3},
-				{align: 'center', title: "消费用户", colspan: 3},
-				{align: 'center', title: "活跃用户", colspan: 3},
+				{field: "newadd", title: "创角人数", rowspan: 2},
+				{field: "rge_rolenum", title: "充值人数", rowspan: 2},
+				{align: 'center', title: "非充值用户", colspan: 3},
+				{align: 'center', title: "充值用户", colspan: 3},
       ],[
-				{align: 'center', field: "week_loss", title: "周流失", templet: function(d) { return okUtils.number.percent(((d.week_active1-d.pay_week_active1)-(d.week_active2-d.pay_week_active2))*100,(d.week_active1-d.pay_week_active1));}},
-				{align: 'center', field: "double_week_loss", title: "双周流失", templet: function(d) { return okUtils.number.percent(((d.dweek_active1-d.pay_dweek_active1)-(d.dweek_active2-d.pay_dweek_active2))*100,(d.dweek_active1-d.pay_dweek_active1));}},
-				{align: 'center', field: "month_loss", title: "月流失", templet: function(d) { return okUtils.number.percent(((d.month_active1-d.pay_month_active1)-(d.month_active2-d.pay_month_active2))*100,(d.month_active1-d.pay_month_active1));}},
-				{align: 'center', field: "r_week_loss", title: "周流失", templet: function(d) { return okUtils.number.percent((d.pay_week_active1-d.pay_week_active2)*100, d.pay_week_active1);}},
-				{align: 'center', field: "r_double_week_loss", title: "双周流失", templet: function(d) { return okUtils.number.percent((d.pay_dweek_active1-d.pay_dweek_active2)*100, d.pay_dweek_active1);}},
-				{align: 'center', field: "r_month_loss", title: "月流失", templet: function(d) { return okUtils.number.percent((d.pay_month_active1-d.pay_month_active2)*100, d.pay_month_active1);}},
-				{align: 'center', field: "a_week_loss", title: "周流失", templet: function(d) { return okUtils.number.percent((d.week_active1-d.week_active2)*100, d.week_active1);}},
-				{align: 'center', field: "a_double_week_loss", title: "双周流失", templet: function(d) { return okUtils.number.percent((d.dweek_active1-d.dweek_active2)*100, d.dweek_active1);}},
-				{align: 'center', field: "a_month_loss", title: "月流失", templet: function(d) { return okUtils.number.percent((d.month_active1-d.month_active2)*100, d.month_active1);}},
+				{align: 'center', field: "week_loss", title: "周流失"},
+				{align: 'center', field: "dweek_loss", title: "双周流失"},
+				{align: 'center', field: "month_loss", title: "月流失"},
+				{align: 'center', field: "r_week_loss", title: "周流失"},
+				{align: 'center', field: "r_dweek_loss", title: "双周流失"},
+				{align: 'center', field: "r_month_loss", title: "月流失"},
 			]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
+      parseData: function(res){
+        for (let i = 0; res.data && i < res.data.length; ++i) {
+          let d = res.data[i];
+          res.data[i].week_loss = d.newadd == 0 ? '-' : okUtils.number.percent((d.newadd-d.rge_rolenum-d.week_active)*100,d.newadd-d.rge_rolenum);
+          res.data[i].dweek_loss = d.newadd == 0 ? '-' : okUtils.number.percent((d.newadd-d.rge_rolenum-d.dweek_active)*100,d.newadd-d.rge_rolenum);
+          res.data[i].month_loss = d.newadd == 0 ? '-' : okUtils.number.percent((d.newadd-d.rge_rolenum-d.month_active)*100,d.newadd-d.rge_rolenum);
+          res.data[i].r_week_loss = d.rge_rolenum == 0 ? '-' : okUtils.number.percent((d.rge_rolenum-d.pay_week_active)*100,d.rge_rolenum);
+          res.data[i].r_dweek_loss = d.rge_rolenum == 0 ? '-' : okUtils.number.percent((d.rge_rolenum-d.pay_dweek_active)*100,d.rge_rolenum);
+          res.data[i].r_month_loss = d.rge_rolenum == 0 ? '-' : okUtils.number.percent((d.rge_rolenum-d.pay_month_active)*100,d.rge_rolenum);
+        }
+      }
      });
 
     form.on("submit(search)", function (data) {

@@ -19,7 +19,7 @@ layui.define(["layer"], function (exports) {
          * @param successFunction
          * @param endFunction
          */
-        open: function (title, content, width, height, successFunction, endFunction) {
+        open: function (title, content, width, height, successFunction, endFunction, cancelFunction) {
             layer.open({
                 title: title,
                 type: 2,
@@ -31,7 +31,8 @@ layui.define(["layer"], function (exports) {
                 zIndex: layer.zIndex,
                 skin: okLayer.skinChoose(),
                 success: successFunction,
-                end: endFunction
+                end: endFunction,
+		cancel: cancelFunction,
             });
         },
         /**

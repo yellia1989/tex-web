@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>推送管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <style type="text/css">
+    .push_ok { color: green; }
+    .push_fail { color: red; }
+  </style>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      let pushTable = table.render({
+        elem: "#tableId",
+        url: '/api/gm/push/list',
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 10,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "iTaskId", title: "任务ID", width: 80 },
+          { field: "sTaskName", title: "任务名字", width: 200 },
+          { field: "iAddTime", title: "开始时间", width: 160, templet: function (d) {
+            return okUtils.dateFormat(new Date(d.iAddTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+          }},
+          { field: "iFinishTime", title: "完成时间", width: 160, templet: function (d) {
+            return okUtils.dateFormat(new Date(d.iFinishTime * 1000), 'yyyy-MM-dd hh:mm:ss');
+          }},
+          { field: "iStatus", title: "状态", width: 80, templet: function (d) {
+            let ret = '';
+            switch (d.iStatus) {
+            case 1: ret = '解析中';break;
+            case 2: ret = '去重中';break;
+            case 3: ret = '发送中';break;
+            case 4: ret = '完成';break;
+            case 5: ret = '暂停';break;
+            default: ret = '未知';break;
+            }
+            return ret;
+          }},
+          { field: "resolveProgress", title: "解析进度", width: 250, templet: function(d) {
+            let ret = '(<span class="push_ok">' + d.iResolveDoneNum + '</span> + <span class="push_fail">' + d.iResolveFailNum + '</span>) / ' + d.iResolveTotalNum;
+            if (d.iResolveTotalNum != 0) {
+              ret += ' => ' + okUtils.number.percent((d.iResolveDoneNum + d.iResolveFailNum) * 100.0, d.iResolveTotalNum);
+            }
+            return ret;
+          }},
+          { field: "pushProgress", title: "推送进度", width: 250, templet: function(d) {
+            let ret = '(<span class="push_ok">' + d.iPushDoneNum + '</span> + <span class="push_fail">' + d.iPushFailNum + '</span>) / ' + d.iPushTotalNum;
+            if (d.iResolveTotalNum != 0) {
+              ret += ' => ' + okUtils.number.percent((d.iPushDoneNum + d.iPushFailNum) * 100.0, d.iPushTotalNum);
+            }
+            return ret;
+          }},
+          { field: "payload", title: "payload", templet: function(d) {
+            return d.stPayload.sUPushPayload;
+          }},
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' },
+        ]],
+        parseData: function (res) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iTaskId;
+          }
+          return res;
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "batchPause":
+            batchPause();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "pause":
+            pause(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("新增推送", "push-add.html", "90%", "90%", null, function () {
+          pushTable.reload();
+        })
+      }
+
+      function batchPause() {
+        okLayer.confirm("确定要批量暂停吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/push/pause", "post", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.data);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
+
+      function pause(id) {
+        okLayer.confirm("确定要暂停吗？", function () {
+          okUtils.ajax("/api/gm/push/pause", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+  <script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchPause"><i class="layui-icon layui-icon-pause"></i></div>
+  </div>
+</script>
+
+  <script type="text/html" id="operationTpl">
+   {{#  if(d.iStatus == 4){ }}
+      <a href="javascript:" title="暂停" lay-event="pause" class="layui-disabled"><i class="layui-icon layui-icon-pause"></i></a>
+   {{#  } else { }}
+     {{#  if(d.iStatus != 5){ }}
+      <a href="javascript:" title="暂停" lay-event="pause"><i class="layui-icon layui-icon-loading"></i></a>
+     {{#  } else { }}
+      <a href="javascript:" title="恢复" lay-event="pause"><i class="layui-icon layui-icon-pause"></i></a>
+     {{#  } }}
+   {{#  } }}
+</script>
+</body>
+
+</html>

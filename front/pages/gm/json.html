@@ -18,12 +18,15 @@
   <script>
     var config_data;
     var json_data;
+    var locked;
     layui.use(['form', 'okUtils', 'okLayer', 'laydate'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let $ = layui.jquery;
       let laydate = layui.laydate;
       let okLayer = layui.okLayer;
+
+      locked = parent.locked;
 
       function jsonEditor(json, field) {
         try {
@@ -90,7 +93,7 @@
             $fieldbox = null;
           }
         }
-        $form.append('<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn" lay-submit lay-filter="save">保存</button></div></div>');
+        $form.append('<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn '+(locked?'layui-hide':'')+'" lay-submit lay-filter="save">保存</button></div></div>');
         form.render();
       }
       jsonEditor.prototype.createFormItem = function(fieldKey, fieldDesc, fieldValue) {
@@ -292,7 +295,7 @@
             if (!ctlCheckBox.prop('checked')) {
               return;
             }
-            let title = '编辑-'+fieldDesc.name;
+            let title = '编辑-'+fieldDesc.name+(locked?'[只读]':'');
             config_data = fieldDesc.subFieldOption;
             if (typeof(fieldDesc.subFieldOption) == 'function') {
               config_data = fieldDesc.subFieldOption(fieldKey);
@@ -302,12 +305,30 @@
               return;
             }
             json_data = "#"+fieldKey.replace(".","-");
-            okLayer.open(title, "/gm/json.html", "90%", "90%", null, null);
+            okLayer.open(title, "/gm/json.html", "90%", "90%", null, null, function (index, layero) { 
+	      let newValue = okUtils.jsonToString(json_editor.getValue());
+	      let oldValue = $(json_data).val();
+	      if (newValue == oldValue) {
+                layer.close(index);
+              } else {
+  	        if (confirm('有修改未保存，确定要关闭么')) {
+                  layer.close(index);
+  	        }
+	      }
+	      return false;
+      	    });
           });
         }
 
         if (fieldValue !== null && typeof(fieldValue) == 'object') {
           fieldValue = okUtils.jsonToString(fieldValue);
+        }
+
+        let online = false;
+        if (parent.online_data && fieldKey.indexOf('constrain.') != -1) {
+          if (fieldKey.indexOf('time') != -1 || fieldKey.indexOf('server_publish') != -1 || fieldKey.indexOf("reg_day") != -1) {
+            online = true;
+          }
         }
         let input;
         if (fieldDesc.type === undefined || fieldDesc.type == 'text') {
@@ -371,6 +392,10 @@
           } else {
             setDisabled(false);
             ctlCheckBox.prop('checked', true);
+          }
+          if (online) {
+            ctlCheckBox.prop('disabled', true);
+            input.prop('disabled', true);
           }
         }
 
@@ -549,6 +574,7 @@
       }
 
       let editor = new jsonEditor(parent.layui.$(parent.json_data).val(), parent.config_data);
+      parent.json_editor = editor;
 
       form.on('checkbox', function(data) {
         let checked = data.elem.checked;
@@ -599,11 +625,8 @@
 
       form.on('submit(save)', function(data){
         let fields = editor.getValue();
-        if (!fields) {
-          return false;
-        }
-        if (!okUtils.isEmpty(fields)) {
-          parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
+        if (fields != undefined) {
+       	  parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
         }
         parent.layer.close(parent.layer.getFrameIndex(window.name));
         return false;

@@ -2,14 +2,16 @@ package game
 
 import (
 	"fmt"
+    "strings"
 	"strconv"
 	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
+	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
+	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
-type _role struct {
+type role struct {
     Uid uint64  `json:"id"`
     Name string `json:"name"`
     VipLevel uint32 `json:"vip_level"`
@@ -20,16 +22,13 @@ type _role struct {
 func RoleList(c echo.Context) error {
     ctx := c.(*mid.Context)
     zoneid := ctx.QueryParam("zoneid")
-    name := ctx.QueryParam("name")
+    name := strings.TrimSpace(ctx.QueryParam("name"))
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
     field := ctx.QueryParam("field")
     order := ctx.QueryParam("order")
 
-    db := common.GetDb()
-    if db == nil {
-        return ctx.SendError(-1, "连接数据库失败");
-    }
+    db := cfg.GameDb
 
     tx, err := db.Begin()
     if err != nil {
@@ -37,14 +36,19 @@ func RoleList(c echo.Context) error {
     }
     defer tx.Rollback()
 
-    _, err = tx.Exec("USE db_zone_" + zoneid)
+    _, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_" + zoneid)
     if err != nil {
         return err
     }
 
     sql := "SELECT uid,name,vip_level,this_login_time,reg_time FROM t_role"
     if name != "" {
-        sql += " WHERE name like '%" + name + "%'"
+        uid, err := strconv.Atoi(name)
+        if err == nil && uid != 0 {
+            sql += " WHERE uid = " + strconv.Itoa(uid)
+        } else {
+            sql += " WHERE name like '%" + name + "%'"
+        }
     }
     if field != "" {
         sql += " ORDER BY " + field + " " + order
@@ -55,9 +59,11 @@ func RoleList(c echo.Context) error {
     }
     defer rows.Close()
 
-    roles := make([]_role, 0)
+    c.Logger().Debug(sql)
+
+    roles := make([]role, 0)
     for rows.Next() {
-        var r _role
+        var r role
         if err := rows.Scan(&r.Uid, &r.Name, &r.VipLevel, &r.LastLoginTime, &r.RegTime); err != nil {
             return err
         }
@@ -67,34 +73,8 @@ func RoleList(c echo.Context) error {
         return err
     }
 
-    if err := tx.Commit(); err != nil {
-        return err
-    }
-
     vPage := common.GetPage(roles, page, limit)
     return ctx.SendArray(vPage, len(roles))
-}
-
-func getRoleDetail(zone, role string) string {
-    comm := common.GetLocator()
-    app := common.GetApp()
-
-	gamePrx := new(rpc.GameService)
-	comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zone, gamePrx)
-
-	result := ""
-	var ret int32
-	var err error
-	ret, err = gamePrx.DoGmCmd("admin", "see_json "+role, &result)
-	if ret != 0 || err != nil {
-		sErr := ""
-		if err != nil {
-			sErr = err.Error()
-		}
-		result = fmt.Sprintf("ret:%d, err:%s", ret, sErr)
-	}
-
-	return result
 }
 
 func RoleDeatil(c echo.Context) error {
@@ -106,7 +86,23 @@ func RoleDeatil(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-    result := getRoleDetail(zoneId, roleId)
+    comm := cfg.Comm
+    app := cfg.App
+
+	gamePrx := new(rpc.GameService)
+	comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneId, gamePrx)
+
+	result := ""
+	var ret int32
+	var err error
+	ret, err = gamePrx.DoGmCmd("admin", "see_json "+roleId, &result)
+	if ret != 0 || err != nil {
+		sErr := ""
+		if err != nil {
+			sErr = err.Error()
+		}
+		result = fmt.Sprintf("ret:%d, err:%s", ret, sErr)
+	}
 
 	return ctx.SendResponse(result)
 }

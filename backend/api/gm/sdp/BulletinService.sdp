@@ -17,6 +17,8 @@ struct BulletinDataInfo
 	5 optional string			sBeginTime;
 	6 optional string			sEndTime;
 	7 optional unsigned int		iDisplay;
+	8 optional unsigned int		iType;
+	9 optional unsigned int		iPopWindow; // 是否弹窗显示
 };
 
 struct NoticeDataInfo

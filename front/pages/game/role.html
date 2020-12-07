@@ -16,7 +16,7 @@
           <div id="zoneSelect"></div>
         </div>
         <div class="layui-input-inline">
-          <input class="layui-input" placeholder="请输入角色名" autocomplete="off" name="name">
+          <input class="layui-input" placeholder="请输入角色名或玩家id" autocomplete="off" name="name">
         </div>
         <div class="layui-input-inline">
           <button class="layui-btn" lay-submit lay-filter="search">
@@ -67,7 +67,7 @@
 
     okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
       zoneSelect.update({
-        data: response.data,
+        data: response.data["game"],
         initValue: [1],
       });
     }).fail(function (error) {

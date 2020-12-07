@@ -5,8 +5,10 @@ enum IAPReceiptType
 {
 	IAPReceiptType_Apple				= 1,
 	IAPReceiptType_Google				= 2,
-    IAPReceiptType_AB                   = 4,
-    IAPReceiptType_Yoka                 = 5,
+	IAPReceiptType_Fy				    = 3,
+    IAPReceiptType_HeePay               = 4,
+    IAPReceiptType_HeePayH5             = 5,
+    IAPReceiptType_GameHub              = 6,
 };
 
 enum IAPReceiptStatus
@@ -92,7 +94,53 @@ struct GoogleReceipt
 	7	optional	bool				bAutoRenewing;
 };
 
-struct ABPurchase
+struct FyPurchase
+{
+	1	optional	string				sPurchaseData;
+	2	optional	string				sSignature;
+    3   optional    unsigned int        iConnId;
+    4   optional    string              sChannel;
+	
+	10	optional string					sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
+	11	optional string					sTraceFlowId;
+};
+
+struct FyReceipt
+{
+	0	optional	string				sOrderId;
+    1   optional    string              sUuid;
+    2   optional    string              sAppCallbackExt;
+    3   optional    unsigned int        iPayAmount;         
+    4   optional    unsigned int        iSandBox;
+    5   optional    unsigned int        iPayTime;
+    6   optional    unsigned int        iTime;
+};
+
+struct HeePayPurchase
+{
+    0   optional    string sPurchaseData;
+    1   optional    string sSignature;
+    2   optional    unsigned int    iConnId;
+    3   optional    string sChannel;
+
+    10  optional    string  sTraceProductId;
+    11  optional    string  sTraceFlowId;
+    12  optional    unsigned int iCreateTime;
+};
+
+struct HeePayReceipt
+{
+    0   optional    int    iResult;
+    1   optional    string sPayMessage;
+    2   optional    string sAgentId;
+    3   optional    string sJnetBillNo;
+    4   optional    string sAgentBillId;
+    5   optional    unsigned int iPayType;
+    6   optional    float fPayAmt;
+    7   optional    string sRemark; 
+};
+
+struct HeePayH5Purchase
 {
     0   optional    string sPurchaseData;
     1   optional    string sSignature;
@@ -103,24 +151,32 @@ struct ABPurchase
     11  optional    string  sTraceFlowId;
 };
 
-struct ABReceipt
+struct HeePayH5Receipt
 {
-    0   optional    string          sTransid;
-    1   optional    unsigned int    iTranstype;
-    2   optional    string          sCporderid;
-    3   optional    string          sAppuserid;
-    4   optional    string          sAppid;
-    5   optional    unsigned int    iWaresid;
-    6   optional    unsigned int    iFeetype;
-    7   optional    float           fMoney;
-    8   optional    string          sCurrency;
-    9   optional    unsigned int    iResult;
-    10  optional    unsigned int    iTranstime;
-    11  optional    string          sCpprivate;
-    12  optional    unsigned int    iPaytype;
+    0   optional    string sMethod;
+    1   optional    string sVersion;
+    2   optional    string sCharset;
+    3   optional    string sSignType;
+    4   optional    string sReturnCode;
+    5   optional    string sReturnMsg;
+    6   optional    string sAppId;
+    7   optional    string sMchId;
+    8   optional    string sNonceStr;
+    9   optional    string sResultCode;
+    10  optional    string sErrCode;
+    11  optional    string sErrCodeDesc;
+    12  optional    string sOpenId;
+    13  optional    string sFeeType;
+    14  optional    unsigned int iTotalFee;
+    15  optional    unsigned int iCouponFee;
+    16  optional    string sTransactionId;
+    17  optional    string sOutTradeNo;
+    18  optional    string sTimeEnd;
+    19  optional    string sBuyerLogonId;
+    20  optional    string sFundBillList;
 };
 
-struct YokaPurchase
+struct GameHubPurchase
 {
     0   optional    string sPurchaseData;
     1   optional    string sSignature;
@@ -131,16 +187,19 @@ struct YokaPurchase
     11  optional    string  sTraceFlowId;
 };
 
-struct YokaReceipt
+struct GameHubReceipt
 {
-    0   optional    string sOrderId;
-    1   optional    string sAppOrderId;
-    2   optional    double fOrderAmount;
-    3   optional    unsigned int iProductId;
-    4   optional    string sSndaId;
-    5   optional    string sSuccessTime;
-    6   optional    string sExtendAccount;
-    7   optional    string sChannel;
+    0   optional    string sChannelId;
+    1   optional    string sChannelUid;
+    2   optional    string sOrderNo;
+    3   optional    string sCpOrderNo;
+    4   optional    string sZoneId;
+    5   optional    string sRoleId;
+    6   optional    string sGoodsId;
+    7   optional    float fAmount;
+    8   optional    unsigned int iPayTime;
+    9   optional    string sPassbackParams;
+    10  optional    unsigned int iIsTest;
 };
 
 struct IAPReceiptInAll
@@ -149,8 +208,10 @@ struct IAPReceiptInAll
 	1	optional	IAPStatus			stStatus;
 	2	optional	AppleReceipt		stAppleReceipt;
 	3	optional	GoogleReceipt		stGoogleReceipt;
-    5   optional    ABReceipt           stABReceipt;
-    6   optional    YokaReceipt         stYokaReceipt;
+	4	optional	FyReceipt		    stFyReceipt;
+    5   optional    HeePayReceipt       stHeePayReceipt;
+    6   optional    HeePayH5Receipt     stHeePayH5Receipt;
+    7   optional    GameHubReceipt      stGameHubReceipt;
 };
 
 struct ReceiptQueryParam
@@ -174,9 +235,10 @@ interface IAPService
 	int deliverGoogleReceipt(unsigned long iRoleId, unsigned int iZoneId, GooglePurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
 	int getGoogleReceiptStatus(string sOrderId, out GoogleReceipt stReceipt, out IAPStatus stStatus);
 
-    int deliverABReceipt(unsigned long iRoleId, unsigned int iZoneId, ABPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
-
-    int deliverYokaReceipt(unsigned long iRoleId, unsigned int iZoneId, YokaPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+	int deliverFyReceipt(unsigned long iRoleId, unsigned int iZoneId, FyPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+    int deliverHeePayReceipt(unsigned long iRoleId, unsigned int iZoneId, HeePayPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+    int deliverHeePayH5Receipt(unsigned long iRoleId, unsigned int iZoneId, HeePayH5Purchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+    int deliverGameHubReceipt(unsigned long iRoleId, unsigned int iZoneId, GameHubPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
 
 	int getReceiptStatusByFlow(string sFlowId, out IAPReceiptInAll stIAPReceiptInAll);
 	int getReceiptStatusList(ReceiptQueryParam stQueryParam, out vector<IAPReceiptInAll> vIAPReceiptInAll);

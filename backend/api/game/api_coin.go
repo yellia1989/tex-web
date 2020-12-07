@@ -1,13 +1,13 @@
 package game
 
 import (
+    "fmt"
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
 )
 
-type _coinlog struct {
+type coinlog struct {
     Id uint32 `json:"id"`
     Time string `json:"time"`
     AddNum uint32 `json:"add_num"`
@@ -28,26 +28,17 @@ func CoinAddLog(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetLogDb()
-    if db == nil {
-        return ctx.SendError(-1, "连接数据库失败")
-    }
+    db, err := zoneLogDb(zoneid)
 
-    tx, err := db.Begin()
     if err != nil {
-        return err
+        return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
-    defer tx.Rollback()
-
-    _, err = tx.Exec("USE log_zone_" + zoneid)
-    if err != nil {
-        return err
-    }
+    defer db.Close()
 
     sqlcount := "SELECT count(*) as total FROM add_coin"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
-    err = tx.QueryRow(sqlcount).Scan(&total)
+    err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
         return err
     }
@@ -61,25 +52,21 @@ func CoinAddLog(c echo.Context) error {
 
     c.Logger().Debug(sql)
 
-    rows, err := tx.Query(sql)
+    rows, err := db.Query(sql)
     if err != nil {
         return err
     }
     defer rows.Close()
 
-    logs := make([]_coinlog, 0)
+    logs := make([]coinlog, 0)
     for rows.Next() {
-        var r _coinlog
+        var r coinlog
         if err := rows.Scan(&r.Id, &r.Time, &r.AddNum, &r.CurNum, &r.Action); err != nil {
             return err
         }
         logs = append(logs, r)
     }
     if err := rows.Err(); err != nil {
-        return err
-    }
-
-    if err := tx.Commit(); err != nil {
         return err
     }
 
@@ -99,26 +86,17 @@ func CoinSubLog(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    db := common.GetLogDb()
-    if db == nil {
-        return ctx.SendError(-1, "连接数据库失败")
-    }
+    db, err := zoneLogDb(zoneid)
 
-    tx, err := db.Begin()
     if err != nil {
-        return err
+        return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
-    defer tx.Rollback()
-
-    _, err = tx.Exec("USE log_zone_" + zoneid)
-    if err != nil {
-        return err
-    }
+    defer db.Close()
 
     sqlcount := "SELECT count(*) as total FROM sub_coin"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
-    err = tx.QueryRow(sqlcount).Scan(&total)
+    err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
         return err
     }
@@ -132,25 +110,21 @@ func CoinSubLog(c echo.Context) error {
 
     c.Logger().Debug(sql)
 
-    rows, err := tx.Query(sql)
+    rows, err := db.Query(sql)
     if err != nil {
         return err
     }
     defer rows.Close()
 
-    logs := make([]_coinlog, 0)
+    logs := make([]coinlog, 0)
     for rows.Next() {
-        var r _coinlog
+        var r coinlog
         if err := rows.Scan(&r.Id, &r.Time, &r.AddNum, &r.CurNum, &r.Action); err != nil {
             return err
         }
         logs = append(logs, r)
     }
     if err := rows.Err(); err != nil {
-        return err
-    }
-
-    if err := tx.Commit(); err != nil {
         return err
     }
 

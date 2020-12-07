@@ -45,15 +45,34 @@
         <div class="layui-input-block">
           <select name="iDisplay">
             <option value="0">否</option>
-            <option value="1" selected>是</option>
+            <option value="1">是</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">是否弹窗显示</label>
+        <div class="layui-input-block">
+          <select name="iPopWindow">
+            <option value="0">否</option>
+            <option value="1">是</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+          <select name="iType">
+            <option value="0" selected>默认</option>
+            <option value="1">爱贝勇士</option>
           </select>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="add">添加</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+          <button class="layui-btn" lay-submit lay-filter="add">更新</button>
         </div>
       </div>
 
@@ -68,17 +87,15 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      laydate.render({
-        elem: "#iBeginTime", type: "datetime"
-      });
-      laydate.render({
-        elem: "#iEndTime", type: "datetime"
-      });
+      laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
+      laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
 
       $("input[name='sTitle']").val(parent.editdata.sTitle);
       $("textarea[name='sContent']").val(parent.editdata.sContent);
-      $("input[name='sBeginTime']").val(parent.editdata.sBeginTime);
-      $("input[name='sEndTime']").val(parent.editdata.sEndTime);
+      $("select[name='iDisplay']").val(parent.editdata.iDisplay);
+      $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
+      $("select[name='iType']").val(parent.editdata.iType);
+      form.render();
 
       //监听提交
       form.on('submit(add)', function (data) {

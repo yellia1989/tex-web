@@ -13,8 +13,9 @@
          options: { val: 'text' }, // select选项，value=>说明
          printer: fn, // fn(object), 把json对象转换为配置文本项
          parser: fn, // 解析函数fn(text)，把文本解析成json对象，比如JSON.parse，parseInt
-         checkValid: fn, // 校验配置是否合法函数fn(object, json)
+         checkValid: fn, // 校验配置是否合法函数fn(object)
          onChange: fn, // 字段被设置为指定值, fn(object)
+         separate: true, // 是否在这个字段前面加上换行
          subFieldOption: {} // 子字段配置，可以是一个object，或者一个返回object的fn，参数为fieldKey，
 
          useWholeValue: false,  // type=map|array时有效，是否使用整个字段，如果为false则根据fieldKey取值，否则取整个字段本身
@@ -40,30 +41,38 @@
         },
         ActType2:{
             1: '道具消耗',
-            2: '酒馆抽武将次数',
-            3: '关卡进度',
-            4: '商店购买次数',
-            5: '马匹配对次数',
-            6: '宝物修复次数',
+            2: '英雄战力提升',
+            3: '赏金招募次数',
+            4: '王者竞技场胜利次数',
+            5: '天赋升级次数',
+            6: '英雄试练胜利次数',
+            7: '巅峰竞技场胜利次数',
+            8: '关卡进度',
+            9: '商店购买次数',
+            10: '王者竞技场获得积分',
+            11: '宠物积分',
         },
         ActType3:{
             1: '道具消耗',
-            2: '酒馆抽武将次数',
-            3: '关卡进度',
-            4: '商店购买次数',
-            5: '马匹配对次数',
-            6: '宝物修复次数',
-            7: '列传模式总积分'
+            2: '英雄战力提升',
+            3: '赏金招募次数',
+            4: '王者竞技场胜利次数',
+            5: '天赋升级次数',
+            6: '英雄试练胜利次数',
+            7: '巅峰竞技场胜利次数',
+            8: '关卡进度',
+            12: '龙域探险加速次数',
+            13: '天赋点购买次数',
+            14: '宝石购买次数',
+            15: '符文碎片购买次数',
         },
         ActType4:{
-            1: '成就等级',
-            2: '武将数量',
-            3: '关卡进度',
+            1: '王者竞技场',
+            3: '巅峰竞技场',
             4: '金币消耗',
-            5: '钻石消耗',
-            6: '玩家等级',
-            7: '所有武将等级',
-            8: '主线任务',
+            5: '战力',
+            6: '钻石消耗',
+            8: '关卡进度',
         },
     };
 
@@ -203,6 +212,36 @@
                 return activityType.fieldOption[fieldKey];
             }
             return undefined;
+        },
+        stringToDate: function(dateStr) {
+            var converted = Date.parse(dateStr);
+            var myDate = new Date(converted);
+            if (isNaN(myDate))
+            {
+                var arys= dateStr.split('-');
+                myDate = new Date(arys[0],--arys[1],arys[2]);
+            }
+            return myDate;
+        },
+        formatDate: function(fmt,d) {
+            var o = {
+                "M+": d.getMonth() + 1, //月份 
+                "d+": d.getDate(), //日 
+                "h+": d.getHours(), //小时 
+                "m+": d.getMinutes(), //分 
+                "s+": d.getSeconds(), //秒 
+                "q+": Math.floor((d.getMonth() + 3) / 3), //季度 
+                "S": d.getMilliseconds() //毫秒 
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (d.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        },
+        addHour: function(dateStr, hour) {
+            var dt = this.stringToDate(dateStr);
+            var ndt = new Date(dt.getTime() + hour*3600*1000);
+            return this.formatDate('yyyy-MM-dd hh:mm:ss', ndt);
         }
     };
 
@@ -228,7 +267,7 @@
                 type: {
                     name: '子类型',
                     type: 'select',
-                    options: options.ActType2,
+                    options: options.ActType3,
                     parser: parseInt,
                 },
                 itemid: {
@@ -257,6 +296,16 @@
                          }
                      }
                  }
+            },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
             }
         }
     };
@@ -268,7 +317,7 @@
                 type: {
                     name: '子类型',
                     type: 'select',
-                    options: options.ActType3,
+                    options: options.ActType2,
                     parser: parseInt,
                 },
                 itemid: {
@@ -297,6 +346,16 @@
                      }
                  }
             },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
         }
     };
     // 4
@@ -358,6 +417,16 @@
                         }
                     }
                 }
+            },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
             }
         }
     };
@@ -366,10 +435,11 @@
         name: '首冲送英雄',
         fieldOption: {
             comm_param: {
-                heroid: {
-                    name: '英雄id',
-                    type: 'text',
-                    parser: parseInt
+                item: {
+                    name: '道具:id,num',
+                    type: 'midtext',
+                    printer: utils.printItemNumList,
+                    parser: utils.parseItemNumList
                 }
             },
             client_param: {
@@ -384,6 +454,18 @@
                 background_img: {
                     name: '背景',
                     type: 'longtext',
+                },
+                itemid: {
+                    name: '道具id(英雄)',
+                    type: 'text',
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
                 }
             }
         }
@@ -413,6 +495,14 @@
                 background_img: {
                     name: '背景',
                     type: 'longtext',
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
                 }
             }
         }
@@ -443,6 +533,14 @@
                 background_img: {
                     name: '背景',
                     type: 'longtext',
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
                 }
             }
         }
@@ -483,6 +581,14 @@
                         '0' : '不显示',
                         '1' : '显示',
                     }
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
                 }
             }
         }
@@ -525,6 +631,14 @@
                 background_img: {
                     name: '背景',
                     type: 'longtext',
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
                 }
             },
             server_param: {
@@ -574,6 +688,10 @@
                 list_bg: {
                     name: '列表背景',
                     type: 'text',
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
                 }
             },
             server_param: {
@@ -581,13 +699,19 @@
                     name: '触发点',
                     type: 'select',
                     options: {
-                        '1': '玩家升级',
-                        '2': '英雄升级',
-                        '3': '英雄升星',
-                        '4': '酒馆抽英雄',
+                        '1': '王者竞技场失败',
+                        '2': '巅峰竞技场失败',
+                        '3': '天赋等级提升',
+                        '4': '钻石免费抽',
                         '5': '登录触发',
-                        '6': '剧情模式失败',
-                        '7': '购买金币',
+                        '6': '技能升级',
+                        '7': '英雄升级',
+                        '8': '购买符文',
+                        '9': '英雄历练升级',
+                        '10': '主线任务进度变化',
+                        '11': '商店购买',
+                        '12': '蓝钻商城购买',
+                        '13': '天赋技能解锁',
                     },
                     parser: parseInt
                 },
@@ -610,20 +734,50 @@
                     name: '商品id列表(,区分)',
                     type: 'text',
                 },
+                buy_month_card: {
+                    name: '是否买过月卡',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                no_heroids: {
+                    name: '没有英雄(;区分)',
+                    type: 'midtext',
+                },
+                talent_level_range: {
+                    name: '天赋等级范围(-区分)',
+                    type: 'midtext',
+                },
+                talent_range: {
+                    name: '天赋点范围(-区分)',
+                    type: 'midtext',
+                },
                 coin_range: {
                     name: '金币范围(-区分)',
                     type: 'midtext',
                 },
                 diamond_range: {
-                    name: '元宝范围(-区分)',
+                    name: '钻石范围(-区分)',
                     type: 'midtext',
                 },
-                role_level_range: {
-                    name: '玩家等级范围(-区分)',
+                exp_range: {
+                    name: '经验药水数量,单位K(-区分)',
+                    type: 'midtext'
+                },
+                gem_range: {
+                    name: '宝石范围(-区分)',
+                    type: 'midtext',
+                },
+                temper_level_range: {
+                    name: '历练等级范围(-区分)',
+                    type: 'midtext',
+                },
+                rune_range: {
+                    name: '符文碎片范围(-区分)',
                     type: 'midtext',
                 },
                 recharge_money_range: {
-                    name: '充值金额范围(-区分)',
+                    name: '充值美金范围(-区分)',
                     type: 'midtext',
                 },
                 recharge_last_time: {
@@ -639,20 +793,27 @@
                     name: '付费次数范围(-区分)',
                     type: 'midtext',
                 },
-                hero_level_range: {
-                    name: '当前英雄等级范围(-区分)',
-                    type: 'midtext'
-                },
-                hero_star_range: {
-                    name: '当前英雄星级范围(-区分)',
-                    type: 'midtext'
-                },
-                no_heroids: {
-                    name: '没有英雄(;区分)',
+                hero_star_min: {
+                    name: '所有英雄星级小于',
                     type: 'midtext',
+                    parser: parseInt,
                 },
-                hero_num_range: {
-                    name: '英雄数量范围(-区分)',
+                has_free_hero: {
+                    name: '有剩余英雄未组队',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                hero_skilllv_range: {
+                    name: '英雄技能等级范围(-区分)',
+                    type: 'midtext'
+                },
+                hero_level_range: {
+                    name: '英雄等级范围(-区分)',
+                    type: 'midtext'
+                },
+                hero_runelv_range: {
+                    name: '英雄符文等级范围(-区分)',
                     type: 'midtext'
                 },
                 month_card_left: {
@@ -666,9 +827,44 @@
                     parser: parseInt,
                 },
                 stage_range: {
-                    name: '剧情模式关卡范围(-区分)',
+                    name: '挂机关卡范围(-区分)',
                     type: 'midtext',
                 },
+                main_quest_range: {
+                    name: '主线任务进度范围(-区分)',
+                    type: 'midtext'
+                },
+                once_recharge_money: {
+                    name: '单次充值超过数额',
+                    type: 'midtext',
+                    parser: parseInt,
+                },
+                coin_rate: {
+                    name: '当前金币量小于(点金卷所得金币的倍率)',
+                    type: 'midtext',
+                    parser: parseInt,
+                },
+                exp_rate: {
+                    name: '当前经验药水量小于(药水礼盒所得药水的倍率)',
+                    type: 'midtext',
+                    parser: parseInt,
+                },
+                coin_less_skillcost: {
+                    name: '当前金币量小于上次技能升级所消耗的金币量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                exp_less_herolevelcost: {
+                    name: '当前药水量小于上次英雄升级所消耗的药水量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                rune_level: {
+                    name: '购买符文的等级(-区分)',
+                    type: 'midtext'
+                }
             }
         }
     };
@@ -694,11 +890,21 @@
                      }
                  }
             },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
         }
     };
     // 12
     activityTypeDefine[12] = {
-        name: '英雄众筹',
+        name: '商品团购',
         fieldOption: {
             comm_param: {
                 heroes: {
@@ -707,12 +913,12 @@
                      vertical: true,
                      groupFieldOption: {
                          _: {
-                             name: '英雄id',
+                             name: '英雄整卡id',
                              type: 'text',
                              isMapKey: true
                          },
                          step: {
-                             name: '指定人数:商品id:id,num;id,num',
+                             name: '个数:人数:商品id:vip:diamond:price:id,num;id,num',
                              type: 'textarea',
                          },
                      }
@@ -725,7 +931,7 @@
                      vertical: true,
                      groupFieldOption: {
                          _: {
-                             name: '英雄id',
+                             name: '英雄整卡id',
                              type: 'text',
                              isMapKey: true
                          },
@@ -734,7 +940,15 @@
                              type: 'text',
                          },
                      }
-                 }
+                 },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
             },
         }
     };
@@ -766,6 +980,16 @@
                      }
                  }
             },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
         }
     };
     // 14
@@ -778,7 +1002,7 @@
                      type: 'map',
                      groupFieldOption: {
                          _: {
-                             name: '英雄id',
+                             name: '英雄整卡id',
                              type: 'text',
                              isMapKey: true,
                              parser: parseInt
@@ -808,7 +1032,15 @@
                              type: 'text',
                          },
                      }
-                 }
+                 },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
             },
          }
     };
@@ -875,6 +1107,24 @@
                      }
                  }
             },
+            client_param: {
+                hot_hero_bg: {
+                    name: '英雄立绘',
+                    type: 'longtext',
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                },
+                hot_hero: {
+                    name: '热点英雄',
+                    type: 'text'
+                }
+            }
         }
     };
     // 16
@@ -936,8 +1186,18 @@
                      }
                  },
              },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
         }
-    },
+    };
     // 17
     activityTypeDefine[17] = {
          name: 'vip福利',
@@ -959,7 +1219,92 @@
                          }
                      }
                  }
-             }
+             },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
+        }
+    };
+    // 18
+    activityTypeDefine[18] = {
+        name: '个性化赠礼',
+        fieldOption: {
+            comm_param: {
+                reward: {
+                    name: '奖励:id,num;id,num',
+                    type: 'longtext',
+                    printer: utils.printItemNumList,
+                    parser: utils.parseItemNumList
+                }
+            },
+            client_param: {
+                detail_bg: {
+                    name: '活动背景',
+                    type: 'text'
+                },
+                list_bg: {
+                    name: '列表背景',
+                    type: 'text'
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                }
+            },
+            server_param: {
+                trigger_point: {
+                    name: '触发点',
+                    type: 'select',
+                    options: {
+                        '1': '穿戴装备',
+                        '2': '打开英雄列表',
+                        '3': '打开技能界面和点击技能升级'
+                    },
+                    parser: parseInt
+                },
+                trigger_interval: {
+                    name: '触发间隔(秒)',
+                    type: 'text',
+                    parser: parseInt
+                },
+                trigger_times: {
+                    name: '触发次数',
+                    type: 'text',
+                    parser: parseInt
+                },
+                last_time: {
+                    name: '持续时间',
+                    type: 'text',
+                    parser: parseInt
+                },
+                stage_range: {
+                    name: '挂机关卡范围(-区分)',
+                    type: 'midtext'
+                },
+                hero_equip: {
+                    name: '缺少装备',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                hero_quality: {
+                    name: 'X时间没有合成英雄(秒)',
+                    type: 'text',
+                    parser: parseInt
+                },
+                hero_skill: {
+                    name: 'x个满技能等级英雄且升级技能缺少金币',
+                    type: 'text',
+                    parser: parseInt
+                }
+            },
         }
     };
 	
@@ -1019,7 +1364,7 @@
             onChange: utils.changeActivityType
         },
 		'info.close': {
-            name: '紧急关闭活动',
+            name: '---紧急关闭活动---',
             type: 'select',
             options: options.optYesNo,
             parser: parseInt
@@ -1081,6 +1426,7 @@
         'constrain.begin_time': {
             name: '活动开始时间',
             type: 'datetime',
+            separate: true,
         },
         'constrain.end_time': {
             name: '活动结束时间',
@@ -1144,6 +1490,7 @@
             type: 'textarea',
             parser: JSON.parse,
             subFieldOption: utils.getFieldOptionByActivity,
+            separate: true
         },
         server_param: {
             name: '服务端私有参数',

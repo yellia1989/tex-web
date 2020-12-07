@@ -9,7 +9,9 @@ import (
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api"
-    "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/api/stat"
+    "github.com/yellia1989/tex-web/backend/cron"
+    "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-go/tools/log"
 )
 
@@ -31,8 +33,6 @@ func httpErrorHandler(err error, c echo.Context) {
     code := he.Code
     message := he.Message
 
-    c.Logger().Error("error:"+he.Error())
-
     // Send response
     if !c.Response().Committed {
         if c.Request().Method == http.MethodHead { // Issue #608
@@ -48,14 +48,14 @@ func httpErrorHandler(err error, c echo.Context) {
             } else {
                 // 没有登陆的话重定位到登陆
                 if mid.GetUserId(c) == 0 {
-                    err = c.Redirect(http.StatusMovedPermanently, "/login.html")
+                    err = c.Redirect(http.StatusFound, "/login.html")
                 } else {
                     redirect := "/500.html"
                     switch code {
                     case http.StatusForbidden:redirect = "/403.html"
                     case http.StatusNotFound:redirect = "/404.html"
                     }
-                    err = c.Redirect(http.StatusMovedPermanently, redirect)
+                    err = c.Redirect(http.StatusFound, redirect)
                 }
             }
         }
@@ -66,12 +66,13 @@ func httpErrorHandler(err error, c echo.Context) {
 }
 
 func main() {
-    if err := common.ParseCfg("conf.cfg"); err != nil {
+    if err := cfg.ParseCfg("conf.cfg"); err != nil {
         fmt.Printf("%s", err)
         os.Exit(-1)
     }
     
-    debug := common.Cfg.GetBool("debug", false)
+    debug := cfg.Debug
+    framework_debug := cfg.FrameworkDebug
 
     // Echo instance
     e := echo.New()
@@ -98,11 +99,23 @@ func main() {
     api.RegisterHandler(e.Group("/api"))
 
     if debug {
+        log.SetLevel(log.DEBUG)
+    }
+
+    if framework_debug {
         log.SetFrameworkLevel(log.DEBUG)
     }
 
+    stat.InitCondition()
+
+    // Start Cron
+    cron.Start()
+
     // Start server
-    e.Logger.Fatal(e.Start(common.Cfg.GetCfg("listen", "")))
+    e.Logger.Fatal(e.Start(cfg.Listen))
+
+    // Stop Cron
+    cron.Stop()
 
     log.FlushLogger()
 }

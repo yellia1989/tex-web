@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <title>CDK管理</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="../../css/oksub.css">
-  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 
 <body>
@@ -14,7 +14,7 @@
     <table id="tableId" lay-filter="tableFilter"></table>
   </div>
   <!--js逻辑-->
-  <script src="../../lib/layui/layui.js"></script>
+  <script src="/lib/layui/layui.js"></script>
   <script>
     var editCDK;
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
@@ -65,16 +65,27 @@
           },
           //{ field: "sCustomLimit", title: "自定义限制", width: 120 },
           { field: "sZoneLimit", title: "可用分区", align: "center", width: 90, templet: function (d) {
+            if (d.iActive == 1) {
+              return '-';
+            }
             return d.sZoneLimit == '' ? '全服' : d.sZoneLimit;
           }},
           { field: "iExchangeLimit", title: "账号使用次数", align: "center", width: 120, templet: function (d) {
+            if (d.iActive == 1) {
+              return '-';
+            }
             if (d.iExchangeLimit == 0) {
               return '无';
             } else {
               return d.iExchangeLimit + '次';
             }
           }},
-          { field: "sRewardInfo", title: "自定义奖励", align: "center", fixed: 'right' },
+          { field: "sRewardInfo", title: "自定义奖励", align: "center", fixed: 'right', templet: function (d) {
+            if (d.iActive == 1) {
+              return '-';
+            }
+            return d.sRewardInfo;
+          }},
           { field: "iGeneratedNum", title: "已生成", align: "center", width: 90, fixed: 'right' },
           { field: "iExchangedNum", title: "已兑换", align: "center", width: 90, fixed: 'right' },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
@@ -90,6 +101,9 @@
         switch (obj.event) {
           case "add":
             add();
+            break;
+          case "export":
+            mexport();
             break;
         }
       });
@@ -115,12 +129,51 @@
           cdkTable.reload();
         })
       }
+
+      function mexport() {
+        let checkStatus = table.checkStatus('tableId');
+        let idsStr = '';
+        for (let i = 0;i < checkStatus.data.length; ++i) {
+          if (i != 0) idsStr += ',';
+          idsStr += checkStatus.data[i].id;
+        }
+        okUtils.ajax("/api/gm/cdk/export", "post", {idsStr: idsStr}, true).done(function (response) {
+          let names = new Array(checkStatus.data.length);
+          let rows = new Array();
+          let maxlen = 0;
+          for (let i = 0;i < checkStatus.data.length; ++i) {
+            let name = checkStatus.data[i].sCDKeyName;
+            names[i] = name;
+
+            let data = response.data[checkStatus.data[i].id+''].split('\n');
+            rows.push(data);
+            if (data.length > maxlen) maxlen = data.length;
+          }
+          for (let i = 0; i < rows.length; ++i) {
+            let j = maxlen - rows[i].length;
+            while (j-- > 0) {
+              rows[i].push("");
+            }
+          }
+
+          let newRows = rows[0].map(function (col, i) {
+             return rows.map(function (row) {
+                    return row[i];
+              })
+          });
+
+          table.exportFile(names, newRows);
+        }).fail(function (error) {
+          console.log(error);
+        });
+      }
     })
   </script>
   <!-- 头工具栏模板 -->
   <script type="text/html" id="toolbarTpl">
   <div class="layui-btn-container">
     <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="export"><i class="layui-icon layui-icon-export"></i></div>
   </div>
 </script>
 

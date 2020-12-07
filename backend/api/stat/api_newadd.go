@@ -1,107 +1,87 @@
 package stat
 
 import (
-    "fmt"
-    "time"
-    "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/common"
 )
 
-type _newaddlog struct {
+type newadd struct {
     Statymd string `json:"statymd"`
-    AccountnumTotal float32 `json:"total_accountnum"`
-    RolenumTotal float32 `json:"total_rolenum"`
-    RolenumTotalRate string `json:"total_rolenum_rate"`
-    Accountnum float32 `json:"accountnum"`
-    Startgame float32 `json:"startgame"`
-    AccountnumRate string `json:"accountnum_rate"`
-    Rolenum float32 `json:"rolenum"`
-    Create2num float32 `json:"create2num"`
-    RolenumRate string `json:"rolenum_rate"`
+    AccountnumTotal uint32 `json:"accountnum_total"`
+    RolenumTotal uint32 `json:"rolenum_total"`
+    Accountnum uint32 `json:"accountnum"`
+    Rolenum uint32 `json:"rolenum"`
 }
 
 func NewaddList(c echo.Context) error {
     ctx := c.(*mid.Context)
-    page, _ := strconv.Atoi(ctx.QueryParam("page"))
-    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+    page := common.Atoi(ctx.QueryParam("page"))
+    limit := common.Atoi(ctx.QueryParam("limit"))
     startTime := ctx.QueryParam("startTime")
     endTime := ctx.QueryParam("endTime")
 
-    now := time.Now()
-    if startTime == "" {
-        startTime = now.Add(-7*24*time.Hour).Format("2006-01-02")
-    }
-    if endTime == "" {
-        endTime = now.Format("2006-01-02")
+    startDate := getDateByString(startTime)
+    endDate := getDateByString(endTime)
+    if startDate == nil || endDate == nil {
+        return ctx.SendError(-1, "请指定日期范围")
     }
 
-    db := common.GetStatDb()
-    if db == nil {
-        return ctx.SendError(-1, "连接数据库失败")
-    }
-
-    tx, err := db.Begin()
-    if err != nil {
-        return err
-    }
-    defer tx.Rollback()
-
-    _, err = tx.Exec("USE db_stat")
+    // 获取账号总数量
+    accountNumTotal, err := getAccountUtilDate(endDate.ID, accountCond)
     if err != nil {
         return err
     }
 
-    sql := "SELECT statymd,sum(accountnum) as sum_accountnum,(sum(rolenum_new)+sum(rolenum_old)) as sum_rolenum,sum(rolenum_startgame) as sum_rolenum_startgame,sum(rolenum_create2) as sum_create2num,sum(total_accountnum) as sum_total_accountnum,sum(total_rolenum) as sum_total_rolenum FROM t_newadd"
-    sql += " WHERE zoneid=0 AND statymd between '"+startTime+"' AND '"+endTime+"'" 
-    sql += " GROUP BY statymd"
-    sql += " ORDER BY statymd desc"
-    var total int
-    err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
+    // 获取角色总数量
+    roleNumTotals, err := getRoleNumUtilDate(nil, endDate.ID, roleCond)
+    if err != nil {
+        return err
+    }
+    // 全服总创角
+    var roleNumTotal uint32
+    for _, v := range roleNumTotals {
+        roleNumTotal += v
+    }
+
+    // 获取指定日期范围内的创建的账号
+    accounts, err := getAccountByDate(startDate.ID, endDate.ID, accountCond)
     if err != nil {
         return err
     }
 
-    limitstart := strconv.Itoa((page-1)*limit)
-    limitrow := strconv.Itoa(limit)
-    sql += " LIMIT "+limitstart+","+limitrow
-
-    c.Logger().Debug(sql)
-
-    rows, err := tx.Query(sql)
+    // 获取指定日期范围内创建的角色
+    roles, err := getRoleNumByDate(nil, startDate.ID, endDate.ID, roleCond)
     if err != nil {
         return err
     }
-    defer rows.Close()
-
-    logs := make([]_newaddlog, 0)
-    for rows.Next() {
-        var r _newaddlog
-        if err := rows.Scan(&r.Statymd, &r.Accountnum, &r.Rolenum, &r.Startgame, &r.Create2num, &r.AccountnumTotal, &r.RolenumTotal); err != nil {
-            return err
-        }
-        r.RolenumTotalRate = "0.0%"
-        r.AccountnumRate = "0.0%"
-        r.RolenumRate = "0.0%"
-        if r.AccountnumTotal != 0 {
-            r.RolenumTotalRate = fmt.Sprintf("%.2f%%", r.RolenumTotal/r.AccountnumTotal)
-        }
-        if r.Accountnum != 0 {
-            r.AccountnumRate = fmt.Sprintf("%.2f%%", r.Startgame/r.Accountnum)
-        }
-        if r.Rolenum != 0 {
-            r.RolenumRate = fmt.Sprintf("%.2f%%", r.Create2num/r.Rolenum)
-        }
-        logs = append(logs, r)
-    }
-    if err := rows.Err(); err != nil {
-        return err
+    date2Roles := make(map[uint32]uint32)
+    for k, r := range roles {
+        date2Roles[k.dateFk] += r
     }
 
-    if err := tx.Commit(); err != nil {
-        return err
+    newadds := make([]*newadd,0)
+    for t := endDate.ID; t >= startDate.ID; t-- {
+        d := getDate(t)
+
+        accountnum, ok := accounts[d.ID]
+        if !ok {
+            continue
+        }
+
+        var nd newadd
+        nd.Statymd = d.Time
+        nd.Accountnum = accountnum
+        nd.Rolenum,_ = date2Roles[d.ID]
+
+        nd.RolenumTotal = roleNumTotal
+        nd.AccountnumTotal = accountNumTotal
+
+        accountNumTotal -= nd.Accountnum
+        roleNumTotal -= nd.Rolenum
+
+        newadds = append(newadds, &nd)
     }
 
-    return ctx.SendArray(logs, total)
+    return ctx.SendArray(common.GetPage(newadds, page, limit), len(newadds))
 }
