@@ -98,12 +98,13 @@ func Cron(now time.Time) {
                         return
                     }
                 }
-                mu.Unlock()
                 sql := "INSERT INTO zone(zoneid,zonename,openday_fk,logdbhost) VALUES(?,?,?,?)"
                 if _,err := conn.ExecContext(ctx, sql, zoneid, new.SZoneName, d.Id, ip); err != nil {
+                    mu.Unlock()
                     log.Errorf("zone cron: %s", err.Error())
                     continue
                 }
+                mu.Unlock()
                 log.Debugf("zone cron add new zone: %d", zoneid)
             } else {
                 log.Errorf("zone cron: %s", err.Error())
@@ -114,7 +115,15 @@ func Cron(now time.Time) {
         old := zone.(*Zone)
         if old.Name != new.SZoneName || old.OpenDay != d.Id || old.DbHost != ip {
             // 更改了分区信息,更新数据库
-            conn.PingContext(ctx)
+            mu.Lock()
+            if err := conn.PingContext(ctx); err != nil {
+                if err := createNewConn(); err != nil {
+                    mu.Unlock()
+                    log.Errorf("zone create new conn: %s", err.Error())
+                    return
+                }
+            }
+            mu.Unlock()
             sql := "UPDATE zone SET "
             first := true
             if old.Name != new.SZoneName {
@@ -139,10 +148,14 @@ func Cron(now time.Time) {
                 log.Debugf("zone cron update zone: %d, dbhost: %s->%s", zoneid, old.DbHost, ip)
             }
             sql += " WHERE id="+common.U32toa(old.Id)
+
+            mu.Lock()
             if _,err := conn.ExecContext(ctx, sql); err != nil {
+                mu.Unlock()
                 log.Errorf("zone cron: %s, sql: %s", err.Error(), sql)
                 continue
             }
+            mu.Unlock()
             zones.Remove(zoneid)
         }
     }
