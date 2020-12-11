@@ -27,7 +27,7 @@ func ActivityList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -106,7 +106,7 @@ func ActivityAdd(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -150,7 +150,7 @@ func ActivityEdit(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -191,7 +191,7 @@ func ActivityDel(c echo.Context) error {
     ctx := c.(*mid.Context)
     ids := ctx.FormValue("idsStr")
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -262,7 +262,7 @@ func ActivityImport(c echo.Context) error {
         sql += fmt.Sprintf("(%d,%d,'%s','%s','%s','%s')", v.Id, v.Type, apply_zone, apply_user, v.Data, v.Desc)
     }
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -333,7 +333,7 @@ func ActivityLock(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
