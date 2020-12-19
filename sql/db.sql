@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.17, for linux-glibc2.5 (x86_64)
 --
--- Host: 172.19.248.171    Database: db_stat
+-- Host: 172.25.2.196    Database: db_stat
 -- ------------------------------------------------------
 -- Server version	5.6.17
 
@@ -64,6 +64,21 @@ CREATE TABLE `date` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `ymd_idx` (`ymd`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `log`
+--
+
+DROP TABLE IF EXISTS `log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `log` (
+  `time` datetime NOT NULL COMMENT '记录时间',
+  `username` varchar(50) NOT NULL COMMENT '用户名',
+  `action` varchar(100) NOT NULL COMMENT '行为',
+  `desc` varchar(255) NOT NULL COMMENT '行为描述'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -329,4 +344,4 @@ CREATE TABLE `zone` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-01 20:47:57
+-- Dump completed on 2020-12-19 20:35:24
