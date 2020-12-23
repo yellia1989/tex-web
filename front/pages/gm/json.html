@@ -205,7 +205,7 @@
             grpFieldValue = grpFieldDesc.printer(grpFieldValue);
           }
 
-          let input = self.createInputField(grpFieldKey, grpFieldDesc, grpFieldValue);
+          let input = self.createInputField(grpFieldKey, grpFieldDesc, grpFieldValue, undefined, true);
           inline.append(input.label);
           inline.append(input.input);
         });
@@ -282,8 +282,12 @@
         formItem.append(line.input);
         return formItem;
       }
-      jsonEditor.prototype.createInputField = function(fieldKey, fieldDesc, fieldValue, ctlCheckBox) {
-        let label = $('<div style="width:100px;color:#999;display:block;float:left;padding:5px 5px 0 0;"></div>');
+      jsonEditor.prototype.createInputField = function(fieldKey, fieldDesc, fieldValue, ctlCheckBox, nofloat) {
+        let f = 'float:left;padding:5px 5px 0 0;';
+        if (nofloat !== undefined) {
+          f = '';
+        }
+        let label = $('<div style="width:100px;color:#999;'+f+'display:block;"></div>');
         label.append(fieldDesc.name);
 
         if (fieldDesc.subFieldOption) {
