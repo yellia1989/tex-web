@@ -77,7 +77,9 @@ func ZoneSimpleList(c echo.Context) error {
     data["game"] = zones
 
     if bmap {
-        data["map"] = MapSimpleList()
+        zones3 := MapSimpleList()
+        zones = append(zones, zones3...)
+        data["map"] = zones
     }
 
     return ctx.SendResponse(data)
