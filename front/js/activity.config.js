@@ -469,7 +469,7 @@
                     options: {
                         '0' : '不显示',
                         '1' : '显示',
-                    }    
+                    }
                 },
                 background_img: {
                     name: '背景',
@@ -1417,7 +1417,59 @@
             }
         }
     };
-	
+    // 21
+    activityTypeDefine[21] = {
+        name: '白嫖活动',
+        fieldOption: {
+            comm_param: {
+                reward: {
+                    name: '可选的奖励: id(,分隔);',
+                    type: 'text',
+                },
+                quest: {
+                    name: '任务',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        id: {
+                            name: '任务id',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        cond_type: {
+                            name: '完成条件类型',
+                            type: 'select',
+                            options: {
+                                '1': '1. 完成成就(加入联盟)',
+                                '2': '2. 多人对决借用英雄',
+                                '3': '3. 联盟参加宠物会议',
+                                '4': '4. 联盟参加圆桌会议',
+                                '5': '5. 给盟友赠送礼物',
+                                '6': '6. 联盟商店兑换炼金石'
+                            },
+                            parser: parseInt
+                        },
+                        step: {
+                            name: '完成次数',
+                            type: 'text',
+                            parser: parseInt
+                        }
+                    }
+                }
+            },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
+        }
+    };
+
     // 当前活动类型
     var currentActivityType;
 
