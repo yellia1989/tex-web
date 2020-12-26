@@ -1424,7 +1424,7 @@
         fieldOption: {
             comm_param: {
                 reward: {
-                    name: '可选的奖励: id(,分隔);',
+                    name: '可选的奖励: id(;分隔)',
                     type: 'text',
                 },
                 quest: {
@@ -1432,7 +1432,7 @@
                     type: 'map',
                     vertical: true,
                     groupFieldOption: {
-                        id: {
+                        _: {
                             name: '任务id',
                             isMapKey: true,
                             parser: parseInt
