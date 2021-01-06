@@ -9,7 +9,7 @@ import (
 )
 
 func parseIDStr(src, sep string, out *string) {
-	reg, _ := regexp.Compile("\\d{5}")
+	reg, _ := regexp.Compile("\\d{5,}")
 	vStr := reg.FindAllString(src, -1)
 
 	if len(vStr) != 0 {
