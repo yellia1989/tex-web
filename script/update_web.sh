@@ -14,7 +14,7 @@ case "$env" in
     cp ../conf_d.cfg conf.cfg
     ;;
     u)
-    ip=139.224.58.141
+    ip=101.133.141.46
     cp ../conf_u.cfg conf.cfg
     ;;
     t)

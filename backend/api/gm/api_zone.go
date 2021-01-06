@@ -77,9 +77,13 @@ func ZoneSimpleList(c echo.Context) error {
     data["game"] = zones
 
     if bmap {
-        zones3 := MapSimpleList()
-        zones = append(zones, zones3...)
-        data["map"] = zones
+        var zones3 []rpc.ZoneInfo
+        if ball {
+            zones3 = append(zones3, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
+        }
+        zones4 := MapSimpleList()
+        zones3 = append(zones3, zones4...)
+        data["map"] = zones3
     }
 
     return ctx.SendResponse(data)
