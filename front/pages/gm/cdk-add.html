@@ -14,7 +14,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">名称</label>
         <div class="layui-input-block">
-          <input type="text" name="sCDKeyName" class="layui-input" lay-verify="required" lay-verType="tips">
+          <input type="text" name="sCDKeyName" class="layui-input" lay-verify="required|cdkname" lay-verType="tips">
         </div>
       </div>
 
@@ -196,6 +196,13 @@
           $('#rewardinfo').removeClass('layui-hide');
           $('textarea[name=sRewardInfo]').attr('lay-verify', 'required');
         }
+      });
+
+      form.verify({
+        cdkname: [
+          /^[A-Za-z\d]{1,20}$/
+          , 'cdk必须1到20位的字母或者数字'
+        ]
       });
 
       //监听提交
