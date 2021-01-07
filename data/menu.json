@@ -629,6 +629,63 @@
         ]
       },
       {
+        "id": 813,
+        "title": "邮件记录",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 81301,
+            "title": "邮件发送记录",
+            "href": "game/mail-send.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81302,
+            "title": "邮件领取记录",
+            "href": "game/mail-rev.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81303,
+            "title": "邮件删除记录",
+            "href": "game/mail-del.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
         "id": 811,
         "title": "在线时长",
         "href": "game/online-time.html",

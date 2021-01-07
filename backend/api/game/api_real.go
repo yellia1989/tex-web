@@ -6,6 +6,7 @@ import (
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/common"
     "github.com/yellia1989/tex-web/backend/cfg"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 func realtime(day string, table string) ([]uint32,error) {
@@ -19,6 +20,7 @@ func realtime(day string, table string) ([]uint32,error) {
     sql += "'"+day+"'"
     sql += " GROUP BY time ORDER BY time"
 
+    log.Debugf("sql: %s", sql)
     rows, err := db.Query(sql)
     if err != nil {
         return nil,err

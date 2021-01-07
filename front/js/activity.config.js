@@ -74,6 +74,27 @@
             6: '钻石消耗',
             8: '关卡进度',
         },
+        ActTypeAllianceTop100:{
+            1: '体力消耗',
+            2: '木材获得',
+            3: '石料获得',
+            4: '银币获得',
+            5: '击杀野怪',
+            6: '击杀Boss',
+            7: '获得能力之石',
+            8: '获得旗帜宝箱',
+        },
+        ActTypeAllianceConsume:{
+            1: '购买体力次数',
+            2: '木材消耗',
+            3: '石料消耗',
+            4: '银币消耗',
+            5: '击杀野怪',
+            6: '击杀Boss',
+            7: '使用能力之石',
+            8: '攻城成功',
+            9: '埋地雷',
+        },
     };
 
     // 工具函数
@@ -449,7 +470,7 @@
                     options: {
                         '0' : '不显示',
                         '1' : '显示',
-                    }    
+                    }
                 },
                 background_img: {
                     name: '背景',
@@ -1307,12 +1328,162 @@
             },
         }
     };
-	
+    // 19
+    activityTypeDefine[19] = {
+        name: '联盟冲榜',
+        fieldOption: {
+            comm_param: {
+                type: {
+                    name: '子类型',
+                    type: 'select',
+                    options: options.ActTypeAllianceTop100,
+                    parser: parseInt,
+                },
+                rank: {
+                    name: '排名奖励',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '排名:from_to',
+                            type: 'text',
+                            isMapKey: true
+                        },
+                        masterreward: {
+                            name: '盟主奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        },
+                        memberreward: {
+                            name: '成员奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        }
+                    }
+                }
+            },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
+        }
+    };
+    // 20
+    activityTypeDefine[20] = {
+        name: '联盟消耗',
+        fieldOption: {
+            comm_param: {
+                type: {
+                    name: '子类型',
+                    type: 'select',
+                    options: options.ActTypeAllianceConsume,
+                    parser: parseInt,
+                },
+                rank: {
+                    name: '排名奖励',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '排名:from_to',
+                            type: 'text',
+                            isMapKey: true
+                        },
+                        reward: {
+                            name: '成员奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        }
+                    }
+                }
+            },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
+        }
+    };
+    // 21
+    activityTypeDefine[21] = {
+        name: '白嫖活动',
+        fieldOption: {
+            comm_param: {
+                reward: {
+                    name: '可选的奖励: id(;分隔)',
+                    type: 'text',
+                },
+                quest: {
+                    name: '任务',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '任务id',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        cond_type: {
+                            name: '完成条件类型',
+                            type: 'select',
+                            options: {
+                                '1': '1. 完成成就(加入联盟)',
+                                '2': '2. 多人对决借用英雄',
+                                '3': '3. 联盟参加宠物会议',
+                                '4': '4. 联盟参加圆桌会议',
+                                '5': '5. 给盟友赠送礼物',
+                                '6': '6. 联盟商店兑换炼金石'
+                            },
+                            parser: parseInt
+                        },
+                        step: {
+                            name: '完成次数',
+                            type: 'text',
+                            parser: parseInt
+                        }
+                    }
+                }
+            },
+            client_param: {
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
+        }
+    };
+
     // 当前活动类型
     var currentActivityType;
 
     // 语言翻译配置项
     var langFieldOption = {
+        'info.name': {
+            name: '活动名字',
+            type: 'longtext'
+        },
+        'info.icon': {
+            name: '活动图标',
+            type: 'longtext'
+        },
         'info.title': {
             name: '活动标题',
             type: 'longtext'
@@ -1324,10 +1495,6 @@
         'info.detail_desc': {
             name: '详细描述',
             type: 'textarea'
-        },
-        'info.icon': {
-            name: '活动图标',
-            type: 'longtext'
         },
         'info.jump_url': {
             name: '跳转链接',
@@ -1369,6 +1536,14 @@
             options: options.optYesNo,
             parser: parseInt
         },
+        'info.name': {
+            name: '活动名字',
+            type: 'longtext'
+        },
+        'info.icon': {
+            name: '活动图标',
+            type: 'longtext'
+        },
         'info.title': {
             name: '活动标题',
             type: 'longtext'
@@ -1380,10 +1555,6 @@
         'info.desc_detail': {
             name: '详细描述',
             type: 'textarea'
-        },
-		'info.icon': {
-            name: '活动图标',
-            type: 'longtext'
         },
         'info.jump_url': {
             name: '跳转链接',
