@@ -9,7 +9,8 @@ import (
 )
 
 func parseIDStr(src, sep string, out *string) {
-	reg, _ := regexp.Compile("\\d{5}")
+    *out = ""
+	reg, _ := regexp.Compile("\\d{5,}")
 	vStr := reg.FindAllString(src, -1)
 
 	if len(vStr) != 0 {
@@ -89,6 +90,9 @@ func WhiteAdd(c echo.Context) error {
 	}
 
 	parseIDStr(input, "),(", &input)
+    if len(input) == 0 {
+        return ctx.SendResponse("删除白名单用户成功")
+    }
 	sql := "INSERT IGNORE INTO t_whitelist VALUES(" + input + ")"
 	_, err = tx.Exec(sql)
 	if err != nil {
@@ -128,6 +132,9 @@ func WhiteDel(c echo.Context) error {
 	}
 
 	parseIDStr(input, ",", &input)
+    if len(input) == 0 {
+        return ctx.SendResponse("删除白名单用户成功")
+    }
 	sql := "DELETE FROM t_whitelist WHERE account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
@@ -168,6 +175,9 @@ func WhiteReplace(c echo.Context) error {
 	}
 
 	parseIDStr(input, "),(", &input)
+    if len(input) == 0 {
+        return ctx.SendResponse("删除白名单用户成功")
+    }
 	sql := "INSERT IGNORE INTO t_whitelist VALUES(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
