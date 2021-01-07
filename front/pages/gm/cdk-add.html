@@ -152,6 +152,13 @@
         },
       });
 
+      form.verify({
+        cdkname: [
+          /^[A-Za-z\d]{1,20}$/
+          ,'cdk必须1到20位的字母或者数字'
+        ]
+      });
+
       okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, all: true}, false).done(function (response) {
         zoneSelect.update({
           data: response.data["game"],
@@ -196,13 +203,6 @@
           $('#rewardinfo').removeClass('layui-hide');
           $('textarea[name=sRewardInfo]').attr('lay-verify', 'required');
         }
-      });
-
-      form.verify({
-        cdkname: [
-          /^[A-Za-z\d]{1,20}$/
-          ,'cdk必须1到20位的字母或者数字'
-        ]
       });
 
       //监听提交
