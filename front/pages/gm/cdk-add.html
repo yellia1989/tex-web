@@ -14,7 +14,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">名称</label>
         <div class="layui-input-block">
-          <input type="text" name="sCDKeyName" class="layui-input" lay-verify="required|cdkname" lay-verType="tips">
+          <input type="text" name="sCDKeyName" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
@@ -40,8 +40,8 @@
       <div class="layui-form-item layui-hide" id="commoncdk">
         <label class="layui-form-label">指定CDK</label>
         <div class="layui-input-block">
-          <input type="text" name="sCommonCdk" class="layui-input">
-        </div>
+          <input type="text" name="sCommonCdk" class="layui-input" lay-verify="cdksize">
+         </div>
       </div>
 
       <div class="layui-form-item">
@@ -153,7 +153,7 @@
       });
 
       form.verify({
-        cdkname: [
+        cdksize: [
           /^[A-Za-z\d]{1,10}$/
           ,'cdk必须1到10位的字母或者数字'
         ]
