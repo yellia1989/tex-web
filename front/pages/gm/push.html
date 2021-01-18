@@ -39,12 +39,8 @@
           { type: "checkbox", title: "序号", fixed: 'left' },
           { field: "iTaskId", title: "任务ID", width: 80 },
           { field: "sTaskName", title: "任务名字", width: 200 },
-          { field: "iAddTime", title: "开始时间", width: 160, templet: function (d) {
-            return okUtils.dateFormat(new Date(d.iAddTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-          }},
-          { field: "iFinishTime", title: "完成时间", width: 160, templet: function (d) {
-            return okUtils.dateFormat(new Date(d.iFinishTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-          }},
+          { field: "sAddTime", title: "开始时间", width: 160 },
+          { field: "sFinishTime", title: "完成时间", width: 160 },
           { field: "iStatus", title: "状态", width: 80, templet: function (d) {
             let ret = '';
             switch (d.iStatus) {

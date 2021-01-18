@@ -1,13 +1,21 @@
 package gm
 
 import (
+    "time"
 	"strconv"
     "strings"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/cfg"
+	"github.com/yellia1989/tex-web/backend/common"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
+
+type _cdkConfig struct {
+    rpc.CDKeyConfig
+    BeginTime string `json:"sBeginTime"`
+    EndTime string `json:"sEndTime"`
+};
 
 func CDKList(c echo.Context) error {
 	ctx := c.(*mid.Context)
@@ -30,7 +38,28 @@ func CDKList(c echo.Context) error {
 		return err
 	}
 
-	return ctx.SendArray(vCDK, int(l))
+    vCDK2 := make([]_cdkConfig,len(vCDK))
+    for k,v := range vCDK {
+        vCDK2[k].SProjectId = v.SProjectId
+        vCDK2[k].ICDKeyId = v.ICDKeyId
+        vCDK2[k].SCDKeyName = v.SCDKeyName
+        vCDK2[k].ICDKeyNum = v.ICDKeyNum
+        vCDK2[k].ICreateMode = v.ICreateMode
+        vCDK2[k].IDeliveryMode = v.IDeliveryMode
+        vCDK2[k].BeginTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(int64(v.IBeginTime),0))
+        vCDK2[k].EndTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(int64(v.IEndTime),0))
+        vCDK2[k].SRewardInfo = v.SRewardInfo
+        vCDK2[k].IExchangeLimit = v.IExchangeLimit
+        vCDK2[k].SZoneLimit = v.SZoneLimit
+        vCDK2[k].SCustomLimit = v.SCustomLimit
+        vCDK2[k].IGeneratedNum = v.IGeneratedNum
+        vCDK2[k].IExchangedNum = v.IExchangedNum
+        vCDK2[k].ICommon = v.ICommon
+        vCDK2[k].SCommonCdk = v.SCommonCdk
+        vCDK2[k].IActive = v.IActive
+    }
+
+	return ctx.SendArray(vCDK2, int(l))
 }
 
 func CDKAdd(c echo.Context) error {
@@ -40,15 +69,18 @@ func CDKAdd(c echo.Context) error {
 	if err := ctx.Bind(&CDKey); err != nil {
 		return err
 	}
-    CDKey.ICreateMode = 1
-    CDKey.IDeliveryMode = 1
 
-	sBeginTime := ctx.FormValue("iBeginTime")
-	sEndTime := ctx.FormValue("iEndTime")
+	sBeginTime := ctx.FormValue("sBeginTime")
+	sEndTime := ctx.FormValue("sEndTime")
 
 	if sBeginTime == "" || sEndTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
+
+    CDKey.ICreateMode = 1
+    CDKey.IDeliveryMode = 1
+    CDKey.IBeginTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sBeginTime).Unix())
+    CDKey.IEndTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sEndTime).Unix())
 
     comm := cfg.Comm
 
@@ -83,6 +115,16 @@ func CDKUpdate(c echo.Context) error {
 	if err := ctx.Bind(&CDKey); err != nil {
 		return err
 	}
+
+	sBeginTime := ctx.FormValue("sBeginTime")
+	sEndTime := ctx.FormValue("sEndTime")
+
+	if sBeginTime == "" || sEndTime == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+    CDKey.IBeginTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sBeginTime).Unix())
+    CDKey.IEndTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sEndTime).Unix())
 
     comm := cfg.Comm
 
