@@ -67,3 +67,7 @@ func ParseTimeInLocal(layout string, v string) time.Time {
     t,_ := time.ParseInLocation(layout, v, time.Local)
     return t
 }
+
+func FormatTimeInLocal(layout string, t time.Time) string {
+    return t.Local().Format(layout)
+}
