@@ -74,6 +74,9 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
 	group.POST("/gm/whitelist/del", gm.WhiteDel)    // 删除白名单用户
 	group.POST("/gm/whitelist/replace", gm.WhiteReplace)    // 覆盖白名单用户
+	group.GET("/gm/whitelist/tmplist", gm.TmpWhiteList)   // 获取白名单列表
+	group.POST("/gm/whitelist/addtmp", gm.WhiteAddTmp)    // 增加白名单用户
+	group.POST("/gm/whitelist/deltmp", gm.WhiteDelTmp)    // 删除白名单用户
 
 	group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
 
