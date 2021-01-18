@@ -3,8 +3,10 @@ package gm
 import (
 	"regexp"
 	"strings"
+    "time"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/cfg"
+    "github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -59,7 +61,7 @@ func WhiteList(c echo.Context) error {
 
 	if err := tx.Commit(); err != nil {
 		return err
-	}Z
+	}
 
 	return ctx.SendResponse(strings.Join(vStr, ";"))
 }
@@ -221,13 +223,13 @@ func TmpWhiteList(c echo.Context) error {
 	for rows.Next() {
 		var id string
 		var delst string
-		err = rows.Scan(&id,&delTime)
+		err = rows.Scan(&id,&delst)
 		if err != nil {
 			return err
 		}
 		delt := common.ParseTimeInLocal("2006-01-02 15:04:05", delst)
 		now := time.Now()
-		if now.after(delt) {
+		if now.After(delt) {
 			_, err = tx.Exec("DELETE FROM t_whitelist_tmp WHERE account_id IN (?)", id)
 			if err != nil {
 				return err
@@ -299,7 +301,7 @@ func WhiteAddTmp(c echo.Context) error {
 	return ctx.SendResponse("添加临时白名单用户成功")
 }
 
-func WhiteDel(c echo.Context) error {
+func WhiteDelTmp(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
 	input := ctx.FormValue("input")
