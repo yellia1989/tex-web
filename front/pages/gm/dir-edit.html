@@ -29,7 +29,7 @@
         <div class="layui-inline">
           <label class="layui-form-label">开服时间</label>
           <div class="layui-input-inline">
-            <input type="text" name="iPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off"
+            <input type="text" name="sPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off"
               class="layui-input" lay-verify="required|datetime" lay-verType="tips">
           </div>
         </div>
@@ -114,7 +114,7 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      laydate.render({ elem: "#iPublishTime", type: "datetime", value: new Date(parent.zonedata.iPublishTime * 1000) });
+      laydate.render({ elem: "#iPublishTime", type: "datetime", value: parent.zonedata.sPublishTime});
 
 		  okUtils.ajax("/api/gm/channel/list", "get", {page:1, limit: 1000}, false).done(function (response) {
         let channelHtml = '';
@@ -164,7 +164,6 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
-        data.field.iPublishTime = Date.parse(data.field.iPublishTime) / 1000;
         okUtils.ajax("/api/gm/zone/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

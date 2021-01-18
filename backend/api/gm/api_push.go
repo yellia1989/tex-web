@@ -11,6 +11,12 @@ import (
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
+type _pushTaskInfo struct {
+    rpc.PushTaskInfo
+    SAddTime string `json:"sAddTime"`
+    SFinishTime string `json:"sFinishTime"`
+}
+
 func PushList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
@@ -27,8 +33,22 @@ func PushList(c echo.Context) error {
 		return err
 	}
 
-	vPage := common.GetPage(vTask, page, limit)
-	return ctx.SendArray(vPage, len(vTask))
+    vTask2 := make([]_pushTaskInfo, len(vTask))
+    for k,v := range vTask {
+        vTask2[k].ITaskId = v.ITaskId
+        vTask2[k].STaskName = v.STaskName
+        vTask2[k].StPayload = v.StPayload
+        vTask2[k].IStatus = v.IStatus
+        vTask2[k].IResolveTotalNum = v.IResolveTotalNum
+        vTask2[k].IResolveDoneNum = v.IResolveDoneNum
+        vTask2[k].IResolveFailNum = v.IResolveFailNum
+        vTask2[k].IPushTotalNum = v.IPushTotalNum
+        vTask2[k].IPushDoneNum = v.IPushDoneNum
+        vTask2[k].IPushFailNum = v.IPushFailNum
+    }
+
+	vPage := common.GetPage(vTask2, page, limit)
+	return ctx.SendArray(vPage, len(vTask2))
 }
 
 func PushTestSend(c echo.Context) error {

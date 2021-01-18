@@ -105,15 +105,7 @@
               return ret;
             }
           },
-          {
-            field: "iPublishTime", title: "开区时间", width: 170, templet: function (d) {
-              let ret = okUtils.dateFormat(new Date(d.iPublishTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-              if (new Date().getTime() < d.iPublishTime * 1000) {
-                ret = '<span class="layui-btn layui-btn-warm layui-btn-xs">' + ret + '</span>';
-              }
-              return ret;
-            }
-          },
+          { field: "sPublishTime", title: "开区时间", width: 170 },
           { field: "iMaxNum", title: "最大创角", width: 90 },
           { field: "iCurNum", title: "当前创角", width: 90 },
           { field: "iMaxOnline", title: "最大在线", width: 90 },
