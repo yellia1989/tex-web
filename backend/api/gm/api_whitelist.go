@@ -227,13 +227,13 @@ func TmpWhiteList(c echo.Context) error {
 		if err != nil {
 			return err
 		}
+
+		if delst == "" {
+			continue
+		}
 		delt := common.ParseTimeInLocal("2006-01-02 15:04:05", delst)
 		now := time.Now()
 		if now.After(delt) {
-			_, err = tx.Exec("DELETE FROM t_whitelist_tmp WHERE account_id IN (?)", id)
-			if err != nil {
-				return err
-			}
 			continue
 		}
 		vStr = append(vStr, id)
@@ -288,7 +288,7 @@ func WhiteAddTmp(c echo.Context) error {
 	
 	value := strings.Join(vStr,seq)
 	parseIDStr(input, "),(", &input)
-	sql := "INSERT IGNORE t_whitelist_tmp(account_id,del_time) VALUES(" + value + ");"
+	sql := "INSERT IGNORE t_whitelist(account_id,del_time) VALUES(" + value + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
@@ -299,46 +299,4 @@ func WhiteAddTmp(c echo.Context) error {
 	}
 
 	return ctx.SendResponse("添加临时白名单用户成功")
-}
-
-func WhiteDelTmp(c echo.Context) error {
-	ctx := c.(*mid.Context)
-
-	input := ctx.FormValue("input")
-
-	if input == "" {
-		return ctx.SendError(-1, "参数非法")
-	}
-
-	db := cfg.GameDb
-	if db == nil {
-		return ctx.SendError(-1, "连接数据库失败")
-	}
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_loginserver")
-	if err != nil {
-		return err
-	}
-
-	parseIDStr(input, ",", &input)
-    if len(input) == 0 {
-        return ctx.SendResponse("删除临时白名单用户成功")
-    }
-	sql := "DELETE FROM t_whitelist_tmp WHERE account_id IN(" + input + ");"
-	_, err = tx.Exec(sql)
-	if err != nil {
-		return err
-	}
-
-    if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	return ctx.SendResponse("删除临时白名单用户成功")
 }
