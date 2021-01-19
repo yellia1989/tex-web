@@ -62,7 +62,7 @@ func MailSendLog(c echo.Context) error {
     limitrow := strconv.Itoa(limit)
     sql := "SELECT _rid as id,mailid,sendtime,templateid,itemid,itemnum FROM send_mail"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
-    sql += " ORDER BY _rid desc"
+    sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
     c.Logger().Debug(sql)
@@ -120,7 +120,7 @@ func MailRevLog(c echo.Context) error {
     limitrow := strconv.Itoa(limit)
     sql := "SELECT _rid as id,mailid,time,itemid,itemnum FROM rcv_mail"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
-    sql += " ORDER BY _rid desc"
+    sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
     c.Logger().Debug(sql)
@@ -178,7 +178,7 @@ func MailDelLog(c echo.Context) error {
     limitrow := strconv.Itoa(limit)
     sql := "SELECT _rid as id,mailid,time FROM del_mail"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
-    sql += " ORDER BY _rid desc"
+    sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
     c.Logger().Debug(sql)
