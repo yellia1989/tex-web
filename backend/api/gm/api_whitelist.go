@@ -295,7 +295,7 @@ func WhiteAddTmp(c echo.Context) error {
 
     sql := "INSERT IGNORE t_whitelist(account_id,del_time) VALUES(?,?);"
     for _, sId := range vStr {
-        _, err = tx.Exec(sql,delst,sId)
+        _, err = tx.Exec(sql,sId,delst)
         if err != nil {
             return err
         }
