@@ -71,7 +71,7 @@ func main() {
         fmt.Printf("%s", err)
         os.Exit(-1)
     }
-    
+
     debug := cfg.Debug
     framework_debug := cfg.FrameworkDebug
 
@@ -106,6 +106,10 @@ func main() {
     if framework_debug {
         log.SetFrameworkLevel(log.DEBUG)
     }
+
+    go func() {                                                                                                                                                        
+        log.Debug(http.ListenAndServe(":16060", nil))
+    }()
 
     stat.InitCondition()
 
