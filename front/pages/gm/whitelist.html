@@ -91,6 +91,9 @@
             $.get("/api/gm/whitelist/list", function (data) {
               $("div[name='list']").text(data.data);
             });
+            $.get("/api/gm/whitelist/tmplist", function (data) {
+              $("div[name='tmplist']").text(data.data);
+            });
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
         }).fail(function (error) {
@@ -120,6 +123,9 @@
           okLayer.greenTickMsg(response.data, function () {
             $.get("/api/gm/whitelist/list", function (data) {
               $("div[name='list']").text(data.data);
+            });
+            $.get("/api/gm/whitelist/tmplist", function (data) {
+              $("div[name='tmplist']").text(data.data);
             });
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });

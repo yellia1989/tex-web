@@ -101,7 +101,7 @@ func WhiteAdd(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "INSERT IGNORE INTO t_whitelist(account_id) VALUES(" + input + ");"
+	sql := "REPLACE INTO t_whitelist(account_id) VALUES(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
@@ -176,7 +176,6 @@ func WhiteReplace(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
 	_, err = tx.Exec("DELETE FROM t_whitelist WHERE del_time IS NULL")
 	if err != nil {
 		return err
@@ -186,7 +185,7 @@ func WhiteReplace(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "INSERT IGNORE INTO t_whitelist(account_id) VALUES(" + input + ");"
+	sql := "REPLACE INTO t_whitelist(account_id) VALUES(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
