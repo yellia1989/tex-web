@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-	"database/sql"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
@@ -40,7 +39,7 @@ func WhiteList(c echo.Context) error {
 		return err
 	}
 
-	rows, err := tx.Query("SELECT account_id,del_time FROM t_whitelist")
+	rows, err := tx.Query("SELECT account_id FROM t_whitelist WHERE del_time = ''")
 	if err != nil {
 		return err
 	}
@@ -49,15 +48,11 @@ func WhiteList(c echo.Context) error {
 	var vStr []string
 	for rows.Next() {
 		var id string
-		var delNilst sql.NullString
-		err = rows.Scan(&id, &delNilst)
+		err = rows.Scan(&id)
 		if err != nil {
 			return err
 		}
 
-		if delNilst.Valid {
-			continue
-		}
 		vStr = append(vStr, id)
 	}
 
@@ -141,9 +136,9 @@ func WhiteDel(c echo.Context) error {
 
 	parseIDStr(input, ",", &input)
 	if len(input) == 0 {
-		return ctx.SendResponse("删除白名单用户成功")
+		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "DELETE FROM t_whitelist WHERE del_time IS NULL AND account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE del_time = '' AND account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
@@ -176,7 +171,7 @@ func WhiteReplace(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("DELETE FROM t_whitelist WHERE del_time IS NULL")
+	_, err = tx.Exec("DELETE FROM t_whitelist WHERE del_time = ''")
 	if err != nil {
 		return err
 	}
@@ -218,7 +213,7 @@ func TmpWhiteList(c echo.Context) error {
 		return err
 	}
 
-	rows, err := tx.Query("SELECT account_id,del_time FROM t_whitelist")
+	rows, err := tx.Query("SELECT account_id,del_time FROM t_whitelist WHERE del_time != ''")
 	if err != nil {
 		return err
 	}
@@ -227,17 +222,11 @@ func TmpWhiteList(c echo.Context) error {
 	var vStr []string
 	for rows.Next() {
 		var id string
-		var delNilst sql.NullString
-		err = rows.Scan(&id,&delNilst)
+		var delst string
+		err = rows.Scan(&id,&delst)
 		if err != nil {
 			return err
 		}
-
-		if !delNilst.Valid {
-			continue
-		}
-
-		delst := delNilst.String
 
 		delt := common.ParseTimeInLocal("2006-01-02 15:04:05", delst)
 		now := time.Now()
@@ -336,7 +325,7 @@ func WhiteDelTmp(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "DELETE FROM t_whitelist WHERE del_time IS NOT NULL AND account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE del_time != '' AND account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
