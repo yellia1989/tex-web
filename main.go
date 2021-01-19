@@ -5,6 +5,7 @@ import (
     "fmt"
     "strings"
     "net/http"
+    _ "net/http/pprof"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
