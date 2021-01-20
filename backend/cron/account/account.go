@@ -9,16 +9,29 @@ import (
     "github.com/yellia1989/tex-web/backend/cfg"
 )
 
+var mu sync.Mutex
 var ctx context.Context
 var conn *dsql.Conn
-var accounts gcache.Cache
-var mu sync.Mutex
 
-func createNewConn() (err error) {
+var accounts gcache.Cache
+
+func checkConn() (err error) {
     if conn != nil {
-        conn.Close()
+        err = conn.PingContext(ctx)
+        if err != nil {
+            conn.Close()
+            conn = nil
+        } else {
+            return
+        }
     }
-    conn, err = cfg.StatDb.Conn(ctx)
+
+    if conn == nil {
+        conn, err = cfg.StatDb.Conn(ctx)
+        if err != nil {
+            return
+        }
+    }
     return
 }
 
@@ -35,17 +48,10 @@ func init() {
             mu.Lock()
             defer mu.Unlock()
 
-            if conn == nil {
-                if err := createNewConn(); err != nil {
-                    return nil, err
-                }
+            if err := checkConn(); err != nil {
+                return nil, err
             }
 
-            if err := conn.PingContext(ctx); err != nil {
-                if err := createNewConn(); err != nil {
-                    return nil, err
-                }
-            }
             a := Account{}
             if err := conn.QueryRowContext(ctx, "SELECT id,accountid FROM account WHERE accountid=?", key).Scan(&a.Id, &a.AccountId); err != nil {
                 return nil, err
@@ -59,7 +65,7 @@ func Get(accountid uint32) *Account {
     a, err := accounts.Get(accountid)
     if a == nil {
         if err != dsql.ErrNoRows {
-            log.Errorf("get account err: %s", err.Error())
+            log.Errorf("cron [account] get account err: %s", err.Error())
         }
         return nil
     }

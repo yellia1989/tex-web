@@ -248,6 +248,7 @@ func checkConn() {
     if conn != nil {
         err = conn.PingContext(ctx)
         if err != nil {
+            conn.Close()
             conn = nil
         } else {
             return
