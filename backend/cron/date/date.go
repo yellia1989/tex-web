@@ -12,9 +12,10 @@ import (
     "github.com/yellia1989/tex-go/tools/log"
 )
 
-var mu sync.Mutex
 var ctx context.Context
+var mu sync.Mutex
 var conn *dsql.Conn
+
 var dates gcache.Cache
 var dateMinError = errors.New("日期小于最小日期")
 var dateMax time.Time
@@ -25,11 +26,22 @@ type Date struct {
     Ymd uint32
 }
 
-func createNewConn() (err error) {
+func checkConn() (err error) {
     if conn != nil {
-        conn.Close()
+        err = conn.PingContext(ctx)
+        if err != nil {
+            conn = nil
+        } else {
+            return
+        }
     }
-    conn, err = cfg.StatDb.Conn(ctx)
+
+    if conn == nil {
+        conn, err = cfg.StatDb.Conn(ctx)
+        if err != nil {
+            return
+        }
+    }
     return
 }
 
@@ -46,18 +58,10 @@ func init() {
             mu.Lock()
             defer mu.Unlock()
 
-            if conn == nil {
-                err := createNewConn()
-                if err != nil {
-                    return nil, err
-                }
+            if err := checkConn(); err != nil {
+                return nil, err
             }
-            if err := conn.PingContext(ctx); err != nil {
-                err := createNewConn()
-                if err != nil {
-                    return nil, err
-                }
-            }
+
             d := Date{}
             if err := conn.QueryRowContext(ctx, "SELECT id,yyyymmdd,ymd FROM date WHERE ymd=?", key).Scan(&d.Id, &d.Yyyymmdd, &d.Ymd); err != nil {
                 return nil, err
@@ -69,29 +73,18 @@ func init() {
 
 func Cron(now time.Time) {
     mu.Lock()
-    if conn == nil {
-        if err := createNewConn(); err != nil {
-            mu.Unlock()
-            log.Errorf("create date conn err: %s", err.Error())
-            return
-        }
+
+    if err := checkConn(); err != nil {
+        mu.Unlock()
+        log.Errorf("cron [date] check conn err: %s", err.Error())
+        return
     }
-    mu.Unlock()
 
     if dateMax.IsZero() {
-        mu.Lock()
-        if err := conn.PingContext(ctx); err != nil {
-            if err := createNewConn(); err != nil {
-                mu.Unlock()
-                log.Errorf("create date conn err: %s", err.Error())
-                return
-            }
-        }
-        mu.Unlock()
-
         var t dsql.NullInt32
         if err := conn.QueryRowContext(ctx, "SELECT max(ymd) FROM date").Scan(&t); err != nil {
-            log.Errorf("date cron: %s", err.Error())
+            mu.Unlock()
+            log.Errorf("cron [date] query err: %s", err.Error())
             return
         }
         if t.Valid {
@@ -100,6 +93,7 @@ func Cron(now time.Time) {
             dateMax = cfg.LogDateMin
         }
     }
+    mu.Unlock()
 
     dateFrom := dateMax
     dateTo := now
@@ -111,7 +105,7 @@ func Cron(now time.Time) {
         }
 
         if err != dsql.ErrNoRows {
-            log.Errorf("get date err: %s", err.Error())
+            log.Errorf("cron [date] get cache date err: %s", err.Error())
             return
         }
 
@@ -124,12 +118,20 @@ func Cron(now time.Time) {
             week = 7
         }
 
-        sql := "INSERT INTO `date`(yyyymmdd,`desc`,`year`,`month`,`day`,`week`,ymd) VALUES(?,'',?,?,?,?,?)"
-        if _, err := conn.ExecContext(ctx, sql, yyyymmdd, year, month, day, week, ymd); err != nil {
-            log.Errorf("create date err: %s", err.Error())
+        mu.Lock()
+        if err := checkConn(); err != nil {
+            mu.Unlock()
+            log.Errorf("cron [date] check conn, err: %s", err.Error())
             return
         }
-        log.Debugf("create date: %s", yyyymmdd)
+        sql := "INSERT INTO `date`(yyyymmdd,`desc`,`year`,`month`,`day`,`week`,ymd) VALUES(?,'',?,?,?,?,?)"
+        if _, err := conn.ExecContext(ctx, sql, yyyymmdd, year, month, day, week, ymd); err != nil {
+            mu.Unlock()
+            log.Errorf("cron [date] create date err: %s", err.Error())
+            return
+        }
+        mu.Unlock()
+        log.Debugf("cron [date] create date: %s", yyyymmdd)
     }
 }
 
@@ -137,7 +139,7 @@ func Get(t time.Time) *Date {
     d, err := dates.Get(common.Atou32(t.Format("20060102")))
     if d == nil {
         if err != dsql.ErrNoRows {
-            log.Errorf("get date err: %s", err.Error())
+            log.Errorf("cron [date] get cache date err: %s", err.Error())
         }
         return nil
     }

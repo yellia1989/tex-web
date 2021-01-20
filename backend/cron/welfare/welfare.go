@@ -245,17 +245,20 @@ func init() {
 
 func checkConn() {
     var err error
+    if conn != nil {
+        err = conn.PingContext(ctx)
+        if err != nil {
+            conn = nil
+        } else {
+            return
+        }
+    }
 
     if conn == nil {
         conn, err = cfg.StatDb.Conn(ctx)
         if err != nil {
             panic(fmt.Sprintf("cron [welfare] create conn err: %s", err.Error()))
         }
-    }
-
-    err = conn.PingContext(ctx)
-    if err != nil {
-        panic(fmt.Sprintf("cron [welfare] ping conn err: %s", err.Error()))
     }
 }
 
