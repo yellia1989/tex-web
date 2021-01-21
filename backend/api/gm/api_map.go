@@ -245,8 +245,19 @@ func GameDb(zoneid uint32) (error, string) {
 		return fmt.Errorf("连接数据库失败"),""
 	}
 
+	tx, err := db.Begin()
+	if err != nil {
+		return err,""
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+		return err,""
+	}
+
 	sql := "SELECT mapid,zoneids FROM t_maplist"
-    rows, err := db.Query(sql)
+    rows, err := tx.Query(sql)
     if err != nil {
         return err,""
     }
