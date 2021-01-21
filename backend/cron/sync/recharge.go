@@ -21,15 +21,11 @@ type recharge struct {
 }
 
 func (t *recharge) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
-    if err := to.PingContext(ctx); err != nil {
-        return fmt.Errorf("sync recharge ping err: %s", err.Error())
-    }
-
     if !t.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='recharge' and zoneid=?", zoneid).Scan(&rid); err != nil {
             if err != dsql.ErrNoRows {
-                return fmt.Errorf("sync recharge scan err: %s", err.Error())
+                return fmt.Errorf("cron [sync][recharge] scan err: %s, zoneid: %d", err.Error(), zoneid)
             }
         }
         t.rid = uint32(rid.Int64)
@@ -38,17 +34,13 @@ func (t *recharge) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk 
 
     if t.buff.Len() > 0 {
         if err := t.save(to, zoneid); err != nil {
-            return fmt.Errorf("sync recharge save err: %s", err.Error())
+            return fmt.Errorf("cron [sync][recharge] save err: %s, zoneid: %d", err.Error(), zoneid)
         }
-    }
-
-    if err := from.PingContext(ctx); err != nil {
-        return fmt.Errorf("sync recharge ping err: %s", err.Error())
     }
 
     rows, err := from.QueryContext(ctx, "SELECT _rid,roleid,time,usercreatetime,productid,price,moneytotal FROM iap_recharge WHERE _rid > ? order by _rid limit 10000", t.rid)
     if err != nil {
-        return fmt.Errorf("sync recharge query err: %s", err.Error())
+        return fmt.Errorf("cron [sync][recharge] query err: %s, zoneid: %d", err.Error(), zoneid)
     }
     defer rows.Close()
 
@@ -81,18 +73,15 @@ func (t *recharge) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk 
         account := acc.Get(roleid)
         if account == nil {
             if isAccountMissed(regt) {
-                // 日志丢失了
-                log.Errorf("account create log missed, accountid: %d, time: %s", roleid, regst)
+                log.Errorf("cron [sync][recharge] can't find account, accountid: %d", roleid)
                 continue
             }
-            // 账号还没准备好
             return nil
         }
         r := rrole.Get(zoneidFk, account.Id)
         if r == nil {
             if isRoleMissed(regt) {
-                // 日志丢失了
-                log.Errorf("role create log missed, zoneid: %d, roleid: %d, time: %s", zoneid, roleid, regst)
+                log.Errorf("cron [sync][recharge] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
                 continue
             }
             return nil
@@ -126,11 +115,11 @@ func (t *recharge) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk 
     }
 
     if err := t.save(to, zoneid); err != nil {
-        return fmt.Errorf("sync recharge save err: %s", err.Error())
+        return fmt.Errorf("cron [sync][recharge] save err: %s, zoneid: %d", err.Error(), zoneid)
     }
     t.rid = _rid
 
-    log.Debugf("sync recharge rid: %d, zoneid: %d", t.rid, zoneid)
+    log.Debugf("cron [sync][recharge] rid: %d, zoneid: %d", t.rid, zoneid)
 
     return nil
 }
@@ -148,17 +137,17 @@ func (t *recharge) save(to *dsql.Conn, zoneid uint32) error {
 
     var result dsql.Result
     if result, err = tx.ExecContext(ctx, t.buff.String()); err != nil {
-        return fmt.Errorf("sync recharge sql: %s, err: %s", t.buff.String(), err.Error())
+        return fmt.Errorf("exec err: %s, sql: %s", err.Error(), t.buff.String())
     }
 
     if err := tx.Commit(); err != nil {
-        return fmt.Errorf("sync recharge sql: %s, err: %s", t.buff.String(), err.Error())
+        return fmt.Errorf("commit err: %s, sql: %s", err.Error(), t.buff.String())
     }
 
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("sync recharge cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, t.rows, rowsAffected, zoneid)
+    log.Debugf("cron [sync][recharge] cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, t.rows, rowsAffected, zoneid)
 
     t.buff.Reset()
     t.rows = 0

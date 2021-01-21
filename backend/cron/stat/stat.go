@@ -22,14 +22,30 @@ func init() {
     ctx = context.Background()
 }
 
-func Cron(now time.Time) {
-    if conn2 == nil {
-        var err error
-        conn2, err = cfg.StatDb.Conn(ctx)
+func checkConn2() (err error) {
+    if conn2 != nil {
+        err = conn2.PingContext(ctx)
         if err != nil {
-            log.Errorf("create stat conn err: %s", err.Error())
+            conn2.Close()
+            conn2 = nil
+        } else {
             return
         }
+    }
+
+    if conn2 == nil {
+        conn2, err = cfg.StatDb.Conn(ctx)
+        if err != nil {
+            return
+        }
+    }
+    return
+}
+
+func Cron(now time.Time) {
+    if err := checkConn2(); err != nil {
+        log.Errorf("cron [stat] check conn err: %s", err.Error())
+        return
     }
 
     // 初始化进度
@@ -37,7 +53,7 @@ func Cron(now time.Time) {
         var rid dsql.NullInt64
         if err := conn2.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='role_login' and zoneid=0").Scan(&rid); err != nil {
             if err != dsql.ErrNoRows {
-                log.Errorf("stat scan err: %s", err.Error())
+                log.Errorf("cron [stat] role_login scan err: %s", err.Error())
                 return
             }
         }
@@ -46,7 +62,7 @@ func Cron(now time.Time) {
         var rid2 dsql.NullInt64
         if err := conn2.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='role_recharge' and zoneid=0").Scan(&rid2); err != nil {
             if err != dsql.ErrNoRows {
-                log.Errorf("stat scan err: %s", err.Error())
+                log.Errorf("cron [stat] role_recharge scan err: %s", err.Error())
                 return
             }
         }
@@ -57,7 +73,7 @@ func Cron(now time.Time) {
     if buff.Len() > 0 {
         //上次的进度没有同步完
         if err := save(); err != nil {
-            log.Errorf("stat role save err: %s", err.Error())
+            log.Errorf("cron [stat] save err: %s", err.Error())
             return
         }
     }
@@ -70,13 +86,13 @@ func Cron(now time.Time) {
     var tmp_loginrid uint32
     rows, err := conn2.QueryContext(ctx, "SELECT rid,zoneid_fk,accountid_fk,date_fk FROM login WHERE rid>? order by rid limit 10000", loginRid)
     if err != nil {
-        log.Errorf("stat query err: %s", err.Error())
+        log.Errorf("cron [stat] login query err: %s", err.Error())
         return
     }
     defer rows.Close()
     for rows.Next() {
         if err := rows.Scan(&tmp_loginrid,&zoneid_fk,&accountid_fk,&date_fk); err != nil {
-            log.Errorf("stat scan err: %s", err.Error())
+            log.Errorf("cron [stat] login scan err: %s", err.Error())
             return
         }
 
@@ -92,13 +108,13 @@ func Cron(now time.Time) {
     var money uint32
     rows2, err := conn2.QueryContext(ctx, "SELECT rid,zoneid_fk,accountid_fk,date_fk,money FROM recharge WHERE rid>? order by rid limit 10000", rechargeRid)
     if err != nil {
-        log.Errorf("stat query err: %s", err.Error())
+        log.Errorf("cron [stat] recharge query err: %s", err.Error())
         return
     }
     defer rows2.Close()
     for rows2.Next() {
         if err := rows2.Scan(&tmp_rechargerid,&zoneid_fk,&accountid_fk,&date_fk, &money); err != nil {
-            log.Errorf("stat scan err: %s", err.Error())
+            log.Errorf("cron [stat] recharge scan err: %s", err.Error())
             return
         }
 
@@ -126,7 +142,7 @@ func Cron(now time.Time) {
         buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('role_recharge',0,%d);", tmp_rechargerid))
     }
     if err := save(); err != nil {
-        log.Errorf("stat save err: %s", err.Error())
+        log.Errorf("cron [stat] save err: %s", err.Error())
         return
     }
 
@@ -136,13 +152,14 @@ func Cron(now time.Time) {
     if tmp_rechargerid != 0 {
         rechargeRid = tmp_rechargerid
     }
-    log.Debugf("stat role loginrid:%d, rechargerid:%d", loginRid, rechargeRid)
+    log.Debugf("cron [stat] loginrid:%d, rechargerid:%d", loginRid, rechargeRid)
 }
 
-func save() error {
-    tx, err := conn2.BeginTx(ctx, nil)
-    if err != nil {
-        return err
+func save() (err error) {
+    tx, err2 := conn2.BeginTx(ctx, nil)
+    if err2 != nil {
+        err = fmt.Errorf("begintx err: %s", err2.Error())
+        return
     }
 
     defer tx.Rollback()
@@ -151,21 +168,23 @@ func save() error {
     t1 := time.Now()
 
     var result dsql.Result
-    if result, err = tx.ExecContext(ctx, buff.String()); err != nil {
-        return fmt.Errorf("stat role sql: %s, err: %s", buff.String(), err.Error())
+    if result, err2 = tx.ExecContext(ctx, buff.String()); err2 != nil {
+        err = fmt.Errorf("exec err: %s, sql: %s", err2.Error(), buff.String())
+        return
     }
 
-    if err := tx.Commit(); err != nil {
-        return fmt.Errorf("stat role sql: %s, err: %s", buff.String(), err.Error())
+    if err2 := tx.Commit(); err2 != nil {
+        err = fmt.Errorf("commit err: %s, sql: %s", err2.Error(), buff.String())
+        return
     }
 
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("stat role cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d", t2.Sub(t1).Seconds(), size, row_size, rowsAffected)
+    log.Debugf("cron [stat] save cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d", t2.Sub(t1).Seconds(), size, row_size, rowsAffected)
 
     buff.Reset()
     row_size = 0
 
-    return nil
+    return
 }
