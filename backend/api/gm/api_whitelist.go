@@ -39,7 +39,7 @@ func WhiteList(c echo.Context) error {
 		return err
 	}
 
-	rows, err := tx.Query("SELECT account_id FROM t_whitelist WHERE del_time = ''")
+	rows, err := tx.Query("SELECT account_id FROM t_whitelist WHERE del_time is NULL")
 	if err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func WhiteDel(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "DELETE FROM t_whitelist WHERE del_time = '' AND account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE del_time is NULL AND account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
@@ -171,7 +171,7 @@ func WhiteReplace(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("DELETE FROM t_whitelist WHERE del_time = ''")
+	_, err = tx.Exec("DELETE FROM t_whitelist WHERE del_time is NULL")
 	if err != nil {
 		return err
 	}
@@ -213,7 +213,7 @@ func TmpWhiteList(c echo.Context) error {
 		return err
 	}
 
-	rows, err := tx.Query("SELECT account_id,del_time FROM t_whitelist WHERE del_time != ''")
+	rows, err := tx.Query("SELECT account_id,del_time FROM t_whitelist WHERE del_time is not NULL")
 	if err != nil {
 		return err
 	}
@@ -325,7 +325,7 @@ func WhiteDelTmp(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "DELETE FROM t_whitelist WHERE del_time != '' AND account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE del_time is not NULL AND account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
