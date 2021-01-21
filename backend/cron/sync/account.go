@@ -17,7 +17,7 @@ type account struct {
     init bool   // 是否初始化成功
 }
 
-func (a *account) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
+func (a *account) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !a.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='account' and zoneid=?", zoneid).Scan(&rid); err != nil {

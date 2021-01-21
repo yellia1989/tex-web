@@ -19,7 +19,7 @@ type login struct {
     init bool   // 是否初始化成功
 }
 
-func (l *login) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
+func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !l.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='login' and zoneid=?", zoneid).Scan(&rid); err != nil {

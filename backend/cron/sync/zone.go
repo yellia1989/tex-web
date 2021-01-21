@@ -9,7 +9,7 @@ import (
 )
 
 type tabler interface {
-    sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error
+    sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error
 }
 
 type zone struct {
@@ -19,24 +19,18 @@ type zone struct {
     quit chan bool // 结束标识
     dur time.Duration // 日志同步间隔
     tables []tabler // 需要同步的表
-    fromconn *dsql.Conn
+    fromdb *dsql.DB
     toconn *dsql.Conn
 }
 
 func (z *zone) init() (err error) {
-    var fromdb *dsql.DB
-
     if z.zoneid != 0 {
-        fromdb, err = dsql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/log_zone_%d?multiStatements=true", cfg.LogDbUser, cfg.LogDbPwd, z.dbhost, z.zoneid))
+        z.fromdb, err = dsql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/log_zone_%d?multiStatements=true", cfg.LogDbUser, cfg.LogDbPwd, z.dbhost, z.zoneid))
         if err != nil {
             return
         }
     } else {
-        fromdb = cfg.LogDb
-    }
-    z.fromconn, err = fromdb.Conn(ctx)
-    if err != nil {
-        return
+        z.fromdb = cfg.LogDb
     }
 
     todb := cfg.StatDb
@@ -61,7 +55,7 @@ func (z *zone) init() (err error) {
 }
 
 func (z *zone) checkConn() (err error){
-    err = z.fromconn.PingContext(ctx)
+    err = z.fromdb.PingContext(ctx)
     if err != nil {
         return
     }
@@ -72,8 +66,8 @@ func (z *zone) checkConn() (err error){
 
 func (z *zone) run() {
     defer func() {
-        if z.fromconn != nil {
-            z.fromconn.Close()
+        if z.zoneid != 0 && z.fromdb != nil {
+            z.fromdb.Close()
         }
         if z.toconn != nil {
             z.toconn.Close()
@@ -102,7 +96,7 @@ func (z *zone) run() {
                 return
             }
             for _, t := range z.tables {
-                if err := t.sync(z.fromconn, z.toconn, z.zoneid, z.id); err != nil {
+                if err := t.sync(z.fromdb, z.toconn, z.zoneid, z.id); err != nil {
                     log.Errorf("cron [sync][zone] sync err: %s, zoneid: %d", err.Error(), z.zoneid)
                     return
                 }

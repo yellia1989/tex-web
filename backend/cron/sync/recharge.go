@@ -20,7 +20,7 @@ type recharge struct {
     init bool   // 是否初始化成功
 }
 
-func (t *recharge) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
+func (t *recharge) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !t.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='recharge' and zoneid=?", zoneid).Scan(&rid); err != nil {

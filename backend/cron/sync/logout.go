@@ -19,7 +19,7 @@ type logout struct {
     init bool   // 是否初始化成功
 }
 
-func (l *logout) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
+func (l *logout) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !l.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='logout' and zoneid=?", zoneid).Scan(&rid); err != nil {

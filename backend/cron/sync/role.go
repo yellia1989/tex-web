@@ -19,7 +19,7 @@ type role struct {
     init bool   // 是否初始化成功
 }
 
-func (t *role) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
+func (t *role) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !t.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='account_newrole' and zoneid=0").Scan(&rid); err != nil {
