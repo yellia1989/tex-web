@@ -440,6 +440,14 @@
                 }
             },
             client_param: {
+                every_day_pos: {
+                    name: '每日充值金额隐藏档位',
+                    type: 'text'
+                },
+                total_money_pos: {
+                    name: '累计充值金额隐藏档位',
+                    type: 'text'
+                },
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
