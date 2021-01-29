@@ -1533,6 +1533,10 @@
                 }
             },
             client_param: {
+                show_step: {
+                    name: '隐藏档位',
+                    type: 'text'
+                },
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
