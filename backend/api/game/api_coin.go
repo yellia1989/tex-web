@@ -10,8 +10,8 @@ import (
 type coinlog struct {
     Id uint32 `json:"id"`
     Time string `json:"time"`
-    AddNum uint32 `json:"add_num"`
-    CurNum uint32 `json:"cur_num"`
+    AddNum uint64 `json:"add_num"`
+    CurNum uint64 `json:"cur_num"`
     Action string `json:"action"`
 }
 

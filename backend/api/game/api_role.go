@@ -4,10 +4,12 @@ import (
 	"fmt"
     "strings"
 	"strconv"
+    "database/sql"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
+	"github.com/yellia1989/tex-web/backend/api/gm"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -28,7 +30,17 @@ func RoleList(c echo.Context) error {
     field := ctx.QueryParam("field")
     order := ctx.QueryParam("order")
 
-    db := cfg.GameDb
+    zoneid2, _ := strconv.Atoi(zoneid)
+    err, conn := gm.GameDb(uint32(zoneid2))
+    if err != nil {
+        return err
+    }
+
+    db, err := sql.Open("mysql", conn)
+    if err != nil {
+        return err
+    }
+    defer db.Close()
 
     tx, err := db.Begin()
     if err != nil {

@@ -108,6 +108,7 @@ func Cron(now time.Time) {
                     log.Errorf("cron [zone] add new zone err: %s, zoneid: %d", err.Error(), zoneid)
                     continue
                 }
+
                 mu.Unlock()
                 log.Debugf("cron [zone] add new zone err: %s, zoneid: %d", err.Error(), zoneid)
             } else {
@@ -150,6 +151,7 @@ func Cron(now time.Time) {
                 log.Errorf("cron [zone] check conn err: %s", err.Error())
                 return
             }
+
             if _,err := conn.ExecContext(ctx, sql); err != nil {
                 mu.Unlock()
                 log.Errorf("cron [zone] update err: %s, sql: %s", err.Error(), sql)

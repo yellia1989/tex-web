@@ -6,15 +6,16 @@ struct ChannelAddr
 	0 optional string sChannel;
 	1 optional string sAddress;
 	2 optional string sRes;
+    3 optional string sShopVer;
 };
 
 interface LoginService
 {
-	int addNewChannel(string sChannel, string sAddress, string sRes);
-	int modifyChannel(string sChannel, string sAddress, string sRes);
+	int addNewChannel(string sChannel, string sAddress, string sRes, string sShopVer);
+	int modifyChannel(string sChannel, string sAddress, string sRes, string sShopVer);
 	int delChannel(string sChannel);
 	int getAllChannel(out vector<ChannelAddr> vChannelAddr);
-	int getAddress(string sChannel, out string sAddress, out string sRes);	
+	int getAddress(string sChannel, out string sAddress, out string sRes, out string sShopVer);	
 };
 
 }; 

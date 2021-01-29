@@ -12,6 +12,9 @@ import (
     "github.com/yellia1989/tex-web/backend/common"
 )
 
+// 配置
+var Config *util.Config
+
 // 是否开启调试模式
 var Debug bool
 
@@ -39,8 +42,8 @@ var LogDbUser string
 // 日志数据库连接密码
 var LogDbPwd string
 
-// 游戏数据库
-var GameDb *sql.DB
+// 游戏全局数据库
+var GameGlobalDb *sql.DB
 
 // 统计数据库
 var StatDb *sql.DB
@@ -64,8 +67,11 @@ var StatRmoney uint32
 var StatChannels []string
 
 func ParseCfg(file string) (err error) {
-    cfg := util.NewConfig()
-    cfg.ParseFile(file)
+    if Config == nil {
+        Config = util.NewConfig()
+    }
+    Config.ParseFile(file)
+    cfg := Config
 
     Debug = cfg.GetBool("debug", false)
     FrameworkDebug = cfg.GetBool("framework-debug", false)
@@ -103,13 +109,13 @@ func ParseCfg(file string) (err error) {
         panic(fmt.Sprintf("create log db err: %s", err.Error()))
     }
 
-    gamedb := cfg.GetCfg("gamedb", "")
-    if len(gamedb) == 0 {
-        panic("gamedb required")
+    gameglobaldb := cfg.GetCfg("gameglobaldb", "")
+    if len(gameglobaldb) == 0 {
+        panic("gameglobaldb required")
     }
-    GameDb, err = sql.Open("mysql", gamedb)
+    GameGlobalDb, err = sql.Open("mysql", gameglobaldb)
     if err != nil {
-        panic(fmt.Sprintf("create game db err: %s", err.Error()))
+        panic(fmt.Sprintf("create game global db err: %s", err.Error()))
     }
 
     statdb := cfg.GetCfg("statdb", "")

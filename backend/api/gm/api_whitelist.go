@@ -23,7 +23,7 @@ func parseIDStr(src, sep string, out *string) {
 func WhiteList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -76,7 +76,7 @@ func WhiteAdd(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -118,7 +118,7 @@ func WhiteDel(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -156,7 +156,7 @@ func WhiteReplace(c echo.Context) error {
 
 	input := ctx.FormValue("input")
 
-	db := cfg.GameDb
+    db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -193,11 +193,10 @@ func WhiteReplace(c echo.Context) error {
 	return ctx.SendResponse("覆盖白名单用户成功")
 }
 
-
 func TmpWhiteList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -256,7 +255,7 @@ func WhiteAddTmp(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -305,7 +304,7 @@ func WhiteDelTmp(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
