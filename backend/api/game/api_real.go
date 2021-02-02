@@ -12,12 +12,16 @@ import (
 func realtime(day string, table string) ([]uint32,error) {
     db := cfg.LogDb
 
-    sql := "SELECT time, sum(num) as num FROM realtime_"+table+" WHERE left(time,10)="
+    daytime := common.ParseTimeInLocal("2006-01-02", day)
+    timebegin := daytime.Format("2006-01-02 15:04:05")
+    timeend := daytime.Add(time.Hour*24).Format("2006-01-02 15:04:05")
+
+    sql := "SELECT time, sum(num) as num FROM realtime_"+table+" WHERE "
     if table == "income" {
-        sql = "SELECT time, round(sum(num)/100) as num FROM realtime_"+table+" WHERE left(time,10)="
+        sql = "SELECT time, round(sum(num)/100) as num FROM realtime_"+table+" WHERE "
     }
 
-    sql += "'"+day+"'"
+    sql += " time between '"+ timebegin +"' and '"+ timeend +"'"
     sql += " GROUP BY time ORDER BY time"
 
     log.Debugf("sql: %s", sql)
@@ -40,7 +44,6 @@ func realtime(day string, table string) ([]uint32,error) {
         return nil,err
     }
 
-    daytime := common.ParseTimeInLocal("2006-01-02", day)
     ret := make([]uint32,288)
     for i,_ := range ret {
         t := daytime.Add(time.Duration(i*300)*time.Second).Format("2006-01-02 15:04:05")

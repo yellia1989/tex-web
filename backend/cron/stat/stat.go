@@ -84,7 +84,7 @@ func Cron(now time.Time) {
     var accountid_fk uint32
     var date_fk uint32
     var tmp_loginrid uint32
-    rows, err := conn2.QueryContext(ctx, "SELECT rid,zoneid_fk,accountid_fk,date_fk FROM login WHERE rid>? order by rid limit 10000", loginRid)
+    rows, err := conn2.QueryContext(ctx, "SELECT rid,zoneid_fk,accountid_fk,date_fk FROM login WHERE rid>? order by rid limit 100000", loginRid)
     if err != nil {
         log.Errorf("cron [stat] login query err: %s", err.Error())
         return
@@ -106,7 +106,7 @@ func Cron(now time.Time) {
 
     var tmp_rechargerid uint32
     var money uint32
-    rows2, err := conn2.QueryContext(ctx, "SELECT rid,zoneid_fk,accountid_fk,date_fk,money FROM recharge WHERE rid>? order by rid limit 10000", rechargeRid)
+    rows2, err := conn2.QueryContext(ctx, "SELECT rid,zoneid_fk,accountid_fk,date_fk,money FROM recharge WHERE rid>? order by rid limit 100000", rechargeRid)
     if err != nil {
         log.Errorf("cron [stat] recharge query err: %s", err.Error())
         return
