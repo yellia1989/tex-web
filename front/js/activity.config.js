@@ -1533,8 +1533,12 @@
                 }
             },
             client_param: {
-                show_step: {
-                    name: '隐藏档位',
+                total_people_pos: {
+                    name: '充值人数显示档位',
+                    type: 'text'
+                },
+                total_money_pos: {
+                    name: '充值金额显示档位',
                     type: 'text'
                 },
                 view_sort: {
