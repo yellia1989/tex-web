@@ -24,7 +24,7 @@ func realtime(day string, table string) ([]uint32,error) {
     sql += " time between '"+ timebegin +"' and '"+ timeend +"'"
     sql += " GROUP BY time ORDER BY time"
 
-    log.Debugf("sql: %s", sql)
+    log.Infof("sql: %s", sql)
     rows, err := db.Query(sql)
     if err != nil {
         return nil,err

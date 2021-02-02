@@ -5,6 +5,7 @@ import (
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 type diamondlog struct {
@@ -50,7 +51,7 @@ func DiamondAddLog(c echo.Context) error {
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Debug(sql)
+    log.Infof("sql: %s", sql)
 
     rows, err := db.Query(sql)
     if err != nil {
@@ -107,6 +108,8 @@ func DiamondSubLog(c echo.Context) error {
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
+
+    log.Infof("sql: %s", sql)
 
     rows, err := db.Query(sql)
     if err != nil {

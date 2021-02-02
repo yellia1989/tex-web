@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"github.com/labstack/echo"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 type itemlog struct {
@@ -51,7 +52,7 @@ func ItemAddLog(c echo.Context) error {
     sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Debug(sql)
+	log.Infof("sql: %s", sql)
 
 	rows, err := db.Query(sql)
 	if err != nil {
@@ -109,7 +110,7 @@ func ItemSubLog(c echo.Context) error {
     sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Debug(sql)
+	log.Infof("sql: %s", sql)
 
 	rows, err := db.Query(sql)
 	if err != nil {

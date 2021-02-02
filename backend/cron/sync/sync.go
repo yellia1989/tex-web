@@ -27,7 +27,7 @@ var roleMu sync.Mutex
 func isAccountMissed(t time.Time) bool {
     accountMu.Lock()
     defer accountMu.Unlock()
-    return t.Sub(accountMaxTime) > time.Minute * 10
+    return accountMaxTime.Sub(t) > time.Minute * 10
 }
 
 func UpdateAccountMaxTime(t time.Time) {
@@ -41,7 +41,7 @@ func UpdateAccountMaxTime(t time.Time) {
 func isRoleMissed(t time.Time) bool {
     roleMu.Lock()
     defer roleMu.Unlock()
-    return t.Sub(roleMaxTime) > time.Minute * 10
+    return roleMaxTime.Sub(t) > time.Minute * 10
 }
 
 func UpdateRoleMaxTime(t time.Time) {

@@ -4,6 +4,7 @@ import (
     "fmt"
 	"github.com/labstack/echo"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 type onlineTime struct {
@@ -33,7 +34,7 @@ func OnlineTime(c echo.Context) error {
 	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
 	sql += "WHERE time BETWEEN '"+startTime+"' AND '"+endTime+"' GROUP BY roleid ORDER BY sum(online_time)"
 
-	c.Logger().Debug(sql)
+	log.Infof("sql: %s", sql)
 
 	rows, err := db.Query(sql)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 type _mailSendLog struct {
@@ -65,7 +66,7 @@ func MailSendLog(c echo.Context) error {
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Debug(sql)
+    log.Infof("sql: %s", sql)
 
     rows, err := db.Query(sql)
     if err != nil {
@@ -123,7 +124,7 @@ func MailRevLog(c echo.Context) error {
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Debug(sql)
+    log.Infof("sql: %s", sql)
 
     rows, err := db.Query(sql)
     if err != nil {
@@ -181,7 +182,7 @@ func MailDelLog(c echo.Context) error {
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Debug(sql)
+    c.Logger().Info(sql)
 
     rows, err := db.Query(sql)
     if err != nil {
