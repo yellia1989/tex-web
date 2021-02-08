@@ -38,15 +38,16 @@ func (en BulletinFlag) String() string {
 }
 
 type BulletinDataInfo struct {
-	IBulletinId uint32 `json:"iBulletinId"`
-	STitle      string `json:"sTitle"`
-	SContent    string `json:"sContent"`
-	IFlag       uint32 `json:"iFlag"`
-	SBeginTime  string `json:"sBeginTime"`
-	SEndTime    string `json:"sEndTime"`
-	IDisplay    uint32 `json:"iDisplay"`
-	IType       uint32 `json:"iType"`
-	IPopWindow  uint32 `json:"iPopWindow"`
+	IBulletinId       uint32 `json:"iBulletinId"`
+	STitle            string `json:"sTitle"`
+	SContent          string `json:"sContent"`
+	IFlag             uint32 `json:"iFlag"`
+	SBeginTime        string `json:"sBeginTime"`
+	SEndTime          string `json:"sEndTime"`
+	IDisplay          uint32 `json:"iDisplay"`
+	IType             uint32 `json:"iType"`
+	IPopWindow        uint32 `json:"iPopWindow"`
+	SPopWindowEndTime string `json:"sPopWindowEndTime"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -62,6 +63,7 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	ret.IDisplay = st.IDisplay
 	ret.IType = st.IType
 	ret.IPopWindow = st.IPopWindow
+	ret.SPopWindowEndTime = st.SPopWindowEndTime
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -79,6 +81,7 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iDisplay")+fmt.Sprintf("%v\n", st.IDisplay))
 	util.Tab(buff, t+1, util.Fieldname("iType")+fmt.Sprintf("%v\n", st.IType))
 	util.Tab(buff, t+1, util.Fieldname("iPopWindow")+fmt.Sprintf("%v\n", st.IPopWindow))
+	util.Tab(buff, t+1, util.Fieldname("sPopWindowEndTime")+fmt.Sprintf("%v\n", st.SPopWindowEndTime))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -119,6 +122,10 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.IPopWindow, 9, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SPopWindowEndTime, 10, false)
 	if err != nil {
 		return err
 	}
@@ -209,6 +216,12 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.IPopWindow != 0 {
 		err = p.WriteUint32(9, st.IPopWindow)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SPopWindowEndTime != "" {
+		err = p.WriteString(10, st.SPopWindowEndTime)
 		if err != nil {
 			return err
 		}
