@@ -103,7 +103,7 @@
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
       $("select[name='iType']").val(parent.editdata.iType);
       form.render();
-      
+
       form.on('select(type)', function(data){
         if (data.value == 1) {
           $('#popwindowEndTime').removeClass('layui-hide');
