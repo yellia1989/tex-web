@@ -54,10 +54,17 @@
       <div class="layui-form-item">
         <label class="layui-form-label">是否弹窗显示</label>
         <div class="layui-input-block">
-          <select name="iPopWindow">
+          <select name="iPopWindow" lay-filter="type">
             <option value="0">否</option>
             <option value="1" selected>是</option>
           </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item layui-hide" id="PopWindowEndTime">
+        <label class="layui-form-label">弹窗显示时间</label>
+        <div class="layui-input-block">
+          <input type="text" name="sPopWindowEndTime" id="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
@@ -92,6 +99,17 @@
       });
       laydate.render({
         elem: "#iEndTime", type: "datetime"
+      });
+
+      form.on('select(type)', function(data){
+        if (data.value == 1) {
+          $('#popwindowEndTime').removeClass('layui-hide');
+          $('input[name=sPopWindowEndTime]').val('');
+          $('input[name=sPopWindowEndTime]').attr("lay-verify", "required|datatime");
+        } else {
+          $('#popwindowEndTime').addClass('layui-hide');
+          $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
+        }
       });
 
       //监听提交
