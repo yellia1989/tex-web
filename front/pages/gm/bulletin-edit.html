@@ -60,10 +60,10 @@
         </div>
       </div>
 
-      <div class="layui-form-item layui-hide" id="PopWindowEndTime">
+      <div class="layui-form-item" id="popWindowEndTime">
         <label class="layui-form-label">弹窗显示时间</label>
         <div class="layui-input-block">
-          <input type="text" name="sPopWindowEndTime" id="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="sPopWindowEndTime" id="iPopWindowEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
@@ -96,6 +96,11 @@
 
       laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
       laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
+      if (parent.editdata.iPopWindow == 1) {
+        laydate.render({elem: "#iPopWindowEndTime", type: "datetime", value: parent.editdata.sPopWindowEndTime});
+      } else {
+        $('#popWindowEndTime').addClass('layui-hide');
+      }
 
       $("input[name='sTitle']").val(parent.editdata.sTitle);
       $("textarea[name='sContent']").val(parent.editdata.sContent);
@@ -105,13 +110,14 @@
       form.render();
 
       form.on('select(type)', function(data){
-        if (data.value == 1) {
-          $('#popwindowEndTime').removeClass('layui-hide');
-          $('input[name=sPopWindowEndTime]').val('');
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "required|datatime");
-        } else {
-          $('#popwindowEndTime').addClass('layui-hide');
+        if (data.value == 0) {
+          $('#popWindowEndTime').addClass('layui-hide');
+          $('input[name=sPopWindowEndTime]').val("");
           $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
+        } else {
+          $('#popWindowEndTime').removeClass('layui-hide');
+          $('input[name=sPopWindowEndTime]').attr("lay-verify", "required|datetime");
+          laydate.render({elem: "#iPopWindowEndTime", type: "datetime"});
         }
       });
 
