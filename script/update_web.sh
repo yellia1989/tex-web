@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (d/47.103.96.228 u/101.133.141.46 r/47.74.66.171 t/101.132.43.124)"
+	echo "Usage: $0 env (d/47.103.96.228 u/101.133.141.46 r/47.74.66.171 t/101.132.43.124 robot/139.224.211.207)"
 	exit 100
 fi
 
@@ -25,6 +25,10 @@ case "$env" in
     ip=101.132.43.124
     cp ../conf_t.cfg conf.cfg
     ;;
+    robot)
+    ip=139.224.211.207
+    cp ../conf_robot.cfg conf.cfg
+    ;;
     *)
     echo "invalid env"
     exit 0
@@ -36,7 +40,7 @@ runcmdroot root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjvf $web conf.cfg ../front ../data ../web ../start.sh ../stop.sh ../sql
+tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'
@@ -48,7 +52,7 @@ putfile root@$ip ../update.sh /data/web/
 putfile root@$ip $web /data/web/backup/
 
 echo "更新web中。。。"
-runcmdroot root@$ip "cd /data/web && ./update.sh $web"
+runcmd root@$ip "cd /data/web && ./update.sh $web"
 
 rm -rf $web
 rm -rf conf.cfg

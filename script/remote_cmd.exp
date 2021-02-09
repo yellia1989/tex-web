@@ -2,112 +2,63 @@
 
 proc usage {} {
 	puts "Usage: ";
-  puts "   runcmd \[user@\]ip password command";
+  puts "   runcmd \[user@\]ip command";
   puts "   runcmdroot \[user\]@ip command";
   puts "   runinstall \[user\]@ip command"
-  puts "   ssh \[user@\]ip password \[command\]";
-  puts "   scp \[\[user@\]srcip:\]srcpath \[\[user@\]destip:\]destpath \[password1\] \[password2\]";
-  puts "   rsync from to \[password\]";
+  puts "   scp \[\[user@\]srcip:\]srcpath \[\[user@\]destip:\]destpath";
+  puts "   rsync from to";
   exit -1;
 }
 
 exp_internal 0
 set cmd [lindex $argv 0]
 set default_ssh_port 22
-set root_password "#Bugsfor\$Linux"
 if {$cmd == "runcmd"} {
 	########## Begin runcmd ##########
-  if {$argc < 4} usage;
-  
-	set host [lindex $argv 1]
-	set password [lindex $argv 2]
-	set command [lindex $argv 3]
-	set timeout 86400
-	spawn -noecho /usr/bin/ssh -p $default_ssh_port -o "StrictHostKeyChecking no" -q $host $command
-	
-	expect {
-		"Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
-		"assword:" { send "$password\r"; }
-		eof { exit; }
-	}
-	expect eof
-	########## End runcmd ##########
-} elseif {$cmd == "runcmdroot"} {
-	########## Begin runcmdroot ##########
   if {$argc < 3} usage;
   
 	set host [lindex $argv 1]
 	set command [lindex $argv 2]
 	set timeout 86400
-	spawn -noecho /usr/bin/ssh -p $default_ssh_port -o "StrictHostKeyChecking no" -q $host $command
-
-    expect {
-           "Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
-           "assword:" { send "$root_password\r"; }
-            eof { exit; }
-    }
-	expect eof
-	
-	########## End runcmdroot ##########
-}  elseif {$cmd == "ssh"} {
-
-	########## Begin ssh ##########
-	if {$argc < 3} usage;
-  
-	set host [lindex $argv 1]
-	set password [lindex $argv 2]
-	set command [lindex $argv 3]
-	set timeout 86400
-	spawn -noecho /usr/bin/ssh -p $default_ssh_port -o "StrictHostKeyChecking no" -q ${host}
+	spawn -noecho /usr/bin/ssh -p $default_ssh_port -o "StrictHostKeyChecking no" $host $command
 	
 	expect {
 		"Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
-		"assword:" { send "$password\r"; exp_continue; }
-		"@" { if {$command != ""} { send $command; send "\r"; } }
-		"$" { if {$command != ""} { send $command; send "\r"; } }
+		eof { exit; }
 	}
-	interact
-	########## End ssh ##########
+	expect eof
+	########## End runcmd ##########
+} elseif {$cmd == "runcmdpem"} {
+	########## Begin runcmd ##########
+  if {$argc < 4} usage;
+  
+	set host [lindex $argv 1]
+	set command [lindex $argv 2]
+	set pem [lindex $argv 3]
+	set timeout 86400
+	spawn -noecho /usr/bin/ssh -p $default_ssh_port -i $pem -o "StrictHostKeyChecking no" $host $command
+	
+	expect {
+		"Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
+		eof { exit; }
+	}
+	expect eof
+	########## End runcmdpem ##########
 } elseif {$cmd == "scp"} {
 	########## Begin scp ##########
 	if {$argc < 3} usage;
   
 	set from [lindex $argv 1]
 	set to [lindex $argv 2]
-	set passwordfrom [lindex $argv 3]
-	set passwordto [lindex $argv 4]
 	set timeout 86400
 	spawn -noecho /usr/bin/scp -P $default_ssh_port -o "StrictHostKeyChecking no" -r -q $from $to
 	
 	expect {
 		"Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
-		"assword:" { send "$passwordfrom\r";}
-		eof { exit 0; }
-	}
-	expect {
-		"Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
-		"assword:" { send "$passwordto\r";}
 		eof { exit 0; }
 	}
 	expect eof
 	########## End scp ##########
-} elseif {$cmd == "rsync"} {
-	########## Begin rsync ##########
-	if {$argc < 3} usage;
-  
-	set from [lindex $argv 1]
-	set to [lindex $argv 2]
-	set password [lindex $argv 3]
-	set timeout 86400
-	spawn -noecho /usr/bin/rsync -e "/usr/bin/ssh -p $default_ssh_port" -av $from $to
-	
-	expect {
-		"Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
-		"assword:" { send "$password\r";}
-		eof { exit 0; }
-	}
-	expect eof
-	########## End rsync ##########
 } else {
 	usage
 }
