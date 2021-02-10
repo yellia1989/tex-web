@@ -54,10 +54,17 @@
       <div class="layui-form-item">
         <label class="layui-form-label">是否弹窗显示</label>
         <div class="layui-input-block">
-          <select name="iPopWindow">
+          <select name="iPopWindow" lay-filter="type">
             <option value="0">否</option>
             <option value="1" selected>是</option>
           </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="popWindowEndTime">
+        <label class="layui-form-label">弹窗显示时间</label>
+        <div class="layui-input-block">
+          <input type="text" name="sPopWindowEndTime" id="iPopWindowEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
@@ -86,6 +93,7 @@
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
+      let $ = layui.jquery;
 
       laydate.render({
         elem: "#iBeginTime", type: "datetime"
@@ -93,12 +101,35 @@
       laydate.render({
         elem: "#iEndTime", type: "datetime"
       });
+      laydate.render({
+        elem:"#iPopWindowEndTime", type:"datetime"
+      });
+
+      form.on('select(type)', function(data){
+        if (data.value == 0) {
+          $('#popWindowEndTime').addClass('layui-hide');
+          $('input[name=sPopWindowEndTime]').val("");
+          $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
+        } else {
+          $('#popWindowEndTime').removeClass('layui-hide');
+        }
+      });
 
       //监听提交
       form.on('submit(add)', function (data) {
 
         if (data.field.sBeginTime >= data.field.sEndTime) {
           okLayer.redCrossMsg('开始时间不能大于结束时间', function () {});
+          return false;
+        }
+
+        if (data.field.iPopWindow == 1 && data.field.sBeginTime >= data.field.sPopWindowEndTime) {
+          okLayer.redCrossMsg('开始时间不能大于弹窗显示结束时间', function () {});
+          return false;
+        }
+
+        if (data.field.sPopWindowEndTime > data.field.sEndTime) {
+          okLayer.redCrossMsg('弹窗显示结束时间不能大于结束时间', function () {});
           return false;
         }
 
