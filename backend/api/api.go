@@ -123,6 +123,13 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/mail/revlog", game.MailRevLog)
 	group.GET("/game/mail/dellog", game.MailDelLog)
 
+	group.GET("/game/chat/getNewest", game.ChatGetNewest)
+	group.GET("/game/chat/getHistory", game.ChatGetHistory)
+	group.GET("/game/chat/getMaskLogs", game.ChatGetMaskLogs)
+	group.GET("/game/chat/getMaskWord", game.ChatGetMaskWord)
+	group.POST("/game/chat/setMaskWord", game.ChatSetMaskWord)
+
+
 	group.GET("/game/real/online", game.RealOnline)
 	group.GET("/game/real/newadd", game.RealNewadd)
 	group.GET("/game/real/income", game.RealIncome)

@@ -686,6 +686,63 @@
         ]
       },
       {
+        "id": 814,
+        "title": "聊天记录",
+        "href": "game/online-time.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 81401,
+            "title": "最新聊天",
+            "href": "game/chat-newest.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81402,
+            "title": "聊天历史",
+            "href": "game/chat-history.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81403,
+            "title": "屏蔽字设置",
+            "href": "game/chat-mask.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
         "id": 811,
         "title": "在线时长",
         "href": "game/online-time.html",

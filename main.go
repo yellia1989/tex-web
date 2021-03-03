@@ -67,12 +67,14 @@ func httpErrorHandler(err error, c echo.Context) {
 }
 
 func main() {
-    if err := cfg.ParseCfg("conf.cfg"); err != nil {
+    if err := cfg.ParseCfg("conf_local.cfg"); err != nil {
         fmt.Printf("%s", err)
         os.Exit(-1)
     }
 
     debug := cfg.Debug
+
+
     framework_debug := cfg.FrameworkDebug
 
     // Echo instance

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>最新聊天</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <link type="text/css" href="/css/style.css" rel="stylesheet" />
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <script src="/js/jquery-1.11.2.min.js"></script>
+  <script src="/js/scroll.js"></script>
+</head>
+<script>
+
+
+  function Test() {
+    console.log($("#tableBody").height());
+  }
+
+
+
+</script>
+<style>
+  .title{
+    font-size: 25px;
+  }
+
+  .container{
+    margin-top: 20px;
+  }
+
+  .chatBody{
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+  }
+
+  .maskBody{
+    margin-left: 10px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+</style>
+<body>
+<div class="ok-body chatBody" style="width: 35%; float: left;">
+  <p class="title">最新聊天</p>
+  <div class="list_lh container" style="border: 2px solid #0e90d2;">
+    <ul id="newest_chat">
+<!--      <li>-->
+<!--        <p><span class="btn_zone">分区ID</span><span class="area_time">2018-3-2 17:28:05</span><span class="area_role">角色名</span><span class="area_role">角色ID</span></p>-->
+<!--        <p>内容1</p>-->
+<!--      </li>-->
+    </ul>
+  </div>
+</div>
+<div id="tableBody" class="ok-body maskBody" style="width: 60%;float: left;">
+  <p class="title">屏蔽词列表</p>
+  <div class="container" id="tableDiv">
+    <table id="tableId2"  lay-filter="tableFilter"></table>
+  </div>
+
+</div>
+
+<style>
+
+</style>
+
+
+
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+
+<script>
+
+  var zoneid;
+  var roleid;
+
+  layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+    let table = layui.table;
+    let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let xmSelect = layui.xmSelect;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+    okLoading.close();
+
+    let now = new Date();
+    let lastweek = new Date(now.getTime() -7*86400*1000);
+    laydate.render({elem: "#startTime", type: "datetime", value: lastweek});
+    laydate.render({elem: "#endTime", type: "datetime", value: now});
+
+    setInterval(refreshNewestChat, 60000);
+
+    let tId = -1;
+
+    let maxId = 0;
+
+    $(document).ready(function(){
+      $('.list_lh li:even').addClass('lieven');
+    })
+
+    window.onresize = function() {
+      $(".list_lh").height($("#tableDiv").height());
+      RollChat();
+    }
+
+    function RollChat(){
+      if(tId!==-1){
+        clearInterval(tId);
+      }
+
+      tId = $("div.list_lh").myScroll({
+        speed:20, //数值越大，速度越慢
+        rowHeight:68, //li的高度
+        loop:false,
+        animSpeed:3,
+      });
+    }
+
+    function refreshNewestChat() {
+      okUtils.ajax("/api/game/chat/getNewest", "get",true).done(function (response) {
+        let data = response.data;
+        for(let i = 0;i<data.length;i++){
+          if(data[i].id <= maxId){
+            continue;
+          }else{
+            maxId = data[i].id;
+          }
+          let zoneStr = "";
+          switch (data[i].type){
+            case 0:
+              zoneStr = "挂机["+data[i].zoneId+"服]";
+              break;
+            case 1:
+              zoneStr = "SLG["+data[i].zoneId+"服]";
+              break;
+            case 2:
+              zoneStr = "联盟["+data[i].zoneId+"][天下盟]";
+              break;
+            case 3:
+              zoneStr = "私聊["+data[i].roleId+"][张三]";
+              break;
+          }
+          $("#newest_chat").append('<li><p><span class="btn_zone">'+zoneStr+'</span><span class="area_time">'+data[i].time+
+                  '</span><span class="area_role">角色名</span><span class="area_role">'+data[i].roleId+'</span></p><p>'
+                  +data[i].content+'</p></li>');
+        }
+        RollChat();
+      }).fail(function (error) {
+        console.log(error);
+      });
+    }
+
+    refreshNewestChat();
+
+    let itemTable2 = table.render({
+      elem: "#tableId2",
+      data:[],
+      text: {
+        none: '暂无相关数据',
+      },
+      limit: 30,
+      where: {},
+      page: true,
+      cols: [[
+        {field: "id", title: "日志id"},
+        {field: "time", title: "时间"},
+        {field: "zoneId", title: "分区id"},
+        {field: "roleId", title: "角色id"},
+        {field: "content", title: "内容"},
+        {field: "dirtyWord", title: "屏蔽词"},
+        {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
+      ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+    });
+
+    table.on("tool(tableFilter)", function (obj) {
+      roleid = obj.data.roleId;
+      zoneid = obj.data.zoneId;
+      switch (obj.event) {
+        case "ban_speak":
+          ban_speak();
+          break;
+        case "ban_login":
+          ban_login();
+          break;
+      }
+    });
+
+    function refreshMaskChat() {
+      itemTable2.reload({
+        url: "/api/game/chat/getMaskLogs",
+        page: {
+          curr: 1,
+        }
+      });
+    }
+
+    refreshMaskChat()
+
+    setInterval(refreshMaskChat, 60000);
+
+    function ban_speak() {
+      okLayer.open("禁言", "ban-speak.html", "40%", "50%", null, function () {
+      })
+    }
+
+    function ban_login() {
+      okLayer.open("封号", "ban-login.html", "40%", "210px", null, function () {
+      })
+    }
+
+  })
+</script>
+<script type="text/html" id="operationTpl">
+  <div class="layui-btn-group">
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="ban_speak">禁言</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="ban_login">封号</button>
+  </div>
+</script>
+</body>
+</html>

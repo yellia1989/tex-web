@@ -18,6 +18,8 @@ var Config *util.Config
 // 是否开启调试模式
 var Debug bool
 
+var Local bool
+
 // 是否开启框架日志
 var FrameworkDebug bool
 
@@ -60,6 +62,9 @@ var LogSyncInterval time.Duration
 // 日志统计间隔
 var LogStatInterval time.Duration
 
+// 聊天屏蔽字处理间隔
+var ChatMaskInterval time.Duration
+
 // 大R充值金额分
 var StatRmoney uint32
 
@@ -74,6 +79,7 @@ func ParseCfg(file string) (err error) {
     cfg := Config
 
     Debug = cfg.GetBool("debug", false)
+    Local = cfg.GetBool("local",false)
     FrameworkDebug = cfg.GetBool("framework-debug", false)
     Listen = cfg.GetCfg("listen", ":8008")
 
@@ -128,6 +134,8 @@ func ParseCfg(file string) (err error) {
     }
 
     GameDbPrefix = cfg.GetCfg("gamedb-prefix", "")
+
+    ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1s")
 
     clog := cfg.GetSubCfg("log")
     if clog == nil {

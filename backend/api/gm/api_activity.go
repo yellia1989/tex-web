@@ -182,10 +182,6 @@ func ActivityEdit(c echo.Context) error {
 		return err
 	}
 
-    if updateRows == 0 {
-        return ctx.SendResponse("活动已锁定不能编辑");
-    }
-
     return ctx.SendResponse("更新活动成功")
 }
 
