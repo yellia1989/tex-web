@@ -173,7 +173,7 @@ func ActivityEdit(c echo.Context) error {
 		return err
 	}
 
-    updateRows, err := result.RowsAffected()
+    _,err = result.RowsAffected()
     if err != nil {
         return err
     }
