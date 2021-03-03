@@ -133,9 +133,14 @@ func MapAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
     mapid := ctx.FormValue("iMapId")
     zoneids := ctx.FormValue("zoneids")
+    endpoint := ctx.FormValue("endpoint")
 
-    if mapid == "" || zoneids == "" {
+    if mapid == "" || zoneids == "" || endpoint == "" {
         return ctx.SendError(-1, "参数非法")
+    }
+
+    if err := registryAdd(cfg.App+".MapServer.MapServiceObj", cfg.App+".map."+mapid, endpoint); err != nil {
+        return fmt.Errorf("增加MapServer.MapServiceObj失败: %s", err.Error())
     }
 
 	db := cfg.GameGlobalDb
