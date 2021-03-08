@@ -6,9 +6,14 @@
   <title>新增公告</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
+  <link rel="stylesheet" href="/lib/layui/css/layui.css">
 </head>
 
+<script src="https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js"></script>
+<script src="/js/editorMenu.js"></script>
+
 <body>
+
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
@@ -22,8 +27,12 @@
       <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required"
-            lay-verType="tips"></textarea>
+<!--          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required"-->
+<!--            lay-verType="tips"></textarea>-->
+
+          <div id="rContnet">
+          </div>
+            <div id="test">Testsss</div>
         </div>
       </div>
 
@@ -87,7 +96,45 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/js/jquery-1.11.2.min.js"></script>
+
   <script>
+
+    //const E = window.wangEditor
+
+    //const { $, BtnMenu, DropListMenu, PanelMenu, DropList, Panel, Tooltip } = E
+    const editor = new E('#rContnet')
+
+
+    //配置菜单栏，删减菜单，调整顺序
+    editor.config.menus = [
+        'undo',
+        'redo',
+        'myColorKey',
+        'FonSizeKey',
+    ]
+
+    editor.create();
+
+    $("#test").on("click",function(){
+
+        console.log(editor.selection.getSelectionContainerElem().elems[0]);
+        console.log(editor.selection.getSelectionStartElem().elems[0]);
+        console.log(editor.selection.getSelectionEndElem().elems[0]);
+      console.log(editor.txt.text());
+      console.log(editor.txt.html());
+      console.log(JSON.stringify(editor.txt.getJSON()));
+      console.log(editor.txt.getJSON());
+
+      var jsonData = editor.txt.getJSON();
+      let ouputStr = ExecuteJsonData(jsonData);
+      console.log(ouputStr);
+    });
+
+    let htmlTest = '<span style="font-size: 22px;"><p>erererererererererererer</p><p>trhhhhhtr&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<font color="#bb1212">htrrrrrrrrrr</font></p></span>';
+
+    editor.txt.html(htmlTest);
+
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
@@ -132,7 +179,20 @@
           okLayer.redCrossMsg('弹窗显示结束时间不能大于结束时间', function () {});
           return false;
         }
-
+        ouputStr = "";
+        let jsonData = editor.txt.getJSON();
+        console.log(jsonData);
+        if(jsonData.length>0){
+            for(let i=0;i<jsonData.length;i++){
+                searchData(jsonData[i]);
+            }
+        }else{
+            okLayer.redCrossMsg('公告内容不能为空', function () {});
+            return false;
+        }
+        console.log(ouputStr);
+        data.field.sContent = ouputStr;
+        console.log(data.field);
         okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

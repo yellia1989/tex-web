@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
 
+<script src="https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js"></script>
+<script src="/js/editorMenu.js"></script>
+
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
@@ -22,7 +25,8 @@
       <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
+          <div id="rContnet"></div>
+<!--          <textarea name="sContent" placeholder="请输入内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>-->
         </div>
       </div>
 
@@ -87,6 +91,18 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
+
+    const editor = new E('#rContnet')
+
+    editor.config.menus = [
+      'undo',
+      'redo',
+      'myColorKey',
+      'FonSizeKey',
+    ]
+
+    editor.create();
+
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let laydate = layui.laydate;
@@ -102,11 +118,15 @@
         $('#popWindowEndTime').addClass('layui-hide');
       }
 
+      console.log(parent.editdata);
+
       $("input[name='sTitle']").val(parent.editdata.sTitle);
       $("textarea[name='sContent']").val(parent.editdata.sContent);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
       $("select[name='iType']").val(parent.editdata.iType);
+      editor.txt.html(parent.editdata.hContent);
+
       form.render();
 
       form.on('select(type)', function(data){
