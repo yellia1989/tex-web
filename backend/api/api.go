@@ -136,6 +136,13 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/recharge/trace", game.RechargeTrace)
 	group.GET("/game/recharge/receipt", gm.IAPDetail)
 
+    group.GET("/game/chat/getnewest", game.ChatGetNewest)
+    group.GET("/game/chat/gethistory", game.ChatGetHistory)
+    group.GET("/game/chat/getnewestmask", game.ChatGetMaskNewest)
+    group.GET("/game/chat/getmaskhistory", game.ChatGetMaskLogs)
+    group.GET("/game/chat/getmaskword", game.ChatGetMaskWord)
+    group.POST("/game/chat/setmaskword", game.ChatSetMaskWord)
+
 	group.GET("/stat/all/list", stat.AllList)
 	group.GET("/stat/all/ltv", stat.LtvList)
 	group.GET("/stat/newadd/list", stat.NewaddList)

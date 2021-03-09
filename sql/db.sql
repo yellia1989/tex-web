@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.17, for linux-glibc2.5 (x86_64)
 --
--- Host: 172.25.2.196    Database: db_stat
+-- Host: 172.19.248.171    Database: db_stat
 -- ------------------------------------------------------
 -- Server version	5.6.17
 
@@ -46,6 +46,49 @@ CREATE TABLE `account` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `chat_dirty_history`
+--
+
+DROP TABLE IF EXISTS `chat_dirty_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chat_dirty_history` (
+  `_rid` int(10) unsigned NOT NULL,
+  `time` datetime DEFAULT NULL,
+  `zoneid` int(10) unsigned DEFAULT NULL,
+  `mapid` int(10) unsigned DEFAULT NULL,
+  `type` int(10) unsigned DEFAULT NULL,
+  `fromroleid` bigint(20) unsigned DEFAULT NULL,
+  `fromrolename` varchar(256) DEFAULT NULL,
+  `tozoneid` int(10) unsigned DEFAULT NULL,
+  `toroleid` bigint(20) unsigned DEFAULT NULL,
+  `torolename` varchar(256) DEFAULT NULL,
+  `allianceid` bigint(20) unsigned DEFAULT NULL,
+  `alliancename` varchar(256) DEFAULT NULL,
+  `content` varchar(256) DEFAULT NULL,
+  `dirtyword` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`_rid`),
+  KEY `time` (`time`),
+  KEY `zoneid_fromroleid_time` (`zoneid`,`fromroleid`,`time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `chat_dirty_word`
+--
+
+DROP TABLE IF EXISTS `chat_dirty_word`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chat_dirty_word` (
+  `id` int(10) unsigned NOT NULL,
+  `words` longtext CHARACTER SET utf8mb4,
+  `sync_rid` int(10) unsigned DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `date`
 --
 
@@ -75,10 +118,10 @@ DROP TABLE IF EXISTS `log`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log` (
   `time` datetime NOT NULL COMMENT '记录时间',
-  `username` varchar(50) NOT NULL COMMENT '用户名',
-  `action` varchar(100) NOT NULL COMMENT '行为',
-  `desc` varchar(255) NOT NULL COMMENT '行为描述'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `username` varchar(50) CHARACTER SET latin1 NOT NULL COMMENT '用户名',
+  `action` varchar(100) CHARACTER SET latin1 NOT NULL COMMENT '行为',
+  `desc` varchar(255) CHARACTER SET latin1 NOT NULL COMMENT '行为描述'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -344,4 +387,4 @@ CREATE TABLE `zone` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-19 20:35:24
+-- Dump completed on 2021-03-09 11:12:51

@@ -173,7 +173,7 @@ func ActivityEdit(c echo.Context) error {
 		return err
 	}
 
-    updateRows, err := result.RowsAffected()
+    _, err = result.RowsAffected()
     if err != nil {
         return err
     }
@@ -181,10 +181,6 @@ func ActivityEdit(c echo.Context) error {
 	if err := tx.Commit(); err != nil {
 		return err
 	}
-
-    if updateRows == 0 {
-        return ctx.SendResponse("活动已锁定不能编辑");
-    }
 
     return ctx.SendResponse("更新活动成功")
 }

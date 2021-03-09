@@ -35,8 +35,8 @@ case "$env" in
     ;;
 esac
 
-runcmdroot root@$ip "[ ! -f /data/web ] && mkdir /data/web"
-runcmdroot root@$ip "mkdir /data/web/backup"
+runcmd root@$ip "[ ! -f /data/web ] && mkdir /data/web"
+runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 

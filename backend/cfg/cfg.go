@@ -66,6 +66,9 @@ var StatRmoney uint32
 // 只统计相关渠道信息
 var StatChannels []string
 
+// 聊天消息脏字检测间隔
+var ChatMaskInterval time.Duration
+
 func ParseCfg(file string) (err error) {
     if Config == nil {
         Config = util.NewConfig()
@@ -145,6 +148,8 @@ func ParseCfg(file string) (err error) {
 
     tmp := cstat.GetCfg("channel","")
     StatChannels = strings.Split(tmp, ",")
+
+    ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1m")
 
     return
 }
