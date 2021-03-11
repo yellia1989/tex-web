@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>添加资源管理项</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">资源类型</label>
+		      <div class="layui-input-inline">
+            <div id="iResId"></div>
+		      </div>
+          <div class="layui-form-mid">-</div>
+          <label class="layui-form-label">可获得途径</label>
+          <div class="layui-input-inline">
+            <div id="access"></div>
+		      </div>
+		    </div>
+		  </div>
+      <div class="layui-form-item">
+        <button class="layui-btn" lay-submit lay-filter="add" id="add">添加</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils', 'upload', 'element'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let xmSelect = layui.xmSelect;
+      let upload = layui.upload;
+      let $ = layui.jquery;
+      let element = layui.element;
+
+      let iResId = xmSelect.render({
+        el: '#iResId',
+        name: 'iResId',
+        tips: '请选择监控的资源类型',
+        filterable: true,
+        radio: true,
+        layVerify: 'required'
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+
+      okUtils.ajax("/api/gm/item/list", "get", null, false).done(function (response) {
+        iResId.update({data: response.data});
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      let access = xmSelect.render({
+        el: '#access',
+        name: 'access',
+        prop: {
+          value: 'iAccessId',
+          name: 'sAccessName',
+        },
+        tips: '请至少选择一个获取途径',
+        layVerify: 'false',
+        layVerType: 'tips',
+        disabled: true,
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iAccessId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iAccessId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
+      });
+     
+      okUtils.ajax("/api/gm/res/accesslist", "get", null, false).done(function (response) {
+        access.update({data: response.data});
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      //监听提交
+      var mailparam;
+      form.on('submit(add)', function (data) {
+        let param = {iResId: data.field.iResId, items: data.field.access};
+        okUtils.ajax("/api/gm/mail/testsend", "post", param, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $("#send").attr("class", "layui-btn");
+            $("#send").attr("disabled",false);
+            $("#file").attr("class", "layui-btn");
+            $("#file").attr("disabled",false);
+            zoneSelect1.update({
+              disabled: true,
+            });
+            zoneSelect2.update({
+              layVerify: true,
+              disabled: false,
+            });
+            mailparam = param;
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      $('#send').click(function () {
+        mailparam.zoneids = zoneSelect2.getValue('valueStr');
+        if (mailparam.zoneids == "") {
+          mailparam.filepath = $("input[name='filepath']").val();
+        }
+
+        if (mailparam.zoneids == "" && mailparam.filepath == "") {
+          okLayer.redCryMsg("请选择至少一个服务器或上传文件");
+          return;
+        }
+
+        okUtils.ajax("/api/gm/mail/send", "post", mailparam, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
