@@ -4,7 +4,6 @@ import (
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
-    "github.com/yellia1989/tex-web/backend/common"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     ssql "database/sql"
     "strconv"
@@ -74,23 +73,16 @@ func reloadMaskWord() {
 
 func ChatGetNewest(c echo.Context) error {
     ctx := c.(*mid.Context)
+    fromid, _ := strconv.Atoi(ctx.QueryParam("maxid"))
+
     db := cfg.LogDb
     if db == nil {
         return ctx.SendError(-1, "连接数据库失败")
     }
 
-    sql := "select _rid from chat order by _rid desc limit 1"
-
-    var maxId  = 0
-    err := db.QueryRow(sql).Scan(&maxId)
-    if err != nil && err != ssql.ErrNoRows {
-        return err
-    }
-
     var limit = 30
-    limitId := common.MaxInt(maxId - limit,0)
-    sql = "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content from chat where _rid > ? limit ?"
-    rows, err := db.Query(sql, limitId, limit)
+    sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content from chat where _rid > ? limit ?"
+    rows, err := db.Query(sql, fromid, limit)
     if err != nil {
         return err
     }
@@ -121,7 +113,7 @@ func ChatGetHistory(c echo.Context) error {
     startTime := ctx.QueryParam("startTime")
     endTime := ctx.QueryParam("endTime")
 
-    if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
+    if zoneid == "" || startTime == "" || endTime == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
@@ -130,9 +122,14 @@ func ChatGetHistory(c echo.Context) error {
         return ctx.SendError(-1, "连接数据库失败")
     }
 
-    sqlcount := "SELECT count(_rid) as total FROM chat WHERE zoneid=? AND fromroleid = ? AND time between ? AND ?"
+    sqlcount := "select count(_rid) as total FROM chat"
+    sqlcount += " WHERE zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    if roleid != "" {
+        sqlcount += " AND fromroleid=" + roleid
+    }
+
     var total int
-    err := db.QueryRow(sqlcount,zoneid,roleid,startTime,endTime).Scan(&total)
+    err := db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
         return err
     }
@@ -140,7 +137,10 @@ func ChatGetHistory(c echo.Context) error {
     limitstart := strconv.Itoa((page - 1) * limit)
     limitrow := strconv.Itoa(limit)
     sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content from chat"
-    sql += " WHERE zoneid=" + zoneid + " AND fromroleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    sql += " WHERE zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    if roleid != "" {
+        sql += " AND fromroleid=" + roleid
+    }
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -169,23 +169,16 @@ func ChatGetHistory(c echo.Context) error {
 
 func ChatGetMaskNewest(c echo.Context) error {
     ctx := c.(*mid.Context)
+    fromid, _ := strconv.Atoi(ctx.QueryParam("maxid"))
+
     db := cfg.StatDb
     if db == nil {
         return ctx.SendError(-1, "连接数据库失败")
     }
 
-    sql := "select _rid from chat_dirty_history order by _rid desc limit 1"
-
-    var maxId  = 0
-    err := db.QueryRow(sql).Scan(&maxId)
-    if err != nil && err != ssql.ErrNoRows {
-        return err
-    }
-
     var limit = 30
-    limitId := common.MaxInt(maxId - limit,0)
-    sql = "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content,dirtyword from chat_dirty_history where _rid > ? limit ?"
-    rows, err := db.Query(sql, limitId, limit)
+    sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content,dirtyword from chat_dirty_history where _rid > ? limit ?"
+    rows, err := db.Query(sql, fromid, limit)
     if err != nil {
         return err
     }
@@ -216,7 +209,7 @@ func ChatGetMaskLogs(c echo.Context) error {
     startTime := ctx.QueryParam("startTime")
     endTime := ctx.QueryParam("endTime")
 
-    if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
+    if zoneid == "" || startTime == "" || endTime == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
@@ -225,9 +218,13 @@ func ChatGetMaskLogs(c echo.Context) error {
         return ctx.SendError(-1, "连接数据库失败")
     }
 
-    sqlcount := "SELECT count(_rid) as total FROM chat_dirty_history WHERE zoneid=? AND fromroleid = ? AND time between ? AND ?"
+    sqlcount := "SELECT count(_rid) as total FROM chat_dirty_history "
+    sqlcount += " WHERE zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    if roleid != "" {
+        sqlcount += " AND fromroleid=" + roleid
+    }
     var total int
-    err := db.QueryRow(sqlcount,zoneid,roleid,startTime,endTime).Scan(&total)
+    err := db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
         return err
     }
@@ -235,7 +232,10 @@ func ChatGetMaskLogs(c echo.Context) error {
     limitstart := strconv.Itoa((page - 1) * limit)
     limitrow := strconv.Itoa(limit)
     sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content,dirtyword from chat_dirty_history"
-    sql += " WHERE zoneid=" + zoneid + " AND fromroleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    sql += " WHERE zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+    if roleid != "" {
+        sql += " AND fromroleid=" + roleid
+    }
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT " + limitstart + "," + limitrow
 

@@ -114,7 +114,7 @@
     let maxId = 0;
     let tId = -1;
     function refreshNewestChat() {
-      okUtils.ajax("/api/game/chat/getnewest", "get",true).done(function (response) {
+      okUtils.ajax("/api/game/chat/getnewest", "get", {maxid: maxId}, true).done(function (response) {
         let data = response.data;
         for (let i = 0; i<data.length; i++) {
           if (data[i].id <= maxId) {
@@ -141,7 +141,7 @@
           $("#newest_chat").append('<li><p><button type="button" class="layui-btn layui-btn-xs">'+zoneStr+'</button><button type="button" class="layui-btn layui-btn-xs">'+data[i].time+'</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs">'+data[i].fromRoleName+'['+data[i].fromZoneId+'服]'+'['+data[i].fromRoleId+']</button></p><p>'+data[i].content+'</p></li>');
         }
 
-	if (tId !== -1) {
+	      if (tId !== -1) {
           clearInterval(tId);
         }
 
@@ -161,7 +161,7 @@
     let maxId2 = 0;
     let tId2 = -1;
     function refreshMaskChat() {
-      okUtils.ajax("/api/game/chat/getnewestmask", "get",true).done(function (response) {
+      okUtils.ajax("/api/game/chat/getnewestmask", "get", {maxid: maxId2}, true).done(function (response) {
         let data = response.data;
         for (let i = 0; i<data.length; i++) {
           if (data[i].id <= maxId2) {
@@ -188,7 +188,7 @@
           $("#mask_chat").append('<li><p><button type="button" class="layui-btn layui-btn-xs">'+zoneStr+'</button><button type="button" class="layui-btn layui-btn-xs">'+data[i].time+'</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs">'+data[i].fromRoleName+'['+data[i].fromZoneId+'服]'+'['+data[i].fromRoleId+']</button></p><p>'+data[i].content.replace(data[i].dirtyWord, '<font color="red">'+data[i].dirtyWord+'</font>')+'</p></li>');
         }
 
-	if (tId2 !== -1) {
+	      if (tId2 !== -1) {
           clearInterval(tId2);
         }
 
