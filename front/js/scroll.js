@@ -33,6 +33,7 @@
 			var sh = opts["rowHeight"],speed = opts["speed"],_this = $(this);
 			intId[i] = setInterval(function(){
 				var s = Math.abs(parseInt(_this.find("ul").css("margin-top")));
+
 				if(opts["loop"]){
 					if(_this.find("ul").height()<=_this.height()){
 						clearInterval(intId[i]);

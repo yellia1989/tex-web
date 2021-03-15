@@ -46,7 +46,7 @@
 </style>
 <body>
 <div class="ok-body chatBody" style="width: 35%; float: left;">
-  <p class="title">最新聊天</p>
+  <p id="newChat" class="title">最新聊天</p>
   <div class="list_lh container" style="border: 2px solid #0e90d2;">
     <ul id="newest_chat">
 <!--      <li>-->
@@ -78,6 +78,13 @@
 
   var zoneid;
   var roleid;
+
+  let scrollParams = {
+    speed:20, //数值越大，速度越慢
+    rowHeight:68, //li的高度
+    loop:false,
+    animSpeed:3,
+  };
 
   layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
     let table = layui.table;
@@ -114,15 +121,25 @@
         clearInterval(tId);
       }
 
-      tId = $("div.list_lh").myScroll({
-        speed:20, //数值越大，速度越慢
-        rowHeight:68, //li的高度
-        loop:false,
-        animSpeed:3,
-      });
+      tId = $("div.list_lh").myScroll(scrollParams);
     }
 
+    function cleanInVisibleData(){
+      let ulDom = $("div.list_lh").find("ul");
+      let marginTop = Math.abs(parseInt(ulDom.css("margin-top")));
+      let number = Math.floor( marginTop / scrollParams.rowHeight);
+      for (let i = 0;i<number;++i){
+        ulDom.children()[i].remove();
+      }
+      ulDom.css("margin-top",0);
+    }
+
+    $("#newChat").on("click",function (param) {
+      cleanInVisibleData();
+    })
+
     function refreshNewestChat() {
+      cleanInVisibleData();
       okUtils.ajax("/api/game/chat/getNewest", "get",true).done(function (response) {
         let data = response.data;
         for(let i = 0;i<data.length;i++){
