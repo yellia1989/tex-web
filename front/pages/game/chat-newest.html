@@ -110,10 +110,20 @@
         return intId[0];
       }
     })($);
+
+    function clearInVisibleData(ulDom){
+      let marginTop = Math.abs(parseInt(ulDom.css("margin-top")));
+      let number = Math.floor( marginTop / 68);
+      for (let i = 0;i<number;++i){
+        ulDom.children()[i].remove();
+      }
+      ulDom.css("margin-top",0);
+    }
 	
     let maxId = 0;
     let tId = -1;
     function refreshNewestChat() {
+      clearInVisibleData($("#newestchat").find("ul"));
       okUtils.ajax("/api/game/chat/getnewest", "get", {maxid: maxId}, true).done(function (response) {
         let data = response.data;
         for (let i = 0; i<data.length; i++) {
@@ -161,6 +171,7 @@
     let maxId2 = 0;
     let tId2 = -1;
     function refreshMaskChat() {
+      clearInVisibleData($("#maskchat").find("ul"));
       okUtils.ajax("/api/game/chat/getnewestmask", "get", {maxid: maxId2}, true).done(function (response) {
         let data = response.data;
         for (let i = 0; i<data.length; i++) {
