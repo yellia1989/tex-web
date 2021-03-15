@@ -80,7 +80,14 @@ func ChatGetNewest(c echo.Context) error {
         return ctx.SendError(-1, "连接数据库失败")
     }
 
-    var limit = 30
+    var limit = 140
+    if fromid == 0 {
+        if err := db.QueryRow("select max(_rid) from chat").Scan(&fromid); err != nil {
+            return err
+        }
+        fromid -= limit
+    }
+
     sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content from chat where _rid > ? limit ?"
     rows, err := db.Query(sql, fromid, limit)
     if err != nil {
@@ -176,7 +183,13 @@ func ChatGetMaskNewest(c echo.Context) error {
         return ctx.SendError(-1, "连接数据库失败")
     }
 
-    var limit = 30
+    var limit = 140
+    if fromid == 0 {
+        if err := db.QueryRow("select max(_rid) from chat_dirty_history").Scan(&fromid); err != nil {
+            return err
+        }
+        fromid -= limit
+    }
     sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content,dirtyword from chat_dirty_history where _rid > ? limit ?"
     rows, err := db.Query(sql, fromid, limit)
     if err != nil {
