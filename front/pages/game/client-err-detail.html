@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>错误详情</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script>
+  var zoneid;
+  layui.use(["table", "okUtils", "okLayer", "laydate"], function () {
+    let table = layui.table;
+    let okUtils = layui.okUtils;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+
+    let stageTable = table.render({
+      elem: "#tableId",
+      url: "/api/game/client_err/err_detail",
+      where: { errInfo: parent.errInfo, errTime: parent.errTime },
+      data:[],
+      text: {
+        none: '暂无相关数据',
+      },
+      cols: [[
+        {field: "role_id", title: "角色id"},
+        {field: "err_info", title: "报错信息"},
+        {field: "zond_id", title: "区服id"}
+      ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: true,
+    });
+  })
+</script>
+</body>
+</html>
