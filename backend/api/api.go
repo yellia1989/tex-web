@@ -70,48 +70,48 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/cdk/update", gm.CDKUpdate) // 更新cdk
 	group.POST("/gm/cdk/export", gm.CDKExport) // 导出cdk
 
-	group.GET("/gm/whitelist/list", gm.WhiteList)   // 获取白名单列表
-	group.POST("/gm/whitelist/add", gm.WhiteAdd)    // 增加白名单用户
-	group.POST("/gm/whitelist/del", gm.WhiteDel)    // 删除白名单用户
-	group.POST("/gm/whitelist/replace", gm.WhiteReplace)    // 覆盖白名单用户
-	group.GET("/gm/whitelist/tmplist", gm.TmpWhiteList)   // 获取临时白名单列表
-	group.POST("/gm/whitelist/addtmp", gm.WhiteAddTmp)    // 增加临时白名单用户
-	group.POST("/gm/whitelist/deltmp", gm.WhiteDelTmp)    // 删除白名单用户
+	group.GET("/gm/whitelist/list", gm.WhiteList)        // 获取白名单列表
+	group.POST("/gm/whitelist/add", gm.WhiteAdd)         // 增加白名单用户
+	group.POST("/gm/whitelist/del", gm.WhiteDel)         // 删除白名单用户
+	group.POST("/gm/whitelist/replace", gm.WhiteReplace) // 覆盖白名单用户
+	group.GET("/gm/whitelist/tmplist", gm.TmpWhiteList)  // 获取临时白名单列表
+	group.POST("/gm/whitelist/addtmp", gm.WhiteAddTmp)   // 增加临时白名单用户
+	group.POST("/gm/whitelist/deltmp", gm.WhiteDelTmp)   // 删除白名单用户
 
-	group.POST("/gm/dirty/test", gm.DirtyTest)   // 屏蔽字测试
+	group.POST("/gm/dirty/test", gm.DirtyTest) // 屏蔽字测试
 
-    group.GET("/gm/activity/list", gm.ActivityList)     // 获取活动列表
-    group.POST("/gm/activity/add", gm.ActivityAdd)       // 增加活动
-    group.POST("/gm/activity/edit", gm.ActivityEdit)     // 编辑活动
-    group.POST("/gm/activity/del", gm.ActivityDel)       // 删除活动
-    group.POST("/gm/activity/import", gm.ActivityImport) // 批量导入活动
-    group.POST("/gm/activity/lock", gm.ActivityLock)    // 活动解锁
-    group.GET("/gm/activity/onlineZone", gm.ActivityOnlineZone) // 查询活动生效分区
+	group.GET("/gm/activity/list", gm.ActivityList)             // 获取活动列表
+	group.POST("/gm/activity/add", gm.ActivityAdd)              // 增加活动
+	group.POST("/gm/activity/edit", gm.ActivityEdit)            // 编辑活动
+	group.POST("/gm/activity/del", gm.ActivityDel)              // 删除活动
+	group.POST("/gm/activity/import", gm.ActivityImport)        // 批量导入活动
+	group.POST("/gm/activity/lock", gm.ActivityLock)            // 活动解锁
+	group.GET("/gm/activity/onlineZone", gm.ActivityOnlineZone) // 查询活动生效分区
 
-	group.GET("/gm/iap/list", gm.IAPList)   // 获取补单商品
+	group.GET("/gm/iap/list", gm.IAPList)          // 获取补单商品
 	group.POST("/gm/iap/recharge", gm.IAPRecharge) // 补单
-	group.POST("/gm/ban/speak", gm.BanSpeak) // 禁言
-	group.POST("/gm/ban/login", gm.BanLogin) // 禁止登陆
+	group.POST("/gm/ban/speak", gm.BanSpeak)       // 禁言
+	group.POST("/gm/ban/login", gm.BanLogin)       // 禁止登陆
 
-    group.GET("/gm/map/list", gm.MapList)   // 地图列表
-    group.POST("/gm/map/add", gm.MapAdd)    // 地图增加
-    group.POST("/gm/map/edit", gm.MapEdit)  // 地图编辑
-    group.POST("/gm/map/del", gm.MapDel)    // 地图删除
+	group.GET("/gm/map/list", gm.MapList)  // 地图列表
+	group.POST("/gm/map/add", gm.MapAdd)   // 地图增加
+	group.POST("/gm/map/edit", gm.MapEdit) // 地图编辑
+	group.POST("/gm/map/del", gm.MapDel)   // 地图删除
 
-    group.GET("/gm/push/list", gm.PushList)   // 推送任务列表
-    group.POST("/gm/push/testsend", gm.PushTestSend)   // 增加测试推送任务
-    group.POST("/gm/push/send", gm.PushSend)    // 增加推送任务
-    group.POST("/gm/push/pause", gm.PushPause)  // 推送任务暂停
+	group.GET("/gm/push/list", gm.PushList)          // 推送任务列表
+	group.POST("/gm/push/testsend", gm.PushTestSend) // 增加测试推送任务
+	group.POST("/gm/push/send", gm.PushSend)         // 增加推送任务
+	group.POST("/gm/push/pause", gm.PushPause)       // 推送任务暂停
 
-    group.GET("/gm/welfare/tasklist", gm.WelfareTaskList)   // 福利任务列表
-    group.POST("/gm/welfare/taskadd", gm.WelfareTaskAdd)    // 新增一个福利任务
-    group.POST("/gm/welfare/taskpause", gm.WelfareTaskPause)    // 暂停福利任务
-    group.POST("/gm/welfare/taskresume", gm.WelfareTaskResume)    // 恢复福利任务
-    group.POST("/gm/welfare/taskupdate", gm.WelfareTaskUpdate)    // 更新福利任务
-    group.POST("/gm/welfare/taskdel", gm.WelfareTaskDel)    // 删除福利任务
-    group.GET("/gm/welfare/rolelist", gm.WelfareRoleList)    // 玩家福利
+	group.GET("/gm/welfare/tasklist", gm.WelfareTaskList)      // 福利任务列表
+	group.POST("/gm/welfare/taskadd", gm.WelfareTaskAdd)       // 新增一个福利任务
+	group.POST("/gm/welfare/taskpause", gm.WelfareTaskPause)   // 暂停福利任务
+	group.POST("/gm/welfare/taskresume", gm.WelfareTaskResume) // 恢复福利任务
+	group.POST("/gm/welfare/taskupdate", gm.WelfareTaskUpdate) // 更新福利任务
+	group.POST("/gm/welfare/taskdel", gm.WelfareTaskDel)       // 删除福利任务
+	group.GET("/gm/welfare/rolelist", gm.WelfareRoleList)      // 玩家福利
 
-	group.GET("/game/role/list", game.RoleList) // 玩家列表
+	group.GET("/game/role/list", game.RoleList)     // 玩家列表
 	group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志
 	group.GET("/game/coin/sublog", game.CoinSubLog)
 	group.GET("/game/diamond/addlog", game.DiamondAddLog) // 钻石日志
@@ -135,13 +135,14 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
 	group.GET("/game/recharge/trace", game.RechargeTrace)
 	group.GET("/game/recharge/receipt", gm.IAPDetail)
+	group.GET("/api/game/client_err/err_info", game.ErrInfo) // 客户端报错信息
 
-    group.GET("/game/chat/getnewest", game.ChatGetNewest)
-    group.GET("/game/chat/gethistory", game.ChatGetHistory)
-    group.GET("/game/chat/getnewestmask", game.ChatGetMaskNewest)
-    group.GET("/game/chat/getmaskhistory", game.ChatGetMaskLogs)
-    group.GET("/game/chat/getmaskword", game.ChatGetMaskWord)
-    group.POST("/game/chat/setmaskword", game.ChatSetMaskWord)
+	group.GET("/game/chat/getnewest", game.ChatGetNewest)
+	group.GET("/game/chat/gethistory", game.ChatGetHistory)
+	group.GET("/game/chat/getnewestmask", game.ChatGetMaskNewest)
+	group.GET("/game/chat/getmaskhistory", game.ChatGetMaskLogs)
+	group.GET("/game/chat/getmaskword", game.ChatGetMaskWord)
+	group.POST("/game/chat/setmaskword", game.ChatSetMaskWord)
 
 	group.GET("/stat/all/list", stat.AllList)
 	group.GET("/stat/all/ltv", stat.LtvList)
