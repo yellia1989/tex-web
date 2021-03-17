@@ -4,6 +4,9 @@ import (
 	"github.com/labstack/echo"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
     common "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-go/tools/log"
+    "github.com/yellia1989/tex-web/backend/cfg"
+    "sort"
 )
 
 type errSimpleInfo struct {
@@ -54,11 +57,11 @@ func ErrInfo(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-    db, err := zoneLogDb(zoneid)
+    db := cfg.LogDb
 
-    sql := "select time, message FROM client_err "
-    sql += "WHERE time BETWEEN '"+startTime"' AND '"+endTime"'"
-    
+    sql := "SELECT time, message FROM client_err "
+    sql += "WHERE time BETWEEN '"+startTime+"' AND '"+endTime+"'"
+
     log.Infof("sql: %s", sql)
 
     rows, err := db.Query(sql)
@@ -67,24 +70,30 @@ func ErrInfo(c echo.Context) error {
 	}
 	defer rows.Close()
 
-
 	simpleErrInfo := make([]errSimpleInfo, 0)
     for rows.Next() {
         var r errSimpleInfo
-        var string sErrtime
-        if err := row.Scan(&ErrTime, &r.ErrMessage); err != nil {
+        var sErrTime string
+        if err := rows.Scan(&sErrTime, &r.ErrMessage); err != nil {
             return err
         }
         // 日期按天排序
         timeFormat := "2006-01-02 15:04:05"
         tErrtime := common.ParseTimeInLocal(timeFormat, sErrTime)
+
         r.ErrTime = tErrtime.Format("2006-01-02")    
-        
-        ++r.ErrTimes
+        r.ErrTimes += 1
+
+        bFind := false
         for k,v := range simpleErrInfo {
-            if (v.ErrTime == r.ErrTime && v.ErrMessage == r.ErrMessage) {
-                ++simpleErrInfo[k].Errtimes
+            if len(simpleErrInfo) != 0 && v.ErrTime == r.ErrTime && v.ErrMessage == r.ErrMessage {
+                simpleErrInfo[k].ErrTimes += 1
+                bFind = true
             }
+        }
+
+        if !bFind {
+            simpleErrInfo = append(simpleErrInfo, r)
         }
     }
 
@@ -92,8 +101,8 @@ func ErrInfo(c echo.Context) error {
         return err
     }
 
-    sort.Sort(errSimpleInfo(simpleErrInfo))
-    
+    sort.Sort(errSimpleInfoBy(simpleErrInfo))
+
 	return ctx.SendArray(simpleErrInfo, len(simpleErrInfo))
 }
 

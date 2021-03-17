@@ -135,8 +135,8 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
 	group.GET("/game/recharge/trace", game.RechargeTrace)
 	group.GET("/game/recharge/receipt", gm.IAPDetail)
-	group.GET("/api/game/client_err/err_info", game.ErrInfo)     // 客户端报错信息
-	group.GET("/api/game/client_err/err_detail", game.ErrDetail) // 错误信息详情
+	group.GET("/game/client_err/err_info", game.ErrInfo)     // 客户端报错信息
+	group.GET("/game/client_err/err_detail", game.ErrDetail) // 错误信息详情
 
 	group.GET("/game/chat/getnewest", game.ChatGetNewest)
 	group.GET("/game/chat/gethistory", game.ChatGetHistory)
