@@ -66,7 +66,8 @@
         {field: "err_time", title: "报错时间", width: 120, align: "center"},
         {field: "err_info", title: "报错信息"},
         {field: "err_times", title: "报错次数", width: 120, align: "center"},
-        {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
+        {field: "client_version", title: "客户端版本", width:150, align: "center"},
+        {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
@@ -74,7 +75,7 @@
     });
 
     table.on("tool(tableFilter)", function (obj) {
-      errInfo = obj.data.err_info
+      errInfoMd5 = obj.data.err_info_md5
       errTime = obj.data.err_time
       switch (obj.event) {
         case "detail":

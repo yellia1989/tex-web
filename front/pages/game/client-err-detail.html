@@ -29,7 +29,7 @@
     let detailTable = table.render({
       elem: "#tableId",
       url: "/api/game/client_err/err_detail",
-      where: { ErrInfo: parent.errInfo, ErrTime: parent.errTime },
+      where: { ErrInfo: parent.errInfoMd5, ErrTime: parent.errTime },
       data:[],
       text: {
         none: '暂无相关数据',
