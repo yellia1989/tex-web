@@ -34,13 +34,14 @@
         none: '暂无相关数据',
       },
       cols: [[
+        {field: "err_time", title: "报错时间"},
         {field: "role_id", title: "角色id"},
         {field: "err_info", title: "报错信息"},
         {field: "zond_id", title: "区服id"}
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
-      autoSort: true,
+      autoSort: false,
     });
   })
 </script>
