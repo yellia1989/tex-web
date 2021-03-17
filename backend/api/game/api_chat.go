@@ -82,10 +82,13 @@ func ChatGetNewest(c echo.Context) error {
 
     var limit = 140
     if fromid == 0 {
-        if err := db.QueryRow("select max(_rid) from chat").Scan(&fromid); err != nil {
+        var maxid ssql.NullInt32
+        if err := db.QueryRow("select max(_rid) from chat").Scan(&maxid); err != nil {
             return err
         }
-        fromid -= limit
+        if int(maxid.Int32) > limit {
+            fromid = int(maxid.Int32) - limit
+        }
     }
 
     sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content from chat where _rid > ? limit ?"
@@ -185,10 +188,13 @@ func ChatGetMaskNewest(c echo.Context) error {
 
     var limit = 140
     if fromid == 0 {
-        if err := db.QueryRow("select max(_rid) from chat_dirty_history").Scan(&fromid); err != nil {
+        var maxid ssql.NullInt32
+        if err := db.QueryRow("select max(_rid) from chat_dirty_history").Scan(&maxid); err != nil {
             return err
         }
-        fromid -= limit
+        if int(maxid.Int32) > limit {
+            fromid = int(maxid.Int32) - limit
+        }
     }
     sql := "select _rid,time,zoneid,mapid,type,fromroleid,fromrolename,tozoneid,toroleid,torolename,allianceid,alliancename,content,dirtyword from chat_dirty_history where _rid > ? limit ?"
     rows, err := db.Query(sql, fromid, limit)
