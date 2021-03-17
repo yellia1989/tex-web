@@ -8,6 +8,7 @@ import (
 	"github.com/yellia1989/tex-web/backend/cfg"
 	common "github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+    "strings"
 )
 
 type errSimpleInfo struct {
@@ -21,12 +22,11 @@ type errSimpleInfoBy []errSimpleInfo
 func (a errSimpleInfoBy) Len() int      { return len(a) }
 func (a errSimpleInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errSimpleInfoBy) Less(i, j int) bool {
-
-	return a[i].ErrTime > a[j].ErrTime
+    if a[i].ErrTime > a[j].ErrTime {
+        return true
+    }
 
 	return a[i].ErrTimes > a[j].ErrTimes
-
-	return a[i].ErrMessage < a[j].ErrMessage
 }
 
 type errInfo struct {
@@ -41,10 +41,13 @@ type errInfoBy []errInfo
 func (a errInfoBy) Len() int      { return len(a) }
 func (a errInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errInfoBy) Less(i, j int) bool {
+	if a[i].ErrTime > a[j].ErrTime {
+        return true
+    }
 
-	return a[i].ErrTime > a[j].ErrTime
-
-	return a[i].ErrMessage < a[j].ErrMessage
+    if a[i].ErrMessage > a[j].ErrMessage {
+        return true
+    }
 
 	return a[i].ZoneId < a[j].ZoneId
 }
@@ -78,6 +81,9 @@ func ErrInfo(c echo.Context) error {
 		if err := rows.Scan(&sErrTime, &r.ErrMessage); err != nil {
 			return err
 		}
+
+        r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
+
 		// 日期按天排序
 		timeFormat := "2006-01-02 15:04:05"
 		tErrtime := common.ParseTimeInLocal(timeFormat, sErrTime)
@@ -109,23 +115,28 @@ func ErrInfo(c echo.Context) error {
 
 func ErrDetail(c echo.Context) error {
 	ctx := c.(*mid.Context)
-	errInfo := ctx.QueryParam("errInfo")
-	errTime := ctx.QueryParam("errTime")
+	sErrInfo := ctx.QueryParam("ErrInfo")
+	sErrTime := ctx.QueryParam("ErrTime")
 
-	if errInfo == "" || errTime == "" {
+	if sErrInfo == "" || sErrTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
+    // 时间转换
 	timeFormat := "2006-01-02 15:04:05"
-	tErrtime := common.ParseTimeInLocal(timeFormat, errTime)
-	endTime := tErrtime.Date(0, 0, 1)
+    timeFormatDay := "2006-01-02"
+	tErrtime := common.ParseTimeInLocal(timeFormatDay, sErrTime)
+    log.Infof("errTime: %s", tErrtime.Format(timeFormat))
+	endTime := tErrtime.AddDate(0, 0, 1)
 
 	sBeginTime := tErrtime.Format(timeFormat)
 	sEndTime := endTime.Format(timeFormat)
 
+    sErrInfo = strings.Replace(sErrInfo, "<br>", "\n", -1)
+
 	db := cfg.LogDb
 	sql := "SELECT time, message, zoneid, roleid FROM client_err "
-	sql += "WHERE time BETWEEN '" + sBeginTime + "' AND '" + sEndTime + "' AND message = '" + errInfo + "'"
+	sql += "WHERE time BETWEEN '" + sBeginTime + "' AND '" + sEndTime + "' AND message = '" + sErrInfo + "'"
 
 	log.Infof("sql: %s", sql)
 
@@ -139,9 +150,10 @@ func ErrDetail(c echo.Context) error {
 
 	for rows.Next() {
 		var r errInfo
-		if err := rows.Scan(&r.ErrTime, &r.ErrInfo, &r.ZoneId, &r.RoleId); err != nil {
+		if err := rows.Scan(&r.ErrTime, &r.ErrMessage, &r.ZoneId, &r.RoleId); err != nil {
 			return err
 		}
+        r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
 
 		slErrInfo = append(slErrInfo, r)
 	}

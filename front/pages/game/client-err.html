@@ -63,9 +63,9 @@
         none: '暂无相关数据',
       },
       cols: [[
-        {field: "err_time", title: "报错时间"},
+        {field: "err_time", title: "报错时间", width: 120, align: "center"},
         {field: "err_info", title: "报错信息"},
-        {field: "err_times", title: "报错次数"},
+        {field: "err_times", title: "报错次数", width: 120, align: "center"},
         {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
@@ -74,8 +74,8 @@
     });
 
     table.on("tool(tableFilter)", function (obj) {
-      var errInfo = obj.data.err_info
-      var errTime = obj.data.err_time
+      errInfo = obj.data.err_info
+      errTime = obj.data.err_time
       switch (obj.event) {
         case "detail":
           detail();
@@ -103,4 +103,13 @@
   </div>
 </script>
 </body>
+<style>
+    .layui-table-cell {
+        height:auto;
+    }
+    .layui-table-tips-main{
+        height:auto;
+        line-height: 30px;
+    }
+</style>
 </html>
