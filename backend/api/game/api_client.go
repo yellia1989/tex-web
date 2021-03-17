@@ -8,7 +8,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-go/tools/log"
 	"github.com/yellia1989/tex-web/backend/cfg"
-	common "github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -70,12 +69,9 @@ func ErrInfo(c echo.Context) error {
 
 	db := cfg.LogDb
 
-	timeFormatDay := "2006-01-02"
-	tStartTimeDay := common.ParseTimeInLocal(timeFormatDay, startTime)
-	tEndTime := common.ParseTimeInLocal(timeFormatDay, endTime)
-
-	sql := "SELECT timeymd, client_version, stack, stackmd5 FROM client_err "
-	sql += "WHERE time BETWEEN '" + tStartTime.Format(timeFormatDay) + "' AND '" + tEndTime.Format(timeFormatDay) + "'"
+	sql := "SELECT timeymd, client_version, stack, stackmd5, count(*) as count  FROM client_error "
+	sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
+    sql += "GROUP BY timeymd, client_version, stackmd5"
 
 	log.Infof("sql: %s", sql)
 
@@ -88,25 +84,13 @@ func ErrInfo(c echo.Context) error {
 	slSimpleErrInfo := make([]errSimpleInfo, 0)
 	for rows.Next() {
 		var r errSimpleInfo
-		if err := rows.Scan(&r.ErrTime, &r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5); err != nil {
+		if err := rows.Scan(&r.ErrTime, &r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5, &r.ErrTimes); err != nil {
 			return err
 		}
 
 		r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
 
-		r.ErrTimes += 1
-
-		bFind := false
-		for k, v := range slSimpleErrInfo {
-			if len(slSimpleErrInfo) != 0 && v.ErrTime == r.ErrTime && v.ErrMessageMd5 == r.ErrMessageMd5 {
-				slSimpleErrInfo[k].ErrTimes += 1
-				bFind = true
-			}
-		}
-
-		if !bFind {
-			slSimpleErrInfo = append(slSimpleErrInfo, r)
-		}
+		slSimpleErrInfo = append(slSimpleErrInfo, r)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -122,14 +106,16 @@ func ErrDetail(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	sErrInfoMd5 := ctx.QueryParam("ErrInfo")
 	sErrTime := ctx.QueryParam("ErrTime")
+    sClientVersion := ctx.QueryParam("ClientVersion")
 
-	if sErrInfo == "" || sErrTime == "" {
+	if sErrInfoMd5 == "" || sErrTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.LogDb
-	sql := "SELECT timehms, message, zoneid, roleid FROM client_err "
-	sql += "WHERE str_to_date(timeymd, '%Y-%m-%d') = str_to_date('" + sErrTime + "')  AND stackmd5 = '" + sErrInfoMd5 + "'"
+	sql := "SELECT timehms, stack, zoneid, roleid FROM client_error "
+	sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND stackmd5 = '" + sErrInfoMd5 + "'" 
+    sql += "AND client_version = '"+ sClientVersion + "'"
 
 	log.Infof("sql: %s", sql)
 

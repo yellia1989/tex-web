@@ -77,6 +77,7 @@
     table.on("tool(tableFilter)", function (obj) {
       errInfoMd5 = obj.data.err_info_md5
       errTime = obj.data.err_time
+      clientVersion = obj.data.client_version
       switch (obj.event) {
         case "detail":
           detail();
