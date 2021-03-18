@@ -62,6 +62,8 @@
       text: {
         none: '暂无相关数据',
       },
+      limit: 5,
+      page: true,
       cols: [[
         {field: "err_time", title: "报错时间", width: 120, align: "center"},
         {field: "err_info", title: "报错信息"},
@@ -94,6 +96,9 @@
       stageTable.reload({
         url: "/api/game/client_err/err_info",
         where: data.field,
+        page: {
+            curr: 1,
+        }
       });
       return false;
     });

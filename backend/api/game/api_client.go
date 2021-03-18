@@ -3,6 +3,8 @@ package game
 import (
     "sort"
     "strings"
+    "strconv"
+    "github.com/yellia1989/tex-web/backend/common"
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
@@ -60,6 +62,8 @@ func ErrInfo(c echo.Context) error {
     ctx := c.(*mid.Context)
     startTime := ctx.QueryParam("startTime")
     endTime := ctx.QueryParam("endTime")
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     if startTime == "" || endTime == "" {
         return ctx.SendError(-1, "参数非法")
@@ -97,7 +101,9 @@ func ErrInfo(c echo.Context) error {
 
     sort.Sort(errSimpleInfoBy(slSimpleErrInfo))
 
-    return ctx.SendArray(slSimpleErrInfo, len(slSimpleErrInfo))
+    vSimpleErrInfo := common.GetPage(slSimpleErrInfo, page, limit)
+
+    return ctx.SendArray(vSimpleErrInfo, len(slSimpleErrInfo))
 }
 
 func ErrDetail(c echo.Context) error {
