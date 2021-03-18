@@ -783,6 +783,20 @@
           3,
           4
         ]
+      },
+      {
+        "id": 815,
+        "title": "客户端报错信息",
+        "href": "game/client-err.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
       }
     ],
     "role": [
