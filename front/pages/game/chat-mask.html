@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>聊天屏蔽字设置</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form" action="">
+      <div class="layui-form-item lyui-form-text">
+        <div class="layui-input-block" style="color:#a29bfe">
+        <label>屏蔽字(每行为一个单独的屏蔽字)</label>
+        <br/>
+        <div name="list" style="width:50%; word-wrap:break-word"></div>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block" style="width:50%">
+          <textarea name="input" id="input" class="layui-textarea" rows="25"></textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="confirm">设置</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      okUtils.ajax("/api/game/chat/getmaskword", "get",true).done(function (response) {
+        $("#input").val(response.data);
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      //监听提交
+      form.on('submit(confirm)', function (data) {
+        okUtils.ajax("/api/game/chat/setmaskword", "post", data.field, true).done(function (response) {
+
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    })
+  </script>
+</body>
+
+</html>

@@ -33,6 +33,9 @@ var App string
 // logo
 var Logo string
 
+// 时区
+var TimeZone *time.Location
+
 // 日志数据库
 var LogDb *sql.DB
 
@@ -66,6 +69,9 @@ var StatRmoney uint32
 // 只统计相关渠道信息
 var StatChannels []string
 
+// 聊天消息脏字检测间隔
+var ChatMaskInterval time.Duration
+
 func ParseCfg(file string) (err error) {
     if Config == nil {
         Config = util.NewConfig()
@@ -91,6 +97,11 @@ func ParseCfg(file string) (err error) {
     Logo = url.QueryEscape(cfg.GetCfg("logo", ""))
     if Logo == "" {
         panic("logo required")
+    }
+
+    TimeZone, err = time.LoadLocation(cfg.GetCfg("timezone", "Local"))
+    if err != nil {
+        panic("invalid timezone")
     }
 
     logdb := cfg.GetCfg("logdb", "")
@@ -145,6 +156,8 @@ func ParseCfg(file string) (err error) {
 
     tmp := cstat.GetCfg("channel","")
     StatChannels = strings.Split(tmp, ",")
+
+    ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1m")
 
     return
 }
