@@ -15,7 +15,10 @@
         <div class="layui-inline">
 		      <label class="layui-form-label">资源类型</label>
 		      <div class="layui-input-inline">
-            <div id="iResId"></div>
+                <select name="iResId">
+                  <option value="1">钻石</option>
+                  <option value="2">金币</option>
+                </select>
 		      </div>
           <div class="layui-form-mid">-</div>
           <label class="layui-form-label">可获得途径</label>
@@ -41,30 +44,6 @@
       let upload = layui.upload;
       let $ = layui.jquery;
       let element = layui.element;
-
-      let iResId = xmSelect.render({
-        el: '#iResId',
-        name: 'iResId',
-        tips: '请选择监控的资源类型',
-        filterable: true,
-        radio: true,
-        clickClose: true,
-        model: {
-          label: {
-            type: 'block',
-            block: {
-              //是否显示删除图标
-              showIcon: false,
-            }
-          }
-        }
-      });
-
-      okUtils.ajax("/api/gm/item/list", "get", null, false).done(function (response) {
-        iResId.update({data: response.data});
-      }).fail(function (error) {
-        console.log(error);
-      });
 
       let access = xmSelect.render({
         el: '#access',
