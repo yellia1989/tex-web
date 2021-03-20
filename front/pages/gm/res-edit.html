@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>添加资源管理项</title>
+  <title>编辑资源管理项</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -13,11 +13,6 @@
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
         <div class="layui-inline">
-		      <label class="layui-form-label">资源类型</label>
-		      <div class="layui-input-inline">
-            <div id="iResId"></div>
-		      </div>
-          <div class="layui-form-mid">-</div>
           <label class="layui-form-label">可获得途径</label>
           <div class="layui-input-inline">
             <div id="access"></div>
@@ -25,7 +20,7 @@
 		    </div>
 		  </div>
       <div class="layui-form-item">
-        <button class="layui-btn" lay-submit lay-filter="add" id="add">添加</button>
+        <button class="layui-btn" lay-submit lay-filter="edit" id="edit">更改</button>
       </div>
     </form>
   </div>
@@ -41,31 +36,6 @@
       let upload = layui.upload;
       let $ = layui.jquery;
       let element = layui.element;
-
-      let iResId = xmSelect.render({
-        el: '#iResId',
-        name: 'iResId',
-        tips: '请选择监控的资源类型',
-        filterable: true,
-        radio: true,
-        layVerify: 'required'
-        clickClose: true,
-        model: {
-          label: {
-            type: 'block',
-            block: {
-              //是否显示删除图标
-              showIcon: false,
-            }
-          }
-        }
-      });
-
-      okUtils.ajax("/api/gm/item/list", "get", null, false).done(function (response) {
-        iResId.update({data: response.data});
-      }).fail(function (error) {
-        console.log(error);
-      });
 
       let access = xmSelect.render({
         el: '#access',
@@ -110,7 +80,7 @@
 
       //监听提交
       var mailparam;
-      form.on('submit(add)', function (data) {
+      form.on('submit(edit)', function (data) {
         let param = {iResId: data.field.iResId, items: data.field.access};
         okUtils.ajax("/api/gm/res/update_access", "post", param, true).done(function (response) {
         }).fail(function (error) {
