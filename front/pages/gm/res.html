@@ -56,10 +56,11 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
-            edit();
+            editData = data;
+            edit(data.iResId);
             break;
           case "del":
-            del(data.id);
+            del(data.iResId);
             break;
         }
       });
@@ -70,7 +71,7 @@
         })
       }
 
-      function edit() {
+      function edit(id) {
         okLayer.open("编辑资源管理项", "res-edit.html", "90%", "90%", null, function () {
           resTable.reload();
         })
@@ -78,7 +79,7 @@
       
       function del(id) {
         okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/api/gm/res/del", "post", { idsStr: id }, true).done(function (response) {
+          okUtils.ajax("/api/gm/res/del", "post", { iResId: id }, true).done(function (response) {
             okUtils.tableSuccessMsg(response.data);
           }).fail(function (error) {
             console.log(error)

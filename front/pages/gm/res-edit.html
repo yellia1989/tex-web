@@ -13,6 +13,10 @@
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
         <div class="layui-inline">
+		      <label class="layui-form-label">资源类型</label>
+		      <div class="layui-input-inline" name="iResId">
+          </div>
+          <div class="layui-form-mid">-</div>
           <label class="layui-form-label">可获得途径</label>
           <div class="layui-input-inline">
             <div id="action"></div>
@@ -20,7 +24,7 @@
 		    </div>
 		  </div>
       <div class="layui-form-item">
-        <button class="layui-btn" lay-submit lay-filter="edit" id="edit">更改</button>
+        <button class="layui-btn" lay-submit lay-filter="edit" id="edit">编辑</button>
       </div>
     </form>
   </div>
@@ -37,17 +41,18 @@
       let $ = layui.jquery;
       let element = layui.element;
 
+      $("input[name=iResId]").val(parent.editData.iResId);
+
       let action = xmSelect.render({
         el: '#action',
-        name: 'action',
+        name: 'aciton',
         prop: {
-          value: 'iId',
-          name: 'sName',
+          value: 'vaule',
+          name: 'name',
         },
         tips: '请至少选择一个获取途径',
         layVerify: 'false',
         layVerType: 'tips',
-        disabled: true,
         on: function(data){
           //arr:  当前多选已选中的数据
           let arr = data.arr;
@@ -79,10 +84,14 @@
       });
 
       //监听提交
-      var mailparam;
+      var param;
       form.on('submit(edit)', function (data) {
-        let param = {iResId: data.field.iId, items: data.field.sName};
-        okUtils.ajax("/api/gm/res/update_action", "post", param, true).done(function (response) {
+        let actionstr = action.getValue('valueStr')
+        let param = {iResId: data.field.iResId, sAction: actionstr};
+        okUtils.ajax("/api/gm/res/edit", "post", param, true).done(function (response) {
+            okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
         }).fail(function (error) {
           console.log(error);
         });
