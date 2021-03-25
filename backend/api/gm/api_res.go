@@ -2,28 +2,32 @@ package gm
 
 import (
     "time"
-	"strconv"
     "strings"
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/cfg"
-	"github.com/yellia1989/tex-web/backend/common"
-	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
-	mid "github.com/yellia1989/tex-web/backend/middleware"
+    mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
+    "strconv"
 )
 
 type resControl struct {
     ResId	uint32	`json:"iResId"`
-    Access  []string `json:"sAccess"`
+    Action  []string `json:"sAction"`
 };
 
-var vAccess []*string
+type Action struct {
+    Vaule string `json:"vaule"`
+    Name string `json:"name"`
+}
+
+var vAction []Action
 var nextUpdateTime time.Time
 
 func ResControlList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
     db := cfg.GameGlobalDb
-    sql := "SELECT res_id, access from res_control"
+    sql := "SELECT res_id, action from res_control"
     rows, err := db.Query(sql)
     if err != nil {
         return err
@@ -31,28 +35,29 @@ func ResControlList(c echo.Context) error {
     defer rows.Close()
 
     vResControl := make([]resControl, 0)
-    for row.Next() {
+    for rows.Next() {
         var r resControl
-        var sAccess string
-        if err := rows.Scan(&r.ResId, &sAccess) != nil {
+        var sAction string
+        if err := rows.Scan(&r.ResId, &sAction); err != nil {
             return err
         }
 
-        r.Access = strings.Split(sAccess, ",")
+        r.Action = strings.Split(sAction, ",")
         vResControl = append(vResControl, r)
     }
 
     return ctx.SendArray(vResControl, len(vResControl))
 }
 
-func AccessList(c echo.Context) error {
+func ActionList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    accessList := getAllAccess()
-    return ctx.SendResponse(accessList)
+    actionList := getAllAction()
+
+    return ctx.SendArray(actionList, len(actionList));
 }
 
-func refreshAccessList() {
+func refreshActionList() {
     now := time.Now()
     if now.Before(nextUpdateTime) {
         return
@@ -62,32 +67,49 @@ func refreshAccessList() {
     sql := "SELECT action from user_action"
     rows, err := db.Query(sql)
     if err != nil {
-        return err
+        return
     }
     defer rows.Close()
 
-    vtmp := make([]*string, 0)
+    vtmp := make([]Action, 0)
     for rows.Next() {
-        var r string
-        if err := rows.Scan(&r) != nil {
-            return err
+        var r Action
+        if err := rows.Scan(&r.Name); err != nil {
+            return
         }
-        vtmp = append(vtmp, &r)
+        r.Vaule = r.Name
+        vtmp = append(vtmp, r)
     }
-    vAccess = vtmp
+    vAction = vtmp
 
     nextUpdateTime = now.Add(time.Minute * 5)
 }
 
-func getAllAccess() []*string {
-    refreshAccessList()
+func getAllAction() []Action {
+    refreshActionList()
     
-    allAccess := make([]*string, len(vAccess))
+    allAction := make([]Action, len(vAction))
 
-    copy(allAccess, vAccess)
+    copy(allAction, vAction)
 
-    return allAccess
+    return allAction
 }
 
-func AccessUpdate(c echo.Context) error {   
+func ActionAdd(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    resId,_ := strconv.Atoi(ctx.FormValue("iResId"))
+    sAction := ctx.FormValue("sAction")
+
+    log.Infof("resId: %d\n sAction: %s",resId, sAction)
+
+    db := cfg.GameGlobalDb
+    sql := "INSERT INTO res_control (res_id, action) VALUES(?,?)"
+
+    rows, err := db.Query(sql, resId, sAction)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    return ctx.SendResponse("添加资源监控项成功")
 }

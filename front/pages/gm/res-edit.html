@@ -15,7 +15,7 @@
         <div class="layui-inline">
           <label class="layui-form-label">可获得途径</label>
           <div class="layui-input-inline">
-            <div id="access"></div>
+            <div id="action"></div>
 		      </div>
 		    </div>
 		  </div>
@@ -37,12 +37,12 @@
       let $ = layui.jquery;
       let element = layui.element;
 
-      let access = xmSelect.render({
-        el: '#access',
-        name: 'access',
+      let action = xmSelect.render({
+        el: '#action',
+        name: 'action',
         prop: {
-          value: 'iAccessId',
-          name: 'sAccessName',
+          value: 'iId',
+          name: 'sName',
         },
         tips: '请至少选择一个获取途径',
         layVerify: 'false',
@@ -57,13 +57,13 @@
           let isAdd = data.isAdd;
           if(isAdd){
             var allItem = change.find(function(item){
-              return item.iAccessId === 99999;
+              return item.iId === 99999;
             })
             if(allItem){
               return [allItem];
             }
             allItem = arr.find(function(item){
-              return item.iAccessId === 99999;
+              return item.iId === 99999;
             })
             if(allItem){
               return change;
@@ -72,8 +72,8 @@
         },
       });
      
-      okUtils.ajax("/api/gm/res/accesslist", "get", null, false).done(function (response) {
-        access.update({data: response.data});
+      okUtils.ajax("/api/gm/res/actionlist", "get", null, false).done(function (response) {
+        action.update({data: response.data});
       }).fail(function (error) {
         console.log(error);
       });
@@ -81,8 +81,8 @@
       //监听提交
       var mailparam;
       form.on('submit(edit)', function (data) {
-        let param = {iResId: data.field.iResId, items: data.field.access};
-        okUtils.ajax("/api/gm/res/update_access", "post", param, true).done(function (response) {
+        let param = {iResId: data.field.iId, items: data.field.sName};
+        okUtils.ajax("/api/gm/res/update_action", "post", param, true).done(function (response) {
         }).fail(function (error) {
           console.log(error);
         });

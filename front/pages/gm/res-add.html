@@ -15,14 +15,16 @@
         <div class="layui-inline">
 		      <label class="layui-form-label">资源类型</label>
 		      <div class="layui-input-inline">
-            <div id="iResId"></div>                <select name="iResId">
+            <div id="iResId"></div>
+            <select name="iResId">
                   <option value="1">钻石</option>
                   <option value="2">金币</option>
-                </select>		      </div>
+            </select>
+          </div>
           <div class="layui-form-mid">-</div>
           <label class="layui-form-label">可获得途径</label>
           <div class="layui-input-inline">
-            <div id="access"></div>
+            <div id="action"></div>
 		      </div>
 		    </div>
 		  </div>
@@ -44,17 +46,16 @@
       let $ = layui.jquery;
       let element = layui.element;
 
-      let access = xmSelect.render({
-        el: '#access',
-        name: 'access',
+      let action = xmSelect.render({
+        el: '#action',
+        name: 'aciton',
         prop: {
-          value: 'iAccessId',
-          name: 'sAccessName',
+          value: 'vaule',
+          name: 'name',
         },
         tips: '请至少选择一个获取途径',
         layVerify: 'false',
         layVerType: 'tips',
-        disabled: true,
         on: function(data){
           //arr:  当前多选已选中的数据
           let arr = data.arr;
@@ -64,13 +65,13 @@
           let isAdd = data.isAdd;
           if(isAdd){
             var allItem = change.find(function(item){
-              return item.iAccessId === 99999;
+              return item.iId === 99999;
             })
             if(allItem){
               return [allItem];
             }
             allItem = arr.find(function(item){
-              return item.iAccessId === 99999;
+              return item.iId === 99999;
             })
             if(allItem){
               return change;
@@ -79,17 +80,21 @@
         },
       });
      
-      okUtils.ajax("/api/gm/res/accesslist", "get", null, false).done(function (response) {
-        access.update({data: response.data});
+      okUtils.ajax("/api/gm/res/actionlist", "get", null, false).done(function (response) {
+        action.update({data: response.data});
       }).fail(function (error) {
         console.log(error);
       });
 
       //监听提交
-      var mailparam;
+      var param;
       form.on('submit(add)', function (data) {
-        let param = {iResId: data.field.iResId, items: data.field.access};
-        okUtils.ajax("/api/gm/res/update_access", "post", param, true).done(function (response) {
+        let actionstr = action.getValue('valueStr')
+        let param = {iResId: data.field.iResId, sAction: actionstr};
+        okUtils.ajax("/api/gm/res/add", "post", param, true).done(function (response) {
+            okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
         }).fail(function (error) {
           console.log(error);
         });
