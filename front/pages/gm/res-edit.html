@@ -12,17 +12,17 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
-        <div class="layui-inline">
-		      <label class="layui-form-label">资源类型</label>
-		      <div class="layui-input-inline" name="iResId">
+		  <label class="layui-form-label">资源类型</label>
+          <div class="layui-input-block">
+		    <input type="text" name="iResId" class="layui-input layui-disabled">
           </div>
-          <div class="layui-form-mid">-</div>
+
           <label class="layui-form-label">可获得途径</label>
           <div class="layui-input-inline">
             <div id="action"></div>
-		      </div>
-		    </div>
 		  </div>
+	  </div>
+
       <div class="layui-form-item">
         <button class="layui-btn" lay-submit lay-filter="edit" id="edit">编辑</button>
       </div>

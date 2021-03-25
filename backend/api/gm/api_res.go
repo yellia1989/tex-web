@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -27,7 +26,7 @@ func ResControlList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
 	db := cfg.GameGlobalDb
-	sql := "SELECT res_id, action from res_control"
+	sql := "SELECT res_id, action from t_res_control"
 	rows, err := db.Query(sql)
 	defer rows.Close()
 	if err != nil {
@@ -64,7 +63,7 @@ func refreshActionList() {
 	}
 
 	db := cfg.GameGlobalDb
-	sql := "SELECT action from user_action"
+	sql := "SELECT action from t_user_action"
 	rows, err := db.Query(sql)
 	defer rows.Close()
 	if err != nil {
@@ -97,7 +96,7 @@ func getAllAction() []Action {
 
 func ActionAdd(c echo.Context) error {
 	ctx := c.(*mid.Context)
-	resId, _ := strconv.Atoi(ctx.FormValue("iResId"))
+	iResId, _ := strconv.Atoi(ctx.FormValue("iResId"))
 	sAction := ctx.FormValue("sAction")
 
 	if iResId == 0 || sAction == "" {
@@ -107,7 +106,7 @@ func ActionAdd(c echo.Context) error {
 	db := cfg.GameGlobalDb
 	sql := "INSERT INTO t_res_control (res_id, action) VALUES(?,?)"
 
-	rows, err := db.Query(sql, resId, sAction)
+	rows, err := db.Query(sql, iResId, sAction)
 	defer rows.Close()
 	if err != nil {
 		return err
@@ -128,7 +127,7 @@ func ActionEdit(c echo.Context) error {
 	db := cfg.GameGlobalDb
 	sql := "UPDATE t_res_control SET action=? WHERE res_id=?"
 
-	rows, err := db.Query(sql, sAction, resId)
+	rows, err := db.Query(sql, sAction, iResId)
 	defer rows.Close()
 	if err != nil {
 		return err
@@ -137,7 +136,7 @@ func ActionEdit(c echo.Context) error {
 	return ctx.SendResponse("编辑资源监控项成功")
 }
 
-func ActionDel(c echo.Contain) error {
+func ActionDel(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	iResId, _ := strconv.Atoi(ctx.FormValue("iResId"))
 
@@ -153,4 +152,5 @@ func ActionDel(c echo.Contain) error {
 	if err != nil {
 		return err
 	}
+    return ctx.SendResponse("删除资源监控项成功")
 }
