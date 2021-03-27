@@ -12,6 +12,7 @@ import (
 type resControl struct {
 	ResId  uint32   `json:"iResId"`
 	Action []string `json:"sAction"`
+    ActionName []string `json:"sActionName"`
 }
 
 type Action struct {
@@ -26,7 +27,7 @@ func ResControlList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
 	db := cfg.GameGlobalDb
-	sql := "SELECT res_id, action_name from t_res_control"
+	sql := "SELECT res_id, action, action_name from t_res_control"
 	rows, err := db.Query(sql)
 	defer rows.Close()
 	if err != nil {
@@ -37,11 +38,13 @@ func ResControlList(c echo.Context) error {
 	for rows.Next() {
 		var r resControl
 		var sAction string
-		if err := rows.Scan(&r.ResId, &sAction); err != nil {
+        var sActionName string
+		if err := rows.Scan(&r.ResId, &sAction, &sActionName); err != nil {
 			return err
 		}
 
 		r.Action = strings.Split(sAction, ",")
+        r.ActionName = strings.Split(sActionName, ",")
 		vResControl = append(vResControl, r)
 	}
 
