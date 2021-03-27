@@ -26,7 +26,7 @@ func ResControlList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
 	db := cfg.GameGlobalDb
-	sql := "SELECT res_id, action from t_res_control"
+	sql := "SELECT res_id, action_name from t_res_control"
 	rows, err := db.Query(sql)
 	defer rows.Close()
 	if err != nil {
@@ -62,8 +62,8 @@ func refreshActionList() {
 		return
 	}
 
-	db := cfg.GameGlobalDb
-	sql := "SELECT action from t_user_action"
+	db := cfg.LogDb
+	sql := "SELECT action, action_name from user_action"
 	rows, err := db.Query(sql)
 	defer rows.Close()
 	if err != nil {
@@ -73,10 +73,9 @@ func refreshActionList() {
 	vtmp := make([]Action, 0)
 	for rows.Next() {
 		var r Action
-		if err := rows.Scan(&r.Name); err != nil {
+		if err := rows.Scan(&r.Vaule, &r.Name); err != nil {
 			return
 		}
-		r.Vaule = r.Name
 		vtmp = append(vtmp, r)
 	}
 	vAction = vtmp
@@ -98,15 +97,16 @@ func ActionAdd(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	iResId, _ := strconv.Atoi(ctx.FormValue("iResId"))
 	sAction := ctx.FormValue("sAction")
+	sActionName := ctx.FormValue("sActionName")
 
-	if iResId == 0 || sAction == "" {
+	if iResId == 0 || sAction == "" || sActionName == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.GameGlobalDb
-	sql := "INSERT INTO t_res_control (res_id, action) VALUES(?,?)"
+	sql := "INSERT INTO t_res_control (res_id, action, action_name) VALUES(?,?,?)"
 
-	rows, err := db.Query(sql, iResId, sAction)
+	rows, err := db.Query(sql, iResId, sAction, sActionName)
 	defer rows.Close()
 	if err != nil {
 		return err
@@ -119,15 +119,16 @@ func ActionEdit(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	iResId, _ := strconv.Atoi(ctx.FormValue("iResId"))
 	sAction := ctx.FormValue("sAction")
+	sActionName := ctx.FormValue("sActionName")
 
-	if iResId == 0 || sAction == "" {
+	if iResId == 0 || sAction == "" || sActionName == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.GameGlobalDb
-	sql := "UPDATE t_res_control SET action=? WHERE res_id=?"
+	sql := "UPDATE t_res_control SET action=?, action_name=? WHERE res_id=?"
 
-	rows, err := db.Query(sql, sAction, iResId)
+	rows, err := db.Query(sql, sAction, sActionName, iResId)
 	defer rows.Close()
 	if err != nil {
 		return err

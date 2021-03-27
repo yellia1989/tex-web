@@ -17,8 +17,8 @@
 		      <div class="layui-input-inline">
             <div id="iResId"></div>
             <select name="iResId">
-                  <option value="1">钻石</option>
-                  <option value="2">金币</option>
+                  <option value="1">金币(1)</option>
+                  <option value="2">钻石(2)</option>
             </select>
           </div>
           <div class="layui-form-mid">-</div>
@@ -89,8 +89,9 @@
       //监听提交
       var param;
       form.on('submit(add)', function (data) {
-        let actionstr = action.getValue('valueStr')
-        let param = {iResId: data.field.iResId, sAction: actionstr};
+        let actionStr = action.getValue('valueStr')
+        let actionNameStr = action.getValue('nameStr')
+        let param = {iResId: data.field.iResId, sAction: actionStr, sActionName: actionNameStr};
         okUtils.ajax("/api/gm/res/add", "post", param, true).done(function (response) {
             okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
