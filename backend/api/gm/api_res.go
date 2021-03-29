@@ -4,15 +4,16 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
 type resControl struct {
-	ResId  uint32   `json:"iResId"`
-	Action []string `json:"sAction"`
-    ActionName []string `json:"sActionName"`
+	ResId      uint32   `json:"iResId"`
+	Action     []string `json:"sAction"`
+	ActionName []string `json:"sActionName"`
 }
 
 type Action struct {
@@ -38,13 +39,13 @@ func ResControlList(c echo.Context) error {
 	for rows.Next() {
 		var r resControl
 		var sAction string
-        var sActionName string
+		var sActionName string
 		if err := rows.Scan(&r.ResId, &sAction, &sActionName); err != nil {
 			return err
 		}
 
 		r.Action = strings.Split(sAction, ",")
-        r.ActionName = strings.Split(sActionName, ",")
+		r.ActionName = strings.Split(sActionName, ",")
 		vResControl = append(vResControl, r)
 	}
 
@@ -156,5 +157,5 @@ func ActionDel(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-    return ctx.SendResponse("删除资源监控项成功")
+	return ctx.SendResponse("删除资源监控项成功")
 }
