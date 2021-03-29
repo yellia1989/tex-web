@@ -4,6 +4,7 @@ import (
     "sort"
     "strings"
     "strconv"
+    "encoding/base64"
     "github.com/yellia1989/tex-web/backend/common"
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/log"
@@ -51,10 +52,6 @@ func (a errInfoBy) Less(i, j int) bool {
         return true
     }
 
-    if a[i].ErrMessage > a[j].ErrMessage {
-        return true
-    }
-
     return a[i].ZoneId < a[j].ZoneId
 }
 
@@ -90,6 +87,8 @@ func ErrInfo(c echo.Context) error {
             return err
         }
 
+        decodeBytes, _ := base64.StdEncoding.DecodeString(r.ErrMessage)
+        r.ErrMessage = string(decodeBytes)
         r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
 
         slSimpleErrInfo = append(slSimpleErrInfo, r)
@@ -136,6 +135,8 @@ func ErrDetail(c echo.Context) error {
         if err := rows.Scan(&r.ErrTime, &r.ErrMessage, &r.ZoneId, &r.RoleId); err != nil {
             return err
         }
+        decodeBytes, _ := base64.StdEncoding.DecodeString(r.ErrMessage)
+        r.ErrMessage = string(decodeBytes)
         r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
 
         slErrInfo = append(slErrInfo, r)
