@@ -66,7 +66,7 @@ func refreshActionList() {
 		return
 	}
 
-	db := cfg.LogDb
+	db := cfg.StatDb
 	sql := "SELECT action, action_name from user_action"
 	rows, err := db.Query(sql)
 	defer rows.Close()
