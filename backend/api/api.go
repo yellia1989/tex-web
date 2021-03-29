@@ -154,4 +154,10 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/stat/recharge/track", stat.RechargeTrack)
     group.GET("/stat/zone/list", stat.ZoneList)
     group.GET("/stat/date/marklist", stat.MarkList)
+
+    group.GET("/gm/res/list", gm.ResControlList)
+    group.GET("/gm/res/actionlist", gm.ActionList)
+    group.POST("/gm/res/add", gm.ActionAdd)
+    group.POST("/gm/res/edit", gm.ActionEdit)
+    group.POST("/gm/res/del", gm.ActionDel)
 }

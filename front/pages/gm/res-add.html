@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>添加资源管理项</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <div class="layui-inline">
+		      <label class="layui-form-label">资源类型</label>
+		      <div class="layui-input-inline">
+            <div id="iResId"></div>
+            <select name="iResId">
+                  <option value="1">金币(1)</option>
+                  <option value="2">钻石(2)</option>
+            </select>
+          </div>
+          <div class="layui-form-mid">-</div>
+          <label class="layui-form-label">可获得途径</label>
+          <div class="layui-input-inline">
+            <div id="action"></div>
+		      </div>
+		    </div>
+		  </div>
+      <div class="layui-form-item">
+        <button class="layui-btn" lay-submit lay-filter="add" id="add">添加</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils', 'upload', 'element'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let xmSelect = layui.xmSelect;
+      let upload = layui.upload;
+      let $ = layui.jquery;
+      let element = layui.element;
+
+      let action = xmSelect.render({
+        el: '#action',
+        name: 'aciton',
+        prop: {
+          value: 'vaule',
+          name: 'name',
+        },
+        tips: '请至少选择一个获取途径',
+        layVerify: 'false',
+        layVerType: 'tips',
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
+      });
+     
+      okUtils.ajax("/api/gm/res/actionlist", "get", null, false).done(function (response) {
+        action.update({data: response.data});
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      //监听提交
+      var param;
+      form.on('submit(add)', function (data) {
+        let actionStr = action.getValue('valueStr')
+        let actionNameStr = action.getValue('nameStr')
+        let param = {iResId: data.field.iResId, sAction: actionStr, sActionName: actionNameStr};
+        okUtils.ajax("/api/gm/res/add", "post", param, true).done(function (response) {
+            okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>
