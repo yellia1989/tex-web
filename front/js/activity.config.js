@@ -722,6 +722,14 @@
                     name: '列表背景',
                     type: 'text',
                 },
+                title_icon: {
+                    name: '标题图片',
+                    type: 'text',
+                },
+                desc_detail_icon: {
+                    name: '描述图片',
+                    type: 'text',
+                },
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',

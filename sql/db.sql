@@ -323,9 +323,9 @@ DROP TABLE IF EXISTS `user_action`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_action` (
-  `action_name` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
-  `action` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `action_name` varchar(80) NOT NULL DEFAULT '',
+  `action` varchar(80) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -400,4 +400,4 @@ CREATE TABLE `zone` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-03-29 20:10:59
+-- Dump completed on 2021-03-30 10:40:58
