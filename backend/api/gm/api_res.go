@@ -4,10 +4,10 @@ import (
     "strconv"
     "strings"
     "time"
-
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-web/backend/cfg"
     mid "github.com/yellia1989/tex-web/backend/middleware"
+    "errors"
 )
 
 type resControl struct {
@@ -33,12 +33,10 @@ func ResControlList(c echo.Context) error {
     db := cfg.GameGlobalDb
     sql := "SELECT res_id, action FROM t_res_control"
     rows, err := db.Query(sql)
-
-    defer rows.Close()
-
     if err != nil {
         return err
     }
+    defer rows.Close()
 
     vResControl := make([]resControl, 0)
     for rows.Next() {
@@ -49,7 +47,10 @@ func ResControlList(c echo.Context) error {
         }
 
         r.Action = strings.Split(sAction, ",")
-        r.ActionName = getActionName(r.Action)
+        r.ActionName, err = getActionName(r.Action)
+        if err != nil {
+            return err
+        }
         vResControl = append(vResControl, r)
     }
 
@@ -73,10 +74,10 @@ func refreshActionList() {
     db := cfg.StatDb
     sql := "SELECT action, action_name from user_action"
     rows, err := db.Query(sql)
-    defer rows.Close()
     if err != nil {
         return
     }
+    defer rows.Close()
 
     vtmp := make([]Action, 0)
     mtmp := make(map[string]string)
@@ -94,15 +95,17 @@ func refreshActionList() {
     nextUpdateTime = now.Add(time.Minute * 5)
 }
 
-func getActionName(action []string) []string{
+func getActionName(action []string) ([]string, error) {
     vAction := make([]string, 0)
     for _,v := range action {
         val,ok := mAction[v]
         if ok {
             vAction = append(vAction, val)
+        } else {
+            return nil, errors.New("key : " + v + " is nil Value!")
         }
     }
-    return vAction
+    return vAction, nil
 }
 
 func getAllAction() []Action {
@@ -129,10 +132,10 @@ func ActionAdd(c echo.Context) error {
     sql := "INSERT INTO t_res_control (res_id, action, action_name) VALUES(?,?,?)"
 
     rows, err := db.Query(sql, iResId, sAction, sActionName)
-    defer rows.Close()
     if err != nil {
         return err
     }
+    defer rows.Close()
 
     return ctx.SendResponse("添加资源监控项成功")
 }
@@ -151,10 +154,10 @@ func ActionEdit(c echo.Context) error {
     sql := "UPDATE t_res_control SET action=?, action_name=? WHERE res_id=?"
 
     rows, err := db.Query(sql, sAction, sActionName, iResId)
-    defer rows.Close()
     if err != nil {
         return err
     }
+    defer rows.Close()
 
     return ctx.SendResponse("编辑资源监控项成功")
 }
@@ -171,9 +174,10 @@ func ActionDel(c echo.Context) error {
     sql := "DELETE FROM t_res_control WHERE res_id=?"
 
     rows, err := db.Query(sql, iResId)
-    defer rows.Close()
     if err != nil {
         return err
     }
+    defer rows.Close()
+
     return ctx.SendResponse("删除资源监控项成功")
 }
