@@ -76,7 +76,15 @@
         layer.open({
             title: '监控数量',
             content: '本次选择的监控项数量为: ' + arr.length + " 条" ,
-            offset: 'auto'
+            offset: 'auto',
+            btn: ['确定添加', '取消'],
+            yes: function(index, layero) {
+                 $('#add').trigger("click");
+                 layer.close(index);
+            },
+            btn2: function(index, layero) {
+                 layer.close(index);
+            }
           });
         }
       });
