@@ -122,16 +122,15 @@ func ActionAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
     iResId, _ := strconv.Atoi(ctx.FormValue("iResId"))
     sAction := ctx.FormValue("sAction")
-    sActionName := ctx.FormValue("sActionName")
 
-    if iResId == 0 || sAction == "" || sActionName == "" {
+    if iResId == 0 || sAction == "" {  
         return ctx.SendError(-1, "参数非法")
     }
 
     db := cfg.GameGlobalDb
-    sql := "INSERT INTO t_res_control (res_id, action, action_name) VALUES(?,?,?)"
+    sql := "INSERT INTO t_res_control (res_id, action) VALUES(?,?)"
 
-    rows, err := db.Query(sql, iResId, sAction, sActionName)
+    rows, err := db.Query(sql, iResId, sAction)
     if err != nil {
         return err
     }
@@ -144,16 +143,15 @@ func ActionEdit(c echo.Context) error {
     ctx := c.(*mid.Context)
     iResId, _ := strconv.Atoi(ctx.FormValue("iResId"))
     sAction := ctx.FormValue("sAction")
-    sActionName := ctx.FormValue("sActionName")
 
-    if iResId == 0 || sAction == "" || sActionName == "" {
+    if iResId == 0 || sAction == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
     db := cfg.GameGlobalDb
-    sql := "UPDATE t_res_control SET action=?, action_name=? WHERE res_id=?"
+    sql := "UPDATE t_res_control SET action=? WHERE res_id=?"
 
-    rows, err := db.Query(sql, sAction, sActionName, iResId)
+    rows, err := db.Query(sql, sAction, iResId)
     if err != nil {
         return err
     }
