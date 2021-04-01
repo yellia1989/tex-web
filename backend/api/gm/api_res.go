@@ -28,14 +28,17 @@ var mAction map[string]string
 func ResControlList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
+    refreshActionList()
+
     db := cfg.GameGlobalDb
     sql := "SELECT res_id, action FROM t_res_control"
     rows, err := db.Query(sql)
+
     defer rows.Close()
+
     if err != nil {
         return err
     }
-    refreshActionList()
 
     vResControl := make([]resControl, 0)
     for rows.Next() {
