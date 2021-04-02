@@ -22,7 +22,6 @@
           <button class="layui-btn" lay-submit lay-filter="search">
             <i class="layui-icon layui-icon-refresh-3"></i>
           </button>
-          <button class="layui-btn layui-hide" lay-submit lay-filter="add">添加</button>
         </div>
       </div>
   </form>
@@ -68,7 +67,7 @@
       cols: [[
         {field: "err_time", title: "报错时间", width: 120, align: "center"},
         {field: "err_res_id", title: "报错资源id"},
-        {field: "err_action", title: "报错操作项"},
+        {field: "err_action_name", title: "报错操作项"},
         {field: "err_times", title: "报错次数", width: 120, align: "center"},
         {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
@@ -80,7 +79,7 @@
     table.on("tool(tableFilter)", function (obj) {
       errResId = obj.data.err_res_id
       errTime = obj.data.err_time
-      err_action = obj.data.err_action
+      errAction = obj.data.err_action
       switch (obj.event) {
         case "detail":
           detail();
@@ -95,7 +94,7 @@
 
     form.on("submit(search)", function (data) {
       stageTable.reload({
-        url: "/api/game/client_err/err_info",
+        url: "/api/gm/res_err/err_info",
         where: data.field,
         page: {
             curr: 1,

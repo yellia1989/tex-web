@@ -11,7 +11,13 @@
 
 <body>
   <div class="ok-body">
+    <div class="layui-form-item">
     <table id="tableId" lay-filter="tableFilter"></table>
+    </div>
+    <div class="layui-form-item">
+      <button class="layui-btn" lay-submit lay-filter="add" id="addResControl">添加到可获得途径</button>
+      <button class="layui-btn" lay-submit lay-filter="addAciton" id="addResAction">添加可监控项</button>
+    </div>
   </div>
 
 <!--js逻辑-->
@@ -28,23 +34,54 @@
 
     let detailTable = table.render({
       elem: "#tableId",
-      url: "/api/game/client_err/err_detail",
-      where: { ErrInfo: parent.errInfoMd5, ErrTime: parent.errTime, ClientVersion: parent.clientVersion },
+      url: "/api/gm/res_err/err_detail",
+      where: { ErrResId: parent.errResId, ErrTime: parent.errTime, ErrAction: parent.errAction },
       data:[],
       text: {
         none: '暂无相关数据',
       },
       cols: [[
         {field: "err_time", title: "报错时间", width: 150, align: "center"},
-        {field: "res_id", title: "区服id", width: 100, align: "center"},
+        {field: "zone_id", title: "区服id", width: 100, align: "center"},
         {field: "role_id", title: "角色id", width: 100, align: "center"},
         {field: "err_res_id", title: "报错资源id"},
-        {field: "err_res_id", title: "报错操作项"}
+        {field: "err_action_name", title: "报错操作项"}
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
     });
+      //监听提交
+      var param;
+      form.on('submit(add)', function (data) {
+        let param = {iResId: data.field.iResId, sAction: err_action};
+        okUtils.ajax("/api/gm/res/add_res_control", "post", param, true).done(function (response) {
+            okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      form.om('submit(addAciton)', function (data){
+        var actionName;
+        layer.layer.prompt(
+          {title: '输入操作项名称', formType: 1}, function(val, index) {
+           actionName = val;
+           layer.close(index);
+        });
+        let param = { sAction: data.field.sAction, sActionName: actionName};
+        okUtils.ajax("/api/gm/res/add_res_action", "post", param, true).done(function (response) {
+            okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;      
+      })    
   })
 </script>
 </body>
