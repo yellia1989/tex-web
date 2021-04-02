@@ -284,6 +284,8 @@ func ResErrDetail(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
+    refreshActionList()
+
 	db := cfg.LogDb
 	sql := "SELECT timehms, res_id, action, zoneid, roleid FROM res_error "
 	sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
@@ -299,7 +301,7 @@ func ResErrDetail(c echo.Context) error {
 
 	for rows.Next() {
 		var r resErrInfo
-		if err := rows.Scan(&r.ErrTime, &r.ErrAction, &r.ZoneId, &r.RoleId); err != nil {
+		if err := rows.Scan(&r.ErrTime, &r.ErrResId, &r.ErrAction, &r.ZoneId, &r.RoleId); err != nil {
 			return err
 		}
 
@@ -327,24 +329,24 @@ func ResAppendResControl(c echo.Context) error {
 	sAction := ctx.FormValue("sAction")
 
 	if sResId == "" || sAction == "" {
-		ctx.SendError(-1, "参数非法")
+		return ctx.SendError(-1, "参数非法")
 	}
 
 	sActionName, ok := mAction[sAction]
 	if !ok {
-		return ctx.SendResponse("未找到监控项: " + sAction + " 请点击 '添加可监控项' 按钮 添加到可监控项中")
+		return ctx.SendError(-2, "未找到监控项: " + sAction + " 请点击 '添加可监控项' 按钮 添加到可监控项中")
 	}
 
 	db := cfg.GameGlobalDb
-	sql := "UPDATE t_res_control set action VAULE=VAULE+'?' WHERE res_id=?"
+	sql := "UPDATE t_res_control set action=CONCAT(action,',',?) WHERE res_id=?"
 
-	rows, err := db.Query(sql, sResId, sAction)
+	rows, err := db.Query(sql, sAction, sResId)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	sSuccess := "在 " + sResId + " 中添加 " + sActionName + " 成功"
+	sSuccess := "在资源ID: " + sResId + " 中添加监控: " + sActionName + " 成功"
 	return ctx.SendResponse(sSuccess)
 }
 
@@ -354,11 +356,11 @@ func ResAppendAction(c echo.Context) error {
 	sActionName := ctx.FormValue("sActionName")
 
 	if sAction == "" || sActionName == "" {
-		ctx.SendError(-1, "参数非法")
+		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.StatDb
-	sql := "INSERT INTO user_action (action, actionName) VALUES(?,?)"
+	sql := "INSERT INTO user_action (action, action_name) VALUES(?,?)"
 
 	rows, err := db.Query(sql, sAction, sActionName)
 	if err != nil {
