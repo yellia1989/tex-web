@@ -885,21 +885,48 @@
   {
     "id": 10,
     "title": "监控报警",
-    "href": "gm/res.html",
     "fontFamily": "ok-icon",
     "icon": "&#xe654;",
     "spread": false,
     "checked": false,
     "children": [
       {
-        "id": 101,
-        "title": "资源获取途径管理",
-        "href": "gm/res.html",
+        "id": 1001,
+        "title": "资源获取管理",
         "fontFamily": "ok-icon",
         "icon": "&#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
+        "children": [
+          {
+            "id": 100101,
+            "title": "资源获取途径",
+            "href": "gm/res.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 100102,
+            "title": "报错信息详情",
+            "href": "gm/res-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
         "role": [
           4,
           3

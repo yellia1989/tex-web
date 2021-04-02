@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>错误详情</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script>
+  var zoneid;
+  layui.use(["table", "okUtils", "okLayer", "laydate"], function () {
+    let table = layui.table;
+    let okUtils = layui.okUtils;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let laydate = layui.laydate;
+    okLoading.close();
+
+    let detailTable = table.render({
+      elem: "#tableId",
+      url: "/api/game/client_err/err_detail",
+      where: { ErrInfo: parent.errInfoMd5, ErrTime: parent.errTime, ClientVersion: parent.clientVersion },
+      data:[],
+      text: {
+        none: '暂无相关数据',
+      },
+      cols: [[
+        {field: "err_time", title: "报错时间", width: 150, align: "center"},
+        {field: "res_id", title: "区服id", width: 100, align: "center"},
+        {field: "role_id", title: "角色id", width: 100, align: "center"},
+        {field: "err_res_id", title: "报错资源id"},
+        {field: "err_res_id", title: "报错操作项"}
+      ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+    });
+  })
+</script>
+</body>
+<style>
+    .layui-table-cell {
+        height:auto;
+    }
+</style>
+</html>
