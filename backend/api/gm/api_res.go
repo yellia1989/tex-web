@@ -237,7 +237,7 @@ func ResErrInfo(c echo.Context) error {
 
 	db := cfg.LogDb
 
-	sql := "SELECT timeymd, res_id, action, count(*) as count  FROM res_error "
+	sql := "SELECT timeymd, res_id, action, count(*) as count  FROM res_prom_error "
 	sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
 	sql += "GROUP BY timeymd, res_id, action"
 
@@ -287,7 +287,7 @@ func ResErrDetail(c echo.Context) error {
     refreshActionList()
 
 	db := cfg.LogDb
-	sql := "SELECT timehms, res_id, action, zoneid, roleid FROM res_error "
+	sql := "SELECT timehms, res_id, action, zoneid, roleid FROM res_prom_error "
 	sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
 	sql += "AND action = '" + sAction + "'"
 
