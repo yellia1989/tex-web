@@ -32,9 +32,9 @@
         page: true,
         toolbar: "#toolbarTpl",
         cols: [[
-          { field: "iResId", title: "资源ID" },
+          { field: "iResId", width:80, title: "资源ID", align: "center" },
           { field: "sActionName", title: "获得途径" },
-          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
         parseData: function (res) {
           for (i = 0; res.data && i < res.data.length; ++i) {
@@ -100,5 +100,19 @@
   <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
 </script>
 </body>
-
+<style>
+    .layui-table-cell {
+        font-size:14px;
+        padding:0 5px;
+        height:auto;
+        overflow:visible;
+        text-overflow:inherit;
+        white-space:normal;
+        word-break: break-all;
+    }
+    .layui-table-tips-main{
+        height:auto;
+        line-height: 30px;
+    }
+</style>
 </html>
