@@ -19,12 +19,12 @@ type resControl struct {
 	ActionName []string `json:"sActionName"`
 }
 
-type action struct {
+type Action struct {
 	Vaule string `json:"vaule"`
 	Name  string `json:"name"`
 }
 
-type resresErrSimpleInfo struct {
+type resErrSimpleInfo struct {
 	ErrTime       string `json:"err_time"`
 	ErrResId      string `json:"err_res_id"`
 	ErrTimes      uint32 `json:"err_times"`
@@ -32,7 +32,7 @@ type resresErrSimpleInfo struct {
 	ErrActionName string `json:"err_action_name"`
 }
 
-type resErrSimpleInfoBy []resresErrSimpleInfo
+type resErrSimpleInfoBy []resErrSimpleInfo
 
 func (a resErrSimpleInfoBy) Len() int      { return len(a) }
 func (a resErrSimpleInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
@@ -241,8 +241,6 @@ func ResErrInfo(c echo.Context) error {
 	sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
 	sql += "GROUP BY timeymd, res_id, action"
 
-	log.Infof("sql: %s", sql)
-
 	rows, err := db.Query(sql)
 	if err != nil {
 		return err
@@ -279,19 +277,17 @@ func ResErrInfo(c echo.Context) error {
 func ResErrDetail(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	sErrTime := ctx.QueryParam("ErrTime")
-	iErrResId, _ := strconv.Atoi(QueryParam("ErrResId"))
+	sErrResId := ctx.QueryParam("ErrResId")
 	sAction := ctx.QueryParam("ErrAction")
 
-	if iErrResId == 0 || sAction == "" || sErrTime == "" {
+	if sErrResId == "" || sAction == "" || sErrTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.LogDb
 	sql := "SELECT timehms, res_id, action, zoneid, roleid FROM res_error "
-	sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + iErrResId + "'"
+	sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
 	sql += "AND action = '" + sAction + "'"
-
-	log.Infof("sql: %s", sql)
 
 	rows, err := db.Query(sql)
 	if err != nil {
@@ -327,10 +323,10 @@ func ResErrDetail(c echo.Context) error {
 
 func ResAppendResControl(c echo.Context) error {
 	ctx := c.(*mid.Context)
-	iResId, _ := strconv.Atoi(ctx.FormValue("iResId"))
+	sResId := ctx.FormValue("iResId")
 	sAction := ctx.FormValue("sAction")
 
-	if iResId == 0 || sAction == "" {
+	if sResId == "" || sAction == "" {
 		ctx.SendError(-1, "参数非法")
 	}
 
@@ -342,13 +338,13 @@ func ResAppendResControl(c echo.Context) error {
 	db := cfg.GameGlobalDb
 	sql := "UPDATE t_res_control set action VAULE=VAULE+'?' WHERE res_id=?"
 
-	rows, err := db.Query(sql, iResId, sAction)
+	rows, err := db.Query(sql, sResId, sAction)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	sSuccess := "在 " + iResId + " 中添加 " + sActionName + " 成功"
+	sSuccess := "在 " + sResId + " 中添加 " + sActionName + " 成功"
 	return ctx.SendResponse(sSuccess)
 }
 
