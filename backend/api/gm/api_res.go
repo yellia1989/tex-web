@@ -234,6 +234,8 @@ func ResErrInfo(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    refreshActionList()
+
     db := cfg.LogDb
 
     sql := "SELECT timeymd, res_id, action, count(*) as count  FROM res_prom_error "
@@ -282,8 +284,6 @@ func ResErrDetail(c echo.Context) error {
     if sErrResId == "" || sAction == "" || sErrTime == "" {
         return ctx.SendError(-1, "参数非法")
     }
-
-    refreshActionList()
 
     db := cfg.LogDb
     sql := "SELECT timehms, res_id, action, zoneid, roleid FROM res_prom_error "
@@ -353,6 +353,11 @@ func ResAppendAction(c echo.Context) error {
     ctx := c.(*mid.Context)
     sAction := ctx.FormValue("sAction")
     sActionName := ctx.FormValue("sActionName")
+
+    _, ok := mAction[sAction]
+    if ok {
+        return ctx.SendError(-2, "监控项已存在")
+    }
 
     if sAction == "" || sActionName == "" {
         return ctx.SendError(-1, "参数非法")

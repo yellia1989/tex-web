@@ -38,7 +38,6 @@ func (a errSimpleInfoBy) Less(i, j int) bool {
 
 type errInfo struct {
     ErrTime    string `json:"err_time"`
-    ErrMessage string `json:"err_info"`
     ZoneId     uint32 `json:"zone_id"`
     RoleId     uint32 `json:"role_id"`
 }
@@ -116,7 +115,7 @@ func ErrDetail(c echo.Context) error {
     }
 
     db := cfg.LogDb
-    sql := "SELECT timehms, stack, zoneid, roleid FROM client_error "
+    sql := "SELECT timehms, zoneid, roleid FROM client_error "
     sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND stackmd5 = '" + sErrInfoMd5 + "'" 
     sql += "AND client_version = '"+ sClientVersion + "'"
 
@@ -132,12 +131,9 @@ func ErrDetail(c echo.Context) error {
 
     for rows.Next() {
         var r errInfo
-        if err := rows.Scan(&r.ErrTime, &r.ErrMessage, &r.ZoneId, &r.RoleId); err != nil {
+        if err := rows.Scan(&r.ErrTime, &r.ZoneId, &r.RoleId); err != nil {
             return err
         }
-        decodeBytes, _ := base64.StdEncoding.DecodeString(r.ErrMessage)
-        r.ErrMessage = string(decodeBytes)
-        r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
 
         slErrInfo = append(slErrInfo, r)
     }
