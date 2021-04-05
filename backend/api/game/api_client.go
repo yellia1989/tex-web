@@ -25,12 +25,15 @@ type errSimpleInfoBy []errSimpleInfo
 func (a errSimpleInfoBy) Len() int      { return len(a) }
 func (a errSimpleInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errSimpleInfoBy) Less(i, j int) bool {
-    if a[i].ErrTime > a[j].ErrTime {
-        return true
+    TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
+
+    if !TmpTimeI.Equal(TmpTimeJ) {
+        return TmpTimeI.After(TmpTimeJ)
     }
 
-    if a[i].ClientVersion > a[j].ClientVersion {
-        return true
+    if a[i].ClientVersion != a[j].ClientVersion {
+        return a[i].ClientVersion > a[j].ClientVersion
     }
 
     return a[i].ErrTimes > a[j].ErrTimes
@@ -38,7 +41,6 @@ func (a errSimpleInfoBy) Less(i, j int) bool {
 
 type errInfo struct {
     ErrTime    string `json:"err_time"`
-    ErrMessage string `json:"err_info"`
     ZoneId     uint32 `json:"zone_id"`
     RoleId     uint32 `json:"role_id"`
 }
@@ -48,8 +50,11 @@ type errInfoBy []errInfo
 func (a errInfoBy) Len() int      { return len(a) }
 func (a errInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errInfoBy) Less(i, j int) bool {
-    if a[i].ErrTime > a[j].ErrTime {
-        return true
+    TmpTimeI := common.ParseTimeInLocal("15:04:05", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("15:04:05", a[j].ErrTime)
+
+    if !TmpTimeI.Equal(TmpTimeJ) {
+        return TmpTimeI.After(TmpTimeJ)
     }
 
     return a[i].ZoneId < a[j].ZoneId
@@ -116,7 +121,7 @@ func ErrDetail(c echo.Context) error {
     }
 
     db := cfg.LogDb
-    sql := "SELECT timehms, stack, zoneid, roleid FROM client_error "
+    sql := "SELECT timehms, zoneid, roleid FROM client_error "
     sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND stackmd5 = '" + sErrInfoMd5 + "'" 
     sql += "AND client_version = '"+ sClientVersion + "'"
 
@@ -132,12 +137,9 @@ func ErrDetail(c echo.Context) error {
 
     for rows.Next() {
         var r errInfo
-        if err := rows.Scan(&r.ErrTime, &r.ErrMessage, &r.ZoneId, &r.RoleId); err != nil {
+        if err := rows.Scan(&r.ErrTime, &r.ZoneId, &r.RoleId); err != nil {
             return err
         }
-        decodeBytes, _ := base64.StdEncoding.DecodeString(r.ErrMessage)
-        r.ErrMessage = string(decodeBytes)
-        r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
 
         slErrInfo = append(slErrInfo, r)
     }

@@ -160,4 +160,9 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/res/add", gm.ActionAdd)
     group.POST("/gm/res/edit", gm.ActionEdit)
     group.POST("/gm/res/del", gm.ActionDel)
+    group.GET("/gm/res_err/err_info", gm.ResErrInfo)
+    group.GET("/gm/res_err/err_detail", gm.ResErrDetail)
+    group.POST("/gm/res/add_res_control", gm.ResAppendResControl)
+    group.POST("/gm/res/add_res_action", gm.ResAppendAction)
+
 }

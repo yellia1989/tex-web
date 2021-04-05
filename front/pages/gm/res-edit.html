@@ -17,10 +17,12 @@
 		    <input type="text" name="iResId" class="layui-input layui-disabled">
           </div>
 
+      <div class="layui-form-item">
           <label class="layui-form-label">可获得途径</label>
-          <div class="layui-input-inline">
+          <div class="layui-input-block">
             <div id="action"></div>
 		  </div>
+	    </div>
 	  </div>
 
       <div class="layui-form-item">
@@ -46,6 +48,14 @@
       let action = xmSelect.render({
         el: '#action',
         name: 'aciton',
+        filterable: true,
+        delay: 500,
+        autoRow: true,
+        height: "800px",
+        toolbar:{
+            show: true,
+            list: ['CLEAR']
+        },
         prop: {
           value: 'vaule',
           name: 'name',
@@ -55,26 +65,27 @@
         layVerType: 'tips',
         on: function(data){
           //arr:  当前多选已选中的数据
-          let arr = data.arr;
+          arr = data.arr;
           //change, 此次选择变化的数据,数组
           let change = data.change;
           //isAdd, 此次操作是新增还是删除
           let isAdd = data.isAdd;
-          if(isAdd){
-            var allItem = change.find(function(item){
-              return item.iId === 99999;
-            })
-            if(allItem){
-              return [allItem];
-            }
-            allItem = arr.find(function(item){
-              return item.iId === 99999;
-            })
-            if(allItem){
-              return change;
-            }
-          }
         },
+        hide() {
+        layer.open({
+            title: '监控数量',
+            content: '本次选择的监控项数量为: ' + arr.length + " 条" ,
+            offset: 'auto',
+            btn: ['确定编辑', '取消'],
+            yes: function(index, layero) {
+                 $('#edit').trigger("click");
+                 layer.close(index);
+            },
+            btn2: function(index, layero) {
+                 layer.close(index);
+            }
+          });
+        }
       });
      
       okUtils.ajax("/api/gm/res/actionlist", "get", null, false).done(function (response) {
@@ -90,8 +101,7 @@
       var param;
       form.on('submit(edit)', function (data) {
         let actionStr = action.getValue('valueStr')
-        let actionNameStr = action.getValue('nameStr')
-        let param = {iResId: data.field.iResId, sAction: actionStr, sActionName: actionNameStr};
+        let param = {iResId: data.field.iResId, sAction: actionStr};
         okUtils.ajax("/api/gm/res/edit", "post", param, true).done(function (response) {
             okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

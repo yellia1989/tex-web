@@ -95,9 +95,9 @@
             field: "iManualZoneStatus", title: "手动状态", width: 90, templet: function (d) {
               let ret = '';
               switch (d.iManualZoneStatus) {
-                case 1: ret = '畅通'; break;
-                case 2: ret = '拥挤'; break;
-                case 3: ret = '繁忙'; break;
+                case 1: ret = '流畅'; break;
+                case 2: ret = '忙碌'; break;
+                case 3: ret = '爆满'; break;
                 case 4: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">维护</span>'; break;
                 default:
                   ret = '未知状态';
@@ -114,9 +114,9 @@
             field: "iCurZoneStatus", title: "当前状态", width: 90, templet: function (d) {
               let ret = '';
               switch (d.iCurZoneStatus) {
-                case 1: ret = '畅通'; break;
-                case 2: ret = '拥挤'; break;
-                case 3: ret = '繁忙'; break;
+                case 1: ret = '流畅'; break;
+                case 2: ret = '忙碌'; break;
+                case 3: ret = '爆满'; break;
                 case 4: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">维护</span>'; break;
                 default:
                   ret = '未知状态';
