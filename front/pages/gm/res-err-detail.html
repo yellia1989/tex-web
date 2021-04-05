@@ -11,9 +11,7 @@
 
 <body>
   <div class="ok-body">
-    <div class="layui-form-item">
     <table id="tableId" lay-filter="tableFilter"></table>
-    </div>
     <div class="layui-form-item">
       <button class="layui-btn" lay-submit lay-filter="add" id="addResControl">添加到可获得途径</button>
       <button class="layui-btn" lay-submit lay-filter="addAciton" id="addResAction">添加可监控项</button>
@@ -41,11 +39,24 @@
       text: {
         none: '暂无相关数据',
       },
+      limit: 10,
+      page: true,
       cols: [[
         {field: "err_time", title: "报错时间", width: 150, align: "center"},
         {field: "zone_id", title: "区服id", width: 100, align: "center"},
         {field: "role_id", title: "角色id", width: 100, align: "center"},
-        {field: "err_res_id", title: "报错资源id"},
+        { 
+          field: "err_res_id", width:80, title: "资源ID", align: "center", templet: function(d) {
+            let ret = '';
+            switch(d.err_res_id) {
+              case '1': ret = '金币'; break;
+              case '2': ret = '钻石'; break;
+              default:
+                ret = '未知道具';
+            }
+            return ret;
+          } 
+        },
         {field: "err_action_name", title: "报错操作项"}
       ]],
       toolbar: true,
