@@ -46,6 +46,8 @@
       let $ = layui.jquery;
       let element = layui.element;
 
+      let addArrLength = 0;
+
       let action = xmSelect.render({
         el: '#action',
         name: 'aciton',
@@ -62,30 +64,32 @@
           name: 'name',
         },
         tips: '请至少选择一个获取途径',
-        layVerify: 'false',
+        layVerify: 'required',
         layVerType: 'tips',
         on: function(data){
           //arr:  当前多选已选中的数据
-          arr = data.arr;
+          addArrLength = data.arr.length;
           //change, 此次选择变化的数据,数组
           let change = data.change;
           //isAdd, 此次操作是新增还是删除
           let isAdd = data.isAdd;
         },
         hide() {
-        layer.open({
-            title: '监控数量',
-            content: '本次选择的监控项数量为: ' + arr.length + " 条" ,
-            offset: 'auto',
-            btn: ['确定添加', '取消'],
-            yes: function(index, layero) {
-                 $('#add').trigger("click");
-                 layer.close(index);
-            },
-            btn2: function(index, layero) {
-                 layer.close(index);
-            }
-          });
+          if (addArrLength != 0) {
+            layer.open({
+              title: '监控数量',
+              content: '本次选择的监控项数量为: ' + addArrLength + " 条" ,
+              offset: 'auto',
+              btn: ['确定添加', '取消'],
+              yes: function(index, layero) {
+                $('#add').trigger("click");
+                layer.close(index);
+              },
+              btn2: function(index, layero) {
+              layer.close(index);
+              }
+            });
+          }
         }
       });
      

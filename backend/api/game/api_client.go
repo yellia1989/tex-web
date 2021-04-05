@@ -115,6 +115,8 @@ func ErrDetail(c echo.Context) error {
     sErrInfoMd5 := ctx.QueryParam("ErrInfo")
     sErrTime := ctx.QueryParam("ErrTime")
     sClientVersion := ctx.QueryParam("ClientVersion")
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     if sErrInfoMd5 == "" || sErrTime == "" {
         return ctx.SendError(-1, "参数非法")
@@ -149,6 +151,8 @@ func ErrDetail(c echo.Context) error {
     }
 
     sort.Sort(errInfoBy(slErrInfo))
+    vErrInfo := common.GetPage(slErrInfo, page, limit)
 
-    return ctx.SendArray(slErrInfo, len(slErrInfo))
+
+    return ctx.SendArray(vErrInfo, len(slErrInfo))
 }

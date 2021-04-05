@@ -60,8 +60,8 @@ type resErrInfoBy []resErrInfo
 func (a resErrInfoBy) Len() int      { return len(a) }
 func (a resErrInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a resErrInfoBy) Less(i, j int) bool {
-    TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
-    TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
+    TmpTimeI := common.ParseTimeInLocal("15:04:05", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("15:04:05", a[j].ErrTime)
 
     if !TmpTimeI.Equal(TmpTimeJ) {
         return TmpTimeI.After(TmpTimeJ)
@@ -77,7 +77,7 @@ var mAction map[string]string
 func ResControlList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    refreshActionList()
+    refreshActionList(true)
 
     db := cfg.GameGlobalDb
     sql := "SELECT res_id, action FROM t_res_control"
@@ -114,9 +114,9 @@ func ActionList(c echo.Context) error {
     return ctx.SendArray(actionList, len(actionList))
 }
 
-func refreshActionList() {
+func refreshActionList(bForce bool) {
     now := time.Now()
-    if now.Before(nextUpdateTime) {
+    if now.Before(nextUpdateTime) && !bForce{
         return
     }
 
@@ -158,7 +158,7 @@ func getActionName(action []string) ([]string, error) {
 }
 
 func getAllAction() []Action {
-    refreshActionList()
+    refreshActionList(false)
 
     allAction := make([]Action, len(vAction))
 
@@ -240,13 +240,13 @@ func ResErrInfo(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-    refreshActionList()
+    refreshActionList(true)
 
     db := cfg.LogDb
 
-    sql := "SELECT timeymd, res_id, action, count(*) as count  FROM res_prom_error "
+    sql := "SELECT logymd, res_id, action, count(*) as count  FROM res_prom_error "
     sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
-    sql += "GROUP BY timeymd, res_id, action"
+    sql += "GROUP BY logymd, res_id, action"
 
     rows, err := db.Query(sql)
     if err != nil {
@@ -286,14 +286,16 @@ func ResErrDetail(c echo.Context) error {
     sErrTime := ctx.QueryParam("ErrTime")
     sErrResId := ctx.QueryParam("ErrResId")
     sAction := ctx.QueryParam("ErrAction")
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     if sErrResId == "" || sAction == "" || sErrTime == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
     db := cfg.LogDb
-    sql := "SELECT timehms, res_id, action, zoneid, roleid FROM res_prom_error "
-    sql += "WHERE STR_TO_DATE(timeymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
+    sql := "SELECT loghms, res_id, action, zoneid, roleid FROM res_prom_error "
+    sql += "WHERE STR_TO_DATE(logymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
     sql += "AND action = '" + sAction + "'"
 
     rows, err := db.Query(sql)
@@ -324,8 +326,9 @@ func ResErrDetail(c echo.Context) error {
     }
 
     sort.Sort(resErrInfoBy(slResErrInfo))
+    vResErrInfo := common.GetPage(slResErrInfo, page, limit)
 
-    return ctx.SendArray(slResErrInfo, len(slResErrInfo))
+    return ctx.SendArray(vResErrInfo, len(slResErrInfo))
 }
 
 func ResAppendResControl(c echo.Context) error {
@@ -343,13 +346,54 @@ func ResAppendResControl(c echo.Context) error {
     }
 
     db := cfg.GameGlobalDb
-    sql := "UPDATE t_res_control set action=CONCAT(action,',',?) WHERE res_id=?"
+    sql1 := "SELECT res_id FROM t_res_control WHERE res_id=?"
+    sql2 := "INSERT INTO t_res_control set res_id = ?, action=?"
+    sql3 := "UPDATE t_res_control set action=CONCAT(action,',',?) WHERE res_id=?"
+    sql4 := "SELECT action FROM t_res_control WHERE res_id=?"
 
-    rows, err := db.Query(sql, sAction, sResId)
-    if err != nil {
-        return err
+    rows1, err1 := db.Query(sql1, sResId)
+    if err1 != nil {
+        return err1
     }
-    defer rows.Close()
+    defer rows1.Close()
+
+    // 没有则插入
+    if !rows1.Next() && rows1.Err() == nil {
+        rows2, err2 := db.Query(sql2, sResId, sAction);
+        if err2 != nil {
+            return err2
+        }
+        defer rows2.Close()
+
+        sSuccess := "在资源ID: " + sResId + " 中添加监控: " + sActionName + " 成功"
+        return ctx.SendResponse(sSuccess)
+    }
+
+    rows4, err4 := db.Query(sql4, sResId)
+    if err4 != nil {
+        return err4
+    }
+    defer rows4.Close()
+
+    for rows4.Next() {
+        var sAllAction string
+        if err := rows4.Scan(&sAllAction); err != nil {
+            return err
+        }
+        vAllAction := strings.Split(sAllAction, ",")
+        for _,v := range vAllAction {
+            if v == sAction {
+                return ctx.SendError(-3, "本监控项已被监控")
+            }
+        }
+    } 
+
+    // 有则追加
+    rows3, err3 := db.Query(sql3, sAction, sResId)
+    if err3 != nil {
+        return err3
+    }
+    defer rows3.Close()
 
     sSuccess := "在资源ID: " + sResId + " 中添加监控: " + sActionName + " 成功"
     return ctx.SendResponse(sSuccess)
@@ -377,6 +421,8 @@ func ResAppendAction(c echo.Context) error {
         return err
     }
     defer rows.Close()
+
+    refreshActionList(true)
 
     return ctx.SendResponse("添加可监控项: " + sActionName + " 成功！")
 }

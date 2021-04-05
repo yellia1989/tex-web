@@ -43,7 +43,14 @@
       let $ = layui.jquery;
       let element = layui.element;
 
-      $("input[name=iResId]").val(parent.editData.iResId);
+      let resName = '';
+      switch (parent.editData.iResId) {
+        case 1: resName = '金币'; break;
+        case 2: resName = '钻石'; break;
+      }
+      $("input[name=iResId]").val(resName);
+
+      let arrLength = 0;
 
       let action = xmSelect.render({
         el: '#action',
@@ -61,30 +68,32 @@
           name: 'name',
         },
         tips: '请至少选择一个获取途径',
-        layVerify: 'false',
+        layVerify: 'required',
         layVerType: 'tips',
         on: function(data){
           //arr:  当前多选已选中的数据
-          arr = data.arr;
+          arrLength = data.arr.length;
           //change, 此次选择变化的数据,数组
           let change = data.change;
           //isAdd, 此次操作是新增还是删除
           let isAdd = data.isAdd;
         },
         hide() {
-        layer.open({
-            title: '监控数量',
-            content: '本次选择的监控项数量为: ' + arr.length + " 条" ,
-            offset: 'auto',
-            btn: ['确定编辑', '取消'],
-            yes: function(index, layero) {
-                 $('#edit').trigger("click");
-                 layer.close(index);
-            },
-            btn2: function(index, layero) {
-                 layer.close(index);
-            }
-          });
+          if (arrLength != 0){
+              layer.open({
+              title: '监控数量',
+              content: '本次选择的监控项数量为: ' + arrLength + " 条" ,
+              offset: 'auto',
+              btn: ['确定编辑', '取消'],
+              yes: function(index, layero) {
+                   $('#edit').trigger("click");
+                   layer.close(index);
+              },
+              btn2: function(index, layero) {
+                   layer.close(index);
+              }
+            });
+          }
         }
       });
      

@@ -32,7 +32,18 @@
         page: true,
         toolbar: "#toolbarTpl",
         cols: [[
-          { field: "iResId", width:80, title: "资源ID", align: "center" },
+          { 
+            field: "iResId", width:80, title: "资源ID", align: "center", templet: function(d) {
+              let ret = '';
+              switch(d.iResId) {
+                case 1: ret = '金币'; break;
+                case 2: ret = '钻石'; break;
+                default:
+                  ret = '未知道具';
+              }
+              return ret;
+            } 
+          },
           { field: "sActionName", title: "获得途径" },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
