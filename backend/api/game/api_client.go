@@ -32,11 +32,15 @@ func (a errSimpleInfoBy) Less(i, j int) bool {
         return true
     }
 
-    if a[i].ClientVersion > a[j].ClientVersion {
+    if TmpTimeI.Equal(TmpTimeJ) && a[i].ClientVersion > a[j].ClientVersion {
         return true
     }
 
-    return a[i].ErrTimes > a[j].ErrTimes
+    if TmpTimeI.Equal(TmpTimeJ) && a[i].ClientVersion == a[j].ClientVersion && a[i].ErrTimes > a[j].ErrTimes {
+        return true
+    }
+
+    return false
 }
 
 type errInfo struct {
@@ -50,14 +54,18 @@ type errInfoBy []errInfo
 func (a errInfoBy) Len() int      { return len(a) }
 func (a errInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errInfoBy) Less(i, j int) bool {
-    TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
-    TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
+    TmpTimeI := common.ParseTimeInLocal("15:04:05", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("15:04:05", a[j].ErrTime)
 
     if TmpTimeI.After(TmpTimeJ) {
         return true
     }
 
-    return a[i].ZoneId < a[j].ZoneId
+    if TmpTimeI.Equal(TmpTimeI) && a[i].ZoneId < a[j].ZoneId {
+        return true
+    }
+
+    return false
 }
 
 func ErrInfo(c echo.Context) error {

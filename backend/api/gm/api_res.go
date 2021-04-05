@@ -43,7 +43,11 @@ func (a resErrSimpleInfoBy) Less(i, j int) bool {
         return true
     }
 
-    return a[i].ErrTimes > a[j].ErrTimes
+    if TmpTimeI.Equal(TmpTimeJ) && a[i].ErrTimes > a[j].ErrTimes {
+        return true
+    }
+
+    return false
 }
 
 type resErrInfo struct {
@@ -67,7 +71,11 @@ func (a resErrInfoBy) Less(i, j int) bool {
         return true
     }
 
-    return a[i].ZoneId < a[j].ZoneId
+    if TmpTimeI.Equal(TmpTimeJ) && a[i].ZoneId < a[j].ZoneId {
+        return true
+    }
+
+    return false;
 }
 
 var vAction []Action
