@@ -39,15 +39,11 @@ func (a resErrSimpleInfoBy) Less(i, j int) bool {
     TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
     TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
 
-    if TmpTimeI.After(TmpTimeJ) {
-        return true
+    if !TmpTimeI.Equal(TmpTimeJ) {
+        return TmpTimeI.After(TmpTimeJ)
     }
 
-    if TmpTimeI.Equal(TmpTimeJ) && a[i].ErrTimes > a[j].ErrTimes {
-        return true
-    }
-
-    return false
+    return a[i].ErrTimes > a[j].ErrTimes 
 }
 
 type resErrInfo struct {
@@ -67,15 +63,11 @@ func (a resErrInfoBy) Less(i, j int) bool {
     TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
     TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
 
-    if TmpTimeI.After(TmpTimeJ) {
-        return true
+    if !TmpTimeI.Equal(TmpTimeJ) {
+        return TmpTimeI.After(TmpTimeJ)
     }
 
-    if TmpTimeI.Equal(TmpTimeJ) && a[i].ZoneId < a[j].ZoneId {
-        return true
-    }
-
-    return false;
+    return a[i].ZoneId < a[j].ZoneId
 }
 
 var vAction []Action

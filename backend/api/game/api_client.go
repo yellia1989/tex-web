@@ -28,19 +28,15 @@ func (a errSimpleInfoBy) Less(i, j int) bool {
     TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
     TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
 
-    if TmpTimeI.After(TmpTimeJ) {
-        return true
+    if !TmpTimeI.Equal(TmpTimeJ) {
+        return TmpTimeI.After(TmpTimeJ)
     }
 
-    if TmpTimeI.Equal(TmpTimeJ) && a[i].ClientVersion > a[j].ClientVersion {
-        return true
+    if a[i].ClientVersion != a[j].ClientVersion {
+        return a[i].ClientVersion > a[j].ClientVersion
     }
 
-    if TmpTimeI.Equal(TmpTimeJ) && a[i].ClientVersion == a[j].ClientVersion && a[i].ErrTimes > a[j].ErrTimes {
-        return true
-    }
-
-    return false
+    return a[i].ErrTimes > a[j].ErrTimes
 }
 
 type errInfo struct {
@@ -57,15 +53,11 @@ func (a errInfoBy) Less(i, j int) bool {
     TmpTimeI := common.ParseTimeInLocal("15:04:05", a[i].ErrTime)
     TmpTimeJ := common.ParseTimeInLocal("15:04:05", a[j].ErrTime)
 
-    if TmpTimeI.After(TmpTimeJ) {
-        return true
+    if !TmpTimeI.Equal(TmpTimeJ) {
+        return TmpTimeI.After(TmpTimeJ)
     }
 
-    if TmpTimeI.Equal(TmpTimeI) && a[i].ZoneId < a[j].ZoneId {
-        return true
-    }
-
-    return false
+    return a[i].ZoneId < a[j].ZoneId
 }
 
 func ErrInfo(c echo.Context) error {
