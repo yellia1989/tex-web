@@ -25,7 +25,10 @@ type errSimpleInfoBy []errSimpleInfo
 func (a errSimpleInfoBy) Len() int      { return len(a) }
 func (a errSimpleInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errSimpleInfoBy) Less(i, j int) bool {
-    if a[i].ErrTime > a[j].ErrTime {
+    TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
+
+    if TmpTimeI.After(TmpTimeJ) {
         return true
     }
 
@@ -47,7 +50,10 @@ type errInfoBy []errInfo
 func (a errInfoBy) Len() int      { return len(a) }
 func (a errInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errInfoBy) Less(i, j int) bool {
-    if a[i].ErrTime > a[j].ErrTime {
+    TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
+
+    if TmpTimeI.After(TmpTimeJ) {
         return true
     }
 

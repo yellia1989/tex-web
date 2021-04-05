@@ -36,7 +36,10 @@ type resErrSimpleInfoBy []resErrSimpleInfo
 func (a resErrSimpleInfoBy) Len() int      { return len(a) }
 func (a resErrSimpleInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a resErrSimpleInfoBy) Less(i, j int) bool {
-    if a[i].ErrTime > a[j].ErrTime {
+    TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
+
+    if TmpTimeI.After(TmpTimeJ) {
         return true
     }
 
@@ -57,7 +60,10 @@ type resErrInfoBy []resErrInfo
 func (a resErrInfoBy) Len() int      { return len(a) }
 func (a resErrInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a resErrInfoBy) Less(i, j int) bool {
-    if a[i].ErrTime > a[j].ErrTime {
+    TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
+    TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
+
+    if TmpTimeI.After(TmpTimeJ) {
         return true
     }
 
