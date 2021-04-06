@@ -29,6 +29,7 @@ type resErrSimpleInfo struct {
     ErrTimes      uint32 `json:"err_times"`
     ErrAction     string `json:"err_action"`
     ErrActionName string `json:"err_action_name"`
+    ErrParam      uint32 `json:"err_param"`
 }
 
 type resErrSimpleInfoBy []resErrSimpleInfo
@@ -244,8 +245,8 @@ func ResErrInfo(c echo.Context) error {
 
     db := cfg.LogDb
 
-    sql := "SELECT logymd, res_id, action, count(*) as count  FROM res_prom_error "
-    sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
+    sql := "SELECT logymd, res_id, action, count(*) as count FROM res_action_prom_error "
+    sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
     sql += "GROUP BY logymd, res_id, action"
 
     rows, err := db.Query(sql)
@@ -294,7 +295,7 @@ func ResErrDetail(c echo.Context) error {
     }
 
     db := cfg.LogDb
-    sql := "SELECT loghms, res_id, action, zoneid, roleid FROM res_prom_error "
+    sql := "SELECT loghms, res_id, action, zoneid, roleid FROM res_action_prom_error "
     sql += "WHERE STR_TO_DATE(logymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
     sql += "AND action = '" + sAction + "'"
 
@@ -425,4 +426,92 @@ func ResAppendAction(c echo.Context) error {
     refreshActionList(true)
 
     return ctx.SendResponse("添加可监控项: " + sActionName + " 成功！")
+}
+
+func ResNumErrInfo(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    startTime := ctx.QueryParam("startTime")
+    endTime := ctx.QueryParam("endTime")
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+
+    if startTime == "" || endTime == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    db := cfg.LogDb
+
+    sql := "SELECT logymd, res_id, param1, count(*) as count  FROM res_add_prom_error "
+    sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
+    sql += "GROUP BY logymd, res_id, param1"
+
+    rows, err := db.Query(sql)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    slSimpleResErrInfo := make([]resErrSimpleInfo, 0)
+    for rows.Next() {
+        var r resErrSimpleInfo
+        if err := rows.Scan(&r.ErrTime, &r.ErrResId, &r.ErrParam, &r.ErrTimes); err != nil {
+            return err
+        }
+
+        slSimpleResErrInfo = append(slSimpleResErrInfo, r)
+    }
+
+    if err := rows.Err(); err != nil {
+        return err
+    }
+
+    sort.Sort(resErrSimpleInfoBy(slSimpleResErrInfo))
+
+    vSimpleResErrInfo := common.GetPage(slSimpleResErrInfo, page, limit)
+
+    return ctx.SendArray(vSimpleResErrInfo, len(slSimpleResErrInfo))
+}
+
+func ResNumErrDetail(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    sErrTime := ctx.QueryParam("ErrTime")
+    sErrResId := ctx.QueryParam("ErrResId")
+    sParam := ctx.QueryParam("ErrParam")
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+
+    if sErrResId == "" || sErrTime == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    db := cfg.LogDb
+    sql := "SELECT loghms, zoneid, roleid FROM res_add_prom_error "
+    sql += "WHERE STR_TO_DATE(logymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
+    sql += "AND param1 = '" + sParam + "'"
+
+    rows, err := db.Query(sql)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    slResErrInfo := make([]resErrInfo, 0)
+
+    for rows.Next() {
+        var r resErrInfo
+        if err := rows.Scan(&r.ErrTime, &r.ZoneId, &r.RoleId); err != nil {
+            return err
+        }
+
+        slResErrInfo = append(slResErrInfo, r)
+    }
+
+    if err := rows.Err(); err != nil {
+        return err
+    }
+
+    sort.Sort(resErrInfoBy(slResErrInfo))
+    vResErrInfo := common.GetPage(slResErrInfo, page, limit)
+
+    return ctx.SendArray(vResErrInfo, len(slResErrInfo))
 }

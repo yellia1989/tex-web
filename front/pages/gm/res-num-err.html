@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>资源管理项错误记录</title>
+  <title>资源数量获取异常记录</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -56,7 +56,7 @@
 
     let stageTable = table.render({
       elem: "#tableId",
-      url: "/api/gm/res_err/err_info",
+      url: "/api/gm/res_num_err/err_info",
       where: {startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss')},
       data:[],
       text: {
@@ -68,18 +68,23 @@
         {field: "err_time", title: "报错时间", width: 120, align: "center"},
         {field: "err_times", title: "报错次数", width: 120, align: "center"},
         { 
-          field: "err_res_id", width:120, title: "资源类型", align: "center", templet: function(d) {
+          field: "err_res_id", width:100, title: "资源类型", align: "center", templet: function(d) {
             let ret = '';
             switch(d.err_res_id) {
               case '1': ret = '金币'; break;
               case '2': ret = '钻石'; break;
+              case '3': ret = '英雄经验'; break;
+              case '51': ret = '木材'; break;
+              case '52': ret = '石料'; break;
+              case '53': ret = '银币'; break;
+              case '54': ret = '体力'; break;
               default:
                 ret = '未知道具';
             }
             return ret;
           } 
         },
-        {field: "err_action_name", title: "报错操作项"},
+        {field: "err_param", title: "报错参数"},
         {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
@@ -90,7 +95,7 @@
     table.on("tool(tableFilter)", function (obj) {
       errResId = obj.data.err_res_id
       errTime = obj.data.err_time
-      errAction = obj.data.err_action
+      errParam = obj.data.err_param
       switch (obj.event) {
         case "detail":
           detail();
@@ -99,13 +104,13 @@
     });
 
     function detail() {
-      okLayer.open("详情","res-err-detail.html", "90%", "90%", null, function () {
+      okLayer.open("详情","res-num-err-detail.html", "90%", "90%", null, function () {
       })
     }
 
     form.on("submit(search)", function (data) {
       stageTable.reload({
-        url: "/api/gm/res_err/err_info",
+        url: "/api/gm/res_num_err/err_info",
         where: data.field,
         page: {
             curr: 1,
