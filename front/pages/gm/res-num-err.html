@@ -65,10 +65,10 @@
       limit: 10,
       page: true,
       cols: [[
-        {field: "err_time", title: "报错时间", width: 120, align: "center"},
+        {field: "err_time", title: "报错时间", align: "center"},
         {field: "err_times", title: "报错次数", width: 120, align: "center"},
         { 
-          field: "err_res_id", width:100, title: "资源类型", align: "center", templet: function(d) {
+          field: "err_res_id", title: "资源类型", align: "center", templet: function(d) {
             let ret = '';
             switch(d.err_res_id) {
               case '1': ret = '金币'; break;
@@ -77,14 +77,12 @@
               case '51': ret = '木材'; break;
               case '52': ret = '石料'; break;
               case '53': ret = '银币'; break;
-              case '54': ret = '体力'; break;
               default:
                 ret = '未知道具';
             }
             return ret;
           } 
         },
-        {field: "err_param", title: "报错参数"},
         {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
@@ -95,7 +93,6 @@
     table.on("tool(tableFilter)", function (obj) {
       errResId = obj.data.err_res_id
       errTime = obj.data.err_time
-      errParam = obj.data.err_param
       switch (obj.event) {
         case "detail":
           detail();
