@@ -30,7 +30,7 @@
       detailTable = table.render({
       elem: "#tableId",
       url: "/api/gm/res_num_err/err_detail",
-      where: { ErrResId: parent.errResId, ErrTime: parent.errTime, ErrAction: parent.errAction },
+      where: { ErrResId: parent.errResId, ErrTime: parent.errTime },
       data:[],
       text: {
         none: '暂无相关数据',
@@ -41,6 +41,22 @@
         {field: "err_time", title: "报错时间", width: 150, align: "center"},
         {field: "zone_id", title: "区服id", align: "center"},
         {field: "role_id", title: "角色id", align: "center"},
+        {
+          field: "err_param", title: "报错参数", templet: function(d) {
+            let ret = '';
+            switch(parent.errResId) {
+              case '3':
+              case '51':
+              case '52':
+              case '53':
+              case '54':
+                ret = d.err_param + '倍'; break;
+              default:
+                ret = d.err_param;
+            }
+            return ret;
+          }
+        }
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],

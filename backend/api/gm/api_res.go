@@ -29,7 +29,6 @@ type resErrSimpleInfo struct {
     ErrTimes      uint32 `json:"err_times"`
     ErrAction     string `json:"err_action"`
     ErrActionName string `json:"err_action_name"`
-    ErrParam      uint32 `json:"err_param"`
 }
 
 type resErrSimpleInfoBy []resErrSimpleInfo
@@ -54,6 +53,7 @@ type resErrInfo struct {
     ErrActionName string `json:"err_action_name"`
     ZoneId        uint32 `json:"zone_id"`
     RoleId        uint32 `json:"role_id"`
+    ErrParam      uint32 `json:"err_param"`
 }
 
 type resErrInfoBy []resErrInfo
@@ -81,8 +81,23 @@ func ResControlList(c echo.Context) error {
     refreshActionList(true)
 
     db := cfg.GameGlobalDb
+    if db == nil {
+        ctx.SendError(-1, "数据库空")
+    }
+
+	tx, err := db.Begin()
+	if err != nil {
+        return err
+	}
+    defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+        return err
+	}
+
     sql := "SELECT res_id, action FROM t_res_control"
-    rows, err := db.Query(sql)
+    rows, err := tx.Query(sql)
     if err != nil {
         return err
     }
@@ -103,6 +118,14 @@ func ResControlList(c echo.Context) error {
         }
         vResControl = append(vResControl, r)
     }
+
+    if err := rows.Err(); err != nil {
+        return err
+    }
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
     return ctx.SendArray(vResControl, len(vResControl))
 }
@@ -178,13 +201,32 @@ func ActionAdd(c echo.Context) error {
     }
 
     db := cfg.GameGlobalDb
+    if db == nil {
+        ctx.SendError(-1, "数据库空")
+    }
+
+	tx, err := db.Begin()
+	if err != nil {
+        return err
+	}
+    defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+        return err
+	}
+
     sql := "INSERT INTO t_res_control (res_id, action) VALUES(?,?)"
 
-    rows, err := db.Query(sql, iResId, sAction)
+    rows, err := tx.Query(sql, iResId, sAction)
     if err != nil {
         return err
     }
     defer rows.Close()
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
     return ctx.SendResponse("添加资源监控项成功")
 }
@@ -199,13 +241,32 @@ func ActionEdit(c echo.Context) error {
     }
 
     db := cfg.GameGlobalDb
+    if db == nil {
+        ctx.SendError(-1, "数据库空")
+    }
+
+	tx, err := db.Begin()
+	if err != nil {
+        return err
+	}
+    defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+        return err
+	}
+
     sql := "UPDATE t_res_control SET action=? WHERE res_id=?"
 
-    rows, err := db.Query(sql, sAction, iResId)
+    rows, err := tx.Query(sql, sAction, iResId)
     if err != nil {
         return err
     }
     defer rows.Close()
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
     return ctx.SendResponse("编辑资源监控项成功")
 }
@@ -219,13 +280,32 @@ func ActionDel(c echo.Context) error {
     }
 
     db := cfg.GameGlobalDb
+    if db == nil {
+        ctx.SendError(-1, "数据库空")
+    }
+
+	tx, err := db.Begin()
+	if err != nil {
+        return err
+	}
+    defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+        return err
+	}
+
     sql := "DELETE FROM t_res_control WHERE res_id=?"
 
-    rows, err := db.Query(sql, iResId)
+    rows, err := tx.Query(sql, iResId)
     if err != nil {
         return err
     }
     defer rows.Close()
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
     return ctx.SendResponse("删除资源监控项成功")
 }
@@ -347,34 +427,53 @@ func ResAppendResControl(c echo.Context) error {
     }
 
     db := cfg.GameGlobalDb
+    if db == nil {
+        ctx.SendError(-1, "数据库空")
+    }
+
+    db.SetConnMaxLifetime(time.Second * 30)
+	tx, err := db.Begin()
+	if err != nil {
+        return err
+	}
+    defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+        return err
+	}
+
     sql1 := "SELECT res_id FROM t_res_control WHERE res_id=?"
     sql2 := "INSERT INTO t_res_control set res_id = ?, action=?"
     sql3 := "UPDATE t_res_control set action=CONCAT(action,',',?) WHERE res_id=?"
     sql4 := "SELECT action FROM t_res_control WHERE res_id=?"
 
-    rows1, err1 := db.Query(sql1, sResId)
+    rows1, err1 := tx.Query(sql1, sResId)
     if err1 != nil {
         return err1
     }
-    defer rows1.Close()
 
     // 没有则插入
     if !rows1.Next() && rows1.Err() == nil {
-        rows2, err2 := db.Query(sql2, sResId, sAction);
+        rows2, err2 := tx.Query(sql2, sResId, sAction);
         if err2 != nil {
             return err2
         }
         defer rows2.Close()
 
+	    if err = tx.Commit(); err != nil {
+		    return err
+	    }
+
         sSuccess := "在资源ID: " + sResId + " 中添加监控: " + sActionName + " 成功"
         return ctx.SendResponse(sSuccess)
     }
+    rows1.Close()
 
-    rows4, err4 := db.Query(sql4, sResId)
+    rows4, err4 := tx.Query(sql4, sResId)
     if err4 != nil {
         return err4
     }
-    defer rows4.Close()
 
     for rows4.Next() {
         var sAllAction string
@@ -384,17 +483,27 @@ func ResAppendResControl(c echo.Context) error {
         vAllAction := strings.Split(sAllAction, ",")
         for _,v := range vAllAction {
             if v == sAction {
+	            defer tx.Commit()
                 return ctx.SendError(-3, "本监控项已被监控")
             }
         }
     } 
 
+    if err = rows4.Err(); err != nil {
+        return err
+    }
+    rows4.Close()
+
     // 有则追加
-    rows3, err3 := db.Query(sql3, sAction, sResId)
+    rows3, err3 := tx.Query(sql3, sAction, sResId)
     if err3 != nil {
         return err3
     }
     defer rows3.Close()
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
 
     sSuccess := "在资源ID: " + sResId + " 中添加监控: " + sActionName + " 成功"
     return ctx.SendResponse(sSuccess)
@@ -441,9 +550,9 @@ func ResNumErrInfo(c echo.Context) error {
 
     db := cfg.LogDb
 
-    sql := "SELECT logymd, res_id, param1, count(*) as count  FROM res_add_prom_error "
+    sql := "SELECT logymd, res_id, count(*) as count  FROM res_add_prom_error "
     sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
-    sql += "GROUP BY logymd, res_id, param1"
+    sql += "GROUP BY logymd, res_id"
 
     rows, err := db.Query(sql)
     if err != nil {
@@ -454,7 +563,7 @@ func ResNumErrInfo(c echo.Context) error {
     slSimpleResErrInfo := make([]resErrSimpleInfo, 0)
     for rows.Next() {
         var r resErrSimpleInfo
-        if err := rows.Scan(&r.ErrTime, &r.ErrResId, &r.ErrParam, &r.ErrTimes); err != nil {
+        if err := rows.Scan(&r.ErrTime, &r.ErrResId, &r.ErrTimes); err != nil {
             return err
         }
 
@@ -476,7 +585,6 @@ func ResNumErrDetail(c echo.Context) error {
     ctx := c.(*mid.Context)
     sErrTime := ctx.QueryParam("ErrTime")
     sErrResId := ctx.QueryParam("ErrResId")
-    sParam := ctx.QueryParam("ErrParam")
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
@@ -485,9 +593,8 @@ func ResNumErrDetail(c echo.Context) error {
     }
 
     db := cfg.LogDb
-    sql := "SELECT loghms, zoneid, roleid FROM res_add_prom_error "
+    sql := "SELECT loghms, zoneid, param1, roleid FROM res_add_prom_error "
     sql += "WHERE STR_TO_DATE(logymd, '%Y-%m-%d') = STR_TO_DATE('" + sErrTime + "', '%Y-%m-%d')  AND res_id = '" + sErrResId + "'"
-    sql += "AND param1 = '" + sParam + "'"
 
     rows, err := db.Query(sql)
     if err != nil {
@@ -499,7 +606,7 @@ func ResNumErrDetail(c echo.Context) error {
 
     for rows.Next() {
         var r resErrInfo
-        if err := rows.Scan(&r.ErrTime, &r.ZoneId, &r.RoleId); err != nil {
+        if err := rows.Scan(&r.ErrTime, &r.ZoneId, &r.ErrParam, &r.RoleId); err != nil {
             return err
         }
 
