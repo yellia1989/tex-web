@@ -431,7 +431,6 @@ func ResAppendResControl(c echo.Context) error {
         ctx.SendError(-1, "数据库空")
     }
 
-    db.SetConnMaxLifetime(time.Second * 30)
 	tx, err := db.Begin()
 	if err != nil {
         return err
@@ -483,7 +482,7 @@ func ResAppendResControl(c echo.Context) error {
         vAllAction := strings.Split(sAllAction, ",")
         for _,v := range vAllAction {
             if v == sAction {
-	            defer tx.Commit()
+                defer tx.Commit()
                 return ctx.SendError(-3, "本监控项已被监控")
             }
         }
