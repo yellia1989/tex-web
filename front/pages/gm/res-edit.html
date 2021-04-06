@@ -110,7 +110,7 @@
       var param;
       form.on('submit(edit)', function (data) {
         let actionStr = action.getValue('valueStr')
-        let param = {iResId: data.field.iResId, sAction: actionStr};
+        let param = {iResId: parent.editData.iResId, sAction: actionStr};
         okUtils.ajax("/api/gm/res/edit", "post", param, true).done(function (response) {
             okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

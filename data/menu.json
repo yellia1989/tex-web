@@ -934,6 +934,20 @@
       },
       {
         "id": 102,
+        "title": "资源数量报错信息",
+        "href": "gm/res-num-err.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 103,
         "title": "客户端报错信息",
         "href": "game/client-err.html",
         "fontFamily": "ok-icon",
