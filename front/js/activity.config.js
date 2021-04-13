@@ -653,6 +653,15 @@
                     name: '商品id',
                     type: 'text',
                     parser: parseInt
+                },
+                condition: {
+                    name: '基金类型',
+                    type: 'select',
+                    options: {
+                        '1': '登录',
+                        '2': '通关关卡'
+                    },
+                    parser: parseInt
                 }
             },
             client_param: {
@@ -672,27 +681,9 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
-                },
-                condition: {
-                    name: '基金类型',
-                    type: 'select',
-                    options: {
-                        '1': '登录',
-                        '2': '通关关卡'
-                    },
-                    parser: parseInt
                 }
             },
             server_param: {
-                condition: {
-                    name: '领取条件',
-                    type: 'select',
-                    options: {
-                        '1': '登录',
-                        '2': '通关关卡'
-                    },
-                    parser: parseInt
-                }
             }
         }
     };
