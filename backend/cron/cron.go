@@ -2,7 +2,6 @@ package cron
 
 import (
     "fmt"
-    "github.com/yellia1989/tex-web/backend/cron/chat"
     "time"
     dsql "database/sql"
     ssync "sync"
@@ -107,16 +106,11 @@ func Start() {
     // 日期
     startCron("date", date.Cron, time.Second * 5)
 
-    if !cfg.Local{
-        // 分区
-        startCron("zone", zone.Cron, time.Second * 5)
-    }
+    // 分区
+    startCron("zone", zone.Cron, time.Second * 5)
 
     // 开启日志
     startLogSync(time.Second * 5)
-
-    //聊天屏蔽字处理
-    startCron("chatMaskCheck",chat.Cron,cfg.ChatMaskInterval)
 
     // 玩家登陆和充值
     startCron("stat", stat.Cron, cfg.LogStatInterval)
