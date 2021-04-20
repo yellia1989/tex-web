@@ -129,8 +129,9 @@ class MyColorMenu extends BtnMenu {
 
 // 注册菜单
 E.registerMenu('myColorKey', MyColorMenu);
-E.registerMenu('FonSizeKey',FonSizeMenu);
+//E.registerMenu('FonSizeKey',FonSizeMenu);
 
+const fontSizeMap = {'1': '10', '2': '13', '3': '16', '4': '18', '5': '24', '6': '32', '7': '48',};
 
 function searchData(jsonData,outputObject) {
     let endTag = "";
@@ -141,10 +142,10 @@ function searchData(jsonData,outputObject) {
         case "object":
             switch (jsonData.tag){
                 case "br":
-                    outputObject.result+="\n ";
+                    endTag += "\n ";
                     break;
                 case "p":
-                    endTag += "\n";
+                    endTag += "\n ";
                     break;
                 case "span":
                     for(let i in jsonData.attrs){
@@ -162,7 +163,10 @@ function searchData(jsonData,outputObject) {
                     for(let i in jsonData.attrs){
                         if(jsonData.attrs[i].name==="color"){
                             outputObject.result += "[color="+jsonData.attrs[i].value+"]";
-                            endTag = "[/color]";
+                            endTag += "[/color]";
+                        }else if(jsonData.attrs[i].name==="size"){
+                            outputObject.result += "[SIZE="+fontSizeMap[jsonData.attrs[i].value]+"]";
+                            endTag += "[/SIZE]";
                         }
                     }
                     break;
@@ -170,7 +174,18 @@ function searchData(jsonData,outputObject) {
             for(let i in jsonData.children){
                 searchData(jsonData.children[i],outputObject);
             }
-            outputObject.result+=endTag;
+            if(endTag === "\n "){
+                let regex = new RegExp("\\[/[a-zA-z]*\\]$");
+                let arr = outputObject.result.match(regex);
+                if(arr!=null){
+                    outputObject.result = outputObject.result.replace(regex,endTag+arr[0]);
+                }else {
+                    outputObject.result+=endTag;
+                }
+
+            }else {
+                outputObject.result+=endTag;
+            }
             break;
     }
 }
