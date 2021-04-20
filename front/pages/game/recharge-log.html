@@ -128,14 +128,7 @@
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
       parseData: function(res) {
-        for (let i = 0; res.data && i < res.data.length; ++i) {
-          for (let j = 0; res.data[i].steps && j < res.data[i].steps.length; ++j) {
-            if (res.data[i].steps[j].status.indexOf("receive-receipt") != -1) {
-              res.data[i].detail = true;
-              break;
-            }
-          }
-        }
+        res.data[i].detail = res.data[i].extern_order_id != '';
         return res;
       }
     });
