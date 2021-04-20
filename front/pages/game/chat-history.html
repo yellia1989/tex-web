@@ -16,7 +16,7 @@
           <div id="zoneSelect"></div>
         </div>
         <div class="layui-input-inline">
-          <input class="layui-input" lay-verify="required|number" lay-verType="tips" placeholder="请输入角色id" autocomplete="off" name="roleid">
+          <input class="layui-input" lay-verify="number" lay-verType="tips" placeholder="请输入角色id" autocomplete="off" name="roleid">
         </div>
         <div class="layui-input-inline">
           <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
@@ -36,10 +36,14 @@
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/utc.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/timezone.js"></script>
+
 <script>
-  var zoneid;
-  var roleid;
-  layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+  var zoneid = 0;
+  var roleid = 0;
+  layui.use(["table", "okUtils", "form", "okLayer", "laydate", "okCookie"], function () {
     let table = layui.table;
     let okUtils = layui.okUtils;
     let form = layui.form;
@@ -49,10 +53,14 @@
     let laydate = layui.laydate;
     okLoading.close();
 
-    let now = new Date();
-    let lastweek = new Date(now.getTime() -7*86400*1000);
-    laydate.render({elem: "#startTime", type: "datetime", value: lastweek});
-    laydate.render({elem: "#endTime", type: "datetime", value: now});
+    dayjs.extend(window.dayjs_plugin_utc);
+    dayjs.extend(window.dayjs_plugin_timezone);
+    dayjs.tz.setDefault($.cookie("timezone"));
+
+    let now = dayjs();
+    let lastweek = dayjs().subtract(7, 'day');
+    laydate.render({elem: "#startTime", type: "datetime", btns: ['clear', 'confirm'], value: lastweek.tz().format("YYYY-MM-DD HH:mm:ss")});
+    laydate.render({elem: "#endTime", type: "datetime", btns: ['clear', 'confirm'], value: now.tz().format("YYYY-MM-DD HH:mm:ss")});
 
     let zoneSelect = xmSelect.render({
       el: '#zoneSelect',
@@ -93,23 +101,47 @@
         none: '暂无相关数据',
       },
       limit: 30,
-      where: {startTime: okUtils.dateFormat(lastweek, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
+      where: {startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss')},
       page: true,
       cols: [[
         {field: "id", title: "日志id"},
         {field: "time", title: "时间"},
-        {field: "zoneId", title: "分区id"},
-        {field: "roleId", title: "角色id"},
+        {title: "发言人", templet: function(d) { return d.fromRoleName+'['+d.fromRoleId+']' }},
+        {title: "类型", templet: "#typeTpl"},
         {field: "content", title: "内容"},
+        {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
     });
 
+    table.on("tool(tableFilter)", function (obj) {
+      roleid = obj.data.fromRoleId;
+      zoneid = zoneSelect.getValue('valueStr');
+      switch (obj.event) {
+        case "ban_speak":
+          ban_speak();
+          break;
+        case "ban_login":
+          ban_login();
+          break;
+      }
+    });
+
+    function ban_speak() {
+      okLayer.open("禁言", "ban-speak.html", "40%", "50%", null, function () {
+      })
+    }
+
+    function ban_login() {
+      okLayer.open("封号", "ban-login.html", "40%", "210px", null, function () {
+      })
+    }
+
     form.on("submit(search)", function (data) {
       itemTable.reload({
-        url: "/api/game/chat/getHistory",
+        url: "/api/game/chat/gethistory",
         where: data.field,
         page: {
           curr: 1,
@@ -118,6 +150,23 @@
       return false;
     });
   })
+</script>
+<script type="text/html" id="typeTpl">
+  {{#  if(d.type == 1){ }}
+    挂机[{{d.fromZoneId}}服]
+  {{#  } else if(d.type == 2){ }}
+    联盟[{{d.allianceId}}][{{d.allianceName}}]
+  {{#  } else if(d.type == 3){ }}
+    私聊[{{d.toRoleName}}][{{d.toRoleId}}]
+  {{#  } else if(d.type == 5){ }}
+    SLG[{{d.fromMapId}}服]
+  {{#  } }}
+</script>
+<script type="text/html" id="operationTpl">
+  <div class="layui-btn-group">
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="ban_speak">禁言</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="ban_login">封号</button>
+  </div>
 </script>
 </body>
 </html>

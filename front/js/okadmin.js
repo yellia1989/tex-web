@@ -155,6 +155,7 @@ layui.use(["element", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday
         $.removeCookie("texweb_session");
         $.removeCookie("username");
         $.removeCookie("logo");
+        $.removeCookie("timezone");
         window.location.href = "/login.html";
       });
     });

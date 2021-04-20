@@ -653,6 +653,15 @@
                     name: '商品id',
                     type: 'text',
                     parser: parseInt
+                },
+                condition: {
+                    name: '基金类型',
+                    type: 'select',
+                    options: {
+                        '1': '登录',
+                        '2': '通关关卡'
+                    },
+                    parser: parseInt
                 }
             },
             client_param: {
@@ -675,15 +684,6 @@
                 }
             },
             server_param: {
-                condition: {
-                    name: '领取条件',
-                    type: 'select',
-                    options: {
-                        '1': '登录',
-                        '2': '通关关卡'
-                    },
-                    parser: parseInt
-                }
             }
         }
     };
@@ -720,6 +720,14 @@
                 },
                 list_bg: {
                     name: '列表背景',
+                    type: 'text',
+                },
+                title_icon: {
+                    name: '标题图片',
+                    type: 'text',
+                },
+                desc_detail_icon: {
+                    name: '描述图片',
                     type: 'text',
                 },
                 view_sort: {
