@@ -26,7 +26,6 @@
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
           <div id="rContnet"></div>
-<!--          <textarea name="sContent" placeholder="请输入内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>-->
         </div>
       </div>
 
@@ -91,17 +90,14 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
-
     const editor = new E('#rContnet')
-
+    //配置菜单栏，删减菜单，调整顺序
     editor.config.menus = [
       'undo',
       'redo',
       'fontSize',
       'myColorKey',
-     // 'FonSizeKey',
     ]
-
     editor.create();
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
@@ -120,8 +116,6 @@
         $('input[name=sPopWindowEndTime]').val("");
         $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
       }
-
-      console.log(parent.editdata);
 
       $("input[name='sTitle']").val(parent.editdata.sTitle);
       $("textarea[name='sContent']").val(parent.editdata.sContent);
@@ -152,6 +146,12 @@
           okLayer.redCrossMsg('开始时间不能大于结束时间', function () {});
           return false;
         }
+
+        let jsonData = editor.txt.getJSON();
+        let ouputStr = ExecuteJsonData(jsonData);
+
+        data.field.sContent = ouputStr;
+        data.field.hContent = editor.txt.html();
 
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {

@@ -13,7 +13,6 @@
 <script src="/js/editorMenu.js"></script>
 
 <body>
-
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
@@ -27,11 +26,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-<!--          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required"-->
-<!--            lay-verType="tips"></textarea>-->
-          <div id="rContnet">
-          </div>
-            <div id="test">Testsss</div>
+          <div id="rContnet"></div>
         </div>
       </div>
 
@@ -95,16 +90,8 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
-  <script src="/js/jquery-1.11.2.min.js"></script>
-
   <script>
-
-    //const E = window.wangEditor
-
-    //const { $, BtnMenu, DropListMenu, PanelMenu, DropList, Panel, Tooltip } = E
     const editor = new E('#rContnet')
-
-
     //配置菜单栏，删减菜单，调整顺序
     editor.config.menus = [
         'undo',
@@ -114,24 +101,20 @@
     ]
     editor.create();
 
-    $("#test").on("click",function(){
-
-        console.log(editor.selection.getSelectionContainerElem().elems[0]);
-        console.log(editor.selection.getSelectionStartElem().elems[0]);
-        console.log(editor.selection.getSelectionEndElem().elems[0]);
-      console.log(editor.txt.text());
-      console.log(editor.txt.html());
-      console.log(JSON.stringify(editor.txt.getJSON()));
-      console.log(editor.txt.getJSON());
-
-      var jsonData = editor.txt.getJSON();
-      let ouputStr = ExecuteJsonData(jsonData);
-      console.log(ouputStr);
-    });
-
-    let htmlTest = '<p>mjhhhhhhhhhhh myuuu</p><p><font size="4">ymuuuu<font color="#a927c9">u</font></font><font size="5" color="#a927c9">uuuu</font><font size="7"><font color="#a927c9">u</font><font color="#131263">u</font>uum<font color="#bb3232">uyyyyy</font>yyy</font><font size="4">yyyyyyy</font></p><p><font size="4">啊啊啊啊啊啊啊啊啊啊啊啊啊啊访问肥肉二哥日癸壬癸俄国人骨腭</font><font size="5"><font color="#dd1e1e">骨而归颚骨人格二哥</font>日个二</font><font color="#331387" style="font-size: 1em;"><font size="5">哥日</font><font size="4">葛瑞格热</font></font><font size="4">狗二个人二哥日</font></p>';
-
-    editor.txt.html(htmlTest);
+    // $("#test").on("click",function(){
+    //
+    //     console.log(editor.selection.getSelectionContainerElem().elems[0]);
+    //     console.log(editor.selection.getSelectionStartElem().elems[0]);
+    //     console.log(editor.selection.getSelectionEndElem().elems[0]);
+    //   console.log(editor.txt.text());
+    //   console.log(editor.txt.html());
+    //   console.log(JSON.stringify(editor.txt.getJSON()));
+    //   console.log(editor.txt.getJSON());
+    //
+    //   var jsonData = editor.txt.getJSON();
+    //   let ouputStr = ExecuteJsonData(jsonData);
+    //   console.log(ouputStr);
+    // });
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
@@ -177,20 +160,13 @@
           okLayer.redCrossMsg('弹窗显示结束时间不能大于结束时间', function () {});
           return false;
         }
-        ouputStr = "";
+
         let jsonData = editor.txt.getJSON();
-        console.log(jsonData);
-        if(jsonData.length>0){
-            for(let i=0;i<jsonData.length;i++){
-                searchData(jsonData[i]);
-            }
-        }else{
-            okLayer.redCrossMsg('公告内容不能为空', function () {});
-            return false;
-        }
+        let ouputStr = ExecuteJsonData(jsonData);
         console.log(ouputStr);
         data.field.sContent = ouputStr;
-        console.log(data.field);
+        data.field.hContent = editor.txt.html();
+
         okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

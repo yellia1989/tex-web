@@ -23,63 +23,9 @@
       let okUtils = layui.okUtils;
       okLoading.close();
 
-      // let bulletinTable = table.render({
-      //   elem: "#tableId",
-      //   url: '/api/gm/bulletin/list',
-      //   text: {
-      //     none: '暂无相关数据',
-      //   },
-      //   limit: 10,
-      //   page: true,
-      //   toolbar: "#toolbarTpl",
-      //   cols: [[
-      //     { type: "checkbox", title: "序号", fixed: 'left' },
-      //     { field: "id", title: "ID" },
-      //     { field: "sTitle", title: "标题", align: "center" },
-      //     { field: "sContent", title: "内容" },
-      //     { field: "sBeginTime", title: "开始时间", align: "center" },
-      //     { field: "sEndTime", title: "结束时间", align: "center" },
-      //     {
-      //       field: "iType", title: "类型", align: "center", templet: function (d) {
-      //         return d.iType == 1 ? '爱贝勇士' : '默认';
-      //       }
-      //     },
-      //     {
-      //       field: "iDisplay", title: "是否显示", align: "center", templet: function (d) {
-      //         return d.iDisplay == 1 ? '是' : '否';
-      //       }
-      //     },
-      //     {
-      //       field: "iPopWindow", title: "是否弹窗显示", align: "center", templet: function (d) {
-      //         return d.iPopWindow == 1 ? '是' : '否';
-      //       }
-      //     },
-      //     { field: "sPopWindowEndTime", title: "结束时间", align: "center" },
-      //     {
-      //       field: "iFlag", title: "状态", align: "center", templet: function (d) {
-      //         var ret = '';
-      //         switch (d.iFlag) {
-      //           case 0: ret = '正常'; break;
-      //           case 1: ret = '未开启'; break;
-      //           case 2: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">已结束</span>'; break;
-      //           default:
-      //             ret = '未知状态';
-      //         }
-      //         return ret;
-      //       }
-      //     },
-      //     { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
-      //   ]],
-      //   parseData: function (res) {
-      //     for (i = 0; res.data && i < res.data.length; ++i) {
-      //       res.data[i].id = res.data[i].iBulletinId;
-      //     }
-      //     return res;
-      //   }
-      // });
-
       let bulletinTable = table.render({
         elem: "#tableId",
+        url: '/api/gm/bulletin/list',
         text: {
           none: '暂无相关数据',
         },
@@ -91,7 +37,6 @@
           { field: "id", title: "ID" },
           { field: "sTitle", title: "标题", align: "center" },
           { field: "sContent", title: "内容" },
-          { field: "hContent", title: "html内容",hide:true },
           { field: "sBeginTime", title: "开始时间", align: "center" },
           { field: "sEndTime", title: "结束时间", align: "center" },
           {
@@ -125,12 +70,6 @@
           },
           { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
         ]],
-        data:[{
-          "id":"111",
-          "sTitle":"dwdd",
-          "hContent":'<span style="font-size: 22px;"><p>erererererererererererer</p><p>trhhhhhtr&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<font color="#bb1212">htrrrrrrrrrr</font></p></span>',
-          "iType":0,
-        }],
         parseData: function (res) {
           for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iBulletinId;
@@ -155,7 +94,6 @@
         switch (obj.event) {
           case "edit":
             editdata = data;
-            console.log(editdata);
             edit(data.id);
             break;
           case "del":
