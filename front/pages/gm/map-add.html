@@ -18,6 +18,20 @@
         </div>
       </div>
 
+	    <div class="layui-form-item">
+		    <label class="layui-form-label">内网ip</label>
+		    <div class="layui-input-inline">
+			    <input type="text" name="sInternalIp" class="layui-input" lay-verify="required" lay-verType="tips">
+		    </div>
+	    </div>
+
+	    <div class="layui-form-item">
+			  <label class="layui-form-label">MapServer</label>
+			  <div class="layui-input-block">
+				  <input type="text" name="endpoint" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+			  </div>
+		  </div>
+
       <div class="layui-form-item">
         <label class="layui-form-label">分区列表</label>
         <div class="layui-input-block">
@@ -39,6 +53,7 @@
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
+      let $ = layui.jquery;
 
       let zoneSelect = xmSelect.render({
         el: '#zoneSelect',
@@ -60,10 +75,16 @@
         console.log(error);
       });
 
+      $("input[name='sInternalIp']").change(function () {
+        mapid = parseInt($("input[name='iMapId']").val());
+        v = $(this).val();
+        $("input[name='endpoint']").val("tcp -h "+v+" -p "+(7000+mapid%10000)+" -t 3600000");
+      });
+
       form.verify({
         mapid: function(value, item) {
-          if (value < 1001) {
-            return '地图id(>1000)'
+          if (value < 10001) {
+            return '地图id(>10000)'
           }
         }
       });

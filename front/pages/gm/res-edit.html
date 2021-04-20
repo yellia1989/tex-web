@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>编辑资源管理项</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+		  <label class="layui-form-label">资源类型</label>
+          <div class="layui-input-block">
+		    <input type="text" name="iResId" class="layui-input layui-disabled">
+          </div>
+
+      <div class="layui-form-item">
+          <label class="layui-form-label">可获得途径</label>
+          <div class="layui-input-block">
+            <div id="action"></div>
+		  </div>
+	    </div>
+	  </div>
+
+      <div class="layui-form-item">
+        <button class="layui-btn" lay-submit lay-filter="edit" id="edit">编辑</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils', 'upload', 'element'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let xmSelect = layui.xmSelect;
+      let upload = layui.upload;
+      let $ = layui.jquery;
+      let element = layui.element;
+
+      let resName = '';
+      switch (parent.editData.iResId) {
+        case 1: resName = '金币'; break;
+        case 2: resName = '钻石'; break;
+      }
+      $("input[name=iResId]").val(resName);
+
+      let arrLength = 0;
+
+      let action = xmSelect.render({
+        el: '#action',
+        name: 'aciton',
+        filterable: true,
+        delay: 500,
+        autoRow: true,
+        height: "800px",
+        toolbar:{
+            show: true,
+            list: ['CLEAR']
+        },
+        prop: {
+          value: 'vaule',
+          name: 'name',
+        },
+        tips: '请至少选择一个获取途径',
+        layVerify: 'required',
+        layVerType: 'tips',
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          arrLength = data.arr.length;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+        },
+        hide() {
+          if (arrLength != 0){
+              layer.open({
+              title: '监控数量',
+              content: '本次选择的监控项数量为: ' + arrLength + " 条" ,
+              offset: 'auto',
+              btn: ['确定编辑', '取消'],
+              yes: function(index, layero) {
+                   $('#edit').trigger("click");
+                   layer.close(index);
+              },
+              btn2: function(index, layero) {
+                   layer.close(index);
+              }
+            });
+          }
+        }
+      });
+     
+      okUtils.ajax("/api/gm/res/actionlist", "get", null, false).done(function (response) {
+        action.update({
+            data: response.data,
+            initValue: parent.editData.sAction,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      //监听提交
+      var param;
+      form.on('submit(edit)', function (data) {
+        let actionStr = action.getValue('valueStr')
+        let param = {iResId: parent.editData.iResId, sAction: actionStr};
+        okUtils.ajax("/api/gm/res/edit", "post", param, true).done(function (response) {
+            okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>

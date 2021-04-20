@@ -2,245 +2,221 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>最新聊天</title>
+  <title>实时聊天</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
-  <link type="text/css" href="/css/style.css" rel="stylesheet" />
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
-  <script src="/js/jquery-1.11.2.min.js"></script>
-  <script src="/js/scroll.js"></script>
+  <style>
+    .list_lh{ overflow:hidden;}
+    .list_lh li{ padding-left: 20px;padding-right: 20px;padding-top: 10px;padding-bottom: 5px;}
+    .list_lh li.lieven{ background:#F0F2F3;}
+    .list_lh li p{ height:24px; line-height:24px;}
+    .list_lh li p a{ float:left;}
+    .list_lh li p em{ width:80px; font:normal 12px/24px Arial; color:#FF3300; float:right; display:inline-block;}
+    .list_lh li p span{ color:#999; float:right;}
+    .list_lh li p .area_role { height:17px; line-height:17px; color:#333333; padding:0 5px; margin-top:4px; margin-right: 10px; display:inline-block; float:right;}
+    .list_lh li p .btn_zone { height:17px; line-height:17px; size: 28px; color:#28BD19; margin-right: 10px; margin-top:4px; display:inline-block; float:left;}
+    .list_lh li p .area_time { height:17px; line-height:17px; size: 28px; color:#333333; margin-right: 10px; margin-top:4px; display:inline-block; float:left;}
+  </style>
 </head>
-<script>
-
-
-  function Test() {
-    console.log($("#tableBody").height());
-  }
-
-
-
-</script>
-<style>
-  .title{
-    font-size: 25px;
-  }
-
-  .container{
-    margin-top: 20px;
-  }
-
-  .chatBody{
-    margin-left: 20px;
-    margin-top: 20px;
-    margin-right: 10px;
-    margin-bottom: 20px;
-  }
-
-  .maskBody{
-    margin-left: 10px;
-    margin-right: 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-</style>
 <body>
-<div class="ok-body chatBody" style="width: 35%; float: left;">
-  <p id="newChat" class="title">最新聊天</p>
-  <div class="list_lh container" style="border: 2px solid #0e90d2;">
-    <ul id="newest_chat">
-<!--      <li>-->
-<!--        <p><span class="btn_zone">分区ID</span><span class="area_time">2018-3-2 17:28:05</span><span class="area_role">角色名</span><span class="area_role">角色ID</span></p>-->
-<!--        <p>内容1</p>-->
-<!--      </li>-->
-    </ul>
+<div class="ok-body">
+  <div class="layui-row">
+    <div class="layui-col-xs12 layui-col-md5">
+      <div class="layui-card">
+        <div class="layui-card-header">实时聊天</div>
+          <div class="layui-card-body">
+            <div class="list_lh" id="newestchat" style="height: 630px">
+              <ul id="newest_chat">
+              </ul>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="layui-col-xs12 layui-col-md5 layui-col-md-offset1">
+      <div class="layui-card">
+        <div class="layui-card-header">敏感聊天</div>
+          <div class="layui-card-body">
+            <div class="list_lh" id="maskchat" style="height: 630px">
+              <ul id="mask_chat">
+              </ul>
+            </div>
+          </div>
+      </div>
+    </div>
   </div>
 </div>
-<div id="tableBody" class="ok-body maskBody" style="width: 60%;float: left;">
-  <p class="title">屏蔽词列表</p>
-  <div class="container" id="tableDiv">
-    <table id="tableId2"  lay-filter="tableFilter"></table>
-  </div>
-
-</div>
-
-<style>
-
-</style>
-
-
-
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
-<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
-
 <script>
-
-  var zoneid;
-  var roleid;
-
-  let scrollParams = {
-    speed:20, //数值越大，速度越慢
-    rowHeight:68, //li的高度
-    loop:false,
-    animSpeed:3,
-  };
-
-  layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
-    let table = layui.table;
-    let okUtils = layui.okUtils;
-    let form = layui.form;
-    let okLayer = layui.okLayer;
-    let xmSelect = layui.xmSelect;
-    let $ = layui.jquery;
-    let laydate = layui.laydate;
+  layui.use(["element", "okUtils"], function () {
     okLoading.close();
+    let $ = layui.jquery;
+    let okUtils = layui.okUtils;
 
-    let now = new Date();
-    let lastweek = new Date(now.getTime() -7*86400*1000);
-    laydate.render({elem: "#startTime", type: "datetime", value: lastweek});
-    laydate.render({elem: "#endTime", type: "datetime", value: now});
+    (function($){
+        $.fn.myScroll = function(options) {
+        //默认配置
+        var defaults = {
+          speed:40,  //滚动速度,值越大速度越慢
+          rowHeight:24, //每行的高度
+          loop:false,
+          animSpeed:1,
+        };
 
-    setInterval(refreshNewestChat, 60000);
+        var opts = $.extend({}, defaults, options),intId = [];
+        let isPause = false;
 
-    let tId = -1;
+        function marquee(obj, step){
+          if(!isPause){
+            obj.find("ul").animate({
+              marginTop: '-='+opts["animSpeed"]
+            },0,function(){
+              var s = Math.abs(parseInt($(this).css("margin-top")));
+              if(s >= step && opts["loop"]){
+                $(this).find("li").slice(0, 1).appendTo($(this));
+                $(this).css("margin-top", 0);
+              }
+            });
+          }
+        }
 
-    let maxId = 0;
+        this.each(function(i){
+          var sh = opts["rowHeight"],speed = opts["speed"],_this = $(this);
+          intId[i] = setInterval(function(){
+            var s = Math.abs(parseInt(_this.find("ul").css("margin-top")));
+            if(opts["loop"]){
+              if(_this.find("ul").height()<=_this.height()){
+                clearInterval(intId[i]);
+              }else{
+                marquee(_this, sh);
+              }
+            }else{
+              if(_this.find("ul").height()<=_this.height()+s){
+                clearInterval(intId[i]);
+              }else{
+                marquee(_this, sh);
+              }
+            }
+          }, speed);
 
-    $(document).ready(function(){
-      $('.list_lh li:even').addClass('lieven');
-    })
+          _this.hover(function(){
+            isPause = true;
+          },function(){
+            isPause = false;
+          });
+        });
 
-    window.onresize = function() {
-      $(".list_lh").height($("#tableDiv").height());
-      RollChat();
-    }
-
-    function RollChat(){
-      if(tId!==-1){
-        clearInterval(tId);
+        return intId[0];
       }
+    })($);
 
-      tId = $("div.list_lh").myScroll(scrollParams);
-    }
-
-    function cleanInVisibleData(){
-      let ulDom = $("div.list_lh").find("ul");
+    function clearInVisibleData(ulDom){
       let marginTop = Math.abs(parseInt(ulDom.css("margin-top")));
-      let number = Math.floor( marginTop / scrollParams.rowHeight);
+      let number = Math.floor( marginTop / 63);
+      console.log(number, marginTop, ulDom, ulDom.children());
       for (let i = 0;i<number;++i){
-        ulDom.children()[i].remove();
+        ulDom.children()[0].remove();
       }
       ulDom.css("margin-top",0);
     }
-
-    $("#newChat").on("click",function (param) {
-      cleanInVisibleData();
-    })
-
+	
+    let maxId = 0;
+    let tId = -1;
     function refreshNewestChat() {
-      cleanInVisibleData();
-      okUtils.ajax("/api/game/chat/getNewest", "get",true).done(function (response) {
+      clearInVisibleData($("#newestchat").find("ul"));
+      okUtils.ajax("/api/game/chat/getnewest", "get", {maxid: maxId}, true).done(function (response) {
         let data = response.data;
-        for(let i = 0;i<data.length;i++){
-          if(data[i].id <= maxId){
+        for (let i = 0; i<data.length; i++) {
+          if (data[i].id <= maxId) {
             continue;
-          }else{
+          } else {
             maxId = data[i].id;
           }
+
           let zoneStr = "";
-          switch (data[i].type){
-            case 0:
-              zoneStr = "挂机["+data[i].zoneId+"服]";
-              break;
+          switch (data[i].type) {
             case 1:
-              zoneStr = "SLG["+data[i].zoneId+"服]";
+              zoneStr = '挂机['+data[i].fromZoneId+'服]';
+              break;
+            case 5:
+              zoneStr = "SLG["+data[i].fromMapId+"服]";
               break;
             case 2:
-              zoneStr = "联盟["+data[i].zoneId+"][天下盟]";
+              zoneStr = "联盟["+data[i].allianceId+"]["+data[i].allianceName+"]";
               break;
             case 3:
-              zoneStr = "私聊["+data[i].roleId+"][张三]";
+              zoneStr = "私聊["+data[i].toRoleId+"]["+data[i].toRoleName+"]";
               break;
           }
-          $("#newest_chat").append('<li><p><span class="btn_zone">'+zoneStr+'</span><span class="area_time">'+data[i].time+
-                  '</span><span class="area_role">角色名</span><span class="area_role">'+data[i].roleId+'</span></p><p>'
-                  +data[i].content+'</p></li>');
+          $("#newest_chat").append('<li><p><button type="button" class="layui-btn layui-btn-xs">'+zoneStr+'</button><button type="button" class="layui-btn layui-btn-xs">'+data[i].time+'</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs">'+data[i].fromRoleName+'['+data[i].fromZoneId+'服]'+'['+data[i].fromRoleId+']</button></p><p>'+data[i].content+'</p></li>');
         }
-        RollChat();
+
+	      if (tId !== -1) {
+          clearInterval(tId);
+        }
+
+        tId = $("#newestchat").myScroll({
+          speed:20, //数值越大，速度越慢
+          rowHeight:63, //li的高度
+          loop:false,
+          animSpeed:3,
+        });
       }).fail(function (error) {
         console.log(error);
       });
     }
-
     refreshNewestChat();
+    setInterval(refreshNewestChat, 60000);
 
-    let itemTable2 = table.render({
-      elem: "#tableId2",
-      data:[],
-      text: {
-        none: '暂无相关数据',
-      },
-      limit: 30,
-      where: {},
-      page: true,
-      cols: [[
-        {field: "id", title: "日志id"},
-        {field: "time", title: "时间"},
-        {field: "zoneId", title: "分区id"},
-        {field: "roleId", title: "角色id"},
-        {field: "content", title: "内容"},
-        {field: "dirtyWord", title: "屏蔽词"},
-        {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
-      ]],
-      toolbar: true,
-      defaultToolbar: ['filter', 'print', 'exports'],
-      autoSort: false,
-    });
-
-    table.on("tool(tableFilter)", function (obj) {
-      roleid = obj.data.roleId;
-      zoneid = obj.data.zoneId;
-      switch (obj.event) {
-        case "ban_speak":
-          ban_speak();
-          break;
-        case "ban_login":
-          ban_login();
-          break;
-      }
-    });
-
+    let maxId2 = 0;
+    let tId2 = -1;
     function refreshMaskChat() {
-      itemTable2.reload({
-        url: "/api/game/chat/getMaskLogs",
-        page: {
-          curr: 1,
+      clearInVisibleData($("#maskchat").find("ul"));
+      okUtils.ajax("/api/game/chat/getnewestmask", "get", {maxid: maxId2}, true).done(function (response) {
+        let data = response.data;
+        for (let i = 0; i<data.length; i++) {
+          if (data[i].id <= maxId2) {
+            continue;
+          } else {
+            maxId2 = data[i].id;
+          }
+
+          let zoneStr = "";
+          switch (data[i].type) {
+            case 1:
+              zoneStr = "挂机["+data[i].fromZoneId+"服]";
+              break;
+            case 5:
+              zoneStr = "SLG["+data[i].fromMapId+"服]";
+              break;
+            case 2:
+              zoneStr = "联盟["+data[i].allianceId+"]["+data[i].allianceName+"]";
+              break;
+            case 3:
+              zoneStr = "私聊["+data[i].toRoleId+"]["+data[i].toRoleName+"]";
+              break;
+          }
+          $("#mask_chat").append('<li><p><button type="button" class="layui-btn layui-btn-xs">'+zoneStr+'</button><button type="button" class="layui-btn layui-btn-xs">'+data[i].time+'</button><button type="button" class="layui-btn layui-btn-normal layui-btn-xs">'+data[i].fromRoleName+'['+data[i].fromZoneId+'服]'+'['+data[i].fromRoleId+']</button></p><p>'+data[i].content.replace(data[i].dirtyWord, '<font color="red">'+data[i].dirtyWord+'</font>')+'</p></li>');
         }
+
+	      if (tId2 !== -1) {
+          clearInterval(tId2);
+        }
+
+        tId2 = $("#maskchat").myScroll({
+          speed:20, //数值越大，速度越慢
+          rowHeight:63, //li的高度
+          loop:false,
+          animSpeed:3,
+        });
+      }).fail(function (error) {
+        console.log(error);
       });
     }
-
-    refreshMaskChat()
-
+    refreshMaskChat();
     setInterval(refreshMaskChat, 60000);
-
-    function ban_speak() {
-      okLayer.open("禁言", "ban-speak.html", "40%", "50%", null, function () {
-      })
-    }
-
-    function ban_login() {
-      okLayer.open("封号", "ban-login.html", "40%", "210px", null, function () {
-      })
-    }
-
-  })
-</script>
-<script type="text/html" id="operationTpl">
-  <div class="layui-btn-group">
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-warm" lay-event="ban_speak">禁言</button>
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="ban_login">封号</button>
-  </div>
+  });
 </script>
 </body>
 </html>

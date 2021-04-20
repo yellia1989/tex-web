@@ -117,6 +117,8 @@
         laydate.render({elem: "#iPopWindowEndTime", type: "datetime", value: parent.editdata.sPopWindowEndTime});
       } else {
         $('#popWindowEndTime').addClass('layui-hide');
+        $('input[name=sPopWindowEndTime]').val("");
+        $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
       }
 
       console.log(parent.editdata);

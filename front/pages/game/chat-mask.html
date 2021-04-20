@@ -5,16 +5,23 @@
   <meta charset="UTF-8">
   <title>聊天屏蔽字设置</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="../../css/oksub.css">
+  <link rel="stylesheet" href="/css/oksub.css">
 </head>
 
 <body>
   <div class="ok-body">
     <form class="layui-form" action="">
       <div class="layui-form-item lyui-form-text">
-        <label class="layui-form-label">输入（每行为独立的屏蔽字）</label>
-        <div class="layui-input-block">
-          <textarea name="input" style="width:50%" id="input" class="layui-textarea" rows="7"></textarea>
+        <div class="layui-input-block" style="color:#a29bfe">
+        <label>屏蔽字(每行为一个单独的屏蔽字)</label>
+        <br/>
+        <div name="list" style="width:50%; word-wrap:break-word"></div>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block" style="width:50%">
+          <textarea name="input" id="input" class="layui-textarea" rows="25"></textarea>
         </div>
       </div>
 
@@ -33,9 +40,8 @@
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
-      $("#input").val("");
 
-      okUtils.ajax("/api/game/chat/getMaskWord", "get",true).done(function (response) {
+      okUtils.ajax("/api/game/chat/getmaskword", "get",true).done(function (response) {
         $("#input").val(response.data);
       }).fail(function (error) {
         console.log(error);
@@ -43,7 +49,7 @@
 
       //监听提交
       form.on('submit(confirm)', function (data) {
-        okUtils.ajax("/api/game/chat/setMaskWord", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/game/chat/setmaskword", "post", data.field, true).done(function (response) {
 
         }).fail(function (error) {
           console.log(error);
@@ -52,13 +58,6 @@
       });
     })
   </script>
-  <!-- 头工具栏模板 -->
-  <script type="text/html" id="toolbarTpl">
-  <div class="layui-btn-container">
-    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
-    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
-  </div>
-</script>
 </body>
 
 </html>

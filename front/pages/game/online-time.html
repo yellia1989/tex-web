@@ -33,9 +33,13 @@
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/utc.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/timezone.js"></script>
+
 <script>
   var zoneid;
-  layui.use(["table", "okUtils", "form", "okLayer", "laydate"], function () {
+  layui.use(["table", "okUtils", "form", "okLayer", "laydate", "okCookie"], function () {
     let table = layui.table;
     let okUtils = layui.okUtils;
     let form = layui.form;
@@ -45,10 +49,14 @@
     let laydate = layui.laydate
     okLoading.close();
 
-    let now = new Date();
-    let lastweek = new Date(now.getTime() -7*86400*1000);
-    laydate.render({elem: "#startTime", type: "datetime", value: lastweek});
-    laydate.render({elem: "#endTime", type: "datetime", value: now});
+    dayjs.extend(window.dayjs_plugin_utc);
+    dayjs.extend(window.dayjs_plugin_timezone);
+    dayjs.tz.setDefault($.cookie("timezone"));
+
+    let now = dayjs();
+    let lastweek = dayjs().subtract(7, 'day');
+    laydate.render({elem: "#startTime", type: "datetime", btns: ['clear', 'confirm'], value: lastweek.tz().format("YYYY-MM-DD HH:mm:ss")});
+    laydate.render({elem: "#endTime", type: "datetime", btns: ['clear', 'confirm'], value: now.tz().format("YYYY-MM-DD HH:mm:ss")});
 
     let zoneSelect = xmSelect.render({
       el: '#zoneSelect',
@@ -85,7 +93,7 @@
     let stageTable = table.render({
       elem: "#tableId",
       url: "/api/game/online/time",
-      where: {zoneid: 1, startTime: okUtils.dateFormat(lastweek, 'yyyy-MM-dd hh:mm:ss'), endTime: okUtils.dateFormat(now, 'yyyy-MM-dd hh:mm:ss')},
+      where: {zoneid: 1, startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss')},
       data:[],
       text: {
         none: '暂无相关数据',

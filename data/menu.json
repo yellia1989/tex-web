@@ -769,6 +769,77 @@
           3,
           4
         ]
+      },
+      {
+        "id": 814,
+        "title": "聊天记录",
+        "href": "game/chat-newest.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 81401,
+            "title": "实时聊天",
+            "href": "game/chat-newest.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81402,
+            "title": "聊天历史",
+            "href": "game/chat-history.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81403,
+            "title": "屏蔽字聊天",
+            "href": "game/chat-maskhistory.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 81404,
+            "title": "屏蔽字设置",
+            "href": "game/chat-mask.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
       }
     ],
     "role": [
@@ -865,6 +936,90 @@
       }
     ],
     "role": [
+      3
+    ]
+  },
+  {
+    "id": 10,
+    "title": "监控报警",
+    "fontFamily": "ok-icon",
+    "icon": "&#xe654;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 1001,
+        "title": "资源获取管理",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 100101,
+            "title": "资源获取途径",
+            "href": "gm/res.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 100102,
+            "title": "报错信息详情",
+            "href": "gm/res-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          4,
+          3
+        ]
+      },
+      {
+        "id": 102,
+        "title": "资源数量报错信息",
+        "href": "gm/res-num-err.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 103,
+        "title": "客户端报错信息",
+        "href": "game/client-err.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null,
+        "role": [
+          3,
+          4
+        ]
+      }
+    ],
+    "role": [
+      4,
       3
     ]
   }
