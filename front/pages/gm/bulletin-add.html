@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <link rel="stylesheet" href="/lib/layui/css/layui.css">
+  <link rel="stylesheet" href="/css/editorMenu.css">
 </head>
 
 <script src="https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js"></script>
@@ -91,21 +92,7 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
-    const editor = new E('#rContnet')
-    //配置菜单栏，删减菜单，调整顺序
-    editor.config.menus = [
-        'undo',
-        'redo',
-        'fontSize',
-        'foreColor',
-        'myColorKey',
-    ]
-    editor.config.colors = [
-    '#955619',
-    '#ff0000',
-    '#cd7540',
-    ]
-    editor.create();
+    const editor = getDefaultEditor('#rContnet')
 
     // $("#test").on("click",function(){
     //
