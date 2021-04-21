@@ -45,7 +45,34 @@ class MyColorMenu extends BtnMenu {
 // 注册菜单
 E.registerMenu('myColorKey', MyColorMenu);
 
-const fontSizeMap = {'1': '10', '2': '13', '3': '16', '4': '18', '5': '24', '6': '32', '7': '48',};
+const fontSizeMap = {'1': '16', '2': '18', '3': '20', '4': '22', '5': '24', '6': '26', '7': '28',};
+
+function getDefaultEditor(id){
+    let editor = new E(id)
+    editor.config.menus = [
+        'undo',
+        'redo',
+        'fontSize',
+        'foreColor',
+        'myColorKey',
+    ]
+    editor.config.colors = [
+        '#955619',
+        '#ff0000',
+        '#cd7540',
+    ]
+    editor.config.fontSizes = {
+        'x-small': { name: '16px', value: '1' },
+        'small': { name: '18px', value: '2' },
+        'normal': { name: '20px', value: '3' },
+        'large': { name: '22px', value: '4' },
+        'x-large': { name: '24px', value: '5' },
+        'xx-large': { name: '26px', value: '6' },
+        'xxx-large': { name: '28px', value: '7' },
+    }
+    editor.create();
+    return editor
+}
 
 function searchData(jsonData,outputObject) {
     let endTag = "";
