@@ -187,6 +187,19 @@ func DelUser(u *User) bool {
     return users.DelItem(u)
 }
 
+func ResetUserNeedReLogin(id uint32) bool {
+    if users == nil {
+        return false
+    }
+
+    u := users.GetItem(id)
+    if u == nil {
+        return false
+    }
+    (u.(*User)).NeedReLogin = false
+    return true
+}
+
 func UpdateUser(u *User) bool {
     if users == nil {
         return false
