@@ -49,6 +49,8 @@ const fontSizeMap = {'1': '10', '2': '13', '3': '16', '4': '18', '5': '24', '6':
 
 function searchData(jsonData,outputObject) {
     let endTag = "";
+    let tagStack = [];
+    let top = 0;
     switch (typeof jsonData){
         case "string":
             outputObject.result+=jsonData;
@@ -56,10 +58,10 @@ function searchData(jsonData,outputObject) {
         case "object":
             switch (jsonData.tag){
                 case "br":
-                    endTag += "\n ";
+                    tagStack[top++] = "\n\n";
                     break;
                 case "p":
-                    endTag += "\n ";
+                    tagStack[top++] = "\n\n";
                     break;
                 case "span":
                     for(let i in jsonData.attrs){
@@ -68,7 +70,7 @@ function searchData(jsonData,outputObject) {
                             tempRegArr = /font-size: ([0-9]*)px/.exec(jsonData.attrs[i].value);
                             if(tempRegArr!=null){
                                 outputObject.result += "[SIZE="+tempRegArr[1]+"]";
-                                endTag = "[/SIZE]";
+                                tagStack[top++] = "[/SIZE]";
                             }
                         }
                     }
@@ -77,10 +79,10 @@ function searchData(jsonData,outputObject) {
                     for(let i in jsonData.attrs){
                         if(jsonData.attrs[i].name==="color"){
                             outputObject.result += "[color="+jsonData.attrs[i].value+"]";
-                            endTag += "[/color]";
+                            tagStack[top++] = "[/color]";
                         }else if(jsonData.attrs[i].name==="size"){
                             outputObject.result += "[SIZE="+fontSizeMap[jsonData.attrs[i].value]+"]";
-                            endTag += "[/SIZE]";
+                            tagStack[top++] = "[/SIZE]";
                         }
                     }
                     break;
@@ -88,8 +90,11 @@ function searchData(jsonData,outputObject) {
             for(let i in jsonData.children){
                 searchData(jsonData.children[i],outputObject);
             }
-            if(endTag === "\n "){
-                let regex = new RegExp("\\[/[a-zA-z]*\\]$");
+            while (top>0){
+                endTag+= tagStack[--top];
+            }
+            if(endTag === "\n\n"){
+                let regex = new RegExp("(\[/[a-zA-z]*\])*$");
                 let arr = outputObject.result.match(regex);
                 if(arr!=null){
                     outputObject.result = outputObject.result.replace(regex,endTag+arr[0]);
