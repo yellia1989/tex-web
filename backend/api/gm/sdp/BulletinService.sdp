@@ -1,4 +1,4 @@
-module Herox
+module rpc
 {
 
 enum BulletinFlag
