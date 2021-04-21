@@ -122,7 +122,7 @@
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
       $("select[name='iType']").val(parent.editdata.iType);
-      editor.txt.html(parent.editdata.hContent);
+      editor.txt.html(parent.editdata.sHtmlContent);
 
       form.render();
 
@@ -151,7 +151,7 @@
         let ouputStr = ExecuteJsonData(jsonData);
 
         data.field.sContent = ouputStr;
-        data.field.hContent = editor.txt.html();
+        data.field.sHtmlContent = editor.txt.html();
 
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {

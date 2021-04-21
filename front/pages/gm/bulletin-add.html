@@ -165,7 +165,7 @@
         let ouputStr = ExecuteJsonData(jsonData);
         console.log(ouputStr);
         data.field.sContent = ouputStr;
-        data.field.hContent = editor.txt.html();
+        data.field.sHtmlContent = editor.txt.html();
 
         okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
