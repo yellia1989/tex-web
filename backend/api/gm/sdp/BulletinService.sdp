@@ -36,6 +36,7 @@ struct NoticeDataInfo
     8 optional unsigned int     iPause;
     9 optional vector<unsigned int>     vZoneId;
     10 optional unsigned int    iMaintenanceTime;
+    11 optional string          sHtmlContent;  //html内容
 };
 
 interface BulletinService
