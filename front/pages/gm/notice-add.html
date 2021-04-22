@@ -6,6 +6,7 @@
   <title>新增跑马灯</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
+  <link rel="stylesheet" href="/css/editorMenu.css">
   <style>
     .layui-form-pane .layui-form-label {
       width: 140px;
@@ -26,6 +27,9 @@
     }
   </style>
 </head>
+
+<script src="https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js"></script>
+<script src="/js/editorMenu.js"></script>
 
 <body>
   <div class="ok-body">
@@ -48,10 +52,10 @@
         </div>
       </div>
 
-      <div class="layui-form-item" id="content">
+      <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
+          <div id="rContnet"></div>
         </div>
       </div>
 
@@ -111,6 +115,7 @@
   <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
+    const editor = getDefaultEditor('#rContnet');
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
@@ -223,6 +228,12 @@
           okLayer.redCrossMsg('开始时间不能大于结束时间', function () {});
           return false;
         }
+
+        let jsonData = editor.txt.getJSON();
+        let ouputStr = ExecuteJsonData(jsonData);
+        data.field.sContent = ouputStr;
+        data.field.sHtmlContent = editor.txt.html();
+
         okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
