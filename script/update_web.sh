@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (d/47.103.96.228 u/101.133.141.46 r/47.241.161.10 t/101.132.43.124 robot/139.224.211.207)"
+	echo "Usage: $0 env (d/47.103.96.228 u/106.15.139.153 r/47.241.161.10 t/101.132.43.124 robot/139.224.211.207)"
 	exit 100
 fi
 
@@ -14,7 +14,7 @@ case "$env" in
     cp ../conf_d.cfg conf.cfg
     ;;
     u)
-    ip=101.133.141.46
+    ip=106.15.139.153
     cp ../conf_u.cfg conf.cfg
     ;;
     r)
@@ -40,7 +40,8 @@ runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
+#tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
+tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'

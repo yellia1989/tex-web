@@ -50,7 +50,7 @@ func refreshZone() {
         z.openTime = common.ParseTimeInLocal("2006-01-02", openDay)
         z.openTimeID = getDateByTime(z.openTime).ID
         
-        if nowDate.ID > z.openTimeID {
+        if nowDate.ID >= z.openTimeID {
             z.OpenDay = uint16(nowDate.ID - z.openTimeID + 1)
         }
         z.Name = fmt.Sprintf("%s(%d)", z.Name, z.Zoneid)
