@@ -1,24 +1,20 @@
 package sys
 
 import (
-    "time"
-    "strconv"
-    "strings"
-    "net/http"
-    "github.com/labstack/echo"
     "github.com/gorilla/sessions"
+    "github.com/labstack/echo"
     "github.com/labstack/echo-contrib/session"
+    "github.com/yellia1989/tex-web/backend/cfg"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
-    "github.com/yellia1989/tex-web/backend/cfg"
+    "net/http"
+    "strconv"
+    "strings"
+    "time"
 )
 
 func UserLogin(c echo.Context) error {
     ctx := c.(*mid.Context)
-    if ctx.GetUserId() != 0 {
-        return ctx.SendError(-2, "已经登陆不用重新登录")
-    }
-
     username := ctx.FormValue("username")
     password := ctx.FormValue("password")
     u := model.GetUserByUserName(username)
@@ -26,6 +22,15 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, "用户名或密码输入错误")
     }
 
+    if ctx.GetUserId() != 0 && !u.NeedReLogin {
+        return ctx.SendError(-2, "已经登陆不用重新登录")
+    }
+    if u.NeedReLogin{
+       success := model.ResetUserNeedReLogin(u.Id)
+       if !success{
+           return ctx.SendError(-3, "重置登录状态失败")
+       }
+    }
     expire := time.Hour * 24 * 7
     sess, err := session.Get("texweb_session", c)
     if err != nil {

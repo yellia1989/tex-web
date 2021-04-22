@@ -20,6 +20,7 @@ struct BulletinDataInfo
     8 optional unsigned int     iType;
     9 optional unsigned int     iPopWindow; // 是否弹窗显示
     10 optional string          sPopWindowEndTime; // 弹窗显示结束时间
+    11 optional string          sHtmlContent;  //html内容
 };
 
 struct NoticeDataInfo

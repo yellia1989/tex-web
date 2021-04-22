@@ -1,6 +1,7 @@
 package main
 
 import (
+    "github.com/yellia1989/tex-web/backend/model"
     "os"
     "fmt"
     "strings"
@@ -48,7 +49,19 @@ func httpErrorHandler(err error, c echo.Context) {
                 })
             } else {
                 // 没有登陆的话重定位到登陆
-                if mid.GetUserId(c) == 0 {
+                bReLogin := false
+                userId := mid.GetUserId(c)
+                if userId==0 {
+                    bReLogin = true
+                }else {
+                    pUser := model.GetUser(userId)
+                    if pUser == nil {
+                        bReLogin = true
+                    }else if pUser.NeedReLogin {
+                        bReLogin = true
+                    }
+                }
+                if bReLogin {
                     err = c.Redirect(http.StatusFound, "/login.html")
                 } else {
                     redirect := "/500.html"

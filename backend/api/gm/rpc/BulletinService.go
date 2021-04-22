@@ -48,6 +48,7 @@ type BulletinDataInfo struct {
 	IType             uint32 `json:"iType"`
 	IPopWindow        uint32 `json:"iPopWindow"`
 	SPopWindowEndTime string `json:"sPopWindowEndTime"`
+	SHtmlContent      string `json:"sHtmlContent"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -64,6 +65,7 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	ret.IType = st.IType
 	ret.IPopWindow = st.IPopWindow
 	ret.SPopWindowEndTime = st.SPopWindowEndTime
+	ret.SHtmlContent = st.SHtmlContent
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -82,6 +84,7 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iType")+fmt.Sprintf("%v\n", st.IType))
 	util.Tab(buff, t+1, util.Fieldname("iPopWindow")+fmt.Sprintf("%v\n", st.IPopWindow))
 	util.Tab(buff, t+1, util.Fieldname("sPopWindowEndTime")+fmt.Sprintf("%v\n", st.SPopWindowEndTime))
+	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -126,6 +129,10 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadString(&st.SPopWindowEndTime, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SHtmlContent, 11, false)
 	if err != nil {
 		return err
 	}
@@ -222,6 +229,12 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.SPopWindowEndTime != "" {
 		err = p.WriteString(10, st.SPopWindowEndTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SHtmlContent != "" {
+		err = p.WriteString(11, st.SHtmlContent)
 		if err != nil {
 			return err
 		}
