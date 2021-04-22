@@ -100,13 +100,7 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
-    const editor = getDefaultEditor('#rContnet')
-
-    editor.config.onchange = function (newHtml) {
-      let jsonData = editor.txt.getJSON();
-      let ouputStr = ExecuteJsonData(jsonData);
-      $("#sContent").val(ouputStr);
-    }
+    const editor = getDefaultEditor('#rContnet');
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
@@ -125,9 +119,15 @@
         elem:"#iPopWindowEndTime", type:"datetime"
       });
 
+
+      editor.config.onchange = function (newHtml) {
+           let jsonData = editor.txt.getJSON();
+           let ouputStr = ExecuteJsonData(jsonData);
+           $("textarea[name='sContent']").val(ouputStr);
+      }
+
       form.on('select(type)', function(data){
-        if (data.value == 0) {
-          $('#popWindowEndTime').addClass('layui-hide');
+        if(data.value==0){
           $('input[name=sPopWindowEndTime]').val("");
           $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
         } else {
@@ -153,9 +153,6 @@
           return false;
         }
 
-        //let jsonData = editor.txt.getJSON();
-        //let ouputStr = ExecuteJsonData(jsonData);
-        //data.field.sContent = ouputStr;
         data.field.sHtmlContent = editor.txt.html();
 
         okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {

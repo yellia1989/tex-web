@@ -196,8 +196,9 @@ func ResetUserNeedReLogin(id uint32) bool {
     if u == nil {
         return false
     }
-    (u.(*User)).NeedReLogin = false
-    return true
+    u2 := *(u.(*User))
+    u2.NeedReLogin = false
+    return users.UpdateItem(&u2)
 }
 
 func UpdateUser(u *User) bool {

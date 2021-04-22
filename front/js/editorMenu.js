@@ -74,7 +74,7 @@ function getDefaultEditor(id){
     return editor
 }
 
-const returnSymbol = "\n    \n";
+const returnSymbol = "\n";
 
 function searchData(jsonData,outputObject) {
     let endTag = "";
@@ -124,7 +124,7 @@ function searchData(jsonData,outputObject) {
                 endTag+= tagStack[--top];
             }
             if(endTag === returnSymbol){
-                let regex = new RegExp("(\[/[a-zA-z]*\])*$");
+                var regex = new RegExp(/(\[\/[a-zA-z]*\])+$/);
                 let arr = outputObject.result.match(regex);
                 if(arr!=null){
                     outputObject.result = outputObject.result.replace(regex,endTag+arr[0]);

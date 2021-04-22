@@ -31,6 +31,14 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">内容2</label>
+        <div class="layui-input-block">
+          <textarea name="sContent" placeholder="请编辑内容" class="layui-textarea" lay-verify="required"
+                    lay-verType="tips"></textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">开始时间</label>
         <div class="layui-input-block">
           <input type="text" name="sBeginTime" id="iBeginTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
@@ -110,8 +118,14 @@
         $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
       }
 
+      editor.config.onchange = function (newHtml) {
+          let jsonData = editor.txt.getJSON();
+          let ouputStr = ExecuteJsonData(jsonData);
+          $("textarea[name='sContent']").val(ouputStr);
+      }
+
       $("input[name='sTitle']").val(parent.editdata.sTitle);
-      $("textarea[name='sContent']").val(parent.editdata.sContent);
+      //$("textarea[name='sContent']").val(parent.editdata.sContent);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
       $("select[name='iType']").val(parent.editdata.iType);
@@ -140,11 +154,6 @@
           return false;
         }
 
-        let jsonData = editor.txt.getJSON();
-        console.log(jsonData);
-        let ouputStr = ExecuteJsonData(jsonData);
-
-        data.field.sContent = ouputStr;
         data.field.sHtmlContent = editor.txt.html();
 
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
