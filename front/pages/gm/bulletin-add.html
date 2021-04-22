@@ -6,7 +6,12 @@
   <title>新增公告</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
+  <link rel="stylesheet" href="/lib/layui/css/layui.css">
+  <link rel="stylesheet" href="/css/editorMenu.css">
 </head>
+
+<script src="https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js"></script>
+<script src="/js/editorMenu.js"></script>
 
 <body>
   <div class="ok-body">
@@ -22,8 +27,15 @@
       <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请输入内容" class="layui-textarea" lay-verify="required"
-            lay-verType="tips"></textarea>
+          <div id="rContnet"></div>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">内容2</label>
+        <div class="layui-input-block">
+          <textarea name="sContent" placeholder="请编辑内容" class="layui-textarea" lay-verify="required"
+                    lay-verType="tips"></textarea>
         </div>
       </div>
 
@@ -88,6 +100,8 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
+    const editor = getDefaultEditor('#rContnet');
+
     layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
@@ -105,9 +119,15 @@
         elem:"#iPopWindowEndTime", type:"datetime"
       });
 
+
+      editor.config.onchange = function (newHtml) {
+           let jsonData = editor.txt.getJSON();
+           let ouputStr = ExecuteJsonData(jsonData);
+           $("textarea[name='sContent']").val(ouputStr);
+      }
+
       form.on('select(type)', function(data){
-        if (data.value == 0) {
-          $('#popWindowEndTime').addClass('layui-hide');
+        if(data.value==0){
           $('input[name=sPopWindowEndTime]').val("");
           $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
         } else {
@@ -132,6 +152,8 @@
           okLayer.redCrossMsg('弹窗显示结束时间不能大于结束时间', function () {});
           return false;
         }
+
+        data.field.sHtmlContent = editor.txt.html();
 
         okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
