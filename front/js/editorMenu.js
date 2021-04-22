@@ -80,6 +80,7 @@ function searchData(jsonData,outputObject) {
     let endTag = "";
     let tagStack = [];
     let top = 0;
+    let bReturn = false;
     switch (typeof jsonData){
         case "string":
             outputObject.result+=jsonData;
@@ -87,11 +88,12 @@ function searchData(jsonData,outputObject) {
         case "object":
             switch (jsonData.tag){
                 case "br":
-                    outputObject.result += " ";
-                    tagStack[top++] = returnSymbol;
+                    tagStack[top++] = " ";
+                    bReturn = true;
                     break;
                 case "p":
                     tagStack[top++] = returnSymbol;
+                    bReturn = true;
                     break;
                 case "span":
                     for(let i in jsonData.attrs){
@@ -123,7 +125,7 @@ function searchData(jsonData,outputObject) {
             while (top>0){
                 endTag+= tagStack[--top];
             }
-            if(endTag === returnSymbol){
+            if(bReturn){
                 var regex = new RegExp(/(\[\/[a-zA-z]*\])+$/);
                 let arr = outputObject.result.match(regex);
                 if(arr!=null){
