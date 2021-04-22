@@ -38,7 +38,10 @@ func RequireLogin() echo.MiddlewareFunc {
 }
 
 func GetUserId(c echo.Context) uint32 {
-    sess, _ := session.Get("texweb_session", c)
+    sess, err := session.Get("texweb_session", c)
+    if err!= nil{
+        return 0
+    }
     userid, ok := sess.Values["userid"]
     if !ok {
         return 0

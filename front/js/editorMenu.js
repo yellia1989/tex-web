@@ -74,6 +74,8 @@ function getDefaultEditor(id){
     return editor
 }
 
+const returnSymbol = "\n    \n";
+
 function searchData(jsonData,outputObject) {
     let endTag = "";
     let tagStack = [];
@@ -85,10 +87,11 @@ function searchData(jsonData,outputObject) {
         case "object":
             switch (jsonData.tag){
                 case "br":
-                    tagStack[top++] = "\n\n";
+                    outputObject.result += " ";
+                    tagStack[top++] = returnSymbol;
                     break;
                 case "p":
-                    tagStack[top++] = "\n\n";
+                    tagStack[top++] = returnSymbol;
                     break;
                 case "span":
                     for(let i in jsonData.attrs){
@@ -120,7 +123,7 @@ function searchData(jsonData,outputObject) {
             while (top>0){
                 endTag+= tagStack[--top];
             }
-            if(endTag === "\n\n"){
+            if(endTag === returnSymbol){
                 let regex = new RegExp("(\[/[a-zA-z]*\])*$");
                 let arr = outputObject.result.match(regex);
                 if(arr!=null){
