@@ -88,7 +88,7 @@ function searchData(jsonData,outputObject) {
         case "object":
             switch (jsonData.tag){
                 case "br":
-                    tagStack[top++] = " ";
+                    tagStack[top++] = " ";
                     bReturn = true;
                     break;
                 case "p":
