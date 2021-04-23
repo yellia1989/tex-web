@@ -296,6 +296,7 @@ type NoticeDataInfo struct {
 	IPause           uint32   `json:"iPause"`
 	VZoneId          []uint32 `json:"vZoneId"`
 	IMaintenanceTime uint32   `json:"iMaintenanceTime"`
+	SHtmlContent     string   `json:"sHtmlContent"`
 }
 
 func (st *NoticeDataInfo) resetDefault() {
@@ -316,6 +317,7 @@ func (st *NoticeDataInfo) Copy() *NoticeDataInfo {
 		ret.VZoneId[i] = v
 	}
 	ret.IMaintenanceTime = st.IMaintenanceTime
+	ret.SHtmlContent = st.SHtmlContent
 	return ret
 }
 func NewNoticeDataInfo() *NoticeDataInfo {
@@ -346,6 +348,7 @@ func (st *NoticeDataInfo) Visit(buff *bytes.Buffer, t int) {
 		util.Tab(buff, t+1, "]\n")
 	}
 	util.Tab(buff, t+1, util.Fieldname("iMaintenanceTime")+fmt.Sprintf("%v\n", st.IMaintenanceTime))
+	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
 }
 func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -412,6 +415,10 @@ func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 		}
 	}
 	err = up.ReadUint32(&st.IMaintenanceTime, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SHtmlContent, 11, false)
 	if err != nil {
 		return err
 	}
@@ -528,6 +535,12 @@ func (st *NoticeDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.IMaintenanceTime != 0 {
 		err = p.WriteUint32(10, st.IMaintenanceTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SHtmlContent != "" {
+		err = p.WriteString(11, st.SHtmlContent)
 		if err != nil {
 			return err
 		}
