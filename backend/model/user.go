@@ -19,7 +19,7 @@ type User struct {
     Password string     `json:"password"`
     Role uint32         `json:"role"`
     NeedReLogin uint32
-    AllowGmCmd string
+    AllowGmCmd string    `json:"allowGmCmd"`
 }
 
 func (u *User) GetId() uint32 {
@@ -68,6 +68,20 @@ func (u *User) CheckPermission(path string, method string) error {
         Message: "没有对应的权限",
     }
 }
+
+func (u *User) CheckGmPermission(cmd string) bool {
+    if u.IsAdmin(){
+        return true
+    }
+    cmdArr := strings.Split(u.AllowGmCmd,"\n")
+    for _,v := range cmdArr{
+        if v == cmd{
+            return true
+        }
+    }
+    return false
+}
+
 func (u *User) ComparePwd(password string) bool {
     err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
     return err == nil
@@ -83,21 +97,18 @@ func (u *User) EncodePwd(password string) bool {
 }
 
 func GetUser(id uint32) *User {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
-
-    u := users.GetItem(id)
-    if u == nil {
+    user := &User{}
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from system_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
         return nil
     }
-    // 复制一份防止原始值被修改
-    u2 := *(u.(*User))
-    return &u2
+    return user
 }
 
 func GetUserByUserName(username string) *User {
-
     // username不能为空
     if len(username) == 0 {
         return nil
@@ -108,10 +119,9 @@ func GetUserByUserName(username string) *User {
     }
     user := &User{}
     if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from system_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
-        return user
-    }else {
         return nil
     }
+    return user
 }
 
 func GetUsers() []*User {
@@ -134,7 +144,7 @@ func GetUsers() []*User {
     return us
 }
 
-func AddUser(username string, password string, role uint32) *User {
+func AddUser(username string, password string, role uint32,allowGmCmd string) *User {
     db := cfg.StatDb
     if db == nil {
         return nil
@@ -156,7 +166,7 @@ func AddUser(username string, password string, role uint32) *User {
     if !u.EncodePwd(password) {
         return nil
     }
-    _,err := db.Exec("insert into system_user(username,password,role,allow_gm_cmd) values(?,?,?,'')",u.UserName,u.Password,u.Role)
+    _,err := db.Exec("insert into system_user(username,password,role,allow_gm_cmd) values(?,?,?,?)",u.UserName,u.Password,u.Role,allowGmCmd)
     if err!=nil{
         return nil
     }

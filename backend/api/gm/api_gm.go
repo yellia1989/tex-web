@@ -34,6 +34,15 @@ func GameCmd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    user := ctx.GetUser()
+    if user == nil{
+        return ctx.SendError(-1, "账号不存在")
+    }
+
+    if !user.CheckGmPermission(scmd) {
+        return ctx.SendError(-1, "账号GM权限不足")
+    }
+
     buff := bytes.Buffer{}
     u := ctx.GetUser()
 
