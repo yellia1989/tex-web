@@ -77,6 +77,7 @@
 
     $('input[name=id]').val(parent.userdata.id);
     $('input[name=username]').val(parent.userdata.username);
+	  $('textarea[name=allowGmCmd]').val(parent.userdata.allowGmCmd);
     roleSelect.setValue([parent.userdata.role]);
 
     form.verify({
