@@ -22,10 +22,10 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, "用户名或密码输入错误")
     }
 
-    if ctx.GetUserId() != 0 && !u.NeedReLogin {
+    if ctx.GetUserId() != 0 && !u.IsNeedLogin() {
         return ctx.SendError(-2, "已经登陆不用重新登录")
     }
-    if u.NeedReLogin{
+    if u.IsNeedLogin() {
        success := model.ResetUserNeedReLogin(u.Id)
        if !success{
            return ctx.SendError(-3, "重置登录状态失败")

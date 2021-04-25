@@ -57,7 +57,7 @@ func httpErrorHandler(err error, c echo.Context) {
                     pUser := model.GetUser(userId)
                     if pUser == nil {
                         bReLogin = true
-                    }else if pUser.NeedReLogin {
+                    }else if pUser.IsNeedLogin() {
                         bReLogin = true
                     }
                 }
