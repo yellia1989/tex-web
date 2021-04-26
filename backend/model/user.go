@@ -4,14 +4,11 @@ import (
     "fmt"
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-web/backend/cfg"
-    cm "github.com/yellia1989/tex-web/backend/common"
     "golang.org/x/crypto/bcrypt"
     "net/http"
     "strconv"
     "strings"
 )
-
-var users *cm.Map
 
 type User struct {
     Id uint32           `json:"id"`
@@ -232,7 +229,7 @@ func DelUserRole(roles []uint32) {
     }
     sql := "update system_user set role = 0 where role in (%s)"
     ids := strings.Join(roleStr,",")
-    fmt.Sprintf(sql,ids)
+    sql = fmt.Sprintf(sql,ids)
     _,err := db.Exec(sql)
     if err!=nil{
         return
