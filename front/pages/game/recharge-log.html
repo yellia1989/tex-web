@@ -128,7 +128,9 @@
       defaultToolbar: ['filter', 'print', 'exports'],
       autoSort: false,
       parseData: function(res) {
-        res.data[i].detail = res.data[i].extern_order_id != '';
+        for (let i = 0; res.data && i < res.data.length; ++i) {
+          res.data[i].detail = res.data[i].extern_order_id != '';
+        }
         return res;
       }
     });
