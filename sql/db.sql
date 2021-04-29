@@ -96,13 +96,12 @@ DROP TABLE IF EXISTS `client_dispose`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `client_dispose` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `client_version` varchar(255) NOT NULL,
+  `client_version` varchar(128) NOT NULL,
   `stackmd5` char(32) NOT NULL,
   `stack` text NOT NULL,
   `status` int(10) NOT NULL,
   `note` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`client_version`,`stackmd5`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -418,4 +417,4 @@ CREATE TABLE `zone` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-04-29 17:21:29
+-- Dump completed on 2021-04-29 20:22:40
