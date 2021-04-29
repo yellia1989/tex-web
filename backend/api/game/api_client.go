@@ -281,7 +281,6 @@ func DisposeList(c echo.Context) error {
     sort.Sort(disposeInfoBy(slDisposeInfo))
     vDisposeInfo:= common.GetPage(slDisposeInfo, page, limit)
 
-
     return ctx.SendArray(vDisposeInfo, len(slDisposeInfo))
 }
 
