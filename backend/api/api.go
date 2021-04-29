@@ -137,6 +137,7 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/recharge/receipt", gm.IAPDetail)
     group.GET("/game/client_err/err_info", game.ErrInfo)     // 客户端报错信息
     group.GET("/game/client_err/err_detail", game.ErrDetail) // 错误信息详情
+    group.POST("/game/client_err/dispose", game.ErrDispose) // 客户端更新处理情况
 
     group.GET("/game/chat/getnewest", game.ChatGetNewest)
     group.GET("/game/chat/gethistory", game.ChatGetHistory)

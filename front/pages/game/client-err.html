@@ -65,10 +65,22 @@
       limit: 5,
       page: true,
       cols: [[
-        {field: "err_time", title: "报错时间", width: 120, align: "center"},
         {field: "client_version", title: "客户端版本", width:150, align: "center"},
         {field: "err_times", title: "报错次数", width: 120, align: "center"},
         {field: "err_info", title: "报错信息"},
+        {
+          field: "status", title: "状态", width: 120, align: "center", templet: function(d) {
+            let ret = '';
+            switch(d.status) {
+              case 1: ret = '未处理'; break;
+              case 2: ret = '处理中'; break;
+              case 3: ret = '处理完成'; break;
+              default:
+                ret = '未知状态';
+            }
+            return ret;
+          }
+        },
         {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
@@ -84,12 +96,26 @@
         case "detail":
           detail();
           break;
+        case "dispose":
+          dispose();
+          break;
       }
     });
 
     function detail() {
       okLayer.open("详情","client-err-detail.html", "90%", "90%", null, function () {
       })
+    }
+
+    function dispose() {
+        let param = { sClientVersion: clientVersion, sErrInfoMd5: errInfoMd5 };
+        okUtils.ajax("/api/game/client_err/dispose", "post", param, false).done(function (response){
+            okLayer.greenTickMsg(response.data, function() {
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
     }
 
     form.on("submit(search)", function (data) {
@@ -107,6 +133,7 @@
 <script type="text/html" id="operationTpl">
   <div class="layui-btn-group">
     <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="detail">详情</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="dispose">处理</button>
   </div>
 </script>
 </body>
