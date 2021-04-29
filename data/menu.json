@@ -971,6 +971,7 @@
           {
             "id": 100302,
             "title": "客户端报错处理",
+            "href": "game/client-err-dispose.html",
             "fontFamily": "ok-icon",
             "icon": "&#xe654;",
             "spread": false,

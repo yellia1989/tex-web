@@ -49,12 +49,6 @@ type errInfo struct {
 
 type errInfoBy []errInfo
 
-type disposeInfo struct {
-    ErrMessageMd5  string `json:"err_info_md5"`
-    ClientVersion  string `json:"client_version"`
-    Status         uint32 `json:"status"`
-}
-
 func (a errInfoBy) Len() int      { return len(a) }
 func (a errInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errInfoBy) Less(i, j int) bool {
@@ -67,6 +61,23 @@ func (a errInfoBy) Less(i, j int) bool {
 
     return a[i].ZoneId < a[j].ZoneId
 }
+
+type disposeInfo struct {
+    ErrMessage     string `json:"err_info"`
+    ErrMessageMd5  string `json:"err_info_md5"`
+    ClientVersion  string `json:"client_version"`
+    Status         uint32 `json:"status"`
+    Note           string `json:"err_note"`
+}
+
+type disposeInfoBy []disposeInfo
+
+func (a disposeInfoBy) Len() int      { return len(a) }
+func (a disposeInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a disposeInfoBy) Less(i, j int) bool {
+    return a[i].ClientVersion > a[j].ClientVersion
+}
+
 
 func ErrInfo(c echo.Context) error {
     ctx := c.(*mid.Context)
@@ -111,7 +122,8 @@ func ErrInfo(c echo.Context) error {
         return err
     }
 
-    sql1 := "SELECT status, client_version, errinfo_md5 FROM client_dispose "
+    db = cfg.StatDb
+    sql1 := "SELECT status, client_version, stackmd5 FROM client_dispose "
     rows1, err1 := db.Query(sql1)
     if err1 != nil {
         return err1
@@ -152,12 +164,11 @@ func ErrInfo(c echo.Context) error {
 func ErrDetail(c echo.Context) error {
     ctx := c.(*mid.Context)
     sErrInfoMd5 := ctx.QueryParam("ErrInfo")
-    sErrTime := ctx.QueryParam("ErrTime")
     sClientVersion := ctx.QueryParam("ClientVersion")
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    if sErrInfoMd5 == "" || sErrTime == "" {
+    if sErrInfoMd5 == "" || sClientVersion == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
@@ -198,20 +209,99 @@ func ErrDetail(c echo.Context) error {
 
 func ErrDispose(c echo.Context) error {
     ctx := c.(*mid.Context)
+    sErrInfo := ctx.FormValue("sErrInfo")
     sErrInfoMd5 := ctx.FormValue("sErrInfoMd5")
     sClientVersion := ctx.FormValue("sClientVersion")
-    if sErrInfoMd5 == "" || sClientVersion == "" {
+    if sErrInfoMd5 == "" || sClientVersion == "" || sErrInfo == "" {
         return ctx.SendError(-1, "参数非法")
     }
+    db := cfg.StatDb
 
-    db := cfg.LogDb
-
-    sql := "INSERT INTO client_dispose (errinfo_md5, client_version, status) VALUES (?,?,?)"
-    rows, err := db.Query(sql, sErrInfoMd5, sClientVersion, 2)
+    sql := "INSERT INTO client_dispose (stack, stackmd5, client_version, status, note) VALUES (?,?,?,?,?)"
+    rows, err := db.Query(sql, sErrInfo, sErrInfoMd5, sClientVersion, 2, "")
     if err != nil {
         return err
     }
     defer rows.Close()
 
     return ctx.SendResponse("添加处理成功")
+}
+
+func FinishDispose(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    sErrInfoMd5 := ctx.FormValue("sErrInfoMd5")
+    sClientVersion := ctx.FormValue("sClientVersion")
+    if sErrInfoMd5 == "" || sClientVersion == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    db := cfg.StatDb
+
+    sql := "UPDATE client_dispose SET status=3 WHERE client_version=? AND stackmd5=? "
+    rows, err := db.Query(sql, sClientVersion, sErrInfoMd5)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    return ctx.SendResponse("更新处理状态成功")
+}
+
+func DisposeList(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+
+    db := cfg.StatDb
+    sql := "SELECT client_version, stack, stackmd5, status, note FROM client_dispose "
+
+    log.Infof("sql: %s", sql)
+
+    rows, err := db.Query(sql)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    slDisposeInfo := make([]disposeInfo, 0)
+
+    for rows.Next() {
+        var r disposeInfo
+        if err := rows.Scan(&r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5, &r.Status, &r.Note); err != nil {
+            return err
+        }
+
+        slDisposeInfo = append(slDisposeInfo, r)
+    }
+
+    if err := rows.Err(); err != nil {
+        return err
+    }
+
+    sort.Sort(disposeInfoBy(slDisposeInfo))
+    vDisposeInfo:= common.GetPage(slDisposeInfo, page, limit)
+
+
+    return ctx.SendArray(vDisposeInfo, len(slDisposeInfo))
+}
+
+func AddDisposeNote(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    sErrInfoMd5 := ctx.FormValue("sErrInfoMd5")
+    sClientVersion := ctx.FormValue("sClientVersion")
+    sNote := ctx.FormValue("sNote")
+    if sErrInfoMd5 == "" || sClientVersion == "" || sNote == ""{
+        return ctx.SendError(-1, "参数非法")
+    }
+
+    db := cfg.StatDb
+
+    sql := "UPDATE  client_dispose SET note=? WHERE client_version=? AND stackmd5=? "
+    rows, err := db.Query(sql, sNote, sClientVersion, sErrInfoMd5)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    return ctx.SendResponse("添加备注成功")
 }

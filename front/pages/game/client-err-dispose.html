@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>客户端错误记录</title>
+  <title>客户端错误处理</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -11,13 +11,6 @@
 <div class="ok-body">
   <form class="layui-form">
     <div class="layui-form-item">
-      <div class="layui-inline">
-        <div class="layui-input-inline">
-          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
-        </div>
-        <div class="layui-input-inline">
-          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
-        </div>
         <div class="layui-input-inline">
           <button class="layui-btn" lay-submit lay-filter="search" id="search">
             <i class="layui-icon layui-icon-refresh-3"></i>
@@ -45,19 +38,10 @@
     let laydate = layui.laydate
     okLoading.close();
 
-    dayjs.extend(window.dayjs_plugin_utc);
-    dayjs.extend(window.dayjs_plugin_timezone);
-    dayjs.tz.setDefault($.cookie("timezone"));
-
-    let now = dayjs();
-    let lastweek = dayjs().subtract(7, 'day');
-    laydate.render({elem: "#startTime", type: "datetime", btns: ['clear', 'confirm'], value: lastweek.tz().format("YYYY-MM-DD HH:mm:ss")});
-    laydate.render({elem: "#endTime", type: "datetime", btns: ['clear', 'confirm'], value: now.tz().format("YYYY-MM-DD HH:mm:ss")});
-
-    let stageTable = table.render({
+    let disposeTable = table.render({
       elem: "#tableId",
-      url: "/api/game/client_err/err_info",
-      where: {startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss')},
+      url: "/api/game/client_err/dispose_info",
+      where: {},
       data:[],
       text: {
         none: '暂无相关数据',
@@ -66,8 +50,8 @@
       page: true,
       cols: [[
         {field: "client_version", title: "客户端版本", width:150, align: "center"},
-        {field: "err_times", title: "报错次数", width: 120, align: "center"},
         {field: "err_info", title: "报错信息"},
+        {field: "err_note", title: "备注", width: 500, align: "center"},
         {
           field: "status", title: "状态", width: 120, align: "center", templet: function(d) {
             let ret = '';
@@ -81,7 +65,7 @@
             return ret;
           }
         },
-        {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
+        {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
@@ -91,31 +75,42 @@
     table.on("tool(tableFilter)", function (obj) {
       errInfoMd5 = obj.data.err_info_md5
       clientVersion = obj.data.client_version
-      errInfo = obj.data.err_info
       iStatus = obj.data.status
       switch (obj.event) {
-        case "detail":
-          detail();
+        case "note":
+          note();
           break;
-        case "dispose":
-          dispose();
+        case "finish":
+          finish();
           break;
       }
     });
 
-    function detail() {
-      okLayer.open("详情","client-err-detail.html", "90%", "90%", null, function () {
-      })
+    function note() {
+        layer.prompt({
+           title: '备注内容', formType: 2, area:['300px', '240px']}, function(val, index) {
+           let param = { sClientVersion: clientVersion, sErrInfoMd5: errInfoMd5, sNote: val};
+           okUtils.ajax("/api/game/client_err/add_dispose_note", "post", param, true).done(function (response) {
+               okLayer.greenTickMsg(response.data, function () {
+                    layer.close(index);
+                    $('#search').trigger("click");
+               });
+           }).fail(function (error) {
+               console.log(error);
+           });
+           return false;
+           layer.close(index);
+        });
     }
 
-    function dispose() {
-        if (iStatus != 1) {
-            okLayer.redCryMsg("已在处理列表", function() {
+    function finish() {
+        if (iStatus == 3) {
+            okLayer.redCryMsg("已标记完成", function() {
             });
             return false;
         }
-        let param = { sClientVersion: clientVersion, sErrInfoMd5: errInfoMd5, sErrInfo: errInfo };
-        okUtils.ajax("/api/game/client_err/dispose", "post", param, false).done(function (response){
+        let param = { sClientVersion: clientVersion, sErrInfoMd5: errInfoMd5 };
+        okUtils.ajax("/api/game/client_err/dispose_finish", "post", param, false).done(function (response){
             okLayer.greenTickMsg(response.data, function() {
                 $('#search').trigger("click");
           });
@@ -126,8 +121,8 @@
     }
 
     form.on("submit(search)", function (data) {
-      stageTable.reload({
-        url: "/api/game/client_err/err_info",
+      disposeTable.reload({
+        url: "/api/game/client_err/dispose_info",
         where: data.field,
         page: {
             curr: 1,
@@ -139,8 +134,8 @@
 </script>
 <script type="text/html" id="operationTpl">
   <div class="layui-btn-group">
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="detail">详情</button>
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="dispose">处理</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="note">修改备注</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="finish">处理完成</button>
   </div>
 </script>
 </body>
