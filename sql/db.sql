@@ -89,6 +89,23 @@ CREATE TABLE `chat_dirty_word` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `client_dispose`
+--
+
+DROP TABLE IF EXISTS `client_dispose`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `client_dispose` (
+  `client_version` varchar(128) NOT NULL,
+  `stackmd5` char(32) NOT NULL,
+  `stack` text NOT NULL,
+  `status` int(10) NOT NULL,
+  `note` text NOT NULL,
+  PRIMARY KEY (`client_version`,`stackmd5`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `date`
 --
 
@@ -400,4 +417,4 @@ CREATE TABLE `zone` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-03-30 10:40:58
+-- Dump completed on 2021-04-29 20:22:40
