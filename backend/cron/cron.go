@@ -13,6 +13,7 @@ import (
     "github.com/yellia1989/tex-web/backend/cron/zone"
     "github.com/yellia1989/tex-web/backend/cron/sync"
     "github.com/yellia1989/tex-web/backend/cron/stat"
+    "github.com/yellia1989/tex-web/backend/cron/chat"
 )
 
 var wg ssync.WaitGroup
@@ -95,6 +96,9 @@ func Start() {
     }
 
     log.Debugf("max account time: %s, max role time: %s", accountMaxTime.Format("2006-01-02 15:04:05"), roleMaxTime.Format("2006-01-02 15:04:05"))
+
+    // 聊天
+    startCron("chatMaskCheck", chat.Cron, cfg.ChatMaskInterval)
 
     // 免费福利
     startCron("welfare", welfare.Cron, time.Second * 5)

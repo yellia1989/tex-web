@@ -23,7 +23,27 @@ const (
 	IAPReceiptType_Fy       = 3
 	IAPReceiptType_HeePay   = 4
 	IAPReceiptType_HeePayH5 = 5
+	IAPReceiptType_GameHub  = 6
 )
+
+func (en IAPReceiptType) String() string {
+	ret := ""
+	switch en {
+	case IAPReceiptType_Apple:
+		ret = "IAPReceiptType_Apple"
+	case IAPReceiptType_Google:
+		ret = "IAPReceiptType_Google"
+	case IAPReceiptType_Fy:
+		ret = "IAPReceiptType_Fy"
+	case IAPReceiptType_HeePay:
+		ret = "IAPReceiptType_HeePay"
+	case IAPReceiptType_HeePayH5:
+		ret = "IAPReceiptType_HeePayH5"
+	case IAPReceiptType_GameHub:
+		ret = "IAPReceiptType_GameHub"
+	}
+	return ret
+}
 
 type IAPReceiptStatus int32
 
@@ -34,6 +54,23 @@ const (
 	IAPReceiptStatus_Deliver_Success = 4
 	IAPReceiptStatus_Deliver_Fail    = 5
 )
+
+func (en IAPReceiptStatus) String() string {
+	ret := ""
+	switch en {
+	case IAPReceiptStatus_Pending:
+		ret = "IAPReceiptStatus_Pending"
+	case IAPReceiptStatus_Verify_Fail:
+		ret = "IAPReceiptStatus_Verify_Fail"
+	case IAPReceiptStatus_Delivering:
+		ret = "IAPReceiptStatus_Delivering"
+	case IAPReceiptStatus_Deliver_Success:
+		ret = "IAPReceiptStatus_Deliver_Success"
+	case IAPReceiptStatus_Deliver_Fail:
+		ret = "IAPReceiptStatus_Deliver_Fail"
+	}
+	return ret
+}
 
 type IAPStatus struct {
 	IReceiptId      uint32 `json:"iReceiptId"`
@@ -2622,6 +2659,435 @@ func (st *HeePayH5Receipt) WriteStructFromTag(p *codec.Packer, tag uint32, requi
 	return nil
 }
 
+type GameHubPurchase struct {
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
+}
+
+func (st *GameHubPurchase) resetDefault() {
+}
+func (st *GameHubPurchase) Copy() *GameHubPurchase {
+	ret := NewGameHubPurchase()
+	ret.SPurchaseData = st.SPurchaseData
+	ret.SSignature = st.SSignature
+	ret.IConnId = st.IConnId
+	ret.SChannel = st.SChannel
+	ret.STraceProductId = st.STraceProductId
+	ret.STraceFlowId = st.STraceFlowId
+	return ret
+}
+func NewGameHubPurchase() *GameHubPurchase {
+	ret := &GameHubPurchase{}
+	ret.resetDefault()
+	return ret
+}
+func (st *GameHubPurchase) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sPurchaseData")+fmt.Sprintf("%v\n", st.SPurchaseData))
+	util.Tab(buff, t+1, util.Fieldname("sSignature")+fmt.Sprintf("%v\n", st.SSignature))
+	util.Tab(buff, t+1, util.Fieldname("iConnId")+fmt.Sprintf("%v\n", st.IConnId))
+	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
+	util.Tab(buff, t+1, util.Fieldname("sTraceProductId")+fmt.Sprintf("%v\n", st.STraceProductId))
+	util.Tab(buff, t+1, util.Fieldname("sTraceFlowId")+fmt.Sprintf("%v\n", st.STraceFlowId))
+}
+func (st *GameHubPurchase) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SPurchaseData, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SSignature, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IConnId, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SChannel, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceProductId, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceFlowId, 11, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *GameHubPurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *GameHubPurchase) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SPurchaseData != "" {
+		err = p.WriteString(0, st.SPurchaseData)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SSignature != "" {
+		err = p.WriteString(1, st.SSignature)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IConnId != 0 {
+		err = p.WriteUint32(2, st.IConnId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SChannel != "" {
+		err = p.WriteString(3, st.SChannel)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceProductId != "" {
+		err = p.WriteString(10, st.STraceProductId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STraceFlowId != "" {
+		err = p.WriteString(11, st.STraceFlowId)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *GameHubPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type GameHubReceipt struct {
+	SChannelId      string  `json:"sChannelId"`
+	SChannelUid     string  `json:"sChannelUid"`
+	SOrderNo        string  `json:"sOrderNo"`
+	SCpOrderNo      string  `json:"sCpOrderNo"`
+	SZoneId         string  `json:"sZoneId"`
+	SRoleId         string  `json:"sRoleId"`
+	SGoodsId        string  `json:"sGoodsId"`
+	FAmount         float32 `json:"fAmount"`
+	IPayTime        uint32  `json:"iPayTime"`
+	SPassbackParams string  `json:"sPassbackParams"`
+	IIsTest         uint32  `json:"iIsTest"`
+}
+
+func (st *GameHubReceipt) resetDefault() {
+}
+func (st *GameHubReceipt) Copy() *GameHubReceipt {
+	ret := NewGameHubReceipt()
+	ret.SChannelId = st.SChannelId
+	ret.SChannelUid = st.SChannelUid
+	ret.SOrderNo = st.SOrderNo
+	ret.SCpOrderNo = st.SCpOrderNo
+	ret.SZoneId = st.SZoneId
+	ret.SRoleId = st.SRoleId
+	ret.SGoodsId = st.SGoodsId
+	ret.FAmount = st.FAmount
+	ret.IPayTime = st.IPayTime
+	ret.SPassbackParams = st.SPassbackParams
+	ret.IIsTest = st.IIsTest
+	return ret
+}
+func NewGameHubReceipt() *GameHubReceipt {
+	ret := &GameHubReceipt{}
+	ret.resetDefault()
+	return ret
+}
+func (st *GameHubReceipt) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sChannelId")+fmt.Sprintf("%v\n", st.SChannelId))
+	util.Tab(buff, t+1, util.Fieldname("sChannelUid")+fmt.Sprintf("%v\n", st.SChannelUid))
+	util.Tab(buff, t+1, util.Fieldname("sOrderNo")+fmt.Sprintf("%v\n", st.SOrderNo))
+	util.Tab(buff, t+1, util.Fieldname("sCpOrderNo")+fmt.Sprintf("%v\n", st.SCpOrderNo))
+	util.Tab(buff, t+1, util.Fieldname("sZoneId")+fmt.Sprintf("%v\n", st.SZoneId))
+	util.Tab(buff, t+1, util.Fieldname("sRoleId")+fmt.Sprintf("%v\n", st.SRoleId))
+	util.Tab(buff, t+1, util.Fieldname("sGoodsId")+fmt.Sprintf("%v\n", st.SGoodsId))
+	util.Tab(buff, t+1, util.Fieldname("fAmount")+fmt.Sprintf("%v\n", st.FAmount))
+	util.Tab(buff, t+1, util.Fieldname("iPayTime")+fmt.Sprintf("%v\n", st.IPayTime))
+	util.Tab(buff, t+1, util.Fieldname("sPassbackParams")+fmt.Sprintf("%v\n", st.SPassbackParams))
+	util.Tab(buff, t+1, util.Fieldname("iIsTest")+fmt.Sprintf("%v\n", st.IIsTest))
+}
+func (st *GameHubReceipt) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SChannelId, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SChannelUid, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SOrderNo, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SCpOrderNo, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SZoneId, 4, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SRoleId, 5, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SGoodsId, 6, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadFloat32(&st.FAmount, 7, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IPayTime, 8, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SPassbackParams, 9, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IIsTest, 10, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *GameHubReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *GameHubReceipt) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SChannelId != "" {
+		err = p.WriteString(0, st.SChannelId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SChannelUid != "" {
+		err = p.WriteString(1, st.SChannelUid)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SOrderNo != "" {
+		err = p.WriteString(2, st.SOrderNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SCpOrderNo != "" {
+		err = p.WriteString(3, st.SCpOrderNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SZoneId != "" {
+		err = p.WriteString(4, st.SZoneId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SRoleId != "" {
+		err = p.WriteString(5, st.SRoleId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SGoodsId != "" {
+		err = p.WriteString(6, st.SGoodsId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.FAmount != 0 {
+		err = p.WriteFloat32(7, st.FAmount)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IPayTime != 0 {
+		err = p.WriteUint32(8, st.IPayTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SPassbackParams != "" {
+		err = p.WriteString(9, st.SPassbackParams)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IIsTest != 0 {
+		err = p.WriteUint32(10, st.IIsTest)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *GameHubReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 type IAPReceiptInAll struct {
 	IReceiptType      uint32          `json:"iReceiptType"`
 	StStatus          IAPStatus       `json:"stStatus"`
@@ -2630,6 +3096,7 @@ type IAPReceiptInAll struct {
 	StFyReceipt       FyReceipt       `json:"stFyReceipt"`
 	StHeePayReceipt   HeePayReceipt   `json:"stHeePayReceipt"`
 	StHeePayH5Receipt HeePayH5Receipt `json:"stHeePayH5Receipt"`
+	StGameHubReceipt  GameHubReceipt  `json:"stGameHubReceipt"`
 }
 
 func (st *IAPReceiptInAll) resetDefault() {
@@ -2639,6 +3106,7 @@ func (st *IAPReceiptInAll) resetDefault() {
 	st.StFyReceipt.resetDefault()
 	st.StHeePayReceipt.resetDefault()
 	st.StHeePayH5Receipt.resetDefault()
+	st.StGameHubReceipt.resetDefault()
 }
 func (st *IAPReceiptInAll) Copy() *IAPReceiptInAll {
 	ret := NewIAPReceiptInAll()
@@ -2649,6 +3117,7 @@ func (st *IAPReceiptInAll) Copy() *IAPReceiptInAll {
 	ret.StFyReceipt = *(st.StFyReceipt.Copy())
 	ret.StHeePayReceipt = *(st.StHeePayReceipt.Copy())
 	ret.StHeePayH5Receipt = *(st.StHeePayH5Receipt.Copy())
+	ret.StGameHubReceipt = *(st.StGameHubReceipt.Copy())
 	return ret
 }
 func NewIAPReceiptInAll() *IAPReceiptInAll {
@@ -2675,6 +3144,9 @@ func (st *IAPReceiptInAll) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, "}\n")
 	util.Tab(buff, t+1, util.Fieldname("stHeePayH5Receipt")+"{\n")
 	st.StHeePayH5Receipt.Visit(buff, t+1+1)
+	util.Tab(buff, t+1, "}\n")
+	util.Tab(buff, t+1, util.Fieldname("stGameHubReceipt")+"{\n")
+	st.StGameHubReceipt.Visit(buff, t+1+1)
 	util.Tab(buff, t+1, "}\n")
 }
 func (st *IAPReceiptInAll) ReadStruct(up *codec.UnPacker) error {
@@ -2708,6 +3180,10 @@ func (st *IAPReceiptInAll) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = st.StHeePayH5Receipt.ReadStructFromTag(up, 6, false)
+	if err != nil {
+		return err
+	}
+	err = st.StGameHubReceipt.ReadStructFromTag(up, 7, false)
 	if err != nil {
 		return err
 	}
@@ -2775,6 +3251,10 @@ func (st *IAPReceiptInAll) WriteStruct(p *codec.Packer) error {
 		return err
 	}
 	err = st.StHeePayH5Receipt.WriteStructFromTag(p, 6, false)
+	if err != nil {
+		return err
+	}
+	err = st.StGameHubReceipt.WriteStructFromTag(p, 7, false)
 	if err != nil {
 		return err
 	}
@@ -3439,6 +3919,56 @@ func (s *IAPService) DeliverHeePayH5Receipt(iRoleId uint64, iZoneId uint32, stPu
 	_ = length
 	return ret, nil
 }
+func (s *IAPService) DeliverGameHubReceipt(iRoleId uint64, iZoneId uint32, stPurchase GameHubPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error) {
+	p := codec.NewPacker()
+	var ret int32
+	var err error
+	var has bool
+	var ty uint32
+	var length uint32
+	if true || iRoleId != 0 {
+		err = p.WriteUint64(1, iRoleId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || iZoneId != 0 {
+		err = p.WriteUint32(2, iZoneId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	err = stPurchase.WriteStructFromTag(p, 3, true)
+	if err != nil {
+		return ret, err
+	}
+	if true || iProxyRoleId != 0 {
+		err = p.WriteUint64(4, iProxyRoleId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || iProxyZoneId != 0 {
+		err = p.WriteUint32(5, iProxyZoneId)
+		if err != nil {
+			return ret, err
+		}
+	}
+	var rsp *protocol.ResponsePacket
+	err = s.proxy.Invoke("deliverGameHubReceipt", p.ToBytes(), &rsp)
+	if err != nil {
+		return ret, err
+	}
+	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
+	err = up.ReadInt32(&ret, 0, true)
+	if err != nil {
+		return ret, err
+	}
+	_ = has
+	_ = ty
+	_ = length
+	return ret, nil
+}
 func (s *IAPService) GetReceiptStatusByFlow(sFlowId string, stIAPReceiptInAll *IAPReceiptInAll) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
@@ -3593,6 +4123,7 @@ type _IAPServiceImpl interface {
 	DeliverFyReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase FyPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
 	DeliverHeePayReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase HeePayPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
 	DeliverHeePayH5Receipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase HeePayH5Purchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
+	DeliverGameHubReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase GameHubPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
 	GetReceiptStatusByFlow(ctx context.Context, sFlowId string, stIAPReceiptInAll *IAPReceiptInAll) (int32, error)
 	GetReceiptStatusList(ctx context.Context, stQueryParam ReceiptQueryParam, vIAPReceiptInAll *[]IAPReceiptInAll) (int32, error)
 	CreateOrder(ctx context.Context, iReceiptType uint32, sFlowId string, iProductId uint32, iRoleId uint64, iZoneId uint32, sPayload string, stOrder *IAPTmpOrder) (int32, error)
@@ -4022,6 +4553,53 @@ func _IAPServiceDeliverHeePayH5ReceiptImpl(ctx context.Context, serviceImpl inte
 	_ = has
 	return nil
 }
+func _IAPServiceDeliverGameHubReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+	var err error
+	var length uint32
+	var ty uint32
+	var has bool
+	impl := serviceImpl.(_IAPServiceImpl)
+	var p1 uint64
+	err = up.ReadUint64(&p1, 1, true)
+	if err != nil {
+		return err
+	}
+	var p2 uint32
+	err = up.ReadUint32(&p2, 2, true)
+	if err != nil {
+		return err
+	}
+	var p3 GameHubPurchase
+	err = p3.ReadStructFromTag(up, 3, true)
+	if err != nil {
+		return err
+	}
+	var p4 uint64
+	err = up.ReadUint64(&p4, 4, true)
+	if err != nil {
+		return err
+	}
+	var p5 uint32
+	err = up.ReadUint32(&p5, 5, true)
+	if err != nil {
+		return err
+	}
+	var ret int32
+	ret, err = impl.DeliverGameHubReceipt(ctx, p1, p2, p3, p4, p5)
+	if err != nil {
+		return err
+	}
+	if true || ret != 0 {
+		err = p.WriteInt32(0, ret)
+		if err != nil {
+			return err
+		}
+	}
+	_ = length
+	_ = ty
+	_ = has
+	return nil
+}
 func _IAPServiceGetReceiptStatusByFlowImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length uint32
@@ -4225,6 +4803,12 @@ func (s *IAPService) Dispatch(ctx context.Context, serviceImpl interface{}, req 
 		texret = protocol.SDPSERVERSUCCESS
 	case "deliverHeePayH5Receipt":
 		err = _IAPServiceDeliverHeePayH5ReceiptImpl(ctx, serviceImpl, up, p)
+		if err != nil {
+			break
+		}
+		texret = protocol.SDPSERVERSUCCESS
+	case "deliverGameHubReceipt":
+		err = _IAPServiceDeliverGameHubReceiptImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

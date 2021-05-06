@@ -38,15 +38,17 @@ func (en BulletinFlag) String() string {
 }
 
 type BulletinDataInfo struct {
-	IBulletinId uint32 `json:"iBulletinId"`
-	STitle      string `json:"sTitle"`
-	SContent    string `json:"sContent"`
-	IFlag       uint32 `json:"iFlag"`
-	SBeginTime  string `json:"sBeginTime"`
-	SEndTime    string `json:"sEndTime"`
-	IDisplay    uint32 `json:"iDisplay"`
-	IType       uint32 `json:"iType"`
-	IPopWindow  uint32 `json:"iPopWindow"`
+	IBulletinId       uint32 `json:"iBulletinId"`
+	STitle            string `json:"sTitle"`
+	SContent          string `json:"sContent"`
+	IFlag             uint32 `json:"iFlag"`
+	SBeginTime        string `json:"sBeginTime"`
+	SEndTime          string `json:"sEndTime"`
+	IDisplay          uint32 `json:"iDisplay"`
+	IType             uint32 `json:"iType"`
+	IPopWindow        uint32 `json:"iPopWindow"`
+	SPopWindowEndTime string `json:"sPopWindowEndTime"`
+	SHtmlContent      string `json:"sHtmlContent"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -62,6 +64,8 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	ret.IDisplay = st.IDisplay
 	ret.IType = st.IType
 	ret.IPopWindow = st.IPopWindow
+	ret.SPopWindowEndTime = st.SPopWindowEndTime
+	ret.SHtmlContent = st.SHtmlContent
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -79,6 +83,8 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iDisplay")+fmt.Sprintf("%v\n", st.IDisplay))
 	util.Tab(buff, t+1, util.Fieldname("iType")+fmt.Sprintf("%v\n", st.IType))
 	util.Tab(buff, t+1, util.Fieldname("iPopWindow")+fmt.Sprintf("%v\n", st.IPopWindow))
+	util.Tab(buff, t+1, util.Fieldname("sPopWindowEndTime")+fmt.Sprintf("%v\n", st.SPopWindowEndTime))
+	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -119,6 +125,14 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.IPopWindow, 9, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SPopWindowEndTime, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SHtmlContent, 11, false)
 	if err != nil {
 		return err
 	}
@@ -213,6 +227,18 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 			return err
 		}
 	}
+	if false || st.SPopWindowEndTime != "" {
+		err = p.WriteString(10, st.SPopWindowEndTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SHtmlContent != "" {
+		err = p.WriteString(11, st.SHtmlContent)
+		if err != nil {
+			return err
+		}
+	}
 
 	_ = length
 	return err
@@ -270,6 +296,7 @@ type NoticeDataInfo struct {
 	IPause           uint32   `json:"iPause"`
 	VZoneId          []uint32 `json:"vZoneId"`
 	IMaintenanceTime uint32   `json:"iMaintenanceTime"`
+	SHtmlContent     string   `json:"sHtmlContent"`
 }
 
 func (st *NoticeDataInfo) resetDefault() {
@@ -290,6 +317,7 @@ func (st *NoticeDataInfo) Copy() *NoticeDataInfo {
 		ret.VZoneId[i] = v
 	}
 	ret.IMaintenanceTime = st.IMaintenanceTime
+	ret.SHtmlContent = st.SHtmlContent
 	return ret
 }
 func NewNoticeDataInfo() *NoticeDataInfo {
@@ -320,6 +348,7 @@ func (st *NoticeDataInfo) Visit(buff *bytes.Buffer, t int) {
 		util.Tab(buff, t+1, "]\n")
 	}
 	util.Tab(buff, t+1, util.Fieldname("iMaintenanceTime")+fmt.Sprintf("%v\n", st.IMaintenanceTime))
+	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
 }
 func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -386,6 +415,10 @@ func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 		}
 	}
 	err = up.ReadUint32(&st.IMaintenanceTime, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SHtmlContent, 11, false)
 	if err != nil {
 		return err
 	}
@@ -502,6 +535,12 @@ func (st *NoticeDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.IMaintenanceTime != 0 {
 		err = p.WriteUint32(10, st.IMaintenanceTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SHtmlContent != "" {
+		err = p.WriteString(11, st.SHtmlContent)
 		if err != nil {
 			return err
 		}

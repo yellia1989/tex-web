@@ -90,12 +90,7 @@
 
       okUtils.ajax("/api/game/recharge/receipt", "get", {flowid: parent.flowid}, false).done(function (response) {
         let status = response.data.stStatus;
-        let receipt = null;
-        if (response.data.iReceiptType == 4) {
-          receipt = response.data.stHeePayReceipt;
-        } else if (response.data.iReceiptType == 5) {
-          receipt = response.data.stHeePayH5Receipt;
-        }
+        let receipt = response.data.stGameHubReceipt;
 
         $("select[name=iReceiptStatus]").val(status.iReceiptStatus);
         $("input[name=iReceiptType]").val(response.data.iReceiptType);

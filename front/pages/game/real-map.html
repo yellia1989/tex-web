@@ -60,7 +60,7 @@
       },
     });
 
-    let myChart = echarts.init(document.getElementById('main'), null, {renderer:'svg'});
+    let myChart = echarts.init(document.getElementById('main'), null, {renderer:'canvas'});
     let option = {
           xAxis: {
             type: 'value',
@@ -103,7 +103,7 @@
     okUtils.ajax("/api/gm/zone/simplelist", "get", {map: true}, false).done(function (response) {
       zoneSelect.update({
         data: response.data["map"],
-        initValue: [1001],
+        initValue: [10001],
       });
       refreshMap(zoneSelect.getValue('valueStr'));
     }).fail(function (error) {
@@ -116,7 +116,7 @@
         myChart.setOption({
           series: [{
               name: '城市',
-              type: 'effectScatter',
+              type: 'scatter',
               symbolSize: 10,
               itemStyle: {
                 color: '#FF2371',

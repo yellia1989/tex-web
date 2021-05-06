@@ -10,16 +10,29 @@ import (
     "github.com/yellia1989/tex-go/tools/log"
 )
 
-var roles gcache.Cache
 var mu sync.Mutex
-var rge90 []uint32
 var conn *dsql.Conn
 
-func createNewConn() (err error) {
+var roles gcache.Cache
+var rge90 []uint32
+
+func checkConn() (err error) {
     if conn != nil {
-        conn.Close()
+        err = conn.PingContext(ctx)
+        if err != nil {
+            conn.Close()
+            conn = nil
+        } else {
+            return
+        }
     }
-    conn, err = cfg.StatDb.Conn(ctx)
+
+    if conn == nil {
+        conn, err = cfg.StatDb.Conn(ctx)
+        if err != nil {
+            return
+        }
+    }
     return
 }
 
@@ -64,10 +77,13 @@ func (r *role) login(dateFk uint32) {
         return
     }
     d := dateFk - r.regDateFk
-    if d <= 63 {
-        r.login1 = r.login1 | (0x01 << d)
-    } else {
-        r.login2 = r.login2 | (0x01 << (d-63))
+    if d < 90 {
+        // 只记录90天内登陆情况
+        if d <= 63 {
+            r.login1 = r.login1 | (0x01 << d)
+        } else {
+            r.login2 = r.login2 | (0x01 << (d-63))
+        }
     }
     if r.lastLoginDateFk < dateFk {
         r.lastLoginDateFk = dateFk
@@ -80,10 +96,12 @@ func (r *role) rge(dateFk uint32, money uint32) {
     }
     d := int(dateFk - r.regDateFk + 1)
     v, ok := r.rge90[d]
-    if !ok {
-        r.rge90[d] = money
-    } else {
-        r.rge90[d] = v + money
+    if d <= 90 {
+        if !ok {
+            r.rge90[d] = money
+        } else {
+            r.rge90[d] = v + money
+        }
     }
     r.rgeTotal += money
 }
@@ -129,17 +147,10 @@ func init() {
             mu.Lock()
             defer mu.Unlock()
 
-            if conn == nil {
-                if err := createNewConn(); err != nil {
-                    return nil, err
-                }
+            if err := checkConn(); err != nil {
+                return nil, err
             }
 
-            if err := conn.PingContext(ctx); err != nil {
-                if err := createNewConn(); err != nil {
-                    return nil, err
-                }
-            }
             zaKey := key.(zoneAccountKey)
             r := role{}
             r.zoneidFk = zaKey.zoneidFk
@@ -157,7 +168,7 @@ func get(zoneid uint32, accountid uint32) *role {
     r, err := roles.Get(zoneAccountKey{zoneid, accountid})
     if r == nil {
         if err != dsql.ErrNoRows {
-            log.Errorf("get stat role err: %s", err.Error())
+            log.Errorf("cron [stat][role] get role err: %s, zoneid: %d, roleid: %d", err.Error(), zoneid, accountid)
         }
         return nil
     }

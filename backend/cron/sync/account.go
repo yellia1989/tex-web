@@ -17,16 +17,12 @@ type account struct {
     init bool   // 是否初始化成功
 }
 
-func (a *account) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
-    if err := to.PingContext(ctx); err != nil {
-        return fmt.Errorf("sync account ping err: %s", err.Error())
-    }
-
+func (a *account) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !a.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='account' and zoneid=?", zoneid).Scan(&rid); err != nil {
             if err != dsql.ErrNoRows {
-                return fmt.Errorf("sync account scan err: %s", err.Error())
+                return fmt.Errorf("cron [sync][account] scan err: %s", err.Error())
             }
         }
         a.rid = uint32(rid.Int64)
@@ -35,17 +31,13 @@ func (a *account) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk u
 
     if a.buff.Len() > 0 {
         if err := a.save(to, zoneid); err != nil {
-            return fmt.Errorf("sync account save err: %s", err.Error())
+            return fmt.Errorf("cron [sync][account] save err: %s", err.Error())
         }
-    }
-
-    if err := from.PingContext(ctx); err != nil {
-        return fmt.Errorf("sync account ping err: %s", err.Error())
     }
     
     rows, err := from.QueryContext(ctx, "SELECT _rid,time,accountid,ip,ostype FROM account_create WHERE _rid > ? limit 10000", a.rid)
     if err != nil {
-        return fmt.Errorf("sync account query err: %s", err.Error())
+        return fmt.Errorf("cron [sync][account] account_create query err: %s", err.Error())
     }
     defer rows.Close()
 
@@ -56,9 +48,11 @@ func (a *account) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk u
     var ostype uint32
     var buff bytes.Buffer
     size := uint32(0)
+    var maxt time.Time
+
     for rows.Next() {
         if err := rows.Scan(&_rid, &st, &accountid, &ip, &ostype); err != nil {
-            return fmt.Errorf("sync account scan err: %s", err.Error())
+            return fmt.Errorf("cron [sync][account] scan err: %s", err.Error())
         }
         t := common.ParseTimeInLocal("2006-01-02 15:04:05", st)
         d := date.Get(t)
@@ -72,6 +66,14 @@ func (a *account) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk u
         daytime := t.Hour()*3600+t.Minute()*60+t.Second()
         buff.WriteString(fmt.Sprintf("(%d,%d,'','%s',%d,%d,'')", accountid, ostype, ip, d.Id, daytime))
         size++
+
+        if t.After(maxt) {
+            maxt = t
+        }
+    }
+
+    if !maxt.IsZero() {
+        UpdateAccountMaxTime(maxt)
     }
 
     if buff.Len() > 0 {
@@ -83,12 +85,9 @@ func (a *account) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk u
         a.rows = size
 
         if err := a.save(to, zoneid); err != nil {
-            return fmt.Errorf("sync account save err: %s", err.Error())
+            return fmt.Errorf("cron [sync][account] save err: %s", err.Error())
         }
         a.rid = _rid
-
-        // 这里假设account日志入库是按照账号创建时间先后入库的
-        UpdateAccountMaxTime(common.ParseTimeInLocal("2006-01-02 15:04:05", st))
     }
 
     return nil
@@ -107,17 +106,17 @@ func (a *account) save(to *dsql.Conn, zoneid uint32) error {
 
     var result dsql.Result
     if result, err = tx.ExecContext(ctx, a.buff.String()); err != nil {
-        return fmt.Errorf("sync account sql: %s, err: %s", a.buff.String(), err.Error())
+        return fmt.Errorf("exec err: %s, sql: %s", err.Error(), a.buff.String())
     }
 
     if err := tx.Commit(); err != nil {
-        return fmt.Errorf("sync account sql: %s, err: %s", a.buff.String(), err.Error())
+        return fmt.Errorf("commit err: %s, sql: %s", err.Error(), a.buff.String())
     }
 
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("sync account cost: %.2f ms, size: %.2f KB, rows: %d, affected rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, a.rows, rowsAffected, zoneid)
+    log.Debugf("cron [sync][account] cost: %.2f ms, size: %.2f KB, rows: %d, affected rows: %d", t2.Sub(t1).Seconds(), size, a.rows, rowsAffected)
 
     a.buff.Reset()
     a.rows = 0

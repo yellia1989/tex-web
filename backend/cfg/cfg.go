@@ -12,6 +12,9 @@ import (
     "github.com/yellia1989/tex-web/backend/common"
 )
 
+// 配置
+var Config *util.Config
+
 // 是否开启调试模式
 var Debug bool
 
@@ -30,6 +33,9 @@ var App string
 // logo
 var Logo string
 
+// 时区
+var TimeZone *time.Location
+
 // 日志数据库
 var LogDb *sql.DB
 
@@ -39,8 +45,8 @@ var LogDbUser string
 // 日志数据库连接密码
 var LogDbPwd string
 
-// 游戏数据库
-var GameDb *sql.DB
+// 游戏全局数据库
+var GameGlobalDb *sql.DB
 
 // 统计数据库
 var StatDb *sql.DB
@@ -63,9 +69,15 @@ var StatRmoney uint32
 // 只统计相关渠道信息
 var StatChannels []string
 
+// 聊天消息脏字检测间隔
+var ChatMaskInterval time.Duration
+
 func ParseCfg(file string) (err error) {
-    cfg := util.NewConfig()
-    cfg.ParseFile(file)
+    if Config == nil {
+        Config = util.NewConfig()
+    }
+    Config.ParseFile(file)
+    cfg := Config
 
     Debug = cfg.GetBool("debug", false)
     FrameworkDebug = cfg.GetBool("framework-debug", false)
@@ -87,6 +99,11 @@ func ParseCfg(file string) (err error) {
         panic("logo required")
     }
 
+    TimeZone, err = time.LoadLocation(cfg.GetCfg("timezone", "Local"))
+    if err != nil {
+        panic("invalid timezone")
+    }
+
     logdb := cfg.GetCfg("logdb", "")
     if len(logdb) == 0 {
         panic("logdb required")
@@ -103,13 +120,13 @@ func ParseCfg(file string) (err error) {
         panic(fmt.Sprintf("create log db err: %s", err.Error()))
     }
 
-    gamedb := cfg.GetCfg("gamedb", "")
-    if len(gamedb) == 0 {
-        panic("gamedb required")
+    gameglobaldb := cfg.GetCfg("gameglobaldb", "")
+    if len(gameglobaldb) == 0 {
+        panic("gameglobaldb required")
     }
-    GameDb, err = sql.Open("mysql", gamedb)
+    GameGlobalDb, err = sql.Open("mysql", gameglobaldb)
     if err != nil {
-        panic(fmt.Sprintf("create game db err: %s", err.Error()))
+        panic(fmt.Sprintf("create game global db err: %s", err.Error()))
     }
 
     statdb := cfg.GetCfg("statdb", "")
@@ -139,6 +156,8 @@ func ParseCfg(file string) (err error) {
 
     tmp := cstat.GetCfg("channel","")
     StatChannels = strings.Split(tmp, ",")
+
+    ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1m")
 
     return
 }

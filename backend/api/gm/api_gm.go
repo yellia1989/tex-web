@@ -93,22 +93,32 @@ func GameCmd(c echo.Context) error {
 
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     u := ctx.GetUser()
-    return Cmd(u.UserName, zoneid, cmd, result)
+    return Cmd(u.UserName, zoneid, "0", cmd, result)
 }
 
-func Cmd(userName string, zoneid string, cmd string, result *string) error {
+func Cmd(userName string, zoneid string, mapid string, cmd string, result *string) error {
     comm := cfg.Comm
     app := cfg.App
 
     gamePrx := new(rpc.GameService)
-    comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+    mapPrx := new(rpc.MapService)
+
+    if mapid == "0" {
+        comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+    } else {
+        comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
+    }
 
     cmd = strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
 
     var ret int32
     var err error
 
-    ret, err = gamePrx.DoGmCmd(userName, cmd, result)
+    if mapid == "0" {
+        ret, err = gamePrx.DoGmCmd(userName, cmd, result)
+    } else {
+        ret, err = mapPrx.DoGmCmd(userName, cmd, result)
+    }
     if ret != 0 || err != nil {
         serr := ""
         if err != nil {

@@ -37,7 +37,7 @@
         <div class="layui-inline">
 			    <label class="layui-form-label">开服时间</label>
 			    <div class="layui-input-inline">
-				    <input type="text" name="iPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
+				    <input type="text" name="sPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
 			    </div>
         </div>
       </div>
@@ -74,9 +74,15 @@
 			    </div>
         </div>
         <div class="layui-inline">
-			    <label class="layui-form-label">最大人数</label>
+			    <label class="layui-form-label">最大创角</label>
 			    <div class="layui-input-inline">
 				    <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
+			    </div>
+        </div>
+        <div class="layui-inline">
+			    <label class="layui-form-label">最大在线</label>
+			    <div class="layui-input-inline">
+				    <input type="text" name="iMaxOnline" placeholder="请输入最大人数" autocomplete="off" class="layui-input" lay-verify="required|number" lay-verType="tips">
 			    </div>
         </div>
 	      <div class="layui-inline">
@@ -135,7 +141,7 @@
       $("input[name='sInternalIp']").change(function () {
         zoneid = parseInt($("input[name='iZoneId']").val());
         v = $(this).val();
-        $("input[name='sHandleConn']").val("tcp -h "+v+" -p "+(4000+zoneid)+" -t 60000");
+        $("input[name='sHandleConn']").val("tcp -h "+v+" -p "+(4000+zoneid)+" -t 300000");
         $("input[name='sConnServiceObj']").val("tcp -h "+v+" -p "+(6000+zoneid)+" -t 3600000");
         $("input[name='sGameServiceObj']").val("tcp -h "+v+" -p "+(5000+zoneid)+" -t 3600000");
       });
@@ -181,7 +187,6 @@
 
       //监听提交
       form.on('submit(add)', function(data){
-        data.field.iPublishTime = Date.parse(data.field.iPublishTime)/1000;
         okUtils.ajax("/api/gm/zone/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
 			  		parent.layer.close(parent.layer.getFrameIndex(window.name));

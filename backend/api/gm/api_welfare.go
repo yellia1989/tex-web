@@ -20,6 +20,7 @@ type _WelfareTask struct {
     CmdEndTime string `json:"sCmdEndTime"`
     Status  uint32  `json:"iStatus"`
     Step uint32  `json:"iStep"`
+    Slg uint32 `json:"slg"`
 }
 
 func WelfareTaskList(c echo.Context) error {
@@ -32,7 +33,7 @@ func WelfareTaskList(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-    sql := "SELECT id,name,roles,cmds,begin_time,end_time,cmd_time,status,step FROM welfare_task WHERE status != 2 order by id desc"
+    sql := "SELECT id,name,roles,cmds,begin_time,end_time,cmd_time,status,step,slg FROM welfare_task WHERE status != 2 order by id desc"
     var total int
     err := db.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
     if err != nil {
@@ -55,7 +56,7 @@ func WelfareTaskList(c echo.Context) error {
     var cmdTime string
     for rows.Next() {
         var task _WelfareTask
-        if err := rows.Scan(&task.ID, &task.Name, &task.Roles, &task.Cmds, &task.BeginTime, &task.EndTime, &cmdTime, &task.Status, &task.Step); err != nil {
+        if err := rows.Scan(&task.ID, &task.Name, &task.Roles, &task.Cmds, &task.BeginTime, &task.EndTime, &cmdTime, &task.Status, &task.Step, &task.Slg); err != nil {
             return err
         }
         vCmdTime := strings.SplitN(cmdTime, "-", 2)
@@ -153,6 +154,7 @@ func WelfareTaskAdd(c echo.Context) error {
     sRoles := ctx.FormValue("sRoles")
     sCmds := ctx.FormValue("sCmds")
     step,_ := strconv.ParseUint(ctx.FormValue("iStep"), 10, 32)
+    slg,_ := strconv.ParseUint(ctx.FormValue("iSlg"), 10, 32)
 
     if sName == "" || sBeginTime == "" || sEndTime == "" || sCmdBeginTime == "" || sCmdEndTime == "" || sRoles == "" || sCmds == "" || step == 0 {
         return ctx.SendError(-1, "参数非法")
@@ -163,8 +165,8 @@ func WelfareTaskAdd(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
     }
 
-    sql := "INSERT INTO welfare_task(name,roles,cmds,cmd_time,status,begin_time,end_time,step) VALUES(?,?,?,?,?,?,?,?)"
-    _, err := db.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, 1, sBeginTime, sEndTime, step)
+    sql := "INSERT INTO welfare_task(name,roles,cmds,cmd_time,status,begin_time,end_time,step,slg) VALUES(?,?,?,?,?,?,?,?,?)"
+    _, err := db.Exec(sql, sName, sRoles, sCmds, sCmdBeginTime+"-"+sCmdEndTime, 1, sBeginTime, sEndTime, step, slg)
     if err != nil {
         return err
     }

@@ -40,21 +40,21 @@
       <div class="layui-form-item layui-hide" id="commoncdk">
         <label class="layui-form-label">指定CDK</label>
         <div class="layui-input-block">
-          <input type="text" name="sCommonCdk" class="layui-input">
-        </div>
+          <input type="text" name="sCommonCdk" class="layui-input" lay-verType="tips">
+         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">开始时间</label>
         <div class="layui-input-block">
-          <input type="text" name="iBeginTime" id="iBeginTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="sBeginTime" id="iBeginTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
         <label class="layui-form-label">结束时间</label>
         <div class="layui-input-block">
-          <input type="text" name="iEndTime" id="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="sEndTime" id="iEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
@@ -152,6 +152,13 @@
         },
       });
 
+      form.verify({
+        cdksize: [
+          /^[A-Za-z\d]{1,9}$/
+          ,'cdk必须1到9位的字母或者数字'
+        ]
+      });
+
       okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, all: true}, false).done(function (response) {
         zoneSelect.update({
           data: response.data["game"],
@@ -173,8 +180,10 @@
         if (data.value == 2) {
           $('#commoncdk').removeClass('layui-hide');
           $('input[name=sCommonCdk]').val('');
+          $('input[name=sCommonCdk]').attr("lay-verify", "required|cdksize");
         } else {
           $('#commoncdk').addClass('layui-hide');
+          $('input[name=sCommonCdk]').attr("lay-verify", "");
         }
 
         if (data.value == 3) {
@@ -200,8 +209,6 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
-        data.field.iBeginTime = Date.parse(data.field.iBeginTime) / 1000;
-        data.field.iEndTime = Date.parse(data.field.iEndTime) / 1000;
         data.field.iCommon = 0;
         if (data.field.iType == 1 || data.field.iType == 2) {
           data.field.iCommon = 1;

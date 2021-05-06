@@ -23,12 +23,13 @@ case "$env" in
     ;;
 esac
 
-runcmdroot root@$ip "[ ! -f /data/web ] && mkdir /data/web"
-runcmdroot root@$ip "mkdir /data/web/backup"
+runcmd root@$ip "[ ! -f /data/web ] && mkdir /data/web"
+runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjvf $web conf.cfg ../front ../data ../web ../start.sh ../stop.sh ../sql
+tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
+#tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'
@@ -40,7 +41,7 @@ putfile root@$ip ../update.sh /data/web/
 putfile root@$ip $web /data/web/backup/
 
 echo "更新web中。。。"
-runcmdroot root@$ip "cd /data/web && ./update.sh $web"
+runcmd root@$ip "cd /data/web && ./update.sh $web"
 
 rm -rf $web
 rm -rf conf.cfg

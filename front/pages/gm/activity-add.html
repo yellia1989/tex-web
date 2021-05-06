@@ -19,16 +19,23 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">是否是Slg活动</label>
+        <div class="layui-input-block">
+          <input type="checkbox" name="iSlg" id="iSlg" lay-skin="switch" lay-filter="layslg">
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="sApplyZone">
         <label class="layui-form-label">应用分区</label>
         <div class="layui-input-block">
           <div id="zoneSelect"></div>
         </div>
       </div>
 
-      <div class="layui-form-item">
-        <label class="layui-form-label">应用玩家</label>
+      <div class="layui-form-item" id="sApplyMap">
+        <label class="layui-form-label">应用地图</label>
         <div class="layui-input-block">
-          <input type="text" name="apply_user" class="layui-input" placeholder="多个玩家以英文逗号(,)分隔">
+          <div id="mapSelect"></div>
         </div>
       </div>
 
@@ -116,6 +123,53 @@
         },
       });
 
+      let mapSelect = xmSelect.render({
+        el: '#mapSelect',
+        name: 'apply_map',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        autoRow: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        },
+        toolbar: {
+          show: true,
+        },
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
+      });
+
       okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, all: true}, false).done(function (response) {
         zoneSelect.update({
           data: response.data["game"],
@@ -124,9 +178,27 @@
         console.log(error);
       });
 
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {map: true, all: true}, false).done(function (response) {
+        mapSelect.update({
+          data: response.data["map"],
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
       //监听提交
       form.on('submit(add)', function (data) {
-        if (data.field.apply_zone == '99999') {
+        if (data.field.iSlg != 'on') {
+          data.field.slg = 0;
+          if (data.field.apply_zone == '99999') {
+            data.field.apply_zone = '';
+          }
+          data.field.apply_map = '';
+        } else {
+          data.field.slg = 1;
+          if (data.field.apply_map == '99999') {
+            data.field.apply_map = '';
+          }
           data.field.apply_zone = '';
         }
         okUtils.ajax("/api/gm/activity/add", "post", data.field, true).done(function (response) {
@@ -139,11 +211,34 @@
         return false;
       });
 
+      function displaySelect(s, s2, disabled) {
+        if (disabled) {
+          s.addClass("layui-hide");
+          s2.update({layVerify: false});
+        } else {
+          s.removeClass("layui-hide");
+          s2.update({layVerify: 'required'});
+        }
+      }
+
+      form.on('switch(layslg)', function (data) {
+        if (data.elem.checked) {
+          displaySelect($("#sApplyZone"), zoneSelect, true);
+          displaySelect($("#sApplyMap"), mapSelect, false);
+        } else {
+          displaySelect($("#sApplyZone"), zoneSelect, false);
+          displaySelect($("#sApplyMap"), mapSelect, true);
+        }
+      });
+
       $('#editconfig').click(function(e) {
         json_data = "textarea[name='configure_data']";
         config_data = activity.config.mainFieldOption;
         okLayer.open("编辑配置", "/gm/json.html", "90%", "90%", null, null);
       });
+
+      displaySelect($("#sApplyZone"), zoneSelect, false);
+      displaySelect($("#sApplyMap"), mapSelect, true);
     });
   </script>
 </body>

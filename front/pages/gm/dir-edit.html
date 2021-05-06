@@ -29,7 +29,7 @@
         <div class="layui-inline">
           <label class="layui-form-label">开服时间</label>
           <div class="layui-input-inline">
-            <input type="text" name="iPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off"
+            <input type="text" name="sPublishTime" id="iPublishTime" placeholder="请输入开服时间" autocomplete="off"
               class="layui-input" lay-verify="required|datetime" lay-verType="tips">
           </div>
         </div>
@@ -66,17 +66,24 @@
           <label class="layui-form-label">手动状态</label>
           <div class="layui-input-inline">
             <select name="iManualZoneStatus">
-              <option value="1">畅通</option>
-              <option value="2">拥挤</option>
-              <option value="3">繁忙</option>
+              <option value="1">流畅</option>
+              <option value="2">忙碌</option>
+              <option value="3">爆满</option>
               <option value="4">维护</option>
             </select>
           </div>
         </div>
         <div class="layui-inline">
-          <label class="layui-form-label">最大人数</label>
+          <label class="layui-form-label">最大创角</label>
           <div class="layui-input-inline">
             <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
+              lay-verify="required|number" lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">最大在线</label>
+          <div class="layui-input-inline">
+            <input type="text" name="iMaxOnline" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
               lay-verify="required|number" lay-verType="tips">
           </div>
         </div>
@@ -107,7 +114,7 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      laydate.render({ elem: "#iPublishTime", type: "datetime", value: new Date(parent.zonedata.iPublishTime * 1000) });
+      laydate.render({ elem: "#iPublishTime", type: "datetime", value: parent.zonedata.sPublishTime});
 
 		  okUtils.ajax("/api/gm/channel/list", "get", {page:1, limit: 1000}, false).done(function (response) {
         let channelHtml = '';
@@ -137,6 +144,7 @@
       $("select[name='iIsManual']").val(parent.zonedata.iIsManual);
       $("select[name='iManualZoneStatus']").val(parent.zonedata.iManualZoneStatus);
       $("input[name='iMaxNum']").val(parent.zonedata.iMaxNum);
+      $("input[name='iMaxOnline']").val(parent.zonedata.iMaxOnline);
       $("select[name='iIsKick']").val(parent.zonedata.iIsKick);
       form.render('select');
 
@@ -156,7 +164,6 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
-        data.field.iPublishTime = Date.parse(data.field.iPublishTime) / 1000;
         okUtils.ajax("/api/gm/zone/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

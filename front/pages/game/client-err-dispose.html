@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>客户端错误处理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form">
+    <div class="layui-form-item">
+        <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="search" id="search">
+            <i class="layui-icon layui-icon-refresh-3"></i>
+          </button>
+        </div>
+      </div>
+  </form>
+  <table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/utc.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/timezone.js"></script>
+
+<script>
+  var zoneid;
+  layui.use(["table", "okUtils", "form", "okLayer", "laydate", "okCookie"], function () {
+    let table = layui.table;
+    let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let laydate = layui.laydate
+    okLoading.close();
+
+    let disposeTable = table.render({
+      elem: "#tableId",
+      url: "/api/game/client_err/dispose_info",
+      where: {},
+      data:[],
+      text: {
+        none: '暂无相关数据',
+      },
+      limit: 5,
+      page: true,
+      cols: [[
+        {field: "client_version", title: "客户端版本", width:150, align: "center"},
+        {field: "err_info", title: "报错信息"},
+        {field: "err_note", title: "备注", width: 500, align: "center"},
+        {
+          field: "status", title: "状态", width: 120, align: "center", templet: function(d) {
+            let ret = '';
+            switch(d.status) {
+              case 1: ret = '未处理'; break;
+              case 2: ret = '处理中'; break;
+              case 3: ret = '处理完成'; break;
+              default:
+                ret = '未知状态';
+            }
+            return ret;
+          }
+        },
+        {title: "操作", width: 200, align: "center", templet: "#operationTpl", fixed: 'right'}
+      ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false,
+    });
+
+    table.on("tool(tableFilter)", function (obj) {
+      errInfoMd5 = obj.data.err_info_md5
+      clientVersion = obj.data.client_version
+      iStatus = obj.data.status
+      switch (obj.event) {
+        case "note":
+          note();
+          break;
+        case "finish":
+          finish();
+          break;
+      }
+    });
+
+    function note() {
+        layer.prompt({
+           title: '备注内容', formType: 2, area:['300px', '240px']}, function(val, index) {
+           let param = { sClientVersion: clientVersion, sErrInfoMd5: errInfoMd5, sNote: val};
+           okUtils.ajax("/api/game/client_err/add_dispose_note", "post", param, true).done(function (response) {
+               okLayer.greenTickMsg(response.data, function () {
+                    layer.close(index);
+                    $('#search').trigger("click");
+               });
+           }).fail(function (error) {
+               console.log(error);
+           });
+           return false;
+           layer.close(index);
+        });
+    }
+
+    function finish() {
+        if (iStatus == 3) {
+            okLayer.redCryMsg("已标记完成", function() {
+            });
+            return false;
+        }
+        let param = { sClientVersion: clientVersion, sErrInfoMd5: errInfoMd5 };
+        okUtils.ajax("/api/game/client_err/dispose_finish", "post", param, false).done(function (response){
+            okLayer.greenTickMsg(response.data, function() {
+                $('#search').trigger("click");
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+    }
+
+    form.on("submit(search)", function (data) {
+      disposeTable.reload({
+        url: "/api/game/client_err/dispose_info",
+        where: data.field,
+        page: {
+            curr: 1,
+        }
+      });
+      return false;
+    });
+  })
+</script>
+<script type="text/html" id="operationTpl">
+  <div class="layui-btn-group">
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="note">修改备注</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="finish">处理完成</button>
+  </div>
+</script>
+</body>
+<style>
+    .layui-table-cell {
+        height:auto;
+    }
+    .layui-table-tips-main{
+        height:auto;
+        line-height: 30px;
+    }
+</style>
+</html>

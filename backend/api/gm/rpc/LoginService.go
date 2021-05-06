@@ -19,6 +19,7 @@ type ChannelAddr struct {
 	SChannel string `json:"sChannel"`
 	SAddress string `json:"sAddress"`
 	SRes     string `json:"sRes"`
+	SShopVer string `json:"sShopVer"`
 }
 
 func (st *ChannelAddr) resetDefault() {
@@ -28,6 +29,7 @@ func (st *ChannelAddr) Copy() *ChannelAddr {
 	ret.SChannel = st.SChannel
 	ret.SAddress = st.SAddress
 	ret.SRes = st.SRes
+	ret.SShopVer = st.SShopVer
 	return ret
 }
 func NewChannelAddr() *ChannelAddr {
@@ -39,6 +41,7 @@ func (st *ChannelAddr) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
 	util.Tab(buff, t+1, util.Fieldname("sAddress")+fmt.Sprintf("%v\n", st.SAddress))
 	util.Tab(buff, t+1, util.Fieldname("sRes")+fmt.Sprintf("%v\n", st.SRes))
+	util.Tab(buff, t+1, util.Fieldname("sShopVer")+fmt.Sprintf("%v\n", st.SShopVer))
 }
 func (st *ChannelAddr) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -55,6 +58,10 @@ func (st *ChannelAddr) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadString(&st.SRes, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SShopVer, 3, false)
 	if err != nil {
 		return err
 	}
@@ -109,6 +116,12 @@ func (st *ChannelAddr) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.SRes != "" {
 		err = p.WriteString(2, st.SRes)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SShopVer != "" {
+		err = p.WriteString(3, st.SShopVer)
 		if err != nil {
 			return err
 		}
@@ -168,7 +181,7 @@ func (s *LoginService) SetPrxImpl(impl model.ServicePrxImpl) {
 func (s *LoginService) SetTimeout(timeout time.Duration) {
 	s.proxy.SetTimeout(timeout)
 }
-func (s *LoginService) AddNewChannel(sChannel string, sAddress string, sRes string) (int32, error) {
+func (s *LoginService) AddNewChannel(sChannel string, sAddress string, sRes string, sShopVer string) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
 	var err error
@@ -189,6 +202,12 @@ func (s *LoginService) AddNewChannel(sChannel string, sAddress string, sRes stri
 	}
 	if true || sRes != "" {
 		err = p.WriteString(3, sRes)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || sShopVer != "" {
+		err = p.WriteString(4, sShopVer)
 		if err != nil {
 			return ret, err
 		}
@@ -208,7 +227,7 @@ func (s *LoginService) AddNewChannel(sChannel string, sAddress string, sRes stri
 	_ = length
 	return ret, nil
 }
-func (s *LoginService) ModifyChannel(sChannel string, sAddress string, sRes string) (int32, error) {
+func (s *LoginService) ModifyChannel(sChannel string, sAddress string, sRes string, sShopVer string) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
 	var err error
@@ -229,6 +248,12 @@ func (s *LoginService) ModifyChannel(sChannel string, sAddress string, sRes stri
 	}
 	if true || sRes != "" {
 		err = p.WriteString(3, sRes)
+		if err != nil {
+			return ret, err
+		}
+	}
+	if true || sShopVer != "" {
+		err = p.WriteString(4, sShopVer)
 		if err != nil {
 			return ret, err
 		}
@@ -320,7 +345,7 @@ func (s *LoginService) GetAllChannel(vChannelAddr *[]ChannelAddr) (int32, error)
 	_ = length
 	return ret, nil
 }
-func (s *LoginService) GetAddress(sChannel string, sAddress *string, sRes *string) (int32, error) {
+func (s *LoginService) GetAddress(sChannel string, sAddress *string, sRes *string, sShopVer *string) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
 	var err error
@@ -351,6 +376,10 @@ func (s *LoginService) GetAddress(sChannel string, sAddress *string, sRes *strin
 	if err != nil {
 		return ret, err
 	}
+	err = up.ReadString(&(*sShopVer), 4, true)
+	if err != nil {
+		return ret, err
+	}
 	_ = has
 	_ = ty
 	_ = length
@@ -358,11 +387,11 @@ func (s *LoginService) GetAddress(sChannel string, sAddress *string, sRes *strin
 }
 
 type _LoginServiceImpl interface {
-	AddNewChannel(ctx context.Context, sChannel string, sAddress string, sRes string) (int32, error)
-	ModifyChannel(ctx context.Context, sChannel string, sAddress string, sRes string) (int32, error)
+	AddNewChannel(ctx context.Context, sChannel string, sAddress string, sRes string, sShopVer string) (int32, error)
+	ModifyChannel(ctx context.Context, sChannel string, sAddress string, sRes string, sShopVer string) (int32, error)
 	DelChannel(ctx context.Context, sChannel string) (int32, error)
 	GetAllChannel(ctx context.Context, vChannelAddr *[]ChannelAddr) (int32, error)
-	GetAddress(ctx context.Context, sChannel string, sAddress *string, sRes *string) (int32, error)
+	GetAddress(ctx context.Context, sChannel string, sAddress *string, sRes *string, sShopVer *string) (int32, error)
 }
 
 func _LoginServiceAddNewChannelImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
@@ -386,8 +415,13 @@ func _LoginServiceAddNewChannelImpl(ctx context.Context, serviceImpl interface{}
 	if err != nil {
 		return err
 	}
+	var p4 string
+	err = up.ReadString(&p4, 4, true)
+	if err != nil {
+		return err
+	}
 	var ret int32
-	ret, err = impl.AddNewChannel(ctx, p1, p2, p3)
+	ret, err = impl.AddNewChannel(ctx, p1, p2, p3, p4)
 	if err != nil {
 		return err
 	}
@@ -423,8 +457,13 @@ func _LoginServiceModifyChannelImpl(ctx context.Context, serviceImpl interface{}
 	if err != nil {
 		return err
 	}
+	var p4 string
+	err = up.ReadString(&p4, 4, true)
+	if err != nil {
+		return err
+	}
 	var ret int32
-	ret, err = impl.ModifyChannel(ctx, p1, p2, p3)
+	ret, err = impl.ModifyChannel(ctx, p1, p2, p3, p4)
 	if err != nil {
 		return err
 	}
@@ -520,8 +559,9 @@ func _LoginServiceGetAddressImpl(ctx context.Context, serviceImpl interface{}, u
 	}
 	var p2 string
 	var p3 string
+	var p4 string
 	var ret int32
-	ret, err = impl.GetAddress(ctx, p1, &p2, &p3)
+	ret, err = impl.GetAddress(ctx, p1, &p2, &p3, &p4)
 	if err != nil {
 		return err
 	}
@@ -539,6 +579,12 @@ func _LoginServiceGetAddressImpl(ctx context.Context, serviceImpl interface{}, u
 	}
 	if true || p3 != "" {
 		err = p.WriteString(3, p3)
+		if err != nil {
+			return err
+		}
+	}
+	if true || p4 != "" {
+		err = p.WriteString(4, p4)
 		if err != nil {
 			return err
 		}

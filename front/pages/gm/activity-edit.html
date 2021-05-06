@@ -19,16 +19,23 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">是否是Slg活动</label>
+        <div class="layui-input-block">
+          <input type="checkbox" name="iSlg" id="iSlg" lay-skin="switch" lay-filter="layslg">
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="sApplyZone">
         <label class="layui-form-label">应用分区</label>
         <div class="layui-input-block">
           <div id="zoneSelect"></div>
         </div>
       </div>
 
-      <div class="layui-form-item">
-        <label class="layui-form-label">应用玩家</label>
+      <div class="layui-form-item" id="sApplyMap">
+        <label class="layui-form-label">应用地图</label>
         <div class="layui-input-block">
-          <input type="text" name="apply_user" class="layui-input">
+          <div id="mapSelect"></div>
         </div>
       </div>
 
@@ -72,7 +79,16 @@
 
       locked = parent.editActivity.locked;
 
-      $("input[name='apply_user']").val(parent.editActivity.apply_user);
+      function displaySelect(s, s2, disabled) {
+        if (disabled) {
+          s.addClass("layui-hide");
+          s2.update({layVerify: false});
+        } else {
+          s.removeClass("layui-hide");
+          s2.update({layVerify: 'required'});
+        }
+      }
+
       $("textarea[name='configure_desc']").val(parent.editActivity.configure_desc);
       $("textarea[name='configure_data']").val(parent.editActivity.configure_data);
 
@@ -85,9 +101,61 @@
         apply_zone = '99999';
       }
 
+      let apply_map = parent.editActivity.apply_map;
+      if (apply_map == '') {
+        apply_map = '99999';
+      }
+
       let zoneSelect = xmSelect.render({
         el: '#zoneSelect',
         name: 'apply_zone',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        autoRow: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        },
+        toolbar: {
+          show: true,
+        },
+        on: function(data){
+          //arr:  当前多选已选中的数据
+          let arr = data.arr;
+          //change, 此次选择变化的数据,数组
+          let change = data.change;
+          //isAdd, 此次操作是新增还是删除
+          let isAdd = data.isAdd;
+          if(isAdd){
+            var allItem = change.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return [allItem];
+            }
+            allItem = arr.find(function(item){
+              return item.iZoneId === 99999;
+            })
+            if(allItem){
+              return change;
+            }
+          }
+        },
+      });
+
+      let mapSelect = xmSelect.render({
+        el: '#mapSelect',
+        name: 'apply_map',
         prop: {
           value: 'iZoneId',
           name: 'sZoneName',
@@ -141,6 +209,28 @@
         console.log(error);
       });
 
+      okUtils.ajax("/api/gm/zone/simplelist", "get", {map: true, all: true}, false).done(function (response) {
+        mapSelect.update({
+          data: response.data["map"],
+          initValue: apply_map.split(','),
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      $("#iSlg").attr("disabled", "disabled");
+      if (parent.editActivity.slg == 1) {
+        $("#iSlg").attr("checked", "checked");
+        form.render('checkbox');
+        $('#sApplyZone').addClass("layui-hide");
+        displaySelect($('#sApplyZone'), zoneSelect, true);
+        displaySelect($('#sApplyMap'), mapSelect, false);
+      } else {
+        $('#sApplyMap').addClass("layui-hide");
+        displaySelect($('#sApplyZone'), zoneSelect, false);
+        displaySelect($('#sApplyMap'), mapSelect, true);
+      }
+
       okUtils.ajax("/api/gm/activity/onlineZone", "get", {activity_id: parent.editActivity.id}, false).done(function (response) {
         let zones = response.data;
         if (zones) {
@@ -163,7 +253,15 @@
           });
           return false;
         }
-        if (data.field.apply_zone == '99999') {
+        if (parent.editActivity.slg != 1) {
+          if (data.field.apply_zone == '99999') {
+            data.field.apply_zone = '';
+          }
+          data.field.apply_map = '';
+        } else {
+          if (data.field.apply_map == '99999') {
+            data.field.apply_map = '';
+          }
           data.field.apply_zone = '';
         }
         data.field.iActivityId = parent.editActivity.id;
@@ -184,7 +282,19 @@
         if (locked) {
           readonly = '[只读]';
         }
-        okLayer.open("编辑配置"+readonly, "/gm/json.html", "90%", "90%", null, null);
+        okLayer.open("编辑配置"+readonly, "/gm/json.html", "90%", "90%", null, null, function (index, layero) { 
+	        let newValue = okUtils.jsonToString(json_editor.getValue());
+	        let oldValue = $(json_data).val();
+	        if (newValue == oldValue) {
+                  layer.close(index);
+                } else {
+  	          if (confirm('有修改未保存，确定要关闭么')) {
+                    layer.close(index);
+  	          } else {
+	            return false;
+	          }
+	        }
+      	});
       });
     });
   </script>

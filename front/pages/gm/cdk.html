@@ -53,16 +53,8 @@
               }
             }
           },
-          {
-            field: "iBeginTime", title: "开始时间", align: "center", width: 170, templet: function (d) {
-              return okUtils.dateFormat(new Date(d.iBeginTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            }
-          },
-          {
-            field: "iEndTime", title: "结束时间", align: "center", width: 170, templet: function (d) {
-              return okUtils.dateFormat(new Date(d.iEndTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-            }
-          },
+          { field: "sBeginTime", title: "开始时间", align: "center", width: 170 },
+          { field: "sEndTime", title: "结束时间", align: "center", width: 170 },
           //{ field: "sCustomLimit", title: "自定义限制", width: 120 },
           { field: "sZoneLimit", title: "可用分区", align: "center", width: 90, templet: function (d) {
             if (d.iActive == 1) {
