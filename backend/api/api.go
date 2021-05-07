@@ -171,5 +171,5 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/gm/res_num_err/err_info", gm.ResNumErrInfo)       // 资源数量获取异常异常信息
 	group.GET("/gm/res_num_err/err_detail", gm.ResNumErrDetail)
 
-	group.GET("/game/fight-verify/err_info", gm.FightErrInfo) // 战斗验证失败日志列表
+	group.GET("/game/fight-verify/err_info", game.FightErrInfo) // 战斗验证失败日志列表
 }

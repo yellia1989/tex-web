@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
 	"github.com/labstack/echo"
 	"github.com/yellia1989/tex-go/tools/log"
 	"github.com/yellia1989/tex-web/backend/cfg"
@@ -17,8 +16,6 @@ type fightVerifyErrInfo struct {
 	ErrTime         string `json:"err_time"`
 	ClientVerify    string `json:"client_verify"`
 	ServerVerify    string `json:"server_verify"`
-	ClientVerifyMd5 string `json:"client_verify_md5"`
-	ServerVerifyMd5 string `json:"server_verify_md5"`
 }
 
 type fightVerifyErrInfoBy []fightVerifyErrInfo
@@ -36,7 +33,7 @@ func (a fightVerifyErrInfoBy) Less(i, j int) bool {
 	return a[i].ErrTime > a[j].ErrTime
 }
 
-func ErrInfo(c echo.Context) error {
+func FightErrInfo(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	startTime := ctx.QueryParam("startTime")
 	endTime := ctx.QueryParam("endTime")
@@ -49,7 +46,7 @@ func ErrInfo(c echo.Context) error {
 
 	db := cfg.LogDb
 
-	sql := "SELECT timeymd, client_verify, server_verify, client_verify_md5, server_verify_md5 FROM fight_verify "
+	sql := "SELECT timeymd, client_verify, server_verify FROM fight_verify "
 	sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
 
 	log.Infof("sql: %s", sql)
@@ -60,10 +57,10 @@ func ErrInfo(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	slSimpleErrInfo := make([]fightVerifyErrInfo, 0)
+	slFightVerifyInfo := make([]fightVerifyErrInfo, 0)
 	for rows.Next() {
 		var r fightVerifyErrInfo
-		if err := rows.Scan(&r.ErrTime, &r.ClientVerify, &r.ServerVerify, &r.ClientVerifyMd5, &r.ServerVerifyMd5); err != nil {
+		if err := rows.Scan(&r.ErrTime, &r.ClientVerify, &r.ServerVerify); err != nil {
 			return err
 		}
 
@@ -75,16 +72,16 @@ func ErrInfo(c echo.Context) error {
 		r.ServerVerify = string(decodeBytes1)
 		r.ServerVerify = strings.Replace(r.ServerVerify, "\n", "<br>", -1)
 
-		slSimpleErrInfo = append(slSimpleErrInfo, r)
+		slFightVerifyInfo = append(slFightVerifyInfo, r)
 	}
 
 	if err := rows.Err(); err != nil {
 		return err
 	}
 
-	sort.Sort(fightVerifyErrInfoBy(slSimpleErrInfo))
+	sort.Sort(fightVerifyErrInfoBy(slFightVerifyInfo))
 
-	vSimpleErrInfo := common.GetPage(slSimpleErrInfo, page, limit)
+	vSimpleErrInfo := common.GetPage(slFightVerifyInfo, page, limit)
 
-	return ctx.SendArray(vSimpleErrInfo, len(slSimpleErrInfo))
+	return ctx.SendArray(vSimpleErrInfo, len(slFightVerifyInfo))
 }

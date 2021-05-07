@@ -54,7 +54,7 @@
     laydate.render({elem: "#startTime", type: "datetime", btns: ['clear', 'confirm'], value: lastweek.tz().format("YYYY-MM-DD HH:mm:ss")});
     laydate.render({elem: "#endTime", type: "datetime", btns: ['clear', 'confirm'], value: now.tz().format("YYYY-MM-DD HH:mm:ss")});
 
-    let stageTable = table.render({
+    let fightTable = table.render({
       elem: "#tableId",
       url: "/api/game/fight-verify/err_info",
       where: {startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss')},
@@ -65,35 +65,32 @@
       limit: 5,
       page: true,
       cols: [[
-        {field: "err_time", title: "错误时间", width:150, align: "center"},
-        {field: "client_verify_info", title: "客户端验证日志"},
-        {field: "server_verify_info", title: "服务器验证日志"},
+        {field: "err_time", title: "错误时间", width:200, align: "center"},
+        {field: "client_verify", title: "客户端验证日志"},
+        {field: "server_verify", title: "服务器验证日志"},
         {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
-      autoSort: false,
+      autoSort: false
     });
 
     table.on("tool(tableFilter)", function (obj) {
-      errInfoMd5 = obj.data.err_info_md5
-      clientVersion = obj.data.client_version
-      errInfo = obj.data.err_info
-      iStatus = obj.data.status
+      let exportData = new Array()
+      exportData.push(obj.data)
       switch (obj.event) {
-        case "detail":
-          download();
+        case "download":
+          download(exportData);
           break;
       }
     });
 
-    function download() {
-      okLayer.open("下载","client-err-detail.html", "90%", "90%", null, function () {
-      })
+    function download(exportData) {
+       table.exportFile(fightTable.config.id, exportData, 'xls');
     }
 
     form.on("submit(search)", function (data) {
-      stageTable.reload({
+      fightTable.reload({
         url: "/api/game/fight-verify/err_info",
         where: data.field,
         page: {
