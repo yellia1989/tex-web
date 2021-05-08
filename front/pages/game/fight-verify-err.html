@@ -62,12 +62,32 @@
       text: {
         none: '暂无相关数据',
       },
-      limit: 5,
+      limit: 10,
       page: true,
       cols: [[
         {field: "err_time", title: "错误时间", width:200, align: "center"},
-        {field: "client_verify", title: "客户端验证日志"},
-        {field: "server_verify", title: "服务器验证日志"},
+        {field: "report_id", title: "战报id"},
+        {field: "stage_id", title: "关卡id"},
+        {field: "role_id", title: "角色id"},
+        {field: "zone_id", title: "区服id"},
+        {
+          field: "fight_type", title: "战斗类型" , templet: function(d) {
+            let ret = ''
+            switch(d.fight_type) {
+              case 1: ret = '关卡挑战'; break;
+              case 2: ret = '树都竞技'; break;
+              case 3: ret = '黎明角斗场'; break;
+              case 4: ret = '隐秘地牢'; break;
+              case 7: ret = '圣山之巅'; break;
+              case 8: ret = '联盟远征'; break;
+              case 10: ret = '棱镜修炼场'; break;
+              case 11: ret = '章节挑战'; break;
+              default:
+                ret = d.fight_type;
+            }
+            return ret;
+          }
+        },
         {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
       ]],
       toolbar: true,
@@ -76,17 +96,35 @@
     });
 
     table.on("tool(tableFilter)", function (obj) {
-      let exportData = new Array()
-      exportData.push(obj.data)
+      reportId = obj.data.report_id
+      zoneId = obj.data.zone_id
+      fightType = obj.data.fight_type
       switch (obj.event) {
         case "download":
-          download(exportData);
+          download();
           break;
       }
     });
 
-    function download(exportData) {
-       table.exportFile(fightTable.config.id, exportData, 'xls');
+    function download() {
+      let cmd = ''
+      if (fightType != 11) {
+        cmd = "dump_fightreport_http" + " " + reportId;
+      } else {
+        cmd = "dump_chapterreport_http" + " " + reportId;
+      }
+      okUtils.ajax("/api/game/fight-verify/export", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId}, true).done(function (response) {
+        let names = new Array();
+        let rows = new Array();
+        names.push("服务器战报")
+        names.push("客户端日志")
+        names.push("服务器日志")
+        rows.push(response.data)
+
+        table.exportFile(names, rows);
+       }).fail(function (error) {
+         console.log(error);
+       });
     }
 
     form.on("submit(search)", function (data) {

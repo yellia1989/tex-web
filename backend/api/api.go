@@ -172,4 +172,5 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/gm/res_num_err/err_detail", gm.ResNumErrDetail)
 
 	group.GET("/game/fight-verify/err_info", game.FightErrInfo) // 战斗验证失败日志列表
+	group.POST("/game/fight-verify/export", game.FightExport) // 导出战斗日志
 }
