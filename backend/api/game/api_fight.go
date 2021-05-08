@@ -168,8 +168,11 @@ func FightExport(c echo.Context) error {
 
     sys.LogAdd(u.UserName, "gm", "[" + szoneid + "]>" + cmd)
 
+    splitLine := "\n\n==========================================================================\n\n"
+
     vString := make([]string, 0)
-    vString = append(vString, buff.String())
+    vString = append(vString, " ========\n|| 服务器战报 ||\n ========\n\n")
+    vString = append(vString, buff.String() + splitLine)
 
     db := cfg.LogDb
     var sql string
@@ -201,9 +204,10 @@ func FightExport(c echo.Context) error {
             clientLog = Log;
         }
     }
-
-    vString = append(vString, clientLog)
-    vString = append(vString, serverLog)
+    vString = append(vString, " ========\n|| 客户端日志 ||\n ========\n\n")
+    vString = append(vString, clientLog + splitLine)
+    vString = append(vString, " ========\n|| 服务器日志 ||\n ========\n\n")
+    vString = append(vString, serverLog + splitLine)
 
     return ctx.SendResponse(vString)
 }

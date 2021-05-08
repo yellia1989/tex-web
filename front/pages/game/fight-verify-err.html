@@ -115,14 +115,22 @@
         cmd = "dump_chapterreport_http" + " " + reportId;
       }
       okUtils.ajax("/api/game/fight-verify/export", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, logmd5: logMd5}, true).done(function (response) {
-        let names = new Array();
-        let rows = new Array();
-        names.push("服务器战报")
-        names.push("客户端日志")
-        names.push("服务器日志")
-        rows.push(response.data)
+        // 创建a标签
+        var elementA = document.createElement('a');
 
-        table.exportFile(names, rows);
+        //文件的名称为时间戳加文件名后缀
+        elementA.download = +new Date() + ".txt";
+        elementA.style.display = 'none';
+
+        //生成一个blob二进制数据，内容为json数据
+        var blob = new Blob(response.data);
+
+        //生成一个指向blob的URL地址，并赋值给a标签的href属性
+        elementA.href = URL.createObjectURL(blob);
+        document.body.appendChild(elementA);
+        elementA.click();
+        document.body.removeChild(elementA);
+
        }).fail(function (error) {
          console.log(error);
        });
