@@ -22,6 +22,7 @@ type fightVerifyErrInfo struct {
     RoleId          uint32 `json:"role_id"`
     ZoneId          uint32 `json:"zone_id"`
     FightType       uint32 `json:"fight_type"`
+    LogMd5          string `json:"log_md5"`
 }
 
 type fightVerifyErrInfoBy []fightVerifyErrInfo
@@ -52,8 +53,9 @@ func FightErrInfo(c echo.Context) error {
 
     db := cfg.LogDb
 
-    sql := "SELECT time, report_id, stage_id, role_id, zone_id, fight_type FROM fight_verify "
-    sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
+    sql := "SELECT time, report_id, stage_id, role_id, zone_id, fight_type, log_md5 FROM fight_verify_error "
+    sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
+    sql += "AND is_server=1"
 
     log.Infof("sql: %s", sql)
 
@@ -66,7 +68,7 @@ func FightErrInfo(c echo.Context) error {
     slFightVerifyInfo := make([]fightVerifyErrInfo, 0)
     for rows.Next() {
         var r fightVerifyErrInfo
-        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType); err != nil {
+        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5); err != nil {
             return err
         }
 
@@ -77,6 +79,28 @@ func FightErrInfo(c echo.Context) error {
         return err
     }
 
+    sql = "SELECT time, report_id, stage_id, role_id, zone_id, fight_type FROM chapter_verify_error "
+    sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
+    sql += "AND is_server=1"
+
+    rows1, err1 := db.Query(sql)
+    if err1 != nil {
+        return err1
+    }
+    defer rows1.Close()
+
+    for rows1.Next() {
+        var r fightVerifyErrInfo
+        if err := rows1.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType); err != nil {
+            return err
+        }
+
+        slFightVerifyInfo = append(slFightVerifyInfo, r)
+    }
+
+    if err := rows.Err(); err != nil {
+        return err
+    }
     sort.Sort(fightVerifyErrInfoBy(slFightVerifyInfo))
 
     vSimpleErrInfo := common.GetPage(slFightVerifyInfo, page, limit)
@@ -88,7 +112,8 @@ func FightExport(c echo.Context) error {
     ctx := c.(*mid.Context)
     szoneid := ctx.FormValue("zoneids")
     cmd := strings.ReplaceAll(strings.TrimSpace(ctx.FormValue("cmd")), "\t", " ")
-    reportid, _ := strconv.Atoi(ctx.FormValue("reportid"))
+    reportid := ctx.FormValue("reportid")
+    logmd5 := ctx.FormValue("logmd5")
     fightType, _ := strconv.Atoi(ctx.FormValue("fighttype"))
 
     if szoneid == "" || cmd == "" {
@@ -150,27 +175,35 @@ func FightExport(c echo.Context) error {
     var sql string
 
     if (fightType != 11) {
-      sql = "SELECT client_log, server_log FROM fight_verify WHERE report_id = ?"
+      sql = "SELECT log, is_server FROM fight_verify_error WHERE log_md5 = '" + logmd5 + "' "
     } else {
-      sql = "SELECT client_log, server_log FROM chapter_verify WHERE report_id = ?"
+      sql = "SELECT log, is_server FROM chapter_verify_error WHERE report_id = '" + reportid + "' "
     }
 
-    rows, err := db.Query(sql, reportid)
+    rows, err := db.Query(sql)
     if err != nil {
         return err
     }
     defer rows.Close()
 
+    var clientLog string
+    var serverLog string
     for rows.Next() {
-        var clientLog string
-        var serverLog string
-        if err := rows.Scan(&clientLog, &serverLog); err != nil {
+        var Log string
+        var bServer uint32
+        if err := rows.Scan(&Log, &bServer); err != nil {
             return err
         }
 
-        vString = append(vString, clientLog)
-        vString = append(vString, serverLog)
+        if bServer == 1 {
+            serverLog = Log;
+        } else {
+            clientLog = Log;
+        }
     }
+
+    vString = append(vString, clientLog)
+    vString = append(vString, serverLog)
 
     return ctx.SendResponse(vString)
 }
