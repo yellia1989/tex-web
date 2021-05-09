@@ -46,13 +46,13 @@
           }},
           { field: "vItems", title: "发送道具", templet: function (d) {
               let result = ""
+              if(d.iCoin > 0){
+                 result += "金币:" + d.iCoin + "\n";
+              }
+              if(d.iDiamond > 0){
+                result += "钻石:" + d.iDiamond + "\n";
+              }
               d.vItems.forEach((item,index,array)=>{
-                if(item.iCoin > 0){
-                  result += "金币:" + item.iCoin + "\n";
-                }
-                if(item.iDiamond > 0){
-                  result += "钻石:" + item.iDiamond + "\n";
-                }
                 result += "道具ID:"+item.iId;
                 result += ",数量:"+item.iNum + "\n";
               })
