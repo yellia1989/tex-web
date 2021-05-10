@@ -987,6 +987,34 @@
           3,
           4
         ]
+      },
+      {
+        "id": 1004,
+        "title": "战斗验证失败报警",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 100401,
+            "title": "战斗验证失败日志",
+            "href": "game/fight-verify-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
       }
     ],
     "role": [
