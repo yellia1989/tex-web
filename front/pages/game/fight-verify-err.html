@@ -119,7 +119,7 @@
         var elementA = document.createElement('a');
 
         //文件的名称为时间戳加文件名后缀
-        elementA.download = +new Date() + ".txt";
+        elementA.download = + reportId + ".txt";
         elementA.style.display = 'none';
 
         //生成一个blob二进制数据，内容为json数据

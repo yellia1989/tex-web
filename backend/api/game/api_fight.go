@@ -3,6 +3,7 @@ package game
 import (
     "sort"
     "strings"
+    "encoding/base64"
     "strconv"
     "fmt"
     "github.com/labstack/echo"
@@ -53,7 +54,7 @@ func FightErrInfo(c echo.Context) error {
 
     db := cfg.LogDb
 
-    sql := "SELECT time, report_id, stage_id, role_id, zone_id, fight_type, log_md5 FROM fight_verify_error "
+    sql := "SELECT time, report_id, stage_id, roleid, zoneid, fight_type, log_md5 FROM fight_verify_error "
     sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
     sql += "AND is_server=1"
 
@@ -79,7 +80,7 @@ func FightErrInfo(c echo.Context) error {
         return err
     }
 
-    sql = "SELECT time, report_id, stage_id, role_id, zone_id, fight_type FROM chapter_verify_error "
+    sql = "SELECT time, report_id, stage_id, roleid, zoneid, fight_type FROM chapter_verify_error "
     sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
     sql += "AND is_server=1"
 
@@ -192,16 +193,21 @@ func FightExport(c echo.Context) error {
     var clientLog string
     var serverLog string
     for rows.Next() {
-        var Log string
+        var log string
         var bServer uint32
-        if err := rows.Scan(&Log, &bServer); err != nil {
+        if err := rows.Scan(&log, &bServer); err != nil {
             return err
         }
 
+        if (fightType != 11) {
+            decodeBytes, _ := base64.StdEncoding.DecodeString(log)
+            log = string(decodeBytes)
+        }
+
         if bServer == 1 {
-            serverLog = Log;
+            serverLog = log;
         } else {
-            clientLog = Log;
+            clientLog = log;
         }
     }
     vString = append(vString, " ========\n|| 客户端日志 ||\n ========\n\n")
