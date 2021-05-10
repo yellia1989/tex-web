@@ -100,6 +100,7 @@
       zoneId = obj.data.zone_id
       fightType = obj.data.fight_type
       logMd5 = obj.data.log_md5
+      mapId = obj.data.map_id
       switch (obj.event) {
         case "download":
           download();
@@ -114,7 +115,7 @@
       } else {
         cmd = "dump_chapterreport_http" + " " + reportId;
       }
-      okUtils.ajax("/api/game/fight-verify/export", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, logmd5: logMd5}, true).done(function (response) {
+      okUtils.ajax("/api/game/fight-verify/export", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, logmd5: logMd5, mapids: mapId}, true).done(function (response) {
         // 创建a标签
         var elementA = document.createElement('a');
 

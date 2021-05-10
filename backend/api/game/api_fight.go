@@ -24,6 +24,7 @@ type fightVerifyErrInfo struct {
     ZoneId          uint32 `json:"zone_id"`
     FightType       uint32 `json:"fight_type"`
     LogMd5          string `json:"log_md5"`
+    MapId           uint32 `json:"map_id"`
 }
 
 type fightVerifyErrInfoBy []fightVerifyErrInfo
@@ -54,7 +55,7 @@ func FightErrInfo(c echo.Context) error {
 
     db := cfg.LogDb
 
-    sql := "SELECT time, report_id, stage_id, roleid, zoneid, fight_type, log_md5 FROM fight_verify_error "
+    sql := "SELECT time, report_id, stage_id, roleid, zoneid, fight_type, log_md5, mapid FROM fight_verify_error "
     sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
     sql += "AND is_server=1"
 
@@ -69,7 +70,7 @@ func FightErrInfo(c echo.Context) error {
     slFightVerifyInfo := make([]fightVerifyErrInfo, 0)
     for rows.Next() {
         var r fightVerifyErrInfo
-        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5); err != nil {
+        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5, &r.MapId); err != nil {
             return err
         }
 
@@ -116,9 +117,14 @@ func FightExport(c echo.Context) error {
     reportid := ctx.FormValue("reportid")
     logmd5 := ctx.FormValue("logmd5")
     fightType, _ := strconv.Atoi(ctx.FormValue("fighttype"))
+    smapid := ctx.FormValue("mapids")
 
     if szoneid == "" || cmd == "" {
         return ctx.SendError(-1, "参数非法")
+    }
+
+    if (fightType == 8) {
+        szoneid = smapid;
     }
 
     buff := bytes.Buffer{}
