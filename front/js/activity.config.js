@@ -588,6 +588,49 @@
         name: '免费福利',
         fieldOption: {
             comm_param: {
+                quest:{
+                    name: '任务',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: '任务ID',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        condition: {
+                            name: '条件类型',
+                            type: 'select',
+                            options: {
+                                1: '购买月卡',
+                                2: '通关关卡'
+                            }
+                        },
+                        cond_param: {
+                            name: '条件值',
+                            type: 'text',
+                            parser: parseInt
+                        },
+                        type : {
+                            name: 'BUFF类型',
+                            type: 'select',
+                            options: {
+                                '1': '免费英雄招募速度',
+                            },
+                            parser: parseInt
+                        },
+                        value: {
+                            name: '加成值',
+                            type: 'text',
+                            parser: parseInt
+                        },
+                        effectTime: {
+                            name: '生效时间(秒)',
+                            type: 'text',
+                            parser: parseInt
+                        }
+                    }
+                },
                 reward: {
                    name: '奖励:id,num',
                    type: 'longtext',
