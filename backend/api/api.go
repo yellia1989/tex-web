@@ -135,8 +135,12 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
     group.GET("/game/recharge/trace", game.RechargeTrace)
     group.GET("/game/recharge/receipt", gm.IAPDetail)
-    group.GET("/game/client_err/err_info", game.ErrInfo)     // 客户端报错信息
-    group.GET("/game/client_err/err_detail", game.ErrDetail) // 错误信息详情
+    group.GET("/game/client_err/err_info", game.ErrInfo)                 // 客户端报错信息
+    group.GET("/game/client_err/err_detail", game.ErrDetail)             // 错误信息详情
+    group.POST("/game/client_err/dispose", game.ErrDispose)              // 客户端错误开始处理
+    group.GET("/game/client_err/dispose_info", game.DisposeList)         // 获取处理情况列表
+    group.POST("/game/client_err/add_dispose_note", game.AddDisposeNote) // 增加错误处理备注
+    group.POST("/game/client_err/dispose_finish", game.FinishDispose)    // 错误处理完成
 
     group.GET("/game/chat/getnewest", game.ChatGetNewest)
     group.GET("/game/chat/gethistory", game.ChatGetHistory)
@@ -155,15 +159,19 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/stat/zone/list", stat.ZoneList)
     group.GET("/stat/date/marklist", stat.MarkList)
 
-    group.GET("/gm/res/list", gm.ResControlList)
-    group.GET("/gm/res/actionlist", gm.ActionList)
-    group.POST("/gm/res/add", gm.ActionAdd)
-    group.POST("/gm/res/edit", gm.ActionEdit)
-    group.POST("/gm/res/del", gm.ActionDel)
-    group.GET("/gm/res_err/err_info", gm.ResErrInfo)
+    group.GET("/gm/res/list", gm.ResControlList)     // 资源监控列表
+    group.GET("/gm/res/actionlist", gm.ActionList)   // 资源获取途径监控列表
+    group.POST("/gm/res/add", gm.ActionAdd)          // 增加资源监控项
+    group.POST("/gm/res/edit", gm.ActionEdit)        // 编辑资源监控项
+    group.POST("/gm/res/del", gm.ActionDel)          // 删除资源监控项
+    group.GET("/gm/res_err/err_info", gm.ResErrInfo) // 资源获取途径异常信息
     group.GET("/gm/res_err/err_detail", gm.ResErrDetail)
-    group.POST("/gm/res/add_res_control", gm.ResAppendResControl)
-    group.POST("/gm/res/add_res_action", gm.ResAppendAction)
-    group.GET("/gm/res_num_err/err_info", gm.ResNumErrInfo)
+    group.POST("/gm/res/add_res_control", gm.ResAppendResControl) // 增加资源获取途径
+    group.POST("/gm/res/add_res_action", gm.ResAppendAction)      // 增加获取途径项
+    group.GET("/gm/res_num_err/err_info", gm.ResNumErrInfo)       // 资源数量获取异常异常信息
     group.GET("/gm/res_num_err/err_detail", gm.ResNumErrDetail)
+
+    group.GET("/game/fight-verify/err_info", game.FightErrInfo) // 战斗验证失败日志列表
+    group.POST("/game/fight-verify/export-report", game.FightExportReport) // 导出战斗日志
+    group.POST("/game/fight-verify/export-log", game.FightExportLog) // 导出战斗日志
 }

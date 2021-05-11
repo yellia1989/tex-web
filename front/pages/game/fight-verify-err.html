@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>战斗验证失败记录</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+  <form class="layui-form">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+        <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+        </div>
+        <div class="layui-input-inline">
+          <input class="layui-input" lay-verify="required" lay-verType="tips" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+        </div>
+        <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="search" id="search">
+            <i class="layui-icon layui-icon-refresh-3"></i>
+          </button>
+        </div>
+      </div>
+  </form>
+  <table id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="/lib/layui/layui.js"></script>
+<script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/utc.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/timezone.js"></script>
+
+<script>
+  var zoneid;
+  layui.use(["table", "okUtils", "form", "okLayer", "laydate", "okCookie"], function () {
+    let table = layui.table;
+    let okUtils = layui.okUtils;
+    let form = layui.form;
+    let okLayer = layui.okLayer;
+    let $ = layui.jquery;
+    let laydate = layui.laydate
+    okLoading.close();
+
+    dayjs.extend(window.dayjs_plugin_utc);
+    dayjs.extend(window.dayjs_plugin_timezone);
+    dayjs.tz.setDefault($.cookie("timezone"));
+
+    let now = dayjs();
+    let lastweek = dayjs().subtract(7, 'day');
+    laydate.render({elem: "#startTime", type: "datetime", btns: ['clear', 'confirm'], value: lastweek.tz().format("YYYY-MM-DD HH:mm:ss")});
+    laydate.render({elem: "#endTime", type: "datetime", btns: ['clear', 'confirm'], value: now.tz().format("YYYY-MM-DD HH:mm:ss")});
+
+    let fightTable = table.render({
+      elem: "#tableId",
+      url: "/api/game/fight-verify/err_info",
+      where: {startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss')},
+      data:[],
+      text: {
+        none: '暂无相关数据',
+      },
+      limit: 10,
+      page: true,
+      cols: [[
+        {field: "err_time", title: "错误时间", width:200, align: "center"},
+        {field: "report_id", title: "战报id"},
+        {field: "stage_id", title: "关卡id"},
+        {field: "role_id", title: "角色id"},
+        {field: "zone_id", title: "区服id"},
+        {
+          field: "fight_type", title: "战斗类型" , templet: function(d) {
+            let ret = ''
+            switch(d.fight_type) {
+              case 1: ret = '关卡挑战'; break;
+              case 2: ret = '树都竞技'; break;
+              case 3: ret = '黎明角斗场'; break;
+              case 4: ret = '隐秘地牢'; break;
+              case 7: ret = '圣山之巅'; break;
+              case 8: ret = '联盟远征'; break;
+              case 10: ret = '棱镜修炼场'; break;
+              case 11: ret = '章节挑战'; break;
+              default:
+                ret = d.fight_type;
+            }
+            return ret;
+          }
+        },
+        {title: "操作", width: 150, align: "center", templet: "#operationTpl", fixed: 'right'}
+      ]],
+      toolbar: true,
+      defaultToolbar: ['filter', 'print', 'exports'],
+      autoSort: false
+    });
+
+    table.on("tool(tableFilter)", function (obj) {
+      reportId = obj.data.report_id
+      zoneId = obj.data.zone_id
+      fightType = obj.data.fight_type
+      logMd5 = obj.data.log_md5
+      mapId = obj.data.map_id
+      switch (obj.event) {
+        case "downloadReport":
+          downloadReport();
+          break;
+        case "downloadLog":
+          downloadLog();
+          break;
+      }
+    });
+
+    function downloadReport() {
+      let cmd = ''
+      if (fightType != 11) {
+        cmd = "dump_fightreport_http" + " " + reportId;
+      } else {
+        cmd = "dump_chapterreport_http" + " " + reportId;
+      }
+      okUtils.ajax("/api/game/fight-verify/export-report", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, mapids: mapId}, true).done(function (response) {
+        // 创建a标签
+        var elementA = document.createElement('a');
+
+        //文件的名称为时间戳加文件名后缀
+        elementA.download = + reportId + "-战报" + ".txt";
+        elementA.style.display = 'none';
+
+        //生成一个blob二进制数据，内容为json数据
+        var blob = new Blob(response.data);
+
+        //生成一个指向blob的URL地址，并赋值给a标签的href属性
+        elementA.href = URL.createObjectURL(blob);
+        document.body.appendChild(elementA);
+        elementA.click();
+        document.body.removeChild(elementA);
+
+       }).fail(function (error) {
+         console.log(error);
+       });
+    }
+
+    function downloadLog() {
+        okUtils.ajax("/api/game/fight-verify/export-log", "post", { fighttype: fightType, reportid: reportId, logmd5: logMd5 }, true).done(function (response) {
+        // 创建a标签
+        var elementA = document.createElement('a');
+
+        //文件的名称为时间戳加文件名后缀
+        elementA.download = + reportId + "-日志" + ".txt";
+        elementA.style.display = 'none';
+
+        //生成一个blob二进制数据，内容为json数据
+        var blob = new Blob(response.data);
+
+        //生成一个指向blob的URL地址，并赋值给a标签的href属性
+        elementA.href = URL.createObjectURL(blob);
+        document.body.appendChild(elementA);
+        elementA.click();
+        document.body.removeChild(elementA);
+
+       }).fail(function (error) {
+         console.log(error);
+       });
+    }
+
+    form.on("submit(search)", function (data) {
+      fightTable.reload({
+        url: "/api/game/fight-verify/err_info",
+        where: data.field,
+        page: {
+            curr: 1,
+        }
+      });
+      return false;
+    });
+  })
+</script>
+<script type="text/html" id="operationTpl">
+  <div class="layui-btn-group">
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadReport">下载战报</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadLog">下载日志</button>
+  </div>
+</script>
+</body>
+<style>
+    .layui-table-cell {
+        height:auto;
+    }
+    .layui-table-tips-main{
+        height:auto;
+        line-height: 30px;
+    }
+</style>
+</html>

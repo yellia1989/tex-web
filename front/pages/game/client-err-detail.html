@@ -29,7 +29,7 @@
     let detailTable = table.render({
       elem: "#tableId",
       url: "/api/game/client_err/err_detail",
-      where: { ErrInfo: parent.errInfoMd5, ErrTime: parent.errTime, ClientVersion: parent.clientVersion },
+      where: { ErrInfo: parent.errInfoMd5, ClientVersion: parent.clientVersion },
       data:[],
       text: {
         none: '暂无相关数据',
@@ -37,7 +37,7 @@
       limit: 10,
       page: true,
       cols: [[
-        {field: "err_time", title: "报错时间", width: 150, align: "center"},
+        {field: "err_time", title: "报错时间", width: 200, align: "center"},
         {field: "zone_id", title: "区服id", align: "center"},
         {field: "role_id", title: "角色id", align: "center"},
       ]],

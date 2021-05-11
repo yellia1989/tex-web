@@ -933,7 +933,7 @@
         ]
       },
       {
-        "id": 102,
+        "id": 1002,
         "title": "资源数量报错信息",
         "href": "gm/res-num-err.html",
         "fontFamily": "ok-icon",
@@ -947,14 +947,70 @@
         ]
       },
       {
-        "id": 103,
-        "title": "客户端报错信息",
-        "href": "game/client-err.html",
+        "id": 1003,
+        "title": "客户端报错管理",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
+        "children": [
+          {
+            "id": 100302,
+            "title": "客户端报错信息",
+            "href": "game/client-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          },
+          {
+            "id": 100302,
+            "title": "客户端报错处理",
+            "href": "game/client-err-dispose.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
+        "role": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": 1004,
+        "title": "战斗验证失败报警",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 100401,
+            "title": "战斗验证失败日志",
+            "href": "game/fight-verify-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "&#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null,
+            "role": [
+              3,
+              4
+            ]
+          }
+        ],
         "role": [
           3,
           4

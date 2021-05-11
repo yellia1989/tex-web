@@ -379,7 +379,12 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                help_id : {
+                    name: '帮助提示',
+                    type: 'text',
                 }
+
             }
         }
     };
@@ -1442,6 +1447,10 @@
                 },
                 recommond: {
                     name: '焦点参数(秒)',
+                    type: 'text',
+                },
+                help_id : {
+                    name: '帮助提示',
                     type: 'text',
                 }
             }
