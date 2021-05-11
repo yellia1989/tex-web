@@ -110,12 +110,10 @@ func FightErrInfo(c echo.Context) error {
     return ctx.SendArray(vSimpleErrInfo, len(slFightVerifyInfo))
 }
 
-func FightExport(c echo.Context) error {
+func FightExportReport(c echo.Context) error {
     ctx := c.(*mid.Context)
     szoneid := ctx.FormValue("zoneids")
     cmd := strings.ReplaceAll(strings.TrimSpace(ctx.FormValue("cmd")), "\t", " ")
-    reportid := ctx.FormValue("reportid")
-    logmd5 := ctx.FormValue("logmd5")
     fightType, _ := strconv.Atoi(ctx.FormValue("fighttype"))
     smapid := ctx.FormValue("mapids")
 
@@ -171,18 +169,32 @@ func FightExport(c echo.Context) error {
         }
         result = fmt.Sprintf("ret:%s, err:%s\n", rpc.ErrorCode(ret), serr)
     }
+
     buff.WriteString(result+"\n")
+
+    index := strings.Index(buff.String(), "\n");
+
+    resultString := buff.String()[index + 1:]
 
     sys.LogAdd(u.UserName, "gm", "[" + szoneid + "]>" + cmd)
 
-    splitLine := "\n\n==========================================================================\n\n"
-
     vString := make([]string, 0)
-    vString = append(vString, " ========\n|| 服务器战报 ||\n ========\n\n")
-    vString = append(vString, buff.String() + splitLine)
+    vString = append(vString, resultString)
+
+    return ctx.SendResponse(vString)
+}
+
+func FightExportLog(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    reportid := ctx.FormValue("reportid")
+    logmd5 := ctx.FormValue("logmd5")
+    fightType, _ := strconv.Atoi(ctx.FormValue("fighttype"))
+
+    splitLine := "\n\n==========================================================================\n\n"
 
     db := cfg.LogDb
     var sql string
+    vString := make([]string, 0)
 
     if (fightType != 11) {
       sql = "SELECT log, is_server FROM fight_verify_error WHERE log_md5 = '" + logmd5 + "' "
