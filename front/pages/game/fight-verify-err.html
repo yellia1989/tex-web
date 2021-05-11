@@ -102,20 +102,23 @@
       logMd5 = obj.data.log_md5
       mapId = obj.data.map_id
       switch (obj.event) {
-        case "download":
-          download();
+        case "downloadReport":
+          downloadReport();
+          break;
+        case "downloadLog":
+          downloadLog();
           break;
       }
     });
 
-    function download() {
+    function downloadReport() {
       let cmd = ''
       if (fightType != 11) {
         cmd = "dump_fightreport_http" + " " + reportId;
       } else {
         cmd = "dump_chapterreport_http" + " " + reportId;
       }
-      okUtils.ajax("/api/game/fight-verify/export", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, logmd5: logMd5, mapids: mapId}, true).done(function (response) {
+      okUtils.ajax("/api/game/fight-verify/export-report", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, mapids: mapId}, true).done(function (response) {
         // 创建a标签
         var elementA = document.createElement('a');
 
@@ -137,6 +140,30 @@
        });
     }
 
+    function downloadLog() {
+        okUtils.ajax("/api/game/fight-verify/export-log", "post", { fighttype: fightType, reportid: reportId, logmd5: logMd5 }, true).done(function (response) {
+        // 创建a标签
+        var elementA = document.createElement('a');
+
+        //文件的名称为时间戳加文件名后缀
+        elementA.download = + reportId + ".txt";
+        elementA.style.display = 'none';
+
+        //生成一个blob二进制数据，内容为json数据
+        var blob = new Blob(response.data);
+
+        //生成一个指向blob的URL地址，并赋值给a标签的href属性
+        elementA.href = URL.createObjectURL(blob);
+        document.body.appendChild(elementA);
+        elementA.click();
+        document.body.removeChild(elementA);
+
+       }).fail(function (error) {
+         console.log(error);
+       });
+    }
+
+
     form.on("submit(search)", function (data) {
       fightTable.reload({
         url: "/api/game/fight-verify/err_info",
@@ -151,7 +178,8 @@
 </script>
 <script type="text/html" id="operationTpl">
   <div class="layui-btn-group">
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="download">下载战报</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadReport">下载战报</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadLog">下载日志</button>
   </div>
 </script>
 </body>
