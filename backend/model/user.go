@@ -99,7 +99,7 @@ func GetUser(id uint32) *User {
         return nil
     }
     user := &User{}
-    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from system_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from sys_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
         return nil
     }
     return user
@@ -115,7 +115,7 @@ func GetUserByUserName(username string) *User {
         return nil
     }
     user := &User{}
-    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from system_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from sys_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
         return nil
     }
     return user
@@ -126,7 +126,7 @@ func GetUsers() []*User {
     if db == nil {
         return nil
     }
-    rows, err := db.Query("select id,username,password,role,need_login,allow_gm_cmd from system_user")
+    rows, err := db.Query("select id,username,password,role,need_login,allow_gm_cmd from sys_user")
     if err!=nil{
         return nil
     }
@@ -163,7 +163,7 @@ func AddUser(username string, password string, role uint32,allowGmCmd string) *U
     if !u.EncodePwd(password) {
         return nil
     }
-    _,err := db.Exec("insert into system_user(username,password,role,allow_gm_cmd) values(?,?,?,?)",u.UserName,u.Password,u.Role,allowGmCmd)
+    _,err := db.Exec("insert into sys_user(username,password,role,allow_gm_cmd) values(?,?,?,?)",u.UserName,u.Password,u.Role,allowGmCmd)
     if err!=nil{
         return nil
     }
@@ -175,7 +175,7 @@ func DelUser(u *User) bool {
     if db == nil {
         return false
     }
-    _,err := db.Exec("delete from system_user where id = ?",u.Id)
+    _,err := db.Exec("delete from sys_user where id = ?",u.Id)
     if err!=nil{
         return false
     }
@@ -187,7 +187,7 @@ func ResetUserNeedReLogin(id uint32) bool {
     if db == nil {
         return false
     }
-    _,err := db.Exec("update system_user set need_login = 0 where id = ?",id)
+    _,err := db.Exec("update sys_user set need_login = 0 where id = ?",id)
     if err!=nil {
         return false
     }
@@ -199,7 +199,7 @@ func UpdateUser(u *User) bool {
     if db == nil {
         return false
     }
-    _,err := db.Exec("update system_user set password = ?,role = ?,need_login = 1,allow_gm_cmd=? where id = ?",u.Password,u.Role,u.AllowGmCmd,u.Id)
+    _,err := db.Exec("update sys_user set password = ?,role = ?,need_login = 1,allow_gm_cmd=? where id = ?",u.Password,u.Role,u.AllowGmCmd,u.Id)
     if err!=nil {
         return false
     }
@@ -211,7 +211,7 @@ func DelAllUser() bool {
     if db == nil {
         return false
     }
-    _,err := db.Exec("delete from system_user")
+    _,err := db.Exec("delete from sys_user")
     if err!=nil {
         return false
     }
@@ -227,7 +227,7 @@ func DelUserRole(roles []uint32) {
     for _,v := range roles{
        roleStr = append(roleStr,strconv.FormatUint(uint64(v),10))
     }
-    sql := "update system_user set role = 0 where role in (%s)"
+    sql := "update sys_user set role = 0 where role in (%s)"
     ids := strings.Join(roleStr,",")
     sql = fmt.Sprintf(sql,ids)
     _,err := db.Exec(sql)

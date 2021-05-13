@@ -60,7 +60,7 @@ func GetRoles() []*Role {
         return nil
     }
 
-    rows, err := db.Query("select id,name,(select group_concat(perm_id) from role_perm where role_id = r.id) as perms from system_role r")
+    rows, err := db.Query("select id,name,(select group_concat(perm_id) from sys_role_perm where role_id = r.id) as perms from sys_role r")
     if err!=nil {
         return nil
     }
@@ -89,7 +89,7 @@ func GetRole(id uint32) *Role {
 
     role := &Role{}
     var nullStr sql.NullString
-    if err:=db.QueryRow("select id,name,(select group_concat(perm_id) from role_perm where role_id = r.id) as perms from system_role r where id = ?",id).Scan(&role.Id,&role.Name,&nullStr);err!=nil{
+    if err:=db.QueryRow("select id,name,(select group_concat(perm_id) from sys_role_perm where role_id = r.id) as perms from sys_role r where id = ?",id).Scan(&role.Id,&role.Name,&nullStr);err!=nil{
         return nil
     }
     if nullStr.Valid {
@@ -106,7 +106,7 @@ func AddRole(name string, perms []uint32) *Role {
     }
 
     role := &Role{}
-    if err:=db.QueryRow("select id from system_role where name = ?",name).Scan(&role.Id);err==nil{
+    if err:=db.QueryRow("select id from sys_role where name = ?",name).Scan(&role.Id);err==nil{
         return nil
     }
 
@@ -120,7 +120,7 @@ func AddRole(name string, perms []uint32) *Role {
         return nil
     }
 
-    result,err := tx.Exec("insert into system_role(name) values(?)", r.Name)
+    result,err := tx.Exec("insert into sys_role(name) values(?)", r.Name)
     if err!=nil {
         tx.Rollback()
         return nil
@@ -132,7 +132,7 @@ func AddRole(name string, perms []uint32) *Role {
     }
     r.Id = uint32(insertId)
     for _,v:= range r.Perms {
-        _,err := tx.Exec("insert into role_perm(role_id,perm_id) values(?,?)", r.Id,v)
+        _,err := tx.Exec("insert into sys_role_perm(role_id,perm_id) values(?,?)", r.Id,v)
         if err!=nil {
             tx.Rollback()
             return nil
@@ -155,12 +155,12 @@ func DelRole(r *Role) bool {
     if err!= nil {
         return false
     }
-    _,err = tx.Exec("delete from system_role where id = ?",r.Id)
+    _,err = tx.Exec("delete from sys_role where id = ?",r.Id)
     if err!=nil {
         tx.Rollback()
         return false
     }
-    _,err = tx.Exec("delete from role_perm where role_id = ?",r.Id)
+    _,err = tx.Exec("delete from sys_role_perm where role_id = ?",r.Id)
     if err!=nil {
         tx.Rollback()
         return false
@@ -182,18 +182,18 @@ func UpdateRole(r *Role) bool {
     if err!= nil {
         return false
     }
-    _,err = tx.Exec("update system_role set name = ? where id = ?",r.Name,r.Id)
+    _,err = tx.Exec("update sys_role set name = ? where id = ?",r.Name,r.Id)
     if err!=nil {
         tx.Rollback()
         return false
     }
-    _,err = tx.Exec("delete from role_perm where role_id = ?",r.Id)
+    _,err = tx.Exec("delete from sys_role_perm where role_id = ?",r.Id)
     if err!=nil {
         tx.Rollback()
         return false
     }
     for _,v:= range r.Perms {
-        _,err := tx.Exec("insert into role_perm(role_id,perm_id) values(?,?)", r.Id,v)
+        _,err := tx.Exec("insert into sys_role_perm(role_id,perm_id) values(?,?)", r.Id,v)
         if err!=nil {
             tx.Rollback()
             return false
@@ -216,7 +216,7 @@ func DelRolePerm(perms []uint32) {
     for _,v := range perms {
         permStr = append(permStr,strconv.FormatUint(uint64(v),10))
     }
-    sql := "delete role_perm where perm_id in  (%s)"
+    sql := "delete sys_role_perm where perm_id in  (%s)"
     ids := strings.Join(permStr,",")
     sql = fmt.Sprintf(sql,ids)
     db.Exec(sql)

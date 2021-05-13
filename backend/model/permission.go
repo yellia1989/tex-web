@@ -67,7 +67,7 @@ func GetPerms() []*Permission {
         return nil
     }
 
-    rows, err := db.Query("select id,name,paths from system_perms")
+    rows, err := db.Query("select id,name,paths from sys_perms")
     if err!=nil {
         return nil
     }
@@ -89,7 +89,7 @@ func GetPerm(id uint32) *Permission {
         return nil
     }
     perm := &Permission{}
-    if err:=db.QueryRow("select id,name,paths from system_perms where id = ?",id).Scan(&perm.Id,&perm.Name,&perm.PathString);err!=nil{
+    if err:=db.QueryRow("select id,name,paths from sys_perms where id = ?",id).Scan(&perm.Id,&perm.Name,&perm.PathString);err!=nil{
         return nil
     }
     perm.InitPath()
@@ -116,7 +116,7 @@ func AddPerm(name string, paths []string) *Permission {
     }
 
     perm := &Permission{}
-    if err:=db.QueryRow("select id from system_perms where name = ?",name).Scan(&perm.Id);err==nil {
+    if err:=db.QueryRow("select id from sys_perms where name = ?",name).Scan(&perm.Id);err==nil {
         return nil
     }
 
@@ -125,7 +125,7 @@ func AddPerm(name string, paths []string) *Permission {
         Paths: paths,
     }
     p.StringifyPath()
-    _,err := db.Exec("insert into system_perms(name,paths) values(?,?)",p.Name,p.PathString)
+    _,err := db.Exec("insert into sys_perms(name,paths) values(?,?)",p.Name,p.PathString)
     if err!=nil{
         return nil
     }
@@ -137,7 +137,7 @@ func DelPerm(p *Permission) bool {
     if db == nil {
         return false
     }
-    _,err := db.Exec("delete from system_perms where id = ?",p.Id)
+    _,err := db.Exec("delete from sys_perms where id = ?",p.Id)
     if err!=nil {
         return false
     }
@@ -150,7 +150,7 @@ func UpdatePerm(p *Permission) bool {
         return false
     }
     p.StringifyPath()
-    _,err := db.Exec("update system_perms set name = ?,paths = ? where id = ?",p.Name,p.PathString,p.Id)
+    _,err := db.Exec("update sys_perms set name = ?,paths = ? where id = ?",p.Name,p.PathString,p.Id)
     if err!=nil{
         return false
     }
