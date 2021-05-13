@@ -3,6 +3,7 @@ package model
 import (
     "database/sql"
     "fmt"
+    "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
     "strconv"
     "strings"
@@ -33,9 +34,9 @@ func (r *Role) copy() *Role {
 
 func (p *Role) InitPath()  {
     p.Perms = make([]uint32,0)
-    if len(p.PermString)>0{
+    if len(p.PermString)>0 {
         tempStrArr := strings.Split(p.PermString,",")
-        for _,v:= range tempStrArr{
+        for _,v:= range tempStrArr {
             if id,err:=strconv.ParseUint(v,10,32);err==nil{
                 p.Perms = append(p.Perms, uint32(id))
             }
@@ -44,7 +45,7 @@ func (p *Role) InitPath()  {
 }
 
 func (p *Role) StringifyPath()  {
-    if len(p.Perms)>0{
+    if len(p.Perms)>0 {
         tempStrArr := make([]string,0)
         for _,v := range p.Perms{
             tempStrArr = append(tempStrArr, strconv.FormatUint(uint64(v),10))
@@ -60,18 +61,18 @@ func GetRoles() []*Role {
     }
 
     rows, err := db.Query("select id,name,(select group_concat(perm_id) from role_perm where role_id = r.id) as perms from system_role r")
-    if err!=nil{
+    if err!=nil {
         return nil
     }
     rs := make([]*Role,0)
     var nullStr sql.NullString
     for rows.Next() {
         var role Role
-        if err := rows.Scan(&role.Id,&role.Name,&nullStr);err!=nil{
-            fmt.Println(err)
+        if err := rows.Scan(&role.Id,&role.Name,&nullStr);err!=nil {
+            log.Errorf("[role] get roles err: %s", err.Error())
             return nil
         }
-        if nullStr.Valid{
+        if nullStr.Valid {
             role.PermString = nullStr.String
         }
         role.InitPath()
@@ -91,7 +92,7 @@ func GetRole(id uint32) *Role {
     if err:=db.QueryRow("select id,name,(select group_concat(perm_id) from role_perm where role_id = r.id) as perms from system_role r where id = ?",id).Scan(&role.Id,&role.Name,&nullStr);err!=nil{
         return nil
     }
-    if nullStr.Valid{
+    if nullStr.Valid {
         role.PermString = nullStr.String
     }
     role.InitPath()
@@ -115,30 +116,30 @@ func AddRole(name string, perms []uint32) *Role {
     }
 
     tx,err:= db.Begin()
-    if err!= nil{
+    if err!= nil {
         return nil
     }
 
     result,err := tx.Exec("insert into system_role(name) values(?)", r.Name)
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return nil
     }
     insertId,err:= result.LastInsertId()
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return nil
     }
     r.Id = uint32(insertId)
     for _,v:= range r.Perms {
         _,err := tx.Exec("insert into role_perm(role_id,perm_id) values(?,?)", r.Id,v)
-        if err!=nil{
+        if err!=nil {
             tx.Rollback()
             return nil
         }
     }
     err = tx.Commit()
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return nil
     }
@@ -151,21 +152,21 @@ func DelRole(r *Role) bool {
         return false
     }
     tx,err:= db.Begin()
-    if err!= nil{
+    if err!= nil {
         return false
     }
     _,err = tx.Exec("delete from system_role where id = ?",r.Id)
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return false
     }
     _,err = tx.Exec("delete from role_perm where role_id = ?",r.Id)
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return false
     }
     err = tx.Commit()
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return false
     }
@@ -178,28 +179,28 @@ func UpdateRole(r *Role) bool {
         return false
     }
     tx,err:= db.Begin()
-    if err!= nil{
+    if err!= nil {
         return false
     }
     _,err = tx.Exec("update system_role set name = ? where id = ?",r.Name,r.Id)
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return false
     }
     _,err = tx.Exec("delete from role_perm where role_id = ?",r.Id)
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return false
     }
     for _,v:= range r.Perms {
         _,err := tx.Exec("insert into role_perm(role_id,perm_id) values(?,?)", r.Id,v)
-        if err!=nil{
+        if err!=nil {
             tx.Rollback()
             return false
         }
     }
     err = tx.Commit()
-    if err!=nil{
+    if err!=nil {
         tx.Rollback()
         return false
     }
@@ -212,7 +213,7 @@ func DelRolePerm(perms []uint32) {
         return
     }
     permStr := make([]string,len(perms))
-    for _,v := range perms{
+    for _,v := range perms {
         permStr = append(permStr,strconv.FormatUint(uint64(v),10))
     }
     sql := "delete role_perm where perm_id in  (%s)"

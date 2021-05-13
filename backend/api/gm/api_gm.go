@@ -35,7 +35,7 @@ func GameCmd(c echo.Context) error {
     }
 
     user := ctx.GetUser()
-    if user == nil{
+    if user == nil {
         return ctx.SendError(-1, "账号不存在")
     }
 

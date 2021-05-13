@@ -29,7 +29,7 @@ func (p *Permission) copy() *Permission {
 }
 
 func (p *Permission) InitPath()  {
-    if len(p.PathString)>0{
+    if len(p.PathString)>0 {
         p.Paths = strings.Split(p.PathString,";")
     }else {
         p.Paths = make([]string,0)
@@ -37,7 +37,7 @@ func (p *Permission) InitPath()  {
 }
 
 func (p *Permission) StringifyPath()  {
-    if len(p.Paths)>0{
+    if len(p.Paths)>0 {
         p.PathString = strings.Join(p.Paths,";")
     }
 }
@@ -68,7 +68,7 @@ func GetPerms() []*Permission {
     }
 
     rows, err := db.Query("select id,name,paths from system_perms")
-    if err!=nil{
+    if err!=nil {
         return nil
     }
     ps := make([]*Permission,0)
@@ -116,7 +116,7 @@ func AddPerm(name string, paths []string) *Permission {
     }
 
     perm := &Permission{}
-    if err:=db.QueryRow("select id from system_perms where name = ?",name).Scan(&perm.Id);err==nil{
+    if err:=db.QueryRow("select id from system_perms where name = ?",name).Scan(&perm.Id);err==nil {
         return nil
     }
 
@@ -138,7 +138,7 @@ func DelPerm(p *Permission) bool {
         return false
     }
     _,err := db.Exec("delete from system_perms where id = ?",p.Id)
-    if err!=nil{
+    if err!=nil {
         return false
     }
     return true

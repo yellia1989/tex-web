@@ -8,6 +8,7 @@ import (
     "github.com/yellia1989/tex-web/backend/api"
     "github.com/yellia1989/tex-web/backend/api/stat"
     "github.com/yellia1989/tex-web/backend/cfg"
+    "github.com/yellia1989/tex-web/backend/cron"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
     "net/http"
@@ -79,7 +80,7 @@ func httpErrorHandler(err error, c echo.Context) {
 }
 
 func main() {
-    if err := cfg.ParseCfg("conf_d.cfg"); err != nil {
+    if err := cfg.ParseCfg("conf.cfg"); err != nil {
         fmt.Printf("%s", err)
         os.Exit(-1)
     }
@@ -126,13 +127,13 @@ func main() {
     stat.InitCondition()
 
     // Start Cron
-    //cron.Start()
+    cron.Start()
 
     // Start server
     e.Logger.Fatal(e.Start(cfg.Listen))
 
     // Stop Cron
-    //cron.Stop()
+    cron.Stop()
 
     log.FlushLogger()
 }

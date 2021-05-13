@@ -20,7 +20,7 @@
 
          useWholeValue: false,  // type=map|array时有效，是否使用整个字段，如果为false则根据fieldKey取值，否则取整个字段本身
          vertical: false, // type=map|array时有效，是否竖向显示编辑框
-         m: {  // type=map|array时有效，分组设置。里面不能再次嵌套map|array
+         groupFieldOption: {  // type=map|array时有效，分组设置。里面不能再次嵌套map|array
             groupFieldKey: {
                  // 字段描述，同上，比如name, type, parser, ...
                 useWholeValue: false, // 是否使用整个字段
@@ -588,63 +588,12 @@
         name: '免费福利',
         fieldOption: {
             comm_param: {
-                complete_step:{
-                    name: '完成阶段',
-                    type: 'map',
-                    groupFieldOption: {
-                        _: {
-                            name: '第几阶段（1开始）',
-                            type: 'text',
-                            isMapKey: true,
-                            parser: parseInt
-                        },
-                        condition: {
-                            name: '条件类型',
-                            type: 'select',
-                            options: {
-                                1: '购买月卡',
-                                2: '通关关卡'
-                            }
-                        },
-                        cond_param: {
-                            name: '条件值',
-                            type: 'text',
-                            parser: parseInt
-                        },
-                        type : {
-                            name: 'BUFF类型',
-                            type: 'select',
-                            options: {
-                                '1': '免费英雄招募速度',
-                            },
-                            parser: parseInt
-                        },
-                        value: {
-                            name: '加成值',
-                            type: 'text',
-                            parser: parseInt
-                        },
-                        effectTime: {
-                            name: '生效时间(秒)',
-                            type: 'text',
-                            parser: parseInt
-                        }
-                    }
-                },
                 reward: {
                    name: '奖励:id,num',
                    type: 'longtext',
                    printer: utils.printItemNumList,
                    parser: utils.parseItemNumList
                 },
-                type : {
-                    name: 'BUFF类型',
-                    type: 'select',
-                    options: {
-                        '1': '免费英雄招募速度',
-                    },
-                    parser: parseInt
-                }
             },
             server_param: {
                 condition: {

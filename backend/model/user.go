@@ -71,7 +71,7 @@ func (u *User) CheckGmPermission(cmd string) bool {
         return true
     }
     cmdArr := strings.Split(u.AllowGmCmd,"\n")
-    for _,v := range cmdArr{
+    for _,v := range cmdArr {
         if v == cmd{
             return true
         }
@@ -188,7 +188,7 @@ func ResetUserNeedReLogin(id uint32) bool {
         return false
     }
     _,err := db.Exec("update system_user set need_login = 0 where id = ?",id)
-    if err!=nil{
+    if err!=nil {
         return false
     }
     return true
@@ -200,7 +200,7 @@ func UpdateUser(u *User) bool {
         return false
     }
     _,err := db.Exec("update system_user set password = ?,role = ?,need_login = 1,allow_gm_cmd=? where id = ?",u.Password,u.Role,u.AllowGmCmd,u.Id)
-    if err!=nil{
+    if err!=nil {
         return false
     }
     return true
@@ -212,7 +212,7 @@ func DelAllUser() bool {
         return false
     }
     _,err := db.Exec("delete from system_user")
-    if err!=nil{
+    if err!=nil {
         return false
     }
     return true
@@ -231,7 +231,7 @@ func DelUserRole(roles []uint32) {
     ids := strings.Join(roleStr,",")
     sql = fmt.Sprintf(sql,ids)
     _,err := db.Exec(sql)
-    if err!=nil{
+    if err!=nil {
         return
     }
 }

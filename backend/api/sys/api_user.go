@@ -70,9 +70,9 @@ func formatAllowGmCmd(allowGmCmd string) string {
         tempCmdArr := make([]string,0)
         arr:= strings.Split(allowGmCmd,"\n")
         reg := regexp.MustCompile(`^[a-zA-z_]+`)
-        for _,v := range arr{
+        for _,v := range arr {
             tempCmd := reg.FindString(v)
-            if len(tempCmd)>0{
+            if len(tempCmd)>0 {
                 tempCmdArr = append(tempCmdArr,tempCmd)
             }
         }
