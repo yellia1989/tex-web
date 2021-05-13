@@ -34,9 +34,8 @@ func CoinAddLog(c echo.Context) error {
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
-    defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM add_coin"
+    sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".add_coin"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
@@ -46,7 +45,7 @@ func CoinAddLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,time,add_num,cur_num,operate as action FROM add_coin"
+    sql := "SELECT _rid as id,time,add_num,cur_num,operate as action FROM log_zone_"+zoneid+".add_coin"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc,_rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
@@ -92,9 +91,8 @@ func CoinSubLog(c echo.Context) error {
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
-    defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM sub_coin"
+    sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".sub_coin"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
@@ -104,7 +102,7 @@ func CoinSubLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,time,sub_num,cur_num,operate as action FROM sub_coin"
+    sql := "SELECT _rid as id,time,sub_num,cur_num,operate as action FROM log_zone_"+zoneid+".sub_coin"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
