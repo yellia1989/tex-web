@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (u/124.156.205.111 t/150.109.21.181)"
+	echo "Usage: $0 env (u/124.156.205.111 r/101.32.168.86)"
 	exit 100
 fi
 
@@ -13,9 +13,9 @@ case "$env" in
     ip=124.156.205.111
     cp ../conf_u.cfg conf.cfg
     ;;
-    t)
-    ip=150.109.21.181
-    cp ../conf_t.cfg conf.cfg
+    r)
+    ip=101.32.168.86
+    cp ../conf_r.cfg conf.cfg
     ;;
     *)
     echo "invalid env"
@@ -28,8 +28,8 @@ runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-#tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
-tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
+tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
+#tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'
