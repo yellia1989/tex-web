@@ -34,6 +34,13 @@
           <div id="roleSelect"></div>
 			  </div>
 		</div>
+	  <div class="layui-form-item">
+		  <label class="layui-form-label">允许GM命令(一行一个)</label>
+		  <div class="layui-input-block">
+          <textarea name="allowGmCmd" placeholder="请编辑内容" class="layui-textarea" lay-verify="required"
+					lay-verType="tips"></textarea>
+		  </div>
+	  </div>
 		<div class="layui-form-item">
 			<div class="layui-input-block">
 				<button class="layui-btn" lay-submit lay-filter="add">修改</button>
@@ -70,6 +77,7 @@
 
     $('input[name=id]').val(parent.userdata.id);
     $('input[name=username]').val(parent.userdata.username);
+    $('textarea[name=allowGmCmd]').val(parent.userdata.allowGmCmd);
     roleSelect.setValue([parent.userdata.role]);
 
     form.verify({

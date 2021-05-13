@@ -8,6 +8,7 @@ import (
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
     "net/http"
+    "regexp"
     "strconv"
     "strings"
     "time"
@@ -22,10 +23,10 @@ func UserLogin(c echo.Context) error {
         return ctx.SendError(-1, "用户名或密码输入错误")
     }
 
-    if ctx.GetUserId() != 0 && !u.NeedReLogin {
+    if ctx.GetUserId() != 0 && !u.IsNeedLogin() {
         return ctx.SendError(-2, "已经登陆不用重新登录")
     }
-    if u.NeedReLogin{
+    if u.IsNeedLogin() {
        success := model.ResetUserNeedReLogin(u.Id)
        if !success{
            return ctx.SendError(-3, "重置登录状态失败")
@@ -64,15 +65,32 @@ func UserList(c echo.Context) error {
     return ctx.SendResponse(us)
 }
 
+func formatAllowGmCmd(allowGmCmd string) string {
+    if len(allowGmCmd)>0{
+        tempCmdArr := make([]string,0)
+        arr:= strings.Split(allowGmCmd,"\n")
+        reg := regexp.MustCompile(`^[a-zA-z_]+`)
+        for _,v := range arr {
+            tempCmd := reg.FindString(v)
+            if len(tempCmd)>0 {
+                tempCmdArr = append(tempCmdArr,tempCmd)
+            }
+        }
+        allowGmCmd = strings.Join(tempCmdArr,"\n")
+    }
+    return allowGmCmd
+}
+
 func UserAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
     username := ctx.FormValue("username")
     password := ctx.FormValue("password")
     role, _ := strconv.ParseUint(ctx.FormValue("role"), 10, 32)
-
-    u := model.AddUser(username, password, uint32(role))
+    allowGmCmd := ctx.FormValue("allowGmCmd")
+    allowGmCmd = formatAllowGmCmd(allowGmCmd)
+    u := model.AddUser(username, password, uint32(role),allowGmCmd)
     if u == nil {
-        return ctx.SendError(-1, "invalid param")
+        return ctx.SendError(-1, "用户名已存在")
     }
 
     return ctx.SendResponse("添加用户成功")
@@ -129,6 +147,8 @@ func UserUpdate(c echo.Context) error {
     userid, _ := strconv.ParseUint(ctx.FormValue("id"), 10, 32)
     role, _ := strconv.ParseUint(ctx.FormValue("role"), 10, 32)
     password := ctx.FormValue("password")
+    allowGmCmd := ctx.FormValue("allowGmCmd")
+    allowGmCmd = formatAllowGmCmd(allowGmCmd)
 
     u := model.GetUser(uint32(userid))
     if u == nil {
@@ -148,6 +168,7 @@ func UserUpdate(c echo.Context) error {
     }
 
     u.Role = uint32(role)
+    u.AllowGmCmd = allowGmCmd
     if !model.UpdateUser(u) {
         return ctx.SendError(-1, "更新用户失败")
     }

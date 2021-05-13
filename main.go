@@ -1,20 +1,20 @@
 package main
 
 import (
-    "github.com/yellia1989/tex-web/backend/model"
-    "os"
     "fmt"
-    "strings"
-    "net/http"
-    _ "net/http/pprof"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/api"
     "github.com/yellia1989/tex-web/backend/api/stat"
-    "github.com/yellia1989/tex-web/backend/cron"
     "github.com/yellia1989/tex-web/backend/cfg"
-    "github.com/yellia1989/tex-go/tools/log"
+    "github.com/yellia1989/tex-web/backend/cron"
+    mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-web/backend/model"
+    "net/http"
+    _ "net/http/pprof"
+    "os"
+    "strings"
 )
 
 func httpErrorHandler(err error, c echo.Context) {
@@ -57,7 +57,7 @@ func httpErrorHandler(err error, c echo.Context) {
                     pUser := model.GetUser(userId)
                     if pUser == nil {
                         bReLogin = true
-                    }else if pUser.NeedReLogin {
+                    }else if pUser.IsNeedLogin() {
                         bReLogin = true
                     }
                 }

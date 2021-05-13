@@ -22,7 +22,7 @@ func RequireAuth() echo.MiddlewareFunc {
             // 验证权限
             userid := ctx.GetUserId()
             user := model.GetUser(userid)
-            if user == nil || user.NeedReLogin  {
+            if user == nil || user.IsNeedLogin()  {
                 return &echo.HTTPError{
                     Code:    9999,
                     Message: "登陆已过期，请重新登录",
