@@ -604,7 +604,8 @@
                             options: {
                                 1: '购买月卡',
                                 2: '通关关卡'
-                            }
+                            },
+                            parser: parseInt
                         },
                         cond_param: {
                             name: '条件值',
