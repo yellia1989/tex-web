@@ -71,8 +71,12 @@ func (u *User) CheckGmPermission(cmd string) bool {
     if u.IsAdmin(){
         return true
     }
-    reg := regexp.MustCompile(`^([a-zA-z_]*)\s+`)
-    cmd = reg.FindString(cmd)
+    reg := regexp.MustCompile(`^([a-zA-z_]*)\s*`)
+    res :=reg.FindStringSubmatch(cmd)
+    if len(res) < 2 {
+        return false
+    }
+    cmd = res[1]
     cmdArr := strings.Split(u.AllowGmCmd,"\n")
     for _,v := range cmdArr {
         if v == cmd{
