@@ -464,6 +464,18 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                is_new_service: {
+                    name: '是否是新服活动',
+                    type: 'select',
+                    options: {
+                        '0' : '否',
+                        '1' : '是',
+                    }
+                },
+                independent_step: {
+                    name: '需要额外展示的挡位(挡位类型, 挡位)',
+                    type: 'text',
                 }
             }
         }
@@ -689,8 +701,14 @@
                             isMapKey: true,
                             parser: parseInt
                          },
-                         reward: {
-                           name: '奖励:id,num',
+                         freereward: {
+                           name: '免费奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         },
+                         buyreward: {
+                           name: '进阶奖励:id,num',
                            type: 'longtext',
                            printer: utils.printItemNumList,
                            parser: utils.parseItemNumList
