@@ -82,6 +82,7 @@
               case 8: ret = '联盟远征'; break;
               case 10: ret = '棱镜修炼场'; break;
               case 11: ret = '章节挑战'; break;
+              case 12: ret = '无尽关卡'; break;
               default:
                 ret = d.fight_type;
             }
@@ -114,16 +115,16 @@
     function downloadReport() {
       let cmd = ''
       if (fightType != 11) {
-        cmd = "dump_fightreport_http" + " " + reportId;
+        cmd = "dump_cmd_fightreport_http" + " " + reportId;
       } else {
-        cmd = "dump_chapterreport_http" + " " + reportId;
+        cmd = "dump_cmd_chapterreport_http" + " " + reportId;
       }
       okUtils.ajax("/api/game/fight-verify/export-report", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, mapids: mapId}, true).done(function (response) {
         // 创建a标签
         var elementA = document.createElement('a');
 
         //文件的名称为时间戳加文件名后缀
-        elementA.download = + reportId + "-战报" + ".txt";
+        elementA.download = + reportId + "-report" + ".txt";
         elementA.style.display = 'none';
 
         //生成一个blob二进制数据，内容为json数据
@@ -146,7 +147,7 @@
         var elementA = document.createElement('a');
 
         //文件的名称为时间戳加文件名后缀
-        elementA.download = + reportId + "-日志" + ".txt";
+        elementA.download = + reportId + "-log" + ".txt";
         elementA.style.display = 'none';
 
         //生成一个blob二进制数据，内容为json数据
