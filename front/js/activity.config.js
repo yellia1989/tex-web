@@ -473,7 +473,8 @@
                     options: {
                         '0' : '否',
                         '1' : '是',
-                    }
+                    },
+                    parser: parseInt,
                 },
                 independent_step: {
                     name: '需要额外展示的挡位(挡位类型, 挡位)',
@@ -646,12 +647,24 @@
                         }
                     }
                 },
-                reward: {
-                   name: '奖励:id,num',
-                   type: 'longtext',
-                   printer: utils.printItemNumList,
-                   parser: utils.parseItemNumList
-                },
+                step: {
+                   name: '奖励',
+                   type: 'map',
+                   groupFieldOption: {
+                        _: {
+                            name: '可选奖励列表',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                       },
+                       reward: {
+                           name: '奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                       }
+                    }
+                }
             },
             server_param: {
                 condition: {
@@ -694,8 +707,26 @@
         name: '成长基金',
         fieldOption: {
             comm_param: {
-                step: {
-                    name: '奖励',
+                step_day: {
+                    name: '成长基金奖励',
+                    type: 'map',
+                    groupFieldOption: {
+                         _: {
+                            name: '档位',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                         },
+                         buyreward: {
+                           name: '进阶奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         }
+                    }
+                },
+                step_stage: {
+                    name: '关卡基金奖励',
                     type: 'map',
                     groupFieldOption: {
                          _: {
@@ -771,7 +802,28 @@
                     name: '最大购买次数',
                     type: 'text',
                     parser: parseInt
-                }
+                },
+                trigger_point: {
+                    name: '触发点',
+                    type: 'select',
+                    options: {
+                        '1': '王者竞技场失败',
+                        '2': '巅峰竞技场失败',
+                        '3': '天赋等级提升',
+                        '4': '钻石免费抽',
+                        '5': '登录触发',
+                        '6': '技能升级',
+                        '7': '英雄升级',
+                        '8': '购买符文',
+                        '9': '英雄历练升级',
+                        '10': '主线任务进度变化',
+                        '11': '商店购买',
+                        '12': '蓝钻商城购买',
+                        '13': '天赋技能解锁',
+                        '14': '充值犹豫时'
+                    },
+                    parser: parseInt
+                },
             },
             client_param: {
                 discount: {
@@ -805,27 +857,6 @@
                 }
             },
             server_param: {
-                trigger_point: {
-                    name: '触发点',
-                    type: 'select',
-                    options: {
-                        '1': '王者竞技场失败',
-                        '2': '巅峰竞技场失败',
-                        '3': '天赋等级提升',
-                        '4': '钻石免费抽',
-                        '5': '登录触发',
-                        '6': '技能升级',
-                        '7': '英雄升级',
-                        '8': '购买符文',
-                        '9': '英雄历练升级',
-                        '10': '主线任务进度变化',
-                        '11': '商店购买',
-                        '12': '蓝钻商城购买',
-                        '13': '天赋技能解锁',
-                        '14': '充值犹豫时'
-                    },
-                    parser: parseInt
-                },
                 trigger_interval: {
                     name: '触发间隔(秒)',
                     type: 'text',
