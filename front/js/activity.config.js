@@ -448,6 +448,19 @@
                            parser: utils.parseItemNumList
                         }
                     }
+                },
+                independent_step: {
+                    name: '需要额外展示的挡位(挡位类型, 挡位)',
+                    type: 'text',
+                },
+                is_new_service: {
+                    name: '是否是新服活动',
+                    type: 'select',
+                    options: {
+                        '0' : '否',
+                        '1' : '是',
+                    },
+                    parser: parseInt,
                 }
             },
             client_param: {
@@ -467,19 +480,6 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 },
-                is_new_service: {
-                    name: '是否是新服活动',
-                    type: 'select',
-                    options: {
-                        '0' : '否',
-                        '1' : '是',
-                    },
-                    parser: parseInt,
-                },
-                independent_step: {
-                    name: '需要额外展示的挡位(挡位类型, 挡位)',
-                    type: 'text',
-                }
             }
         }
     };
