@@ -1660,6 +1660,11 @@
                 certainly_reward: {
                     name: '必出的奖励:第几次,挡位',
                     type: 'text'
+                },
+                open_time: {
+                    name: '触发后的持续时间',
+                    type: 'text',
+                    parser: parseInt
                 }
             },
         }
