@@ -1678,6 +1678,56 @@
             }
         }
     };
+    // 23
+    activityTypeDefine[23] = {
+        name: '祝福限时反馈',
+        fieldOption: {
+            comm_param: {
+                step: {
+                    name: '奖励',
+                    type: 'map',
+                    groupFieldOption: {
+                         _: {
+                            name: '档位,概率',
+                            type: 'text',
+                            isMapKey: true,
+                         },
+                         reward: {
+                           name: '奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         }
+                    }
+                },
+                add_times_productid: {
+                    name: '增加抽奖次数的商品:商品id,商品id,商品id',
+                    type: 'text',
+                },
+                extra_times_productid: {
+                    name: '额外的抽奖次数的商品:商品id',
+                    type: 'text',
+                    parser: parseInt
+                }
+            },
+            server_param: {
+                auto_open_day: {
+                    name: '自动开始的开服天数',
+                    type: 'text',
+                    parser: parseInt
+                },
+                certainly_reward: {
+                    name: '必出的奖励:第几次,挡位',
+                    type: 'text'
+                },
+                open_time: {
+                    name: '触发后的持续时间',
+                    type: 'text',
+                    parser: parseInt
+                }
+            },
+        }
+    };  
 
     // 当前活动类型
     var currentActivityType;
