@@ -448,6 +448,19 @@
                            parser: utils.parseItemNumList
                         }
                     }
+                },
+                independent_step: {
+                    name: '需要额外展示的挡位(挡位类型, 挡位)',
+                    type: 'text',
+                },
+                is_new_service: {
+                    name: '是否是新服活动',
+                    type: 'select',
+                    options: {
+                        '0' : '否',
+                        '1' : '是',
+                    },
+                    parser: parseInt,
                 }
             },
             client_param: {
@@ -466,7 +479,7 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
-                }
+                },
             }
         }
     };
@@ -634,12 +647,24 @@
                         }
                     }
                 },
-                reward: {
-                   name: '奖励:id,num',
-                   type: 'longtext',
-                   printer: utils.printItemNumList,
-                   parser: utils.parseItemNumList
-                },
+                step: {
+                   name: '奖励',
+                   type: 'map',
+                   groupFieldOption: {
+                        _: {
+                            name: '可选奖励列表',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                       },
+                       reward: {
+                           name: '奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                       }
+                    }
+                }
             },
             server_param: {
                 condition: {
@@ -682,8 +707,8 @@
         name: '成长基金',
         fieldOption: {
             comm_param: {
-                step: {
-                    name: '奖励',
+                step_day: {
+                    name: '成长基金奖励',
                     type: 'map',
                     groupFieldOption: {
                          _: {
@@ -692,8 +717,32 @@
                             isMapKey: true,
                             parser: parseInt
                          },
-                         reward: {
-                           name: '奖励:id,num',
+                         buyreward: {
+                           name: '进阶奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         }
+                    }
+                },
+                step_stage: {
+                    name: '关卡基金奖励',
+                    type: 'map',
+                    groupFieldOption: {
+                         _: {
+                            name: '档位',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                         },
+                         freereward: {
+                           name: '免费奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         },
+                         buyreward: {
+                           name: '进阶奖励:id,num',
                            type: 'longtext',
                            printer: utils.printItemNumList,
                            parser: utils.parseItemNumList
@@ -784,6 +833,15 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
+                },
+                is_new_service: {
+                    name: '是否是新服活动',
+                    type: 'select',
+                    options: {
+                        '0' : '否',
+                        '1' : '是',
+                    },
+                    parser: parseInt,
                 }
             },
             server_param: {
@@ -804,6 +862,7 @@
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
                         '13': '天赋技能解锁',
+                        '14': '充值犹豫时'
                     },
                     parser: parseInt
                 },
