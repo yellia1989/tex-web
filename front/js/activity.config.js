@@ -698,6 +698,14 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                template: {
+                    name: '福利类型',
+                    type: 'select',
+                    options: {
+                        'month_card' : '月卡福利',
+                        'stage' : '通关回馈',
+                    }
                 }
             }
         }
