@@ -98,7 +98,7 @@
               case 4: ret = '困难关卡'; break;
               case 5: ret = '深渊关卡'; break;
               default:
-                ret = d.fight_type;
+                ret = d.chapter_type;
             }
             return ret;
           }
@@ -120,8 +120,11 @@
         case "downloadReport":
           downloadReport();
           break;
-        case "downloadLog":
-          downloadLog();
+        case "downloadClientLog":
+          downloadLog(0);
+          break;
+        case "downloadServerLog":
+          downloadLog(1);
           break;
       }
     });
@@ -166,7 +169,7 @@
         } else {
           elementA.download = + reportId + "-server-log" + ".txt";
         }
-        
+
         elementA.style.display = 'none';
 
         //生成一个blob二进制数据，内容为json数据
@@ -181,14 +184,6 @@
        }).fail(function (error) {
          console.log(error);
        });
-    }
-
-    function downloadClientLog(){
-      downloadLog(0);
-    }
-
-    function downloadServerLog(){
-      downloadLog(1);
     }
 
     form.on("submit(search)", function (data) {
