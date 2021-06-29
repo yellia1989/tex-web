@@ -1,6 +1,7 @@
 package game
 
 import (
+    sql2 "database/sql"
     "sort"
     "strings"
     "encoding/base64"
@@ -71,8 +72,12 @@ func FightErrInfo(c echo.Context) error {
     slFightVerifyInfo := make([]fightVerifyErrInfo, 0)
     for rows.Next() {
         var r fightVerifyErrInfo
-        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5, &r.MapId,&r.ChapterType); err != nil {
+        var nullChapterType sql2.NullInt32
+        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5, &r.MapId,&nullChapterType); err != nil {
             return err
+        }
+        if nullChapterType.Valid {
+            r.ChapterType = uint32(nullChapterType.Int32)
         }
 
         slFightVerifyInfo = append(slFightVerifyInfo, r)
