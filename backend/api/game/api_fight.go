@@ -200,11 +200,8 @@ func FightExportLog(c echo.Context) error {
     fightType, _ := strconv.Atoi(ctx.FormValue("fighttype"))
     isServer, _ := strconv.Atoi(ctx.FormValue("isServer"))
 
-    splitLine := "\n\n==========================================================================\n\n"
-
     db := cfg.LogDb
     var sql string
-    vString := make([]string, 0)
 
     if (fightType != 11) {
         sql = fmt.Sprintf("SELECT log,client_version FROM fight_verify_error WHERE log_md5 = '%s' and is_server = %d",logmd5,isServer)
@@ -231,10 +228,9 @@ func FightExportLog(c echo.Context) error {
             log = string(decodeBytes)
         }
     }
-    vString = append(vString, " ========\n|| 客户端版本 ||\n ========\n\n")
-    vString = append(vString, version + splitLine)
-    vString = append(vString, " ========\n|| 日志 ||\n ========\n\n")
-    vString = append(vString, log + splitLine)
 
-    return ctx.SendResponse(vString)
+    resp := make(map[string]string,0)
+    resp["log"] = log
+    resp["version"] = version
+    return ctx.SendResponse(resp)
 }

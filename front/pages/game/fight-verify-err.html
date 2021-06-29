@@ -165,15 +165,15 @@
 
         //文件的名称为时间戳加文件名后缀
         if (isServer === 0) {
-          elementA.download = + reportId + "-client-log" + ".txt";
+          elementA.download = + reportId + "_client-log_" + response.data.version + ".txt";
         } else {
-          elementA.download = + reportId + "-server-log" + ".txt";
+          elementA.download = + reportId + "_server-log_" + response.data.version + ".txt";
         }
 
         elementA.style.display = 'none';
 
         //生成一个blob二进制数据，内容为json数据
-        var blob = new Blob(response.data);
+        var blob = new Blob(response.data.log);
 
         //生成一个指向blob的URL地址，并赋值给a标签的href属性
         elementA.href = URL.createObjectURL(blob);
