@@ -99,10 +99,13 @@ func FightErrInfo(c echo.Context) error {
 
     for rows1.Next() {
         var r fightVerifyErrInfo
-        if err := rows1.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType ,&r.ChapterType); err != nil {
+        var nullChapterType sql2.NullInt32
+        if err := rows1.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType ,&nullChapterType); err != nil {
             return err
         }
-
+        if nullChapterType.Valid {
+            r.ChapterType = uint32(nullChapterType.Int32)
+        }
         slFightVerifyInfo = append(slFightVerifyInfo, r)
     }
 
