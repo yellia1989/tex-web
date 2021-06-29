@@ -70,8 +70,7 @@
         {field: "stage_id", title: "关卡id"},
         {field: "role_id", title: "角色id"},
         {field: "zone_id", title: "区服id"},
-        {
-          field: "fight_type", title: "战斗类型" , templet: function(d) {
+        {field: "fight_type", title: "战斗类型" , templet: function(d) {
             let ret = ''
             switch(d.fight_type) {
               case 1: ret = '关卡挑战'; break;
@@ -83,6 +82,21 @@
               case 10: ret = '棱镜修炼场'; break;
               case 11: ret = '章节挑战'; break;
               case 12: ret = '无尽关卡'; break;
+              case 13: ret = '梦境试炼'; break;
+              default:
+                ret = d.fight_type;
+            }
+            return ret;
+          }
+        },
+        {field: "chapter_type", title: "章节类型" , templet: function(d) {
+            let ret = ''
+            switch(d.chapter_type) {
+              case 1: ret = '简单关卡'; break;
+              case 2: ret = '龙域关卡'; break;
+              case 3: ret = '无尽关卡'; break;
+              case 4: ret = '困难关卡'; break;
+              case 5: ret = '深渊关卡'; break;
               default:
                 ret = d.fight_type;
             }
@@ -141,13 +155,18 @@
        });
     }
 
-    function downloadLog() {
-        okUtils.ajax("/api/game/fight-verify/export-log", "post", { fighttype: fightType, reportid: reportId, logmd5: logMd5 }, true).done(function (response) {
+    function downloadLog(isServer) {
+        okUtils.ajax("/api/game/fight-verify/export-log", "post", { fighttype: fightType, reportid: reportId, logmd5: logMd5 , isServer : isServer }, true).done(function (response) {
         // 创建a标签
         var elementA = document.createElement('a');
 
         //文件的名称为时间戳加文件名后缀
-        elementA.download = + reportId + "-log" + ".txt";
+        if (isServer === 0) {
+          elementA.download = + reportId + "-client-log" + ".txt";
+        } else {
+          elementA.download = + reportId + "-server-log" + ".txt";
+        }
+        
         elementA.style.display = 'none';
 
         //生成一个blob二进制数据，内容为json数据
@@ -162,6 +181,14 @@
        }).fail(function (error) {
          console.log(error);
        });
+    }
+
+    function downloadClientLog(){
+      downloadLog(0);
+    }
+
+    function downloadServerLog(){
+      downloadLog(1);
     }
 
     form.on("submit(search)", function (data) {
@@ -179,7 +206,8 @@
 <script type="text/html" id="operationTpl">
   <div class="layui-btn-group">
     <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadReport">下载战报</button>
-    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadLog">下载日志</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadClientLog">客户端日志</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="downloadServerLog">服务器日志</button>
   </div>
 </script>
 </body>

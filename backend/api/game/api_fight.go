@@ -25,6 +25,7 @@ type fightVerifyErrInfo struct {
     FightType       uint32 `json:"fight_type"`
     LogMd5          string `json:"log_md5"`
     MapId           uint32 `json:"map_id"`
+    ChapterType     uint32 `json:"chapter_type"`
 }
 
 type fightVerifyErrInfoBy []fightVerifyErrInfo
@@ -55,7 +56,7 @@ func FightErrInfo(c echo.Context) error {
 
     db := cfg.LogDb
 
-    sql := "SELECT time, report_id, stage_id, roleid, zoneid, fight_type, log_md5, mapid FROM fight_verify_error "
+    sql := "SELECT time, report_id, stage_id, roleid, zoneid, fight_type, log_md5, mapid , chapter_type FROM fight_verify_error "
     sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
     sql += "AND is_server=1"
 
@@ -70,7 +71,7 @@ func FightErrInfo(c echo.Context) error {
     slFightVerifyInfo := make([]fightVerifyErrInfo, 0)
     for rows.Next() {
         var r fightVerifyErrInfo
-        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5, &r.MapId); err != nil {
+        if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5, &r.MapId,&r.ChapterType); err != nil {
             return err
         }
 
@@ -81,7 +82,7 @@ func FightErrInfo(c echo.Context) error {
         return err
     }
 
-    sql = "SELECT time, report_id, stage_id, roleid, zoneid, fight_type FROM chapter_verify_error "
+    sql = "SELECT time, report_id, stage_id, roleid, zoneid, fight_type , chapter_type FROM chapter_verify_error "
     sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
     sql += "AND is_server=1"
 
@@ -93,7 +94,7 @@ func FightErrInfo(c echo.Context) error {
 
     for rows1.Next() {
         var r fightVerifyErrInfo
-        if err := rows1.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType); err != nil {
+        if err := rows1.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType ,&r.ChapterType); err != nil {
             return err
         }
 
@@ -189,6 +190,7 @@ func FightExportLog(c echo.Context) error {
     reportid := ctx.FormValue("reportid")
     logmd5 := ctx.FormValue("logmd5")
     fightType, _ := strconv.Atoi(ctx.FormValue("fighttype"))
+    isServer, _ := strconv.Atoi(ctx.FormValue("isServer"))
 
     splitLine := "\n\n==========================================================================\n\n"
 
@@ -197,9 +199,9 @@ func FightExportLog(c echo.Context) error {
     vString := make([]string, 0)
 
     if (fightType != 11) {
-      sql = "SELECT log, is_server FROM fight_verify_error WHERE log_md5 = '" + logmd5 + "' "
+        sql = fmt.Sprintf("SELECT log,client_version FROM fight_verify_error WHERE log_md5 = '%s' and is_server = %d",logmd5,isServer)
     } else {
-      sql = "SELECT log, is_server FROM chapter_verify_error WHERE report_id = '" + reportid + "' "
+        sql = fmt.Sprintf("SELECT log,client_version FROM chapter_verify_error WHERE report_id = '%s' and is_server = %d",reportid,isServer)
     }
 
     rows, err := db.Query(sql)
@@ -208,12 +210,11 @@ func FightExportLog(c echo.Context) error {
     }
     defer rows.Close()
 
-    var clientLog string
-    var serverLog string
+    var log string
+    var version string
+
     for rows.Next() {
-        var log string
-        var bServer uint32
-        if err := rows.Scan(&log, &bServer); err != nil {
+        if err := rows.Scan(&log, &version); err != nil {
             return err
         }
 
@@ -221,17 +222,11 @@ func FightExportLog(c echo.Context) error {
             decodeBytes, _ := base64.StdEncoding.DecodeString(log)
             log = string(decodeBytes)
         }
-
-        if bServer == 1 {
-            serverLog = log;
-        } else {
-            clientLog = log;
-        }
     }
-    vString = append(vString, " ========\n|| 客户端日志 ||\n ========\n\n")
-    vString = append(vString, clientLog + splitLine)
-    vString = append(vString, " ========\n|| 服务器日志 ||\n ========\n\n")
-    vString = append(vString, serverLog + splitLine)
+    vString = append(vString, " ========\n|| 客户端版本 ||\n ========\n\n")
+    vString = append(vString, version + splitLine)
+    vString = append(vString, " ========\n|| 日志 ||\n ========\n\n")
+    vString = append(vString, log + splitLine)
 
     return ctx.SendResponse(vString)
 }
