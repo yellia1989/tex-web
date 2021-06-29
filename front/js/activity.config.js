@@ -1623,7 +1623,7 @@
                     vertical: true,
                     groupFieldOption: {
                         _: {
-                            name: '金额:money',
+                            name: '累计vip点:',
                             type: 'text',
                             isMapKey: true
                         },
