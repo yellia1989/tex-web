@@ -822,6 +822,10 @@
                     name: '角标',
                     type: 'text',
                 },
+                slogan: {
+                    name: '宣传语',
+                    type: 'text',
+                },
                 detail_bg: {
                     name: '活动背景',
                     type: 'text',
