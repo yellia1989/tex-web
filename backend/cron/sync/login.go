@@ -65,6 +65,7 @@ func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint3
                 log.Errorf("cron [sync][login] can't find account, accountid: %d", roleid)
                 continue
             }
+            log.Infof("cron [sync][login] can't find account, accountid: %d", roleid)
             return nil
         }
         r := rrole.Get(zoneidFk, account.Id)
@@ -73,6 +74,7 @@ func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint3
                 log.Errorf("cron [sync][login] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
                 continue
             }
+            log.Infof("cron [sync][login] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
             return nil
         }
         if d.Id < r.RegDateFk {

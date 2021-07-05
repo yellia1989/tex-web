@@ -25,7 +25,7 @@ type zone struct {
 
 func (z *zone) init() (err error) {
     if z.zoneid != 0 {
-        z.fromdb, err = dsql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/log_zone_%d?multiStatements=true", cfg.LogDbUser, cfg.LogDbPwd, z.dbhost, z.zoneid))
+        z.fromdb, err = dsql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/log_zone_%d?multiStatements=true", cfg.LogDbUser, cfg.LogDbPwd, cfg.LogDbHost, z.zoneid))
         if err != nil {
             return
         }
