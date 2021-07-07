@@ -448,6 +448,19 @@
                            parser: utils.parseItemNumList
                         }
                     }
+                },
+                independent_step: {
+                    name: '需要额外展示的挡位(挡位类型, 挡位)',
+                    type: 'text',
+                },
+                is_new_service: {
+                    name: '是否是新服活动',
+                    type: 'select',
+                    options: {
+                        '0' : '否',
+                        '1' : '是',
+                    },
+                    parser: parseInt,
                 }
             },
             client_param: {
@@ -466,7 +479,7 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
-                }
+                },
             }
         }
     };
@@ -634,12 +647,24 @@
                         }
                     }
                 },
-                reward: {
-                   name: '奖励:id,num',
-                   type: 'longtext',
-                   printer: utils.printItemNumList,
-                   parser: utils.parseItemNumList
-                },
+                step: {
+                   name: '奖励',
+                   type: 'map',
+                   groupFieldOption: {
+                        _: {
+                            name: '可选奖励列表',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                       },
+                       reward: {
+                           name: '奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                       }
+                    }
+                }
             },
             server_param: {
                 condition: {
@@ -673,6 +698,14 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                template: {
+                    name: '福利类型',
+                    type: 'select',
+                    options: {
+                        'month_card' : '月卡福利',
+                        'stage' : '通关回馈',
+                    }
                 }
             }
         }
@@ -682,8 +715,8 @@
         name: '成长基金',
         fieldOption: {
             comm_param: {
-                step: {
-                    name: '奖励',
+                step_day: {
+                    name: '成长基金奖励',
                     type: 'map',
                     groupFieldOption: {
                          _: {
@@ -692,8 +725,32 @@
                             isMapKey: true,
                             parser: parseInt
                          },
-                         reward: {
-                           name: '奖励:id,num',
+                         buyreward: {
+                           name: '进阶奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         }
+                    }
+                },
+                step_stage: {
+                    name: '关卡基金奖励',
+                    type: 'map',
+                    groupFieldOption: {
+                         _: {
+                            name: '档位',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                         },
+                         freereward: {
+                           name: '免费奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         },
+                         buyreward: {
+                           name: '进阶奖励:id,num',
                            type: 'longtext',
                            printer: utils.printItemNumList,
                            parser: utils.parseItemNumList
@@ -765,6 +822,10 @@
                     name: '角标',
                     type: 'text',
                 },
+                slogan: {
+                    name: '宣传语',
+                    type: 'text',
+                },
                 detail_bg: {
                     name: '活动背景',
                     type: 'text',
@@ -784,6 +845,15 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
+                },
+                is_new_service: {
+                    name: '是否是新服活动',
+                    type: 'select',
+                    options: {
+                        '0' : '否',
+                        '1' : '是',
+                    },
+                    parser: parseInt,
                 }
             },
             server_param: {
@@ -804,6 +874,7 @@
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
                         '13': '天赋技能解锁',
+                        '14': '充值犹豫时'
                     },
                     parser: parseInt
                 },
@@ -1556,7 +1627,7 @@
                     vertical: true,
                     groupFieldOption: {
                         _: {
-                            name: '金额:money',
+                            name: '累计vip点:',
                             type: 'text',
                             isMapKey: true
                         },
@@ -1619,6 +1690,56 @@
             }
         }
     };
+    // 23
+    activityTypeDefine[23] = {
+        name: '祝福限时反馈',
+        fieldOption: {
+            comm_param: {
+                step: {
+                    name: '奖励',
+                    type: 'map',
+                    groupFieldOption: {
+                         _: {
+                            name: '档位,概率',
+                            type: 'text',
+                            isMapKey: true,
+                         },
+                         reward: {
+                           name: '奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                         }
+                    }
+                },
+                add_times_productid: {
+                    name: '增加抽奖次数的商品:商品id,商品id,商品id',
+                    type: 'text',
+                },
+                extra_times_productid: {
+                    name: '额外的抽奖次数的商品:商品id',
+                    type: 'text',
+                    parser: parseInt
+                }
+            },
+            server_param: {
+                auto_open_day: {
+                    name: '自动开始的开服天数',
+                    type: 'text',
+                    parser: parseInt
+                },
+                certainly_reward: {
+                    name: '必出的奖励:第几次,挡位',
+                    type: 'text'
+                },
+                open_time: {
+                    name: '触发后的持续时间',
+                    type: 'text',
+                    parser: parseInt
+                }
+            },
+        }
+    };  
 
     // 当前活动类型
     var currentActivityType;
