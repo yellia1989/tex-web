@@ -26,30 +26,30 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">数据库服务器</label>
-        <div class="layui-input-block">
-          <input type="text" name="dbHost" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+        <label class="layui-form-label">服务器</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbHost" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">数据库端口</label>
-        <div class="layui-input-block">
-          <input type="text" name="dbPort" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+        <label class="layui-form-label">端口</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbPort" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">数据库用户名</label>
-        <div class="layui-input-block">
-          <input type="text" name="dbUser" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+        <label class="layui-form-label">用户名</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbUser" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">数据库密码</label>
-        <div class="layui-input-block">
-          <input type="text" name="dbPwd" disabled class="layui-input" lay-verify="required" lay-verType="tips">
+        <label class="layui-form-label">密码</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbPwd" class="layui-input" lay-verify="required" lay-verType="tips">
         </div>
       </div>
 
@@ -70,6 +70,10 @@
       let $ = layui.jquery;
 
       $("input[name=iMapId]").val(parent.editData.iMapId);
+      $("input[name=dbHost]").val(parent.editData.dbHost);
+      $("input[name=dbPort]").val(parent.editData.dbPort);
+      $("input[name=dbUser]").val(parent.editData.dbUser);
+      $("input[name=dbPwd]").val(parent.editData.dbPwd);
 
       let zoneSelect = xmSelect.render({
         el: '#zoneSelect',

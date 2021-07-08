@@ -88,7 +88,7 @@ func MapList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT mapid,zoneids FROM t_maplist"
+	sql := "SELECT mapid,zoneids,dbhost,dbport,dbuser,dbpwd FROM t_maplist"
     sql += " ORDER BY mapid desc"
     var total int
     err = tx.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
