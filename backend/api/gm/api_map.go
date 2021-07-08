@@ -15,6 +15,10 @@ import (
 type _mapData struct {
     IMapId uint32 `json:"iMapId"`
     VZoneId []uint32 `json:"vZoneId"`
+    DbHost  string   `json:"dbHost"`
+	DbUser  string   `json:"dbUser"`
+	DbPwd   string   `json:"dbPwd"`
+	DbPort  string   `json:"dbPort"`
 }
 
 func MapSimpleList() []rpc.ZoneInfo {
@@ -108,7 +112,7 @@ func MapList(c echo.Context) error {
 	for rows.Next() {
 		var r _mapData
         var ids string
-		if err := rows.Scan(&r.IMapId, &ids); err != nil {
+		if err := rows.Scan(&r.IMapId, &ids,&r.DbHost,&r.DbPort,&r.DbUser,&r.DbPwd); err != nil {
 			return err
 		}
         for _,v := range strings.Split(ids, ",") {
@@ -134,6 +138,10 @@ func MapAdd(c echo.Context) error {
     mapid := ctx.FormValue("iMapId")
     zoneids := ctx.FormValue("zoneids")
     endpoint := ctx.FormValue("endpoint")
+	dbHost := ctx.FormValue("dbHost")
+	dbPort := ctx.FormValue("dbPort")
+	dbUser := ctx.FormValue("dbUser")
+	dbPwd := ctx.FormValue("dbPwd")
 
     if mapid == "" || zoneids == "" || endpoint == "" {
         return ctx.SendError(-1, "参数非法")
@@ -159,7 +167,7 @@ func MapAdd(c echo.Context) error {
 		return err
 	}
 
-    _, err = tx.Exec("INSERT INTO t_maplist(mapid,zoneids) VALUES(?,?)", mapid, zoneids)
+    _, err = tx.Exec("INSERT INTO t_maplist(mapid,zoneids,dbhost,dbport,dbuser,dbpwd) VALUES(?,?,?,?,?,?)", mapid, zoneids,dbHost,dbPort,dbUser,dbPwd)
 	if err != nil {
 		return err
 	}
@@ -211,6 +219,10 @@ func MapEdit(c echo.Context) error {
     ctx := c.(*mid.Context)
     mapid := ctx.FormValue("iMapId")
     zoneids := ctx.FormValue("zoneids")
+	dbHost := ctx.FormValue("dbHost")
+	dbPort := ctx.FormValue("dbPort")
+	dbUser := ctx.FormValue("dbUser")
+	dbPwd := ctx.FormValue("dbPwd")
 
     if mapid == "" || zoneids == "" {
         return ctx.SendError(-1, "参数非法")
@@ -232,7 +244,7 @@ func MapEdit(c echo.Context) error {
 		return err
 	}
 
-    _, err = tx.Exec("UPDATE t_maplist SET zoneids=? WHERE mapid=?", zoneids, mapid)
+    _, err = tx.Exec("UPDATE t_maplist SET zoneids=?,dbhost=?,dbport=?,dbuser=?,dbpwd=? WHERE mapid=?", zoneids,dbHost,dbPort,dbUser,dbPwd,mapid)
 	if err != nil {
 		return err
 	}
@@ -261,7 +273,7 @@ func GameDb(zoneid uint32) (error, string) {
 		return err,""
 	}
 
-	sql := "SELECT mapid,zoneids FROM t_maplist"
+	sql := "SELECT mapid,zoneids,dbhost,dbport,dbuser,dbpwd FROM t_maplist"
     rows, err := tx.Query(sql)
     if err != nil {
         return err,""
@@ -270,8 +282,12 @@ func GameDb(zoneid uint32) (error, string) {
 
     var mapid uint32
     var zoneids string
+    var dbHost string
+    var dbPort string
+    var dbUser string
+    var dbPwd string
     for rows.Next() {
-        if err := rows.Scan(&mapid, &zoneids); err != nil {
+        if err := rows.Scan(&mapid, &zoneids,&dbHost,&dbPort,&dbUser,&dbPwd); err != nil {
             return err,""
         }
         ids := common.Atou32v(zoneids, ",")
@@ -284,11 +300,7 @@ func GameDb(zoneid uint32) (error, string) {
         return err,""
     }
 
-    cfg := cfg.Config
-    conn := cfg.GetCfg(fmt.Sprintf("gamedb_%d", mapid),"")
-    if conn == "" {
-        return fmt.Errorf("缺少数据库配置:%d", zoneid),""
-    }
+    conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/db_map_%d", dbUser,dbPwd,dbHost,dbPort,mapid)
 
     return nil,conn
 }
