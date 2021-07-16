@@ -160,11 +160,10 @@ func UserUpdate(c echo.Context) error {
         return ctx.SendError(-1, "角色不存在")
     }
 
-    if password == "" {
-        return ctx.SendError(-1, "密码不能为空");
-    }
-    if !u.EncodePwd(password) {
-        return ctx.SendError(-1, "更新密码失败")
+    if password != "" {
+        if !u.EncodePwd(password) {
+            return ctx.SendError(-1, "更新密码失败")
+        }
     }
 
     u.Role = uint32(role)
