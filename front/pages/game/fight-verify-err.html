@@ -131,7 +131,7 @@
 
     function downloadReport() {
       let cmd = ''
-      if (fightType != 11) {
+      if (fightType != 11 && fightType != 12) {
         cmd = "dump_cmd_fightreport_http" + " " + reportId;
       } else {
         cmd = "dump_cmd_chapterreport_http" + " " + reportId;
