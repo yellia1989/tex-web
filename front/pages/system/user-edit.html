@@ -92,10 +92,13 @@
           return '用户名不能全为数字';
         }
       },
-      password: [
-        /^[\S]{6,14}$/
-        ,'密码必须6到14位，且不能出现空格'
-      ],
+      password: function(value,item){
+      	if(value!==""){
+      		if(!new RegExp("^[\\S]{6,14}$").test(value)){
+      			return '密码必须6-14位，且不能有空格';
+			}
+		}
+	  },
       password2: function(value, item) {
         if (value != $("input[name='password']").val()) {
           return '两次输入密码不一致';
