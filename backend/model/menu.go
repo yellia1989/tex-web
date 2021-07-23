@@ -1,25 +1,41 @@
 package model
 
 import (
-    "fmt"
+    "database/sql"
     "encoding/json"
+    "fmt"
     "github.com/yellia1989/tex-go/tools/util"
+    "github.com/yellia1989/tex-web/backend/cfg"
     cm "github.com/yellia1989/tex-web/backend/common"
+    "strconv"
+    "strings"
 )
 
 var menus *cm.Map
-func init() {
+
+func InitMenu() {
     bs, err := util.LoadFromFile("data/menu.json")
     if err != nil {
         fmt.Printf("menu init failed, %s", err.Error())
     }
+
+    db := cfg.StatDb
+    if db == nil {
+        panic("menu init failed, statedb error")
+    }
+
     items := make([]*Menu,0)
     err = json.Unmarshal(bs, &items)
     if err != nil {
         fmt.Printf("menu init failed, %s", err.Error())
     }
 
+    for _,v := range items {
+        v.FillRole(db)
+    }
+
     items2 := make([]cm.Item,0)
+
     for _, item := range items {
         items2 = append(items2, item)
     }
@@ -37,6 +53,44 @@ type Menu struct {
     Children []*Menu         `json:"children"`
     Role []uint32           `json:"role"`
 }
+
+func (m *Menu) FillRole(db *sql.DB) {
+    roles :=""
+    db.QueryRow("select role_ids from sys_menu_role where menu_id = ?",m.Id).Scan(&roles)
+    roleIds := make([]uint32,0)
+    if roles != "" {
+        ids := strings.Split(roles,",")
+        for _,v := range ids {
+            id,_ := strconv.ParseUint(v,10,32)
+            roleIds = append(roleIds, uint32(id))
+        }
+    }
+    m.Role = roleIds
+    for _,v := range m.Children{
+        v.FillRole(db)
+    }
+}
+
+func (m *Menu) UpdateRole(db *sql.DB) error {
+    var roleString string
+    roleStrs := make([]string,0)
+    for _,v := range m.Role {
+        roleStrs = append(roleStrs, strconv.FormatUint(uint64(v),32))
+    }
+    roleString = strings.Join(roleStrs,",")
+    _,err := db.Exec("insert into sys_menu_role(menu_id,role_ids) VALUES (?,?) on duplicate key update role_ids= ?",m.Id,roleString,roleString)
+    if err!=nil{
+        return err
+    }
+    for _,v := range m.Children{
+        err = v.UpdateRole(db)
+        if err!=nil {
+            return err
+        }
+    }
+    return nil
+}
+
 func (m *Menu) GetId() uint32 {
     return m.Id
 }
@@ -248,6 +302,11 @@ func UpdateMenu(m *Menu) bool {
         return false
     }
 
+    db := cfg.StatDb
+    if db == nil {
+        return false
+    }
+
     // 先找到顶级菜单
     top := getTopMenu(m.Id)
     if top == nil {
@@ -257,6 +316,10 @@ func UpdateMenu(m *Menu) bool {
     if m.Id <= 100 {
         topp := top.copy()
         topp.updateMenu(m)
+        err := topp.UpdateRole(db)
+        if err!=nil{
+            return false
+        }
         return menus.UpdateItem(topp)
     }
 
@@ -266,6 +329,10 @@ func UpdateMenu(m *Menu) bool {
         return false
     }
     old.updateMenu(m)
+    err := old.UpdateRole(db)
+    if err!=nil{
+        return false
+    }
     return menus.UpdateItem(topp)
 }
 
