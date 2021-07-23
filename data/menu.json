@@ -16,10 +16,7 @@
         "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 102,
@@ -29,10 +26,7 @@
         "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 103,
@@ -42,10 +36,7 @@
         "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 104,
@@ -55,10 +46,7 @@
         "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 105,
@@ -68,10 +56,7 @@
         "icon": "\u0026#xe7d1;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 106,
@@ -81,14 +66,8 @@
         "icon": "\u0026#xe7d1;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       }
-    ],
-    "role": [
-      3
     ]
   },
   {
@@ -117,11 +96,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              2
-            ]
+            "children": null
           },
           {
             "id": 20102,
@@ -131,11 +106,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              2
-            ]
+            "children": null
           },
           {
             "id": 20103,
@@ -145,16 +116,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              2
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          2
         ]
       },
       {
@@ -165,11 +128,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": true,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 203,
@@ -179,11 +138,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 204,
@@ -193,11 +148,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 205,
@@ -207,11 +158,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 206,
@@ -221,11 +168,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 207,
@@ -235,11 +178,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 208,
@@ -249,11 +188,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 209,
@@ -263,11 +198,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 210,
@@ -277,11 +208,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 212,
@@ -291,11 +218,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 213,
@@ -305,11 +228,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 214,
@@ -319,11 +238,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       },
       {
         "id": 215,
@@ -342,11 +257,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              2
-            ]
+            "children": null
           },
           {
             "id": 21502,
@@ -356,22 +267,10 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              2
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          2
         ]
       }
-    ],
-    "role": [
-      3,
-      2
     ]
   },
   {
@@ -391,10 +290,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 702,
@@ -404,10 +300,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 703,
@@ -417,10 +310,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 704,
@@ -430,10 +320,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 705,
@@ -443,14 +330,8 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       }
-    ],
-    "role": [
-      1
     ]
   },
   {
@@ -470,11 +351,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          4
-        ]
+        "children": null
       },
       {
         "id": 802,
@@ -493,11 +370,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 80202,
@@ -507,16 +380,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -536,11 +401,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 80302,
@@ -550,16 +411,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -579,16 +432,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -608,11 +453,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 80402,
@@ -622,16 +463,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -651,11 +484,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 81302,
@@ -665,11 +494,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 81303,
@@ -679,16 +504,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -699,11 +516,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          4
-        ]
+        "children": null
       },
       {
         "id": 812,
@@ -713,11 +526,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          4
-        ]
+        "children": null
       },
       {
         "id": 814,
@@ -736,11 +545,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 81402,
@@ -750,11 +555,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 81403,
@@ -764,11 +565,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 81404,
@@ -778,22 +575,10 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       }
-    ],
-    "role": [
-      3,
-      4
     ]
   },
   {
@@ -813,10 +598,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 902,
@@ -826,10 +608,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 903,
@@ -839,10 +618,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 904,
@@ -852,10 +628,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 905,
@@ -865,10 +638,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 906,
@@ -878,14 +648,8 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       }
-    ],
-    "role": [
-      3
     ]
   },
   {
@@ -914,11 +678,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 100102,
@@ -928,16 +688,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          4,
-          3
         ]
       },
       {
@@ -948,11 +700,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          4
-        ]
+        "children": null
       },
       {
         "id": 1003,
@@ -971,11 +719,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 100302,
@@ -985,16 +729,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -1014,22 +750,10 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       }
-    ],
-    "role": [
-      4,
-      3
     ]
   }
 ]
