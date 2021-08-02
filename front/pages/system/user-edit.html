@@ -19,13 +19,13 @@
 	  <div class="layui-form-item">
 			  <label class="layui-form-label">密码</label>
 			  <div class="layui-input-block">
-			  	<input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input" lay-verify="password|required" lay-verType="tips">
+			  	<input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input" lay-verify="password" lay-verType="tips">
 			  </div>
 		</div>
 	  <div class="layui-form-item">
 			  <label class="layui-form-label">确认密码</label>
 			  <div class="layui-input-block">
-			  	<input type="password" name="password2" placeholder="请再次输入密码" autocomplete="off" class="layui-input" lay-verify="password2|required" lay-verType="tips">
+			  	<input type="password" name="password2" placeholder="请再次输入密码" autocomplete="off" class="layui-input" lay-verify="password2" lay-verType="tips">
 			  </div>
 		</div>
 	  <div class="layui-form-item">
@@ -92,10 +92,13 @@
           return '用户名不能全为数字';
         }
       },
-      password: [
-        /^[\S]{6,14}$/
-        ,'密码必须6到14位，且不能出现空格'
-      ],
+      password: function(value,item){
+      	if(value!==""){
+      		if(!new RegExp("^[\\S]{6,14}$").test(value)){
+      			return '密码必须6-14位，且不能有空格';
+			}
+		}
+	  },
       password2: function(value, item) {
         if (value != $("input[name='password']").val()) {
           return '两次输入密码不一致';

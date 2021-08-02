@@ -85,6 +85,8 @@ func main() {
         os.Exit(-1)
     }
 
+    model.InitMenu()
+
     debug := cfg.Debug
     framework_debug := cfg.FrameworkDebug
 
