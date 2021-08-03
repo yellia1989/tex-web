@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>数据拷贝</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-inline">
+          <div id="serverSelect"></div>
+        </div>
+        <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="server">确认</button>
+        </div>
+        <div class="layui-input-inline">
+          <div id="zoneSelect"></div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-block">
+            <input type="text" id="srcRole" required lay-verify="required" placeholder="请输入玩家id" autocomplete="on" class="layui-input">
+          </div>
+        </div>
+        =========================================
+        <div class="layui-input-inline">
+          <div id="zoneSelect2"></div>
+        </div>
+        <div class="layui-input-inline">
+          <button class="layui-btn" lay-submit lay-filter="copy">复制</button>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-block">
+            <input type="text" id="tarRole" required lay-verify="required" placeholder="请输入玩家id" autocomplete="on" class="layui-input">
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script type="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['okUtils'], function () {
+      let okUtils = layui.okUtils;
+      let $ = layui.jquery;
+      let xmSelect = layui.xmSelect;
+      okLoading.close();
+
+      // 加载所有服务器 选择一个
+      var servers;
+      okUtils.ajax("data/server.json", "get", null, false).done(function (response) {
+        servers = response.data;
+      });
+      let serverSelect = xmSelect.render({
+        el: '#serverSelect',
+        name: 'id',
+        prop: {
+          value: 'id',
+        },
+        tips: '请选择区域',
+        layVerify: 'required',
+        layVerType: 'tips',
+        toolbar: {
+          show: true,
+        },
+        data: servers,
+        initValue: [1],
+      });
+      let zoneSelect = xmSelect.render({
+        el: '#zoneSelect',
+        name: 'id',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        toolbar: {
+          show: true,
+        },
+      });
+      let zoneSelect2 = xmSelect.render({
+        el: '#zoneSelect2',
+        name: 'id',
+        prop: {
+          value: 'iZoneId',
+          name: 'sZoneName',
+        },
+        tips: '请选择一个服务器',
+        layVerify: 'required',
+        layVerType: 'tips',
+        toolbar: {
+          show: true,
+        },
+      });
+
+      // 选择一个内网的服务器作为目标
+      okUtils.ajax("/api/gm/zone/simplelist", "get", { game: true, gf: true, map: true }, false).done(function (response) {
+        zoneSelect2.update({
+          data: [
+            { sZoneName: '挂机服务器', children: response.data["game"] },
+            { sZoneName: 'slg服务器', children: response.data["map"] },
+          ],
+          initValue: [1],
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      updateZone = function () {
+        okUtils.ajax("/api/gm/zone/simplelist", "get", { game: true, gf: true, map: true }, false).done(function (response) {
+          zoneSelect.update({
+            data: [
+              { sZoneName: '挂机服务器', children: response.data["game"] },
+              { sZoneName: 'slg服务器', children: response.data["map"] },
+            ],
+            initValue: [1],
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+      };
+
+      form.on('submit(server)', function (data) {
+        let server = serverSelect.getValue('valueStr');
+        // 根据选的的服务器更新分区列表
+        updateZone();
+        return false;
+      });
+
+      form.on('submit(copy)', function (data) {
+        let server = serverSelect.getValue('valueStr');
+        let src_zone = zoneSelect.getValue('valueStr');
+        let tar_zone = zoneSelect2.getValue('valueStr');
+        let src_role = $("#strRole").val();
+        let tar_role = $("#tar_role").val();
+        // 从选中的服务器获取数据
+        let role;
+        let cmd = "/api/public/game/copy_role";
+        let address = "1.1.2.1";
+        okUtils.ajax(address + cmd, "get", { zone: src_zone, role: src_role }, true).done(function (response) {
+          role = response.data;
+        }).fail(function (error) {
+          console.log("failed", error);
+        });
+        // copy到选中的内网服务器
+        cmd = "/api/public/game/paste_role";
+        address = "1";
+        okUtils.ajax(address + cmd, "post", { zone: tar_zone, role: tar_role, data: role }, true).done(function (response) {
+          console.log("ok");
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>

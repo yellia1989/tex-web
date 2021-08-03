@@ -7,6 +7,9 @@ import (
 
 func pathIgnore(c echo.Context) bool {
     path := c.Request().URL.Path
+    if path == "/public/game/copy_role" || path == "/public/game/paste_role" {
+        return true
+    }
     suffix := strings.Split(path, ".")
     switch suffix[len(suffix)-1] {
     case "html":
