@@ -81,8 +81,21 @@
               case 8: ret = '联盟远征'; break;
               case 9: ret = '矩阵迷宫'; break;
               case 10: ret = '镜像试练'; break;
+              case 11: ret =  '迷宫关卡挑战'; break;
               default:
                 ret = d.fight_type;
+            }
+            return ret;
+          }
+        },
+        {field: "maze_type", title: "迷宫类型" , templet: function(d) {
+            let ret = ''
+            switch(d.maze_type) {
+              case 1: ret = '简单迷宫'; break;
+              case 2: ret = '困难迷宫'; break;
+              case 3: ret = '深渊迷宫'; break;
+              default:
+                ret = d.maze_type;
             }
             return ret;
           }
@@ -114,7 +127,12 @@
     });
 
     function downloadReport() {
-      let cmd = "dump_cmd_fightreport_http" + " " + reportId;
+      let cmd = ''
+      if (fightType != 11 && fightType != 12) {
+        cmd = "dump_cmd_fightreport_http" + " " + reportId;
+      } else {
+        cmd = "dump_cmd_chapterreport_http" + " " + reportId;
+      }
       okUtils.ajax("/api/game/fight-verify/export-report", "post", { zoneids: zoneId, cmd: cmd, fighttype: fightType, reportid: reportId, mapids: mapId}, true).done(function (response) {
         // 创建a标签
         var elementA = document.createElement('a');
@@ -138,7 +156,7 @@
     }
 
     function downloadLog(isServer) {
-        okUtils.ajax("/api/game/fight-verify/export-log", "post", {logmd5: logMd5 , isServer : isServer }, true).done(function (response) {
+        okUtils.ajax("/api/game/fight-verify/export-log", "post", { fighttype: fightType, reportid: reportId, logmd5: logMd5 , isServer : isServer }, true).done(function (response) {
         // 创建a标签
         var elementA = document.createElement('a');
 

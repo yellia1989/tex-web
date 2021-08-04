@@ -19,15 +19,15 @@ import (
 )
 
 type fightVerifyErrInfo struct {
-	ErrTime     string `json:"err_time"`
-	ReportId    uint64 `json:"report_id"`
-	StageId     uint32 `json:"stage_id"`
-	RoleId      uint32 `json:"role_id"`
-	ZoneId      uint32 `json:"zone_id"`
-	FightType   uint32 `json:"fight_type"`
-	LogMd5      string `json:"log_md5"`
-	MapId       uint32 `json:"map_id"`
-	ChapterType uint32 `json:"chapter_type"`
+	ErrTime   string `json:"err_time"`
+	ReportId  uint64 `json:"report_id"`
+	StageId   uint32 `json:"stage_id"`
+	RoleId    uint32 `json:"role_id"`
+	ZoneId    uint32 `json:"zone_id"`
+	FightType uint32 `json:"fight_type"`
+	LogMd5    string `json:"log_md5"`
+	MapId     uint32 `json:"map_id"`
+	MazeType  uint32 `json:"maze_type"`
 }
 
 type fightVerifyErrInfoBy []fightVerifyErrInfo
@@ -58,7 +58,7 @@ func FightErrInfo(c echo.Context) error {
 
 	db := cfg.LogDb
 
-	sql := "SELECT time, report_id, stage_id, roleid, zoneid, fight_type, log_md5, mapid , chapter_type FROM fight_verify_error "
+	sql := "SELECT time, report_id, stage_id, roleid, zoneid, fight_type, log_md5, mapid , maze_type FROM fight_verify_error "
 	sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
 	sql += "AND is_server=1"
 
@@ -73,12 +73,12 @@ func FightErrInfo(c echo.Context) error {
 	slFightVerifyInfo := make([]fightVerifyErrInfo, 0)
 	for rows.Next() {
 		var r fightVerifyErrInfo
-		var nullChapterType sql2.NullInt32
-		if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5, &r.MapId, &nullChapterType); err != nil {
+		var nullMazeType sql2.NullInt32
+		if err := rows.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &r.LogMd5, &r.MapId, &nullMazeType); err != nil {
 			return err
 		}
-		if nullChapterType.Valid {
-			r.ChapterType = uint32(nullChapterType.Int32)
+		if nullMazeType.Valid {
+			r.MazeType = uint32(nullMazeType.Int32)
 		}
 
 		slFightVerifyInfo = append(slFightVerifyInfo, r)
@@ -88,6 +88,31 @@ func FightErrInfo(c echo.Context) error {
 		return err
 	}
 
+	sql = "SELECT time, report_id, stage_id, roleid, zoneid, fight_type , maze_type FROM maze_verify_error "
+	sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "' "
+	sql += "AND is_server=1"
+
+	rows1, err1 := db.Query(sql)
+	if err1 != nil {
+		return err1
+	}
+	defer rows1.Close()
+
+	for rows1.Next() {
+		var r fightVerifyErrInfo
+		var nullMazeType sql2.NullInt32
+		if err := rows1.Scan(&r.ErrTime, &r.ReportId, &r.StageId, &r.RoleId, &r.ZoneId, &r.FightType, &nullMazeType); err != nil {
+			return err
+		}
+		if nullMazeType.Valid {
+			r.MazeType = uint32(nullMazeType.Int32)
+		}
+		slFightVerifyInfo = append(slFightVerifyInfo, r)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
 	sort.Sort(fightVerifyErrInfoBy(slFightVerifyInfo))
 
 	vSimpleErrInfo := common.GetPage(slFightVerifyInfo, page, limit)
@@ -171,13 +196,19 @@ func FightExportReport(c echo.Context) error {
 
 func FightExportLog(c echo.Context) error {
 	ctx := c.(*mid.Context)
+	reportid := ctx.FormValue("reportid")
 	logmd5 := ctx.FormValue("logmd5")
+	fightType, _ := strconv.Atoi(ctx.FormValue("fighttype"))
 	isServer, _ := strconv.Atoi(ctx.FormValue("isServer"))
 
 	db := cfg.LogDb
 	var sql string
 
-	sql = fmt.Sprintf("SELECT log,client_version FROM fight_verify_error WHERE log_md5 = '%s' and is_server = %d", logmd5, isServer)
+	if fightType != 12 {
+		sql = fmt.Sprintf("SELECT log,client_version FROM fight_verify_error WHERE log_md5 = '%s' and is_server = %d", logmd5, isServer)
+	} else {
+		sql = fmt.Sprintf("SELECT log,client_version FROM maze_verify_error WHERE report_id = '%s' and is_server = %d", reportid, isServer)
+	}
 
 	rows, err := db.Query(sql)
 	if err != nil {
@@ -193,8 +224,10 @@ func FightExportLog(c echo.Context) error {
 			return err
 		}
 
-		decodeBytes, _ := base64.StdEncoding.DecodeString(log)
-		log = string(decodeBytes)
+		if fightType != 11 {
+			decodeBytes, _ := base64.StdEncoding.DecodeString(log)
+			log = string(decodeBytes)
+		}
 	}
 
 	resp := make(map[string]string, 0)
