@@ -874,7 +874,8 @@
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
                         '13': '天赋技能解锁',
-                        '14': '充值犹豫时'
+                        '14': '充值犹豫时',
+                        '15': '钻石变更时'
                     },
                     parser: parseInt
                 },
@@ -1027,6 +1028,11 @@
                 rune_level: {
                     name: '购买符文的等级(-区分)',
                     type: 'midtext'
+                },
+                growth_gift_step: {
+                    name: '成长礼包活动阶段',
+                    type: 'midtext',
+                    parser: parseInt
                 }
             }
         }
