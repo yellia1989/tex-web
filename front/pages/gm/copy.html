@@ -134,11 +134,10 @@
           updateZone(server);
         }
       });
-      // 选择一个内网的服务器作为目标
+      // 获取所有地区的服务器列表
       okUtils.ajax("/api/public/gm/server/get_list", "get", null, false).done(function (response) {
         serverSelect.update({
           data: response.data,
-          initValue: [1],
         });
       }).fail(function (error) {
         console.log(error);
@@ -180,14 +179,16 @@
         let tar_role = $("#tarRole").val();
         // 从选中的服务器获取数据
         let role_data;
-        okUtils.ajax("/api/public/gm/copy_role", "get", { server: server, zone: src_zone, role: src_role }, true).done(function (response) {
+        okUtils.ajax("/api/public/gm/dump_role", "get", { server: server, zone: src_zone, role: src_role }, false).done(function (response) {
           role_data = response.data;
+          // copy到选中的内网服务器
+          okUtils.ajax("/api/public/gm/load_role", "post", { zone: tar_zone, role: tar_role, data: role_data }, false).done(function (response) {
+            console.log("ok");
+          }).fail(function (error) {
+            console.log("failed", error);
+          });
         }).fail(function (error) {
           console.log("failed", error);
-        });
-        // copy到选中的内网服务器
-        okUtils.ajax("/api/public/gm/paste_role", "post", { zone: tar_zone, role: tar_role, data: role_data }, true).done(function (response) {
-          console.log("ok");
         });
         return false;
       });

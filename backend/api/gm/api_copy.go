@@ -11,13 +11,12 @@ import (
     "encoding/json"
     "io/ioutil"
     "net/http"
-    "net/url"
 )
 
 type Server struct {
     Name string `json:"name"`
     Ip string `json:"ip"`
-    Port int `json:"port"`
+    Port string `json:"port"`
 }
 
 func (s *Server) GetAddress() string {
@@ -31,12 +30,10 @@ func init() {
     if err != nil {
         fmt.Printf("servers init failed, %s", err.Error())
     }
-    err = json.Unmarshal(servers, AllServer)
+    err = json.Unmarshal(servers, &AllServer)
     if err != nil {
         fmt.Printf("servers init failed, %s", err.Error())
     }
-
-    fmt.Println(AllServer)
 }
 
 func getOtherServerAddress(id string) (string, error) {
@@ -56,14 +53,14 @@ func GetServerList(c echo.Context) error {
         Id string `json:"id"`
         Name string `json:"name"`
     }
-    mServers := make(map[string]server)
+    vServers := make([]server, 0)
 
     for id, v := range AllServer {
         ser := server{id, v.Name}
-        mServers[ser.Id] = ser
+        vServers = append(vServers, ser)
     }
 
-    return ctx.SendResponse(mServers)
+    return ctx.SendArray(vServers, len(vServers))
 }
 
 func GetZoneList(c echo.Context) error {
@@ -87,26 +84,35 @@ func GetZoneList(c echo.Context) error {
             return err
         }
 
-        params := url.Values{}
-        Url, err := url.Parse(address + "/get")
+        cmd := "/api/public/gm/zone/get_list"
+        param := "server=" + server
+        path := "http://" + address + cmd + "/?" + param
+        resp, err := http.Get(path)
         if err != nil {
             return err
         }
-
-        params.Set("server", server)
-        Url.RawQuery = params.Encode()
-        path := Url.String()
-        fmt.Println(path)
-        resp, err := http.Get(path)
         defer resp.Body.Close()
-        body, _ := ioutil.ReadAll(resp.Body)
-        return ctx.SendResponse(body)
+
+        body, err := ioutil.ReadAll(resp.Body)
+        if err != nil {
+            return err
+        }
+        mAllData := make(map[string]interface{})
+        err = json.Unmarshal(body, &mAllData)
+        if err != nil {
+            return err
+        }
+        data, ok := mAllData["data"]
+        if !ok {
+          return errors.New("未找到数据")
+        }
+        return ctx.SendResponse(data)
     }
 
     return nil
 }
 
-func CopyRole(c echo.Context) error {
+func DumpRole(c echo.Context) error {
     ctx := c.(*mid.Context)
     server := ctx.QueryParam("server")
     zone := ctx.QueryParam("zone")
@@ -118,28 +124,61 @@ func CopyRole(c echo.Context) error {
 
     if server == cfg.ServerID {
         result := new (string)
-        cmdstr := "copy_role " + role
-        cmd(ctx, zone, cmdstr, result)
+        cmdstr := "dump_role_http " + role
+        err := Cmd("public_gm", zone, "0", cmdstr, result)
+        if err != nil {
+            return err
+        }
         return ctx.SendResponse(*result)
     } else {
         // 从其他服务器获取玩家数据
+        address, err := getOtherServerAddress(server)
+        if err != nil {
+            return err
+        }
+
+        cmd := "/api/public/gm/copy_role"
+        param := "server=" + server
+        param += "&zone=" + zone
+        param += "&role=" + role
+        path := "http://" + address + cmd + "/?" + param
+        resp, err := http.Get(path)
+        if err != nil {
+            return err
+        }
+        defer resp.Body.Close()
+
+        body, err := ioutil.ReadAll(resp.Body)
+        if err != nil {
+            return err
+        }
+        mAllData := make(map[string]interface{})
+        err = json.Unmarshal(body, &mAllData)
+        if err != nil {
+            return err
+        }
+        data, ok := mAllData["data"]
+        if !ok {
+          return errors.New("未找到数据")
+        }
+        return ctx.SendResponse(data)
     }
     return nil
 }
 
-func PasteRole(c echo.Context) error {
+func LoadRole(c echo.Context) error {
     // 执行gm粘贴玩家数据
     ctx := c.(*mid.Context)
-    zone := ctx.QueryParam("zone")
-    role := ctx.QueryParam("role")
-    roleData := ctx.QueryParam("data")
+    zone := ctx.FormValue("zone")
+    role := ctx.FormValue("role")
+    roleData := ctx.FormValue("data")
 
     if zone == "" || role == "" || roleData == "" {
         return ctx.SendError(-1, "选择的玩家错误")
     }
 
     result := new (string)
-    cmdstr := "paste_role " + role + " " + roleData
+    cmdstr := "load_role_http " + role + " " + roleData
     cmd(ctx, zone, cmdstr, result)
 
     return ctx.SendResponse(*result)
