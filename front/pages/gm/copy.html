@@ -113,6 +113,9 @@
       let serverSelect = xmSelect.render({
         el: '#serverSelect',
         name: 'id',
+        prop: {
+          value: 'id',
+        },
         tips: '请选择区域',
         layVerify: 'required',
         layVerType: 'tips',
@@ -120,11 +123,6 @@
           show: true,
         },
         radio: true,
-        data: [
-          {value: "1", name: "内网"},
-          {value: "2", name: "预发布"},
-          {value: "3", name: "新加坡"},
-        ],
         on: function(data) {
           var arr = data.arr;
           var server;
@@ -136,6 +134,16 @@
           updateZone(server);
         }
       });
+      // 选择一个内网的服务器作为目标
+      okUtils.ajax("/api/public/gm/server/get_list", "get", null, false).done(function (response) {
+        serverSelect.update({
+          data: response.data,
+          initValue: [1],
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
       let zoneSelect2 = xmSelect.render({
         el: '#zoneSelect2',
         name: 'id',
@@ -169,7 +177,7 @@
         let src_zone = zoneSelect.getValue('valueStr');
         let tar_zone = zoneSelect2.getValue('valueStr');
         let src_role = $("#srcRole").val();
-        let tar_role = $("#tarrole").val();
+        let tar_role = $("#tarRole").val();
         // 从选中的服务器获取数据
         let role_data;
         okUtils.ajax("/api/public/gm/copy_role", "get", { server: server, zone: src_zone, role: src_role }, true).done(function (response) {
