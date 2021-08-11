@@ -180,7 +180,9 @@ func LoadRole(c echo.Context) error {
 
     result := new (string)
     cmdstr := "load_role_http " + role + " " + roleData
-    cmd(ctx, zone, cmdstr, result)
+    if err := cmd(ctx, zone, cmdstr, result); err != nil {
+        return err
+    }
 
     return ctx.SendResponse(*result)
 }

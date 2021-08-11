@@ -133,7 +133,7 @@ func Cmd(userName string, zoneid string, mapid string, cmd string, result *strin
         if err != nil {
             serr = err.Error()
         }
-        return fmt.Errorf("ret:%d, err:%s", ret, serr)
+        return fmt.Errorf("ret:%d, err:%s, rsp: %s", ret, serr, *result)
     }
 
     if cmd != "iap_list" && cmd != "item_list" {
