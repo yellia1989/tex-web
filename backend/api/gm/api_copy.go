@@ -67,6 +67,7 @@ func GetServerList(c echo.Context) error {
 func GetZoneList(c echo.Context) error {
     ctx := c.(*mid.Context)
     server := ctx.QueryParam("server")
+
     if server == cfg.ServerID {
         data := make(map[string][]rpc.ZoneInfo,0)
         zones := zoneList(c)
@@ -78,39 +79,50 @@ func GetZoneList(c echo.Context) error {
         zones2 := MapSimpleList()
         data["map"] = zones2
         return ctx.SendResponse(data);
-    } else {
-        // 查询其他服务器列表
-        address, err := getOtherServerAddress(server)
-        if err != nil {
-            return err
-        }
-
-        cmd := "/api/public/gm/zone/get_list"
-        param := "server=" + server
-        path := "http://" + address + cmd + "/?" + param
-        resp, err := http.Get(path)
-        if err != nil {
-            return err
-        }
-        defer resp.Body.Close()
-
-        body, err := ioutil.ReadAll(resp.Body)
-        if err != nil {
-            return err
-        }
-        mAllData := make(map[string]interface{})
-        err = json.Unmarshal(body, &mAllData)
-        if err != nil {
-            return err
-        }
-        data, ok := mAllData["data"]
-        if !ok {
-          return errors.New("未找到数据")
-        }
-        return ctx.SendResponse(data)
     }
 
-    return nil
+    // 查询其他服务器列表
+    address, err := getOtherServerAddress(server)
+    if err != nil {
+        return err
+    }
+
+    path := "/api/public/gm/get_zone_list"
+    param := "server=" + server
+
+    p := make(map[string]string)
+    p["server"] = server
+    param += "&sign=" + mid.Sign(path, p)
+
+    url := "http://" + address + path + "/?" + param
+    resp, err := http.Get(url)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return err
+    }
+
+    type apiResponse struct {
+        Code int `json:"code"`
+        Msg string `json:"msg"`
+        Data interface{} `json:"data"`
+    }
+
+    var data apiResponse
+    err = json.Unmarshal(body, &data)
+    if err != nil {
+        return err
+    }
+
+    if data.Code != 0 {
+        return fmt.Errorf(data.Msg)
+    }
+
+    return ctx.SendResponse(data.Data)
 }
 
 func DumpRole(c echo.Context) error {
@@ -131,40 +143,55 @@ func DumpRole(c echo.Context) error {
             return err
         }
         return ctx.SendResponse(*result)
-    } else {
-        // 从其他服务器获取玩家数据
-        address, err := getOtherServerAddress(server)
-        if err != nil {
-            return err
-        }
-
-        cmd := "/api/public/gm/copy_role"
-        param := "server=" + server
-        param += "&zone=" + zone
-        param += "&role=" + role
-        path := "http://" + address + cmd + "/?" + param
-        resp, err := http.Get(path)
-        if err != nil {
-            return err
-        }
-        defer resp.Body.Close()
-
-        body, err := ioutil.ReadAll(resp.Body)
-        if err != nil {
-            return err
-        }
-        mAllData := make(map[string]interface{})
-        err = json.Unmarshal(body, &mAllData)
-        if err != nil {
-            return err
-        }
-        data, ok := mAllData["data"]
-        if !ok {
-          return errors.New("未找到数据")
-        }
-        return ctx.SendResponse(data)
     }
-    return nil
+
+    // 从其他服务器获取玩家数据
+    address, err := getOtherServerAddress(server)
+    if err != nil {
+        return err
+    }
+
+    path := "/api/public/gm/dump_role"
+    param := "server=" + server
+    param += "&zone=" + zone
+    param += "&role=" + role
+
+    p := make(map[string]string)
+    p["server"] = server
+    p["zone"] = zone
+    p["role"] = role
+
+    param += "&sign=" + mid.Sign(path, p)
+
+    url := "http://" + address + path + "/?" + param
+    resp, err := http.Get(url)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return err
+    }
+
+    type apiResponse struct {
+        Code int `json:"code"`
+        Msg string `json:"msg"`
+        Data interface{} `json:"data"`
+    }
+
+    var data apiResponse
+    err = json.Unmarshal(body, &data)
+    if err != nil {
+        return err
+    }
+
+    if data.Code != 0 {
+        return fmt.Errorf(data.Msg)
+    }
+
+    return ctx.SendResponse(data.Data)
 }
 
 func LoadRole(c echo.Context) error {

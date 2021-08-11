@@ -7,6 +7,7 @@ import (
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
+    "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-go/tools/util"
 )
 
@@ -34,6 +35,12 @@ func filterMenu(ms []*model.Menu, role uint32) []*model.Menu {
         if !util.Contain(m.Role, role) {
             continue
         }
+
+        // 导入数据菜单只有内网才看得见
+        if m.Id == 216 && cfg.ServerID != "1" {
+            continue
+        }
+
         // 处理子节点
         m.Children = filterMenu(m.Children, role)
         ret = append(ret, m)

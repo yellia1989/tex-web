@@ -111,6 +111,11 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/welfare/taskdel", gm.WelfareTaskDel)       // 删除福利任务
     group.GET("/gm/welfare/rolelist", gm.WelfareRoleList)      // 玩家福利
 
+    group.POST("/gm/import/load_role", gm.LoadRole) // 导入玩家数据
+    group.GET("/gm/import/dump_role", gm.DumpRole) // 导入玩家数据
+    group.GET("/gm/import/get_server_list", gm.GetServerList) // 获取所有地区的服务器信息
+    group.GET("/gm/import/get_zone_list", gm.GetZoneList) // 获取可选的服务器列表
+
     group.GET("/game/role/list", game.RoleList)     // 玩家列表
     group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志
     group.GET("/game/coin/sublog", game.CoinSubLog)
@@ -175,8 +180,6 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/game/fight-verify/export-report", game.FightExportReport) // 导出战斗日志
     group.POST("/game/fight-verify/export-log", game.FightExportLog) // 导出战斗日志
 
-    group.GET("/public/gm/server/get_list", gm.GetServerList) // 获取所有地区的服务器信息
-    group.GET("/public/gm/zone/get_list", gm.GetZoneList) // 获取可选的服务器列表
+    group.GET("/public/gm/get_zone_list", gm.GetZoneList) // 获取当前环境的服务器列表
     group.GET("/public/gm/dump_role", gm.DumpRole) // 复制玩家数据
-    group.POST("/public/gm/load_role", gm.LoadRole) // 粘贴玩家数据
 }

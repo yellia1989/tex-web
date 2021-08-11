@@ -279,11 +279,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          2
-        ]
+        "children": null
       }
     ]
   },
