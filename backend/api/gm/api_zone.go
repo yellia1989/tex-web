@@ -42,7 +42,7 @@ func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
     var zones []rpc.ZoneInfo
     ret, err := dirPrx.GetAllZone(&zones)
     checkRet(ret, err)
-    
+
     return zones
 }
 

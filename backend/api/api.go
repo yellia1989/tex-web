@@ -174,4 +174,9 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/fight-verify/err_info", game.FightErrInfo) // 战斗验证失败日志列表
     group.POST("/game/fight-verify/export-report", game.FightExportReport) // 导出战斗日志
     group.POST("/game/fight-verify/export-log", game.FightExportLog) // 导出战斗日志
+
+    group.GET("/public/gm/server/get_list", gm.GetServerList) // 获取所有地区的服务器信息
+    group.GET("/public/gm/zone/get_list", gm.GetZoneList) // 获取可选的服务器列表
+    group.GET("/public/gm/dump_role", gm.DumpRole) // 复制玩家数据
+    group.POST("/public/gm/load_role", gm.LoadRole) // 粘贴玩家数据
 }

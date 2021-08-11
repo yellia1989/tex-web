@@ -72,6 +72,9 @@ var StatChannels []string
 // 聊天消息脏字检测间隔
 var ChatMaskInterval time.Duration
 
+// 服务器id
+var ServerID string
+
 func ParseCfg(file string) (err error) {
     if Config == nil {
         Config = util.NewConfig()
@@ -158,6 +161,8 @@ func ParseCfg(file string) (err error) {
     StatChannels = strings.Split(tmp, ",")
 
     ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1m")
+
+    ServerID = cfg.GetCfg("server", "")
 
     return
 }
