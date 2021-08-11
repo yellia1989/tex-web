@@ -3,8 +3,8 @@ package model
 import (
     "database/sql"
     "encoding/json"
-    "fmt"
     "github.com/yellia1989/tex-go/tools/util"
+    "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
     cm "github.com/yellia1989/tex-web/backend/common"
     "strconv"
@@ -16,7 +16,7 @@ var menus *cm.Map
 func InitMenu() {
     bs, err := util.LoadFromFile("data/menu.json")
     if err != nil {
-        fmt.Printf("menu init failed, %s", err.Error())
+        log.Error("menu init failed, %s", err.Error())
     }
 
     db := cfg.StatDb
@@ -27,7 +27,7 @@ func InitMenu() {
     items := make([]*Menu,0)
     err = json.Unmarshal(bs, &items)
     if err != nil {
-        fmt.Printf("menu init failed, %s", err.Error())
+        log.Error("menu init failed, %s", err.Error())
     }
 
     for _,v := range items {

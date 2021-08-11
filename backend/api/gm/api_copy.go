@@ -5,6 +5,7 @@ import (
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/labstack/echo"
     "github.com/yellia1989/tex-go/tools/util"
+    "github.com/yellia1989/tex-go/tools/log"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "errors"
     "fmt"
@@ -28,11 +29,11 @@ var AllServer = make(map[string]Server)
 func init() {
     servers, err := util.LoadFromFile("data/server.json")
     if err != nil {
-        fmt.Printf("servers init failed, %s", err.Error())
+        log.Error("servers init failed, %s", err.Error())
     }
     err = json.Unmarshal(servers, &AllServer)
     if err != nil {
-        fmt.Printf("servers init failed, %s", err.Error())
+        log.Error("servers init failed, %s", err.Error())
     }
 }
 
