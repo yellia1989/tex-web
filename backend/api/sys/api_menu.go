@@ -17,23 +17,21 @@ func MenuList(c echo.Context) error {
 
     // 权限控制
     user := ctx.GetUser()
-    if !user.IsAdmin() {
-        // 管理员不需要验证权限
-        role := user.Role
-        ms = filterMenu(ms, role)
-    }
+    ms = filterMenu(ms, user.Role, user.IsAdmin())
 
     return ctx.SendResponse(ms)
 }
 
-func filterMenu(ms []*model.Menu, role uint32) []*model.Menu {
+func filterMenu(ms []*model.Menu, role uint32, bAdmin bool) []*model.Menu {
     if len(ms) == 0 {
         return nil
     }
     ret := make([]*model.Menu, 0)
     for _, m := range ms {
-        if !util.Contain(m.Role, role) {
-            continue
+        if !bAdmin {
+            if !util.Contain(m.Role, role) {
+                continue
+            }
         }
 
         // 导入数据菜单只有内网才看得见
@@ -42,7 +40,7 @@ func filterMenu(ms []*model.Menu, role uint32) []*model.Menu {
         }
 
         // 处理子节点
-        m.Children = filterMenu(m.Children, role)
+        m.Children = filterMenu(m.Children, role, bAdmin)
         ret = append(ret, m)
     }
     return ret
