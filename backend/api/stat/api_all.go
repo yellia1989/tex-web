@@ -190,7 +190,7 @@ func RealStat(c echo.Context) error {
     var rgeToday uint32 // 今日充值
     var rgeNewRoleNumToday uint32 // 今日新增充值人数
     rgeRolesToday := make(map[uint32]bool) // 今日充值人数
-    rgeRecords, err := getRgeRecordByDate(nil, now.ID, now.ID, roleCond)
+    rgeRecords, err := getRgeRecordByDate(getAllRealZoneId(), now.ID, now.ID, roleCond)
     if err != nil {
         return err
     }
@@ -209,7 +209,7 @@ func RealStat(c echo.Context) error {
 
     var rgeTotal uint32 // 累计充值
     var rgeRoleNumTotal uint32 // 累计充值人数
-    rgeTotals, err := getRgeUtilDate(nil, now.ID, roleCond)
+    rgeTotals, err := getRgeUtilDate(getAllRealZoneId(), now.ID, roleCond)
     if err != nil {
         return err
     }
