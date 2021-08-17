@@ -1583,6 +1583,110 @@
             }
         }
     };
+        // 22
+    activityTypeDefine[22] = {
+        name: '联盟充值',
+        fieldOption: {
+            comm_param: {
+                totalMoney: {
+                    name: '累计金额',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '金额:money',
+                            type: 'text',
+                            isMapKey: true
+                        },
+                        masterreward: {
+                            name: '盟主奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        },
+                        memberreward: {
+                            name: '成员奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        }
+                    }
+                },
+                totalPeople: {
+                    name: '累计人数',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '人数:people',
+                            type: 'text',
+                            isMapKey: true
+                        },
+                        masterreward: {
+                            name: '盟主奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        },
+                        memberreward: {
+                            name: '成员奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        }
+                    }
+                }
+            },
+            client_param: {
+                total_people_pos: {
+                    name: '充值人数显示档位',
+                    type: 'text'
+                },
+                total_money_pos: {
+                    name: '充值金额显示档位',
+                    type: 'text'
+                },
+                view_sort: {
+                    name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                recommond: {
+                    name: '焦点参数(秒)',
+                    type: 'text',
+                }
+            }
+        }
+    };
+    // 23
+    activityTypeDefine[23] = {
+        name: '开服活动',
+        fieldOption: {
+            comm_param: {
+                activity_order: {
+                    name: '加入开服活动',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '显示顺序',
+                            type: 'text',
+                            isMapKey: true
+                        },
+                        activityId: {
+                            name: '活动id,活动id,活动id',
+                            type: 'text',
+                        },
+                        extrareward: {
+                            name: '额外奖励:id,num;id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     // 当前活动类型
     var currentActivityType;
