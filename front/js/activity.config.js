@@ -446,6 +446,10 @@
                            parser: utils.parseItemNumList
                         }
                     }
+                },
+                independent_step: {
+                    name: '需要额外展示的挡位(挡位类型, 挡位)',
+                    type: 'text',
                 }
             },
             client_param: {
@@ -604,8 +608,6 @@
                    printer: utils.printItemNumList,
                    parser: utils.parseItemNumList
                 },
-            },
-            server_param: {
                 condition: {
                     name: '达成条件',
                     type: 'select',
@@ -614,7 +616,9 @@
                         '2': '通关关卡'
                     },
                     parser: parseInt
-                },
+                }
+            },
+            server_param: {
                 cond_param: {
                     name: '条件参数',
                     type: 'text',
