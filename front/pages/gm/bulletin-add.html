@@ -16,30 +16,42 @@
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
-      <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
-        <div class="layui-input-block">
-          <input type="text" name="sTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
-            lay-verify="required" lay-verType="tips">
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">内容</label>
-        <div class="layui-input-block">
-          <div class="layui-tab layui-tab-brief">
-            <ul class="layui-tab-title">
-              <li class="layui-this">简体中文(默认)</li>
-              <li>英语</li>
-            </ul>
-            <div class="layui-tab-content">
-              <div class="layui-tab-item layui-show">
-                  <div id="zh-CN"></div>
-                  <textarea id="zh-CNHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+      <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+          <li class="layui-this">简体中文(默认)</li>
+          <li>英语</li>
+        </ul>
+        <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
+                  lay-verify="required" lay-verType="tips">
               </div>
-              <div class="layui-tab-item">
-                  <div id="en"></div>
-                  <textarea id="enHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="zh-CN"></div>
+                <textarea id="zh-CNHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="enTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
+                  lay-verify="required" lay-verType="tips">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="en"></div>
+                <textarea id="enHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
               </div>
             </div>
           </div>
@@ -156,10 +168,11 @@
           return false;
         }
 
+        data.field.sTitle = $('#zh-CNTitle').val();
         data.field.sContent = $('#zh-CNHtml').val();
         data.field.sHtmlContent = zhCNeditor.txt.html();
         let lang = {};
-        lang["en"] = {"sContent":$('#enHtml').val(),"sHtmlContent":ENeditor.txt.html()};
+        lang["en"] = {"sTitle": $('#enTitle').val(), "sContent": $('#enHtml').val(), "sHtmlContent": ENeditor.txt.html()};
         data.field.sLangContent = okUtils.jsonToString(lang);
 
         okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {

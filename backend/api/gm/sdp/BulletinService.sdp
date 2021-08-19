@@ -12,6 +12,7 @@ struct LangContentDataInfo
 {
     0   optional string sContent;
     1   optional string sHtmlContent;
+    2   optional string sTitle;
 };
 
 struct BulletinDataInfo

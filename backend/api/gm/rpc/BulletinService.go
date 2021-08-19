@@ -40,6 +40,7 @@ func (en BulletinFlag) String() string {
 type LangContentDataInfo struct {
 	SContent     string `json:"sContent"`
 	SHtmlContent string `json:"sHtmlContent"`
+	STitle       string `json:"sTitle"`
 }
 
 func (st *LangContentDataInfo) resetDefault() {
@@ -48,6 +49,7 @@ func (st *LangContentDataInfo) Copy() *LangContentDataInfo {
 	ret := NewLangContentDataInfo()
 	ret.SContent = st.SContent
 	ret.SHtmlContent = st.SHtmlContent
+	ret.STitle = st.STitle
 	return ret
 }
 func NewLangContentDataInfo() *LangContentDataInfo {
@@ -58,6 +60,7 @@ func NewLangContentDataInfo() *LangContentDataInfo {
 func (st *LangContentDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sContent")+fmt.Sprintf("%v\n", st.SContent))
 	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
+	util.Tab(buff, t+1, util.Fieldname("sTitle")+fmt.Sprintf("%v\n", st.STitle))
 }
 func (st *LangContentDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -70,6 +73,10 @@ func (st *LangContentDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadString(&st.SHtmlContent, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STitle, 2, false)
 	if err != nil {
 		return err
 	}
@@ -118,6 +125,12 @@ func (st *LangContentDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.SHtmlContent != "" {
 		err = p.WriteString(1, st.SHtmlContent)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STitle != "" {
+		err = p.WriteString(2, st.STitle)
 		if err != nil {
 			return err
 		}
