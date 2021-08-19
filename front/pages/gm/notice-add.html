@@ -55,7 +55,20 @@
       <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <div id="rContnet"></div>
+          <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+              <li class="layui-this">简体中文(默认)</li>
+              <li>英语</li>
+            </ul>
+            <div class="layui-tab-content">
+              <div class="layui-tab-item layui-show">
+                  <div id="zh-CN"></div>
+              </div>
+              <div class="layui-tab-item">
+                  <div id="en"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -115,8 +128,10 @@
   <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
-    const editor = getDefaultEditor('#rContnet');
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    zhCNeditor = getDefaultEditor('#zh-CN');
+    ENeditor = getDefaultEditor('#en');
+
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
@@ -190,8 +205,6 @@
 
       form.on('select(type)', function (data) {
         if (data.value == "1") {
-          $("#content").removeClass("layui-hide");
-          $("textarea[name=sContent]").attr("lay-verify", "required");
           $("#displayInterval").removeClass("layui-hide");
           $("input[name=iDisplayInterval]").attr("lay-verify", "required|integer");
           $("#displayNum").removeClass("layui-hide");
@@ -199,8 +212,6 @@
           $("#maintenanceTime").addClass("layui-hide");
           $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
         } else if (data.value == "2") {
-          $("#content").addClass("layui-hide");
-          $("textarea[name=sContent]").removeAttr("lay-verify");
           $("#displayInterval").addClass("layui-hide");
           $("input[name=iDisplayInterval]").removeAttr("lay-verify");
           $("#displayNum").addClass("layui-hide");
@@ -208,8 +219,6 @@
           $("#maintenanceTime").removeClass("layui-hide");
           $("input[name=iMaintenanceTime]").attr("lay-verify", "required|integer");
         } else if (data.value == "3") {
-          $("#content").removeClass("layui-hide");
-          $("textarea[name=sContent]").attr("lay-verify", "required");
           $("#displayInterval").addClass("layui-hide");
           $("input[name=iDisplayInterval]").removeAttr("lay-verify");
           $("#displayNum").addClass("layui-hide");
@@ -229,10 +238,11 @@
           return false;
         }
 
-        let jsonData = editor.txt.getJSON();
-        let ouputStr = ExecuteJsonData(jsonData);
-        data.field.sContent = ouputStr;
-        data.field.sHtmlContent = editor.txt.html();
+        data.field.sContent = ExecuteJsonData(zhCNeditor.txt.getJSON());
+        data.field.sHtmlContent = zhCNeditor.txt.html();
+        let lang = {};
+        lang["en"] = {"sContent":ExecuteJsonData(ENeditor.txt.getJSON()),"sHtmlContent":ENeditor.txt.html()};
+        data.field.sLangContent = okUtils.jsonToString(lang);
 
         okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {

@@ -11,26 +11,58 @@
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
-      <div class="layui-form-item">
-        <label class="layui-form-label">发件人</label>
-        <div class="layui-input-block">
-          <input type="text" name="sFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+      <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+          <li class="layui-this">简体中文(默认)</li>
+          <li>英语</li>
+        </ul>
+        <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+            <div class="layui-form-item">
+              <label class="layui-form-label">发件人</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="zh-CNContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">发件人</label>
+              <div class="layui-input-block">
+                <input type="text" id="enFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="enTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="enContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
-        <div class="layui-input-block">
-          <input type="text" name="sTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
-        </div>
-      </div>
-
-	    <div class="layui-form-item layui-form-text">
-		    <label class="layui-form-label">内容</label>
-		    <div class="layui-input-block">
-		    	<textarea name="sContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
-		    </div>
-		  </div>
 
 	    <div class="layui-form-item">
         <div class="layui-inline">
@@ -447,7 +479,14 @@
           if (itemstr != "") itemstr += ";";
           itemstr += itemid5+","+$("input[name='iItemNum5']").val();
         }
-        let param = {sFrom: data.field.sFrom, sTitle: data.field.sTitle, sContent: data.field.sContent, iCoin: data.field.iCoin, iDiamond: data.field.iDiamond, iDelTimeAfterOpen: data.field.iDelTimeAfterOpen, iDelTimeAfterRcvAttach: data.field.iDelTimeAfterRcvAttach, iZoneId: data.field.zoneid, iRoleId: data.field.iRoleId, items: itemstr};
+
+        let sFrom = $("#zh-CNFrom").val();
+        let sTitle = $("#zh-CNTitle").val();
+        let sContent = $("#zh-CNContent").val();
+        let lang = {};
+        lang["en"] = {"sFrom": $("#enFrom").val(),"sTitle": $("#enTitle").val(),"sContent": $("#enContent").val()};
+        let sLangContent = okUtils.jsonToString(lang);
+        let param = {sFrom: sFrom, sTitle: sTitle, sContent: sContent, sLangContent: sLangContent, iCoin: data.field.iCoin, iDiamond: data.field.iDiamond, iDelTimeAfterOpen: data.field.iDelTimeAfterOpen, iDelTimeAfterRcvAttach: data.field.iDelTimeAfterRcvAttach, iZoneId: data.field.zoneid, iRoleId: data.field.iRoleId, items: itemstr};
         okUtils.ajax("/api/gm/mail/testsend", "post", param, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             $("#send").attr("class", "layui-btn");

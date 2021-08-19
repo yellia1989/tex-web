@@ -26,15 +26,22 @@
       <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <div id="rContnet"></div>
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">内容2</label>
-        <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请编辑内容" class="layui-textarea" lay-verify="required"
-                    lay-verType="tips"></textarea>
+          <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+              <li class="layui-this">简体中文(默认)</li>
+              <li>英语</li>
+            </ul>
+            <div class="layui-tab-content">
+              <div class="layui-tab-item layui-show">
+                  <div id="zh-CN"></div>
+                  <textarea id="zh-CNHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+              </div>
+              <div class="layui-tab-item">
+                  <div id="en"></div>
+                  <textarea id="enHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -80,16 +87,6 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">类型</label>
-        <div class="layui-input-block">
-          <select name="iType">
-            <option value="0" selected>默认</option>
-            <option value="1">爱贝勇士</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">更新</button>
         </div>
@@ -99,9 +96,10 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script>
-    const editor = getDefaultEditor('#rContnet')
+    zhCNeditor = getDefaultEditor('#zh-CN');
+    ENeditor = getDefaultEditor('#en');
 
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
       let form = layui.form;
       let laydate = layui.laydate;
       let okUtils = layui.okUtils;
@@ -118,18 +116,29 @@
         $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
       }
 
-      editor.config.onchange = function (newHtml) {
-          let jsonData = editor.txt.getJSON();
-          let ouputStr = ExecuteJsonData(jsonData);
-          $("textarea[name='sContent']").val(ouputStr);
+      zhCNeditor.config.onchange = function (newHtml) {
+        let jsonData = zhCNeditor.txt.getJSON();
+        let ouputStr = ExecuteJsonData(jsonData);
+        $(zhCNeditor.toolbarSelector+"Html").val(ouputStr);
+      }
+
+      ENeditor.config.onchange = function (newHtml) {
+        let jsonData = ENeditor.txt.getJSON();
+        let ouputStr = ExecuteJsonData(jsonData);
+        $(ENeditor.toolbarSelector+"Html").val(ouputStr);
       }
 
       $("input[name='sTitle']").val(parent.editdata.sTitle);
-      //$("textarea[name='sContent']").val(parent.editdata.sContent);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
-      $("select[name='iType']").val(parent.editdata.iType);
-      editor.txt.html(parent.editdata.sHtmlContent);
+
+      zhCNeditor.txt.html(parent.editdata.sHtmlContent);
+      let mLangContent = parent.editdata.mLangContent;
+      if (mLangContent != null) {
+        if (mLangContent["en"] != null) {
+          ENeditor.txt.html(parent.editdata.mLangContent["en"]["sHtmlContent"]);
+        }
+      }
 
       form.render();
 
@@ -154,7 +163,11 @@
           return false;
         }
 
-        data.field.sHtmlContent = editor.txt.html();
+        data.field.sContent = $('#zh-CNHtml').val();
+        data.field.sHtmlContent = zhCNeditor.txt.html();
+        let lang = {};
+        lang["en"] = {"sContent":$('#enHtml').val(),"sHtmlContent":ENeditor.txt.html()};
+        data.field.sLangContent = okUtils.jsonToString(lang);
 
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {

@@ -3,10 +3,10 @@ package gm
 import (
     "sort"
     "time"
-    "fmt"
     "strings"
     "strconv"
     "io/ioutil"
+    "encoding/json"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
@@ -63,6 +63,10 @@ func MailTestSend(c echo.Context) error {
     iRoleId, _ := strconv.ParseUint(ctx.FormValue("iRoleId"), 10, 64)
     itemstr := ctx.FormValue("items")
 
+    if sTitle == "" || sContent == "" || sFrom == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
     m := rpc.NewMailDataInfo()
     m.SFrom = sFrom
     m.STitle = sTitle
@@ -82,6 +86,11 @@ func MailTestSend(c echo.Context) error {
     }
     m.VSendZoneIds = append(m.VSendZoneIds, uint32(iZoneId))
     m.VToUser = append(m.VToUser, iRoleId)
+
+    sLangContent := ctx.FormValue("sLangContent")
+    if sLangContent != "" {
+        json.Unmarshal([]byte(sLangContent), &m.MLangContent)
+    }
 
     comm := cfg.Comm
 
@@ -108,6 +117,10 @@ func MailSend(c echo.Context) error {
     iDelTimeAfterRcvAttach,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterRcvAttach"))
     itemstr := ctx.FormValue("items")
 
+    if sTitle == "" || sContent == "" || sFrom == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
     m := rpc.NewMailDataInfo()
     m.SFrom = sFrom
     m.STitle = sTitle
@@ -124,6 +137,11 @@ func MailSend(c echo.Context) error {
             num,_ := strconv.ParseUint(item2[1], 10, 32)
             m.VItems = append(m.VItems, rpc.CmdIDNum{IId:uint32(id), INum: uint32(num)})
         }
+    }
+
+    sLangContent := ctx.FormValue("sLangContent")
+    if sLangContent != "" {
+        json.Unmarshal([]byte(sLangContent), &m.MLangContent)
     }
 
     comm := cfg.Comm
@@ -159,9 +177,6 @@ func MailSend(c echo.Context) error {
         role1 := strings.Split(string(content), "\n")
         for _,ids := range role1 {
             tmp := strings.Fields(ids)
-
-            fmt.Printf("%x\n", strings.Join(tmp, ","))
-
             if len(tmp) != 2 {
                 // 格式错误直接忽略
                 continue
@@ -246,12 +261,21 @@ func MailSend2(c echo.Context) error {
     iDelTimeAfterOpen,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterOpen"))
     iDelTimeAfterRcvAttach,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterRcvAttach"))
 
+    if sTitle == "" || sContent == "" || sFrom == "" {
+        return ctx.SendError(-1, "参数非法")
+    }
+
     m := rpc.NewMailDataInfo()
     m.SFrom = sFrom
     m.STitle = sTitle
     m.SContent = sContent
     m.IDelTimeAfterOpen = uint32(iDelTimeAfterOpen)
     m.IDelTimeAfterRcvAttach = uint32(iDelTimeAfterRcvAttach)
+
+    sLangContent := ctx.FormValue("sLangContent")
+    if sLangContent != "" {
+        json.Unmarshal([]byte(sLangContent), &m.MLangContent)
+    }
 
     comm := cfg.Comm
 
