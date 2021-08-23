@@ -924,7 +924,13 @@
                 },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
-                    type: 'midtext'
+                    type: 'select',
+                    options: {
+                        '1': '野蛮成长礼包',
+                        '2': '急速成长礼包',
+                        '3': '快速成长礼包',
+                        '4': '加速成长礼包',
+                    },
                     parser: parseInt
                 }
             }
