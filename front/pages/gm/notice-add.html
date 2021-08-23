@@ -52,7 +52,7 @@
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="content">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
           <div class="layui-tab layui-tab-brief">
@@ -126,6 +126,7 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/js/common.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     zhCNeditor = getDefaultEditor('#zh-CN');
@@ -211,6 +212,7 @@
           $("input[name=iDisplayNum]").attr("lay-verify", "required|integer");
           $("#maintenanceTime").addClass("layui-hide");
           $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
+          $("#content").removeClass("layui-hide");
         } else if (data.value == "2") {
           $("#displayInterval").addClass("layui-hide");
           $("input[name=iDisplayInterval]").removeAttr("lay-verify");
@@ -218,6 +220,7 @@
           $("input[name=iDisplayNum]").removeAttr("lay-verify");
           $("#maintenanceTime").removeClass("layui-hide");
           $("input[name=iMaintenanceTime]").attr("lay-verify", "required|integer");
+          $("#content").addClass("layui-hide");
         } else if (data.value == "3") {
           $("#displayInterval").addClass("layui-hide");
           $("input[name=iDisplayInterval]").removeAttr("lay-verify");
@@ -225,6 +228,7 @@
           $("input[name=iDisplayNum]").removeAttr("lay-verify");
           $("#maintenanceTime").addClass("layui-hide");
           $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
+          $("#content").removeClass("layui-hide");
         }
       });
 
@@ -238,11 +242,28 @@
           return false;
         }
 
-        data.field.sContent = ExecuteJsonData(zhCNeditor.txt.getJSON());
-        data.field.sHtmlContent = zhCNeditor.txt.html();
-        let lang = {};
-        lang["en"] = {"sContent":ExecuteJsonData(ENeditor.txt.getJSON()),"sHtmlContent":ENeditor.txt.html()};
-        data.field.sLangContent = okUtils.jsonToString(lang);
+        if (data.field.iType != 2) {
+          data.field.sContent = ExecuteJsonData(zhCNeditor.txt.getJSON());
+          data.field.sHtmlContent = zhCNeditor.txt.html();
+
+          let lang = {};
+          lang["en"] = {"sContent":ExecuteJsonData(ENeditor.txt.getJSON()),"sHtmlContent":ENeditor.txt.html()};
+          data.field.sLangContent = okUtils.jsonToString(lang);
+
+          if (!checkLang(lang)) {
+            okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
+              okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
+                okLayer.greenTickMsg(response.data, function () {
+                  parent.layer.close(parent.layer.getFrameIndex(window.name));
+                });
+              }).fail(function (error) {
+                console.log(error);
+              });
+              layer.close(index);
+            });
+            return false;
+          }
+        }
 
         okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {

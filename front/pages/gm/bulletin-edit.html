@@ -106,6 +106,7 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/js/common.js"></script>
   <script>
     zhCNeditor = getDefaultEditor('#zh-CN');
     ENeditor = getDefaultEditor('#en');
@@ -178,10 +179,32 @@
         data.field.sTitle = $('#zh-CNTitle').val();
         data.field.sContent = $('#zh-CNHtml').val();
         data.field.sHtmlContent = zhCNeditor.txt.html();
+
+        if (data.field.sTitle == "" || data.field.sContent == "" || data.field.sHtmlContent == "") {
+          okLayer.redCrossMsg('默认语言的配置不能为空', function () {});
+          return false;
+        }
+
         let lang = {};
         lang["en"] = {"sTitle": $('#enTitle').val(), "sContent": $('#enHtml').val(), "sHtmlContent": ENeditor.txt.html()};
-        data.field.sLangContent = okUtils.jsonToString(lang);
 
+        if (!checkLang(lang)) {
+          okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
+            data.field.sLangContent = okUtils.jsonToString(lang);
+            okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
+              okLayer.greenTickMsg(response.data, function () {
+                parent.layer.close(parent.layer.getFrameIndex(window.name));
+              });
+            }).fail(function (error) {
+              console.log(error);
+            });
+
+            layer.close(index);
+          });
+          return false;
+        }
+
+        data.field.sLangContent = okUtils.jsonToString(lang);
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
