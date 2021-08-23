@@ -9,16 +9,29 @@ import (
     "github.com/yellia1989/tex-go/tools/log"
 )
 
-var roles gcache.Cache
+var ctx context.Context
 var mu sync.Mutex
 var conn *dsql.Conn
-var ctx context.Context
 
-func createNewConn() (err error) {
+var roles gcache.Cache
+
+func checkConn() (err error) {
     if conn != nil {
-        conn.Close()
+        err = conn.PingContext(ctx)
+        if err != nil {
+            conn.Close()
+            conn = nil
+        } else {
+            return
+        }
     }
-    conn, err = cfg.StatDb.Conn(ctx)
+
+    if conn == nil {
+        conn, err = cfg.StatDb.Conn(ctx)
+        if err != nil {
+            return
+        }
+    }
     return
 }
 
@@ -39,17 +52,10 @@ func init() {
             mu.Lock()
             defer mu.Unlock()
 
-            if conn == nil {
-                if err := createNewConn(); err != nil {
-                    return nil, err
-                }
+            if err := checkConn(); err != nil {
+                return nil, err
             }
 
-            if err := conn.PingContext(ctx); err != nil {
-                if err := createNewConn(); err != nil {
-                    return nil, err
-                }
-            }
             zaKey := key.(zoneAccountKey)
             r := Role{}
             if err := conn.QueryRowContext(ctx, "SELECT reg_date_fk FROM role WHERE zoneid_fk=? AND accountid_fk=?", zaKey.zoneidFk, zaKey.accountidFk).Scan(&r.RegDateFk); err != nil {
@@ -64,7 +70,7 @@ func Get(zoneid uint32, accountid uint32) *Role {
     r, err := roles.Get(zoneAccountKey{zoneid, accountid})
     if r == nil {
         if err != dsql.ErrNoRows {
-            log.Errorf("get role err: %s", err.Error())
+            log.Errorf("cron [role] get cache role err: %s", err.Error())
         }
         return nil
     }

@@ -22,11 +22,29 @@ const (
 	CDKeyCreateMode_PreAllocate = 1
 )
 
+func (en CDKeyCreateMode) String() string {
+	ret := ""
+	switch en {
+	case CDKeyCreateMode_PreAllocate:
+		ret = "CDKeyCreateMode_PreAllocate"
+	}
+	return ret
+}
+
 type CDKeyDeliveryMode int32
 
 const (
 	CDKeyDeliveryMode_Automatic = 1
 )
+
+func (en CDKeyDeliveryMode) String() string {
+	ret := ""
+	switch en {
+	case CDKeyDeliveryMode_Automatic:
+		ret = "CDKeyDeliveryMode_Automatic"
+	}
+	return ret
+}
 
 type MPProjectConfig struct {
 	SProjectId      string `json:"sProjectId"`

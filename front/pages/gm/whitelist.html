@@ -39,6 +39,35 @@
     </form>
   </div>
 
+    <div class="ok-body">
+      <form class="layui-form" action="">
+        <div class="layui-form-item">
+          <div class="layui-input-block" style="color:#a29bfe">
+            <br>
+            <label>临时白名单列表</label>
+            <br>
+            <br>
+            <div name="tmplist" style="width:50%; word-wrap:break-word"></div>
+          </div>
+        </div>
+        <br>
+  
+        <div class="layui-form-item">
+          <div class="layui-input-block" style="width:40%">
+            <textarea name="input" required lay-verify="required" class="layui-textarea"></textarea>
+          </div>
+        </div>
+  
+        <div class="layui-form-item">
+          <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="addtmp">增加到临时白名单</button>
+            <button class="layui-btn" lay-submit lay-filter="deltmp">从临时白名单删除</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
   <script src="/lib/layui/layui.js"></script>
   <script>
     layui.use(['form', 'okLayer', 'okUtils'], function () {
@@ -51,12 +80,19 @@
         $("div[name='list']").text(data.data);
       });
 
+      $.get("/api/gm/whitelist/tmplist", function (data) {
+        $("div[name='tmplist']").text(data.data);
+      });
+
       //监听提交
       form.on('submit(add)', function (data) {
         okUtils.ajax("/api/gm/whitelist/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             $.get("/api/gm/whitelist/list", function (data) {
               $("div[name='list']").text(data.data);
+            });
+            $.get("/api/gm/whitelist/tmplist", function (data) {
+              $("div[name='tmplist']").text(data.data);
             });
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
@@ -87,6 +123,39 @@
           okLayer.greenTickMsg(response.data, function () {
             $.get("/api/gm/whitelist/list", function (data) {
               $("div[name='list']").text(data.data);
+            });
+            $.get("/api/gm/whitelist/tmplist", function (data) {
+              $("div[name='tmplist']").text(data.data);
+            });
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      //监听提交
+      form.on('submit(addtmp)', function (data) {
+        okUtils.ajax("/api/gm/whitelist/addtmp", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/tmplist", function (data) {
+              $("div[name='tmplist']").text(data.data);
+            });
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      //监听提交
+      form.on('submit(deltmp)', function (data) {
+        okUtils.ajax("/api/gm/whitelist/deltmp", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            $.get("/api/gm/whitelist/tmplist", function (data) {
+              $("div[name='tmplist']").text(data.data);
             });
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });

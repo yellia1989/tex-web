@@ -69,7 +69,7 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号"},
-          { field: "iZoneId", title: "分区ID", width: 90},
+          { field: "iZoneId", title: "分区ID", width: 70},
           { field: "sZoneName", title: "分区名字", width: 90 },
           { field: "sConnServer", title: "ConnServer", width: 120 },
           {
@@ -95,9 +95,9 @@
             field: "iManualZoneStatus", title: "手动状态", width: 90, templet: function (d) {
               let ret = '';
               switch (d.iManualZoneStatus) {
-                case 1: ret = '畅通'; break;
-                case 2: ret = '拥挤'; break;
-                case 3: ret = '繁忙'; break;
+                case 1: ret = '流畅'; break;
+                case 2: ret = '忙碌'; break;
+                case 3: ret = '爆满'; break;
                 case 4: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">维护</span>'; break;
                 default:
                   ret = '未知状态';
@@ -105,24 +105,18 @@
               return ret;
             }
           },
-          { field: "iMaxNum", title: "最大人数", width: 90 },
-          {
-            field: "iPublishTime", title: "开区时间", width: 170, templet: function (d) {
-              let ret = okUtils.dateFormat(new Date(d.iPublishTime * 1000), 'yyyy-MM-dd hh:mm:ss');
-              if (new Date().getTime() < d.iPublishTime * 1000) {
-                ret = '<span class="layui-btn layui-btn-warm layui-btn-xs">' + ret + '</span>';
-              }
-              return ret;
-            }
-          },
-          { field: "iCurNum", title: "当前在线", width: 90 },
+          { field: "sPublishTime", title: "开区时间", width: 170 },
+          { field: "iMaxNum", title: "最大创角", width: 90 },
+          { field: "iCurNum", title: "当前创角", width: 90 },
+          { field: "iMaxOnline", title: "最大在线", width: 90 },
+          { field: "iCurOnline", title: "当前在线", width: 90 },
           {
             field: "iCurZoneStatus", title: "当前状态", width: 90, templet: function (d) {
               let ret = '';
               switch (d.iCurZoneStatus) {
-                case 1: ret = '畅通'; break;
-                case 2: ret = '拥挤'; break;
-                case 3: ret = '繁忙'; break;
+                case 1: ret = '流畅'; break;
+                case 2: ret = '忙碌'; break;
+                case 3: ret = '爆满'; break;
                 case 4: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">维护</span>'; break;
                 default:
                   ret = '未知状态';

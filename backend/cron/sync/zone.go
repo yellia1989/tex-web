@@ -9,7 +9,7 @@ import (
 )
 
 type tabler interface {
-    sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error
+    sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error
 }
 
 type zone struct {
@@ -19,33 +19,24 @@ type zone struct {
     quit chan bool // 结束标识
     dur time.Duration // 日志同步间隔
     tables []tabler // 需要同步的表
-    fromconn *dsql.Conn
+    fromdb *dsql.DB
     toconn *dsql.Conn
 }
 
-func (z *zone) init() error {
-    var err error
-    var fromdb *dsql.DB
-
+func (z *zone) init() (err error) {
     if z.zoneid != 0 {
-        fromdb, err = dsql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/log_zone_%d?multiStatements=true", cfg.LogDbUser, cfg.LogDbPwd, z.dbhost, z.zoneid))
+        z.fromdb, err = dsql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/log_zone_%d?multiStatements=true", cfg.LogDbUser, cfg.LogDbPwd, cfg.LogDbHost, z.zoneid))
         if err != nil {
-            return err
+            return
         }
     } else {
-        fromdb = cfg.LogDb
-    }
-    z.fromconn, err = fromdb.Conn(ctx)
-    if err != nil {
-        return err
+        z.fromdb = cfg.LogDb
     }
 
     todb := cfg.StatDb
     z.toconn, err = todb.Conn(ctx)
     if err != nil {
-        // 释放conn连接
-        z.fromconn.Close()
-        return err
+        return
     }
 
     z.quit = make(chan bool)
@@ -63,27 +54,50 @@ func (z *zone) init() error {
     return nil
 }
 
+func (z *zone) checkConn() (err error){
+    err = z.fromdb.PingContext(ctx)
+    if err != nil {
+        return
+    }
+
+    err = z.toconn.PingContext(ctx)
+    return
+}
+
 func (z *zone) run() {
     defer func() {
-        z.fromconn.Close()
-        z.toconn.Close()
-        log.Debugf("zone sync stop, zoneid: %d", z.zoneid)
+        if z.zoneid != 0 && z.fromdb != nil {
+            z.fromdb.Close()
+        }
+        if z.toconn != nil {
+            z.toconn.Close()
+        }
+        log.Infof("cron [sync][zone] stop, zoneid: %d", z.zoneid)
     }()
 
-    log.Debugf("zone sync start, zoneid: %d", z.zoneid)
+    log.Infof("cron [sync][zone] start, zoneid: %d", z.zoneid)
+
+    if err := z.init(); err != nil {
+        log.Errorf("cron [sync][zone] init err: %s, zoneid: %d", err.Error(), z.zoneid)
+        return
+    }
+
+    ticker := time.NewTicker(z.dur)
+    defer ticker.Stop()
 
     for {
-        ticker := time.NewTicker(z.dur)
-        defer ticker.Stop()
-
         select {
         case <- z.quit: {
             return
         }
         case <- ticker.C: {
+            if err := z.checkConn(); err != nil {
+                log.Errorf("cron [sync][zone] check conn err: %s", err.Error())
+                return
+            }
             for _, t := range z.tables {
-                if err := t.sync(z.fromconn, z.toconn, z.zoneid, z.id); err != nil {
-                    log.Errorf("zone sync err: %s, zoneid: %d", err.Error(), z.zoneid)
+                if err := t.sync(z.fromdb, z.toconn, z.zoneid, z.id); err != nil {
+                    log.Errorf("cron [sync][zone] sync err: %s, zoneid: %d", err.Error(), z.zoneid)
                     return
                 }
             }

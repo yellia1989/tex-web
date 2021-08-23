@@ -67,3 +67,21 @@ func ParseTimeInLocal(layout string, v string) time.Time {
     t,_ := time.ParseInLocation(layout, v, time.Local)
     return t
 }
+
+func FormatTimeInLocal(layout string, t time.Time) string {
+    return t.Local().Format(layout)
+}
+
+func MaxInt(x, y int) int {
+    if x > y {
+        return x
+    }
+    return y
+}
+
+func MaxInt64(x, y int64) int64 {
+    if x > y {
+        return x
+    }
+    return y
+}

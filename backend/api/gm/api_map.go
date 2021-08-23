@@ -6,8 +6,10 @@ import (
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/util"
     "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
+    "github.com/yellia1989/tex-web/backend/common"
 )
 
 type _mapData struct {
@@ -18,7 +20,7 @@ type _mapData struct {
 func MapSimpleList() []rpc.ZoneInfo {
     l := make([]rpc.ZoneInfo, 0)
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
         return l
 	}
@@ -66,7 +68,7 @@ func MapList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -131,12 +133,17 @@ func MapAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
     mapid := ctx.FormValue("iMapId")
     zoneids := ctx.FormValue("zoneids")
+    endpoint := ctx.FormValue("endpoint")
 
-    if mapid == "" || zoneids == "" {
+    if mapid == "" || zoneids == "" || endpoint == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := cfg.GameDb
+    if err := registryAdd(cfg.App+".MapServer.MapServiceObj", cfg.App+".map."+mapid, endpoint); err != nil {
+        return fmt.Errorf("增加MapServer.MapServiceObj失败: %s", err.Error())
+    }
+
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -172,7 +179,7 @@ func MapDel(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
     }
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -209,7 +216,7 @@ func MapEdit(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -235,4 +242,53 @@ func MapEdit(c echo.Context) error {
 	}
 
     return ctx.SendResponse("修改地图成功")
+}
+
+func GameDb(zoneid uint32) (error, string) {
+	db := cfg.GameGlobalDb
+	if db == nil {
+		return fmt.Errorf("连接数据库失败"),""
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err,""
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"db_zone_global")
+	if err != nil {
+		return err,""
+	}
+
+	sql := "SELECT mapid,zoneids FROM t_maplist"
+    rows, err := tx.Query(sql)
+    if err != nil {
+        return err,""
+    }
+    defer rows.Close()
+
+    var mapid uint32
+    var zoneids string
+    for rows.Next() {
+        if err := rows.Scan(&mapid, &zoneids); err != nil {
+            return err,""
+        }
+        ids := common.Atou32v(zoneids, ",")
+        if ids != nil && util.Contain(ids, zoneid) {
+            break
+        }
+    }
+
+    if err := rows.Err(); err != nil {
+        return err,""
+    }
+
+    cfg := cfg.Config
+    conn := cfg.GetCfg(fmt.Sprintf("gamedb_%d", mapid),"")
+    if conn == "" {
+        return fmt.Errorf("缺少数据库配置:%d", zoneid),""
+    }
+
+    return nil,conn
 }

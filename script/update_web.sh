@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (d/47.103.96.228 u/101.133.141.46 t/101.132.43.124)"
+	echo "Usage: $0 env (u/124.156.205.111 r/101.32.168.86)"
 	exit 100
 fi
 
@@ -9,17 +9,13 @@ env="$1"
 source remote_cmd.sh
 
 case "$env" in
-    d)
-    ip=47.103.96.228
-    cp ../conf_d.cfg conf.cfg
-    ;;
     u)
-    ip=101.133.141.46
+    ip=124.156.205.111
     cp ../conf_u.cfg conf.cfg
     ;;
-    t)
-    ip=101.132.43.124
-    cp ../conf_t.cfg conf.cfg
+    r)
+    ip=101.32.168.86
+    cp ../conf_r.cfg conf.cfg
     ;;
     *)
     echo "invalid env"
@@ -27,12 +23,12 @@ case "$env" in
     ;;
 esac
 
-runcmdroot root@$ip "[ ! -f /data/web ] && mkdir /data/web"
-runcmdroot root@$ip "mkdir /data/web/backup"
+runcmd root@$ip "[ ! -f /data/web ] && mkdir /data/web"
+runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjvf $web conf.cfg ../front ../data ../web ../start.sh ../stop.sh ../sql
+tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'
@@ -44,7 +40,7 @@ putfile root@$ip ../update.sh /data/web/
 putfile root@$ip $web /data/web/backup/
 
 echo "更新web中。。。"
-runcmdroot root@$ip "cd /data/web && ./update.sh $web"
+runcmd root@$ip "cd /data/web && ./update.sh $web"
 
 rm -rf $web
 rm -rf conf.cfg

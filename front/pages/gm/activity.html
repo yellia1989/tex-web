@@ -82,7 +82,7 @@
           { type: "checkbox", title: "序号", fixed: 'left' },
           { field: "id", title: "活动ID", width: 90, fixed: 'left' },
           { field: "apply_zone", title: "应用分区", width: 90, fixed: 'left' },
-          { field: "apply_user", title: "应用玩家", width: 90 },
+          { field: "apply_map", title: "应用地图", width: 90 },
           { field: "activity_type", title: "活动类型", width: 90, align: "center", templet: function (d) {
             let act = activity.config.activityTypeDefine[d.activity_type];
             return act ? act.name : '未知类型';
@@ -126,7 +126,10 @@
             iimport();
             break;
           case "batchLock":
-            batchLock();
+            batchLock(1);
+            break;
+          case "batchUnLock":
+            batchLock(0);
             break;
         }
       });
@@ -209,12 +212,16 @@
         });
       }
 
-      function batchLock() {
-        okLayer.confirm("确定要批量加锁吗？", function (index) {
+      function batchLock(lock) {
+	let msg = "确定要批量加锁吗？";
+	if (lock == 0) {
+	  msg = "确定要批量解锁吗？";
+	}
+        okLayer.confirm(msg, function (index) {
           layer.close(index);
           let idsStr = okUtils.tableBatchCheck(table);
           if (idsStr) {
-            okUtils.ajax("/api/gm/activity/lock", "post", { idsStr: idsStr, locked: 1 }, true).done(function (response) {
+            okUtils.ajax("/api/gm/activity/lock", "post", { idsStr: idsStr, locked: lock }, true).done(function (response) {
               okUtils.tableSuccessMsg(response.data);
             }).fail(function (error) {
               console.log(error)
@@ -274,6 +281,7 @@
     <div class="layui-inline" lay-event="export"><a href="javascript:" title="导出"><i class="layui-icon layui-icon-download-circle"></i></a></div>
     <div class="layui-inline" lay-event="import"><a href="javascript:" title="导入"><i class="layui-icon layui-icon-upload-drag"></i></a></div>
     <div class="layui-inline" lay-event="batchLock"><a href="javascript:" title="一键加锁"><i class="layui-icon">&#xe673;</i></a></div>
+    <div class="layui-inline" lay-event="batchUnLock"><a href="javascript:" title="一键解锁"><i class="layui-icon">&#xe673;</i></a></div>
   </div>
 </script>
 

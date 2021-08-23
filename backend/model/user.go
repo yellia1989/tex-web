@@ -28,6 +28,7 @@ type User struct {
     UserName string     `json:"username"`
     Password string     `json:"password"`
     Role uint32         `json:"role"`
+    NeedReLogin bool
 }
 
 func (u *User) GetId() uint32 {
@@ -186,12 +187,26 @@ func DelUser(u *User) bool {
     return users.DelItem(u)
 }
 
-func UpdateUser(u *User) bool {
+func ResetUserNeedReLogin(id uint32) bool {
     if users == nil {
         return false
     }
 
+    u := users.GetItem(id)
+    if u == nil {
+        return false
+    }
+    u2 := *(u.(*User))
+    u2.NeedReLogin = false
+    return users.UpdateItem(&u2)
+}
+
+func UpdateUser(u *User) bool {
+    if users == nil {
+        return false
+    }
     u2 := *u
+    u2.NeedReLogin = true
     return users.UpdateItem(&u2)
 }
 

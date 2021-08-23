@@ -19,16 +19,12 @@ type login struct {
     init bool   // 是否初始化成功
 }
 
-func (l *login) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
-    if err := to.PingContext(ctx); err != nil {
-        return fmt.Errorf("sync login ping err: %s", err.Error())
-    }
-
+func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !l.init {
         var rid dsql.NullInt64
         if err := to.QueryRowContext(ctx, "SELECT rid FROM sync_rid WHERE `table`='login' and zoneid=?", zoneid).Scan(&rid); err != nil {
             if err != dsql.ErrNoRows {
-                return fmt.Errorf("sync login scan err: %s", err.Error())
+                return fmt.Errorf("cron [sync][login] scan err: %s, zoneid: %d", err.Error(), zoneid)
             }
         }
         l.rid = uint32(rid.Int64)
@@ -37,17 +33,13 @@ func (l *login) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uin
 
     if l.buff.Len() > 0 {
         if err := l.save(to, zoneid); err != nil {
-            return fmt.Errorf("sync login save err: %s", err.Error())
+            return fmt.Errorf("cron [sync][login] save err: %s, zoneid: %d", err.Error(), zoneid)
         }
     }
 
-    if err := from.PingContext(ctx); err != nil {
-        return fmt.Errorf("sync login ping err: %s", err.Error())
-    }
-    
     rows, err := from.QueryContext(ctx, "SELECT _rid,roleid,time,usercreatetime FROM login WHERE _rid > ? order by _rid limit 10000", l.rid)
     if err != nil {
-        return fmt.Errorf("sync login query err: %s", err.Error())
+        return fmt.Errorf("cron [sync][login] query err: %s, zoneid: %d", err.Error(), zoneid)
     }
     defer rows.Close()
 
@@ -59,36 +51,30 @@ func (l *login) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uin
     size := uint32(0)
     for rows.Next() {
         if err := rows.Scan(&_rid, &roleid, &st, &regst); err != nil {
-            return fmt.Errorf("sync login scan err: %s", err.Error())
+            return fmt.Errorf("cron [sync][login] scan err: %s, zoneid: %d", err.Error(), zoneid)
         }
         t := common.ParseTimeInLocal("2006-01-02 15:04:05", st)
         regt := common.ParseTimeInLocal("2006-01-02 15:04:05", regst)
         d := date.Get(t)
         if d == nil {
-            // 日期还没准备好
-            log.Errorf("can't find date: %s", st)
             return nil
         }
         account := acc.Get(roleid)
         if account == nil {
             if isAccountMissed(regt) {
-                // 日志丢失了
-                log.Errorf("account create log missed, accountid: %d, time: %s", roleid, regst)
+                log.Errorf("cron [sync][login] can't find account, accountid: %d", roleid)
                 continue
             }
-            // 账号还没准备好
-            log.Errorf("account not ready, accountid: %d, time: %s", roleid, regst)
+            log.Infof("cron [sync][login] can't find account, accountid: %d", roleid)
             return nil
         }
         r := rrole.Get(zoneidFk, account.Id)
         if r == nil {
             if isRoleMissed(regt) {
-                // 日志丢失了
-                log.Errorf("role create log missed, zoneid: %d, roleid: %d, time: %s", zoneid, roleid, st)
+                log.Errorf("cron [sync][login] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
                 continue
             }
-            // 角色信息还没准备好
-            log.Errorf("role not ready, zoneid: %d, roleid: %d, time: %s", zoneid, roleid, st)
+            log.Infof("cron [sync][login] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
             return nil
         }
         if d.Id < r.RegDateFk {
@@ -120,11 +106,11 @@ func (l *login) sync(from *dsql.Conn, to *dsql.Conn, zoneid uint32, zoneidFk uin
     }
 
     if err := l.save(to, zoneid); err != nil {
-        return fmt.Errorf("sync login save err: %s", err.Error())
+        return fmt.Errorf("cron [sync][login] save err: %s, zoneid: %d", err.Error(), zoneid)
     }
 
     l.rid = _rid
-    log.Debugf("sync login rid: %d, zoneid: %d", l.rid, zoneid)
+    log.Debugf("cron [sync][login] rid: %d, zoneid: %d", l.rid, zoneid)
 
     return nil
 }
@@ -142,17 +128,17 @@ func (l *login) save(to *dsql.Conn, zoneid uint32) error {
 
     var result dsql.Result
     if result, err = tx.ExecContext(ctx, l.buff.String()); err != nil {
-        return fmt.Errorf("sync login sql: %s, err: %s", l.buff.String(), err.Error())
+        return fmt.Errorf("exec err: %s, sql: %s", err.Error(), l.buff.String())
     }
 
     if err := tx.Commit(); err != nil {
-        return fmt.Errorf("sync login sql: %s, err: %s", l.buff.String(), err.Error())
+        return fmt.Errorf("commit err: %s, sql: %s", err.Error(), l.buff.String())
     }
 
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("sync login cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, l.rows, rowsAffected, zoneid)
+    log.Debugf("cron [sync][login] cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, l.rows, rowsAffected, zoneid)
 
     l.buff.Reset()
     l.rows = 0

@@ -5,6 +5,7 @@ import (
     "strconv"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 type steptrace struct {
@@ -33,14 +34,13 @@ func RechargeTrace(c echo.Context) error {
     }
 
     db, err := zoneLogDb(zoneid)
+
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
 
-    sqlcount := "SELECT count(DISTINCT flowid) as total FROM iap_trace_buy"
+    sqlcount := "SELECT count(DISTINCT flowid) as total FROM log_zone_"+zoneid+".iap_trace_buy"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
-
-    c.Logger().Debug(sqlcount)
 
     var total int
     db.QueryRow(sqlcount).Scan(&total)
@@ -52,13 +52,13 @@ func RechargeTrace(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT flowid,product_id,min(time) as start_time FROM iap_trace_buy"
+    sql := "SELECT flowid,product_id,min(time) as start_time FROM log_zone_"+zoneid+".iap_trace_buy"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " GROUP by flowid"
     sql += " ORDER by min(time) desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
-    c.Logger().Debug(sql)
+    log.Infof("sql: %s", sql)
 
     rows, err := db.Query(sql)
     if err != nil {
@@ -90,9 +90,7 @@ func RechargeTrace(c echo.Context) error {
         flowids2 = strconv.AppendUint(flowids2, v, 10)
     }
 
-    sql = "SELECT flowid,time,status FROM iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY time"
-
-    c.Logger().Debug(sql)
+    sql = "SELECT flowid,time,status FROM log_zone_"+zoneid+".iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY time"
 
     rows2, err := db.Query(sql)
     if err != nil {
@@ -112,9 +110,9 @@ func RechargeTrace(c echo.Context) error {
         return err
     }
 
-    sql = "SELECT flowid,extern_order_id FROM iap_recharge WHERE flowid in("+string(flowids2)+")"
+    sql = "SELECT flowid,extern_order_id FROM log_zone_"+zoneid+".iap_recharge WHERE flowid in("+string(flowids2)+")"
 
-    c.Logger().Debug(sql)
+    log.Infof("sql: %s", sql)
 
     rows3, err := db.Query(sql)
     if err != nil {

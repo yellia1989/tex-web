@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"github.com/labstack/echo"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 type itemlog struct {
@@ -30,11 +31,12 @@ func ItemAddLog(c echo.Context) error {
 	}
 
     db, err := zoneLogDb(zoneid)
+
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
 
-	sqlcount := "SELECT count(*) as total FROM add_item"
+	sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".add_item"
 	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
 	err = db.QueryRow(sqlcount).Scan(&total)
@@ -44,12 +46,12 @@ func ItemAddLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,time,baseid,add_num,cur_num,operate as action FROM add_item"
+	sql := "SELECT _rid as id,time,baseid,add_num,cur_num,operate as action FROM log_zone_"+zoneid+".add_item"
 	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
-    sql += " ORDER BY _rid desc"
+    sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Debug(sql)
+	log.Infof("sql: %s", sql)
 
 	rows, err := db.Query(sql)
 	if err != nil {
@@ -86,11 +88,12 @@ func ItemSubLog(c echo.Context) error {
 	}
 
     db, err := zoneLogDb(zoneid)
+
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
 
-	sqlcount := "SELECT count(*) as total FROM sub_item"
+	sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".sub_item"
 	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
 	err = db.QueryRow(sqlcount).Scan(&total)
@@ -100,12 +103,12 @@ func ItemSubLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid as id,time,baseid,sub_num,cur_num,operate as action FROM sub_item"
+	sql := "SELECT _rid as id,time,baseid,sub_num,cur_num,operate as action FROM log_zone_"+zoneid+".sub_item"
 	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
-    sql += " ORDER BY _rid desc"
+    sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
-	c.Logger().Debug(sql)
+	log.Infof("sql: %s", sql)
 
 	rows, err := db.Query(sql)
 	if err != nil {

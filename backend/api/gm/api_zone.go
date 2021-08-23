@@ -2,6 +2,7 @@ package gm
 
 import (
     "fmt"
+    "time"
     "strings"
     "strconv"
     "github.com/labstack/echo"
@@ -10,6 +11,11 @@ import (
     "github.com/yellia1989/tex-web/backend/common"
     "github.com/yellia1989/tex-web/backend/cfg"
 )
+
+type _zoneInfo struct {
+    rpc.ZoneInfo
+    SPublishTime string `json:"sPublishTime"`
+}
 
 func ZoneMap() map[uint32]rpc.ZoneInfo {
     comm := cfg.Comm
@@ -77,7 +83,13 @@ func ZoneSimpleList(c echo.Context) error {
     data["game"] = zones
 
     if bmap {
-        data["map"] = MapSimpleList()
+        var zones3 []rpc.ZoneInfo
+        if ball {
+            zones3 = append(zones3, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
+        }
+        zones4 := MapSimpleList()
+        zones3 = append(zones3, zones4...)
+        data["map"] = zones3
     }
 
     return ctx.SendResponse(data)
@@ -89,9 +101,29 @@ func ZoneList(c echo.Context) error {
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     zones := zoneList(c)
-    vPage := common.GetPage(zones, page, limit)
+    zones2 := make([]_zoneInfo, len(zones))
+    for k,v := range zones {
+        zones2[k].IZoneId = v.IZoneId
+        zones2[k].SZoneName = v.SZoneName
+        zones2[k].SConnServer = v.SConnServer
+        zones2[k].SGameServer = v.SGameServer
+        zones2[k].IZoneFlag = v.IZoneFlag
+        zones2[k].IIsManual = v.IIsManual
+        zones2[k].IManualZoneStatus = v.IManualZoneStatus
+        zones2[k].IMaxNum = v.IMaxNum
+        zones2[k].SPublishTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(int64(v.IPublishTime), 0))
+        zones2[k].IIsKick = v.IIsKick
+        zones2[k].MVersion = v.MVersion
+        zones2[k].IMaxOnline = v.IMaxOnline
+        zones2[k].ICurNum = v.ICurNum
+        zones2[k].ILastReportTime = v.ILastReportTime
+        zones2[k].ICurZoneStatus = v.ICurZoneStatus
+        zones2[k].ICurOnline = v.ICurOnline
+    }
 
-    return ctx.SendArray(vPage, len(zones))
+    vPage := common.GetPage(zones2, page, limit)
+
+    return ctx.SendArray(vPage, len(zones2))
 }
 
 func ZoneAdd(c echo.Context) error {
@@ -101,6 +133,12 @@ func ZoneAdd(c echo.Context) error {
     if err := ctx.Bind(zone); err != nil {
         return err
     }
+
+    sPublishTime := c.FormValue("sPublishTime")
+    if sPublishTime == "" {
+        return ctx.SendError(-1, "开服时间不能为空")
+    }
+    zone.IPublishTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sPublishTime).Unix())
 
     comm := cfg.Comm
 
@@ -188,6 +226,12 @@ func ZoneUpdate(c echo.Context) error {
     if err := ctx.Bind(zone); err != nil {
         return err
     }
+
+    sPublishTime := c.FormValue("sPublishTime")
+    if sPublishTime == "" {
+        return ctx.SendError(-1, "开服时间不能为空")
+    }
+    zone.IPublishTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sPublishTime).Unix())
 
     comm := cfg.Comm
 

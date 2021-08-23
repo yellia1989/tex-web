@@ -1,10 +1,12 @@
 package main
 
 import (
+    "github.com/yellia1989/tex-web/backend/model"
     "os"
     "fmt"
     "strings"
     "net/http"
+    _ "net/http/pprof"
     "github.com/labstack/echo"
     "github.com/labstack/echo/middleware"
     mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -47,7 +49,19 @@ func httpErrorHandler(err error, c echo.Context) {
                 })
             } else {
                 // 没有登陆的话重定位到登陆
-                if mid.GetUserId(c) == 0 {
+                bReLogin := false
+                userId := mid.GetUserId(c)
+                if userId==0 {
+                    bReLogin = true
+                }else {
+                    pUser := model.GetUser(userId)
+                    if pUser == nil {
+                        bReLogin = true
+                    }else if pUser.NeedReLogin {
+                        bReLogin = true
+                    }
+                }
+                if bReLogin {
                     err = c.Redirect(http.StatusFound, "/login.html")
                 } else {
                     redirect := "/500.html"
@@ -70,7 +84,7 @@ func main() {
         fmt.Printf("%s", err)
         os.Exit(-1)
     }
-    
+
     debug := cfg.Debug
     framework_debug := cfg.FrameworkDebug
 
@@ -105,6 +119,10 @@ func main() {
     if framework_debug {
         log.SetFrameworkLevel(log.DEBUG)
     }
+
+    go func() {                                                                                                                                                        
+        log.Debug(http.ListenAndServe(":16060", nil))
+    }()
 
     stat.InitCondition()
 

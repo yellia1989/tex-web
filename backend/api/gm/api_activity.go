@@ -15,10 +15,11 @@ type _activityData struct {
 	ActivityID    uint32 `json:"activity_id"`
 	ActivityType  uint32 `json:"activity_type"`
 	ApplyZone     string `json:"apply_zone"`
-	ApplyUser     string `json:"apply_user"`
+	ApplyMap      string `json:"apply_map"`
 	ConfigureData string `json:"configure_data"`
 	ConfigureDesc string `json:"configure_desc"`
     Locked  bool    `json:"locked"`
+    Slg uint32  `json:"slg"`
 }
 
 func ActivityList(c echo.Context) error {
@@ -27,7 +28,7 @@ func ActivityList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -43,7 +44,7 @@ func ActivityList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc,locked FROM t_activity"
+	sql := "SELECT activity_id,activity_type,apply_zone,apply_map,slg,configure_data,configure_desc,locked FROM t_activity"
 	where := ""
     if stype != "" {
 		where += " activity_type IN (" + stype + ")"
@@ -73,7 +74,7 @@ func ActivityList(c echo.Context) error {
 	logs := make([]_activityData, 0)
 	for rows.Next() {
 		var r _activityData
-		if err := rows.Scan(&r.ActivityID, &r.ActivityType, &r.ApplyZone, &r.ApplyUser, &r.ConfigureData, &r.ConfigureDesc, &r.Locked); err != nil {
+		if err := rows.Scan(&r.ActivityID, &r.ActivityType, &r.ApplyZone, &r.ApplyMap, &r.Slg, &r.ConfigureData, &r.ConfigureDesc, &r.Locked); err != nil {
 			return err
 		}
 		logs = append(logs, r)
@@ -94,7 +95,8 @@ func ActivityAdd(c echo.Context) error {
     ctx := c.(*mid.Context)
     activity_id := ctx.FormValue("iActivityId")
     apply_zone := ctx.FormValue("apply_zone")
-    apply_user := ctx.FormValue("apply_user")
+    apply_map := ctx.FormValue("apply_map")
+    slg := ctx.FormValue("slg")
     config_desc := ctx.FormValue("configure_desc")
     config_data := ctx.FormValue("configure_data")
 
@@ -106,7 +108,7 @@ func ActivityAdd(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -122,7 +124,7 @@ func ActivityAdd(c echo.Context) error {
 		return err
 	}
 
-	_, err = tx.Exec("insert into t_activity(activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc) value(?,?,?,?,?,?)", activity_id, activity_type, apply_zone, apply_user, config_data, config_desc)
+	_, err = tx.Exec("insert into t_activity(activity_id,activity_type,apply_zone,apply_map,slg,configure_data,configure_desc) value(?,?,?,?,?,?,?)", activity_id, activity_type, apply_zone, apply_map, slg, config_data, config_desc)
 	if err != nil {
 		return err
 	}
@@ -138,7 +140,7 @@ func ActivityEdit(c echo.Context) error {
     ctx := c.(*mid.Context)
     activity_id := ctx.FormValue("iActivityId")
     apply_zone := ctx.FormValue("apply_zone")
-    apply_user := ctx.FormValue("apply_user")
+    apply_map := ctx.FormValue("apply_map")
     config_desc := ctx.FormValue("configure_desc")
     config_data := ctx.FormValue("configure_data")
 
@@ -150,7 +152,7 @@ func ActivityEdit(c echo.Context) error {
 
     activity_type := json_data["type"]
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -166,12 +168,12 @@ func ActivityEdit(c echo.Context) error {
 		return err
 	}
 
-	result, err := tx.Exec("update t_activity set activity_type=?,apply_zone=?,apply_user=?,configure_data=?,configure_desc=? WHERE activity_id=? and locked=0",activity_type, apply_zone, apply_user, config_data, config_desc, activity_id)
+	result, err := tx.Exec("update t_activity set activity_type=?,apply_zone=?,apply_map=?,configure_data=?,configure_desc=? WHERE activity_id=? and locked=0",activity_type, apply_zone, apply_map, config_data, config_desc, activity_id)
 	if err != nil {
 		return err
 	}
 
-    updateRows, err := result.RowsAffected()
+    _, err = result.RowsAffected()
     if err != nil {
         return err
     }
@@ -180,10 +182,6 @@ func ActivityEdit(c echo.Context) error {
 		return err
 	}
 
-    if updateRows == 0 {
-        return ctx.SendResponse("活动已锁定不能编辑");
-    }
-
     return ctx.SendResponse("更新活动成功")
 }
 
@@ -191,7 +189,7 @@ func ActivityDel(c echo.Context) error {
     ctx := c.(*mid.Context)
     ids := ctx.FormValue("idsStr")
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -238,7 +236,8 @@ type _importAct struct {
 func ActivityImport(c echo.Context) error {
     ctx := c.(*mid.Context)
     apply_zone := ctx.FormValue("apply_zone")
-    apply_user := ctx.FormValue("apply_user")
+    slg := ctx.FormValue("slg")
+    apply_map := ctx.FormValue("apply_map")
     filename := ctx.FormValue("filepath")
 
     content, err := util.LoadFromFile(filename)
@@ -254,15 +253,15 @@ func ActivityImport(c echo.Context) error {
         return ctx.SendError(-1, "导入活动为空")
     }
 
-    sql := "insert into t_activity(activity_id,activity_type,apply_zone,apply_user,configure_data,configure_desc) values"
+    sql := "insert into t_activity(activity_id,activity_type,apply_zone,apply_map,slg,configure_data,configure_desc) values"
     for k, v := range acts {
         if k != 0 {
             sql += ","
         }
-        sql += fmt.Sprintf("(%d,%d,'%s','%s','%s','%s')", v.Id, v.Type, apply_zone, apply_user, v.Data, v.Desc)
+        sql += fmt.Sprintf("(%d,%d,'%s','%s', %s, '%s','%s')", v.Id, v.Type, apply_zone, apply_map, slg, v.Data, v.Desc)
     }
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -333,7 +332,7 @@ func ActivityLock(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
-	db := cfg.GameDb
+	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
