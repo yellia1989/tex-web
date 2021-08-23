@@ -70,7 +70,9 @@ func GetZoneList(c echo.Context) error {
 
     if server == cfg.ServerID {
         data := make(map[string][]rpc.ZoneInfo,0)
-        zones := zoneList(c)
+        tmp := updateZoneList(false)
+        zones := make([]rpc.ZoneInfo, len(tmp), len(tmp))
+        copy(zones, tmp)
         for i,_ := range zones {
             zones[i].SZoneName = fmt.Sprintf("%s(%d)", zones[i].SZoneName, zones[i].IZoneId)
         }

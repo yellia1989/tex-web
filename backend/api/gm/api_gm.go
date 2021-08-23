@@ -4,13 +4,13 @@ import (
     "fmt"
     "strings"
     "bytes"
-    "strconv"
     "encoding/json"
     "github.com/labstack/echo"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/api/sys"
     "github.com/yellia1989/tex-web/backend/cfg"
+    "github.com/yellia1989/tex-web/backend/common"
 )
 
 func checkRet(ret int32, err error) error {
@@ -51,12 +51,12 @@ func GameCmd(c echo.Context) error {
 
     zoneids := strings.Split(szoneid, ",")
     for _,zoneid := range zoneids {
-        izoneid,_ := strconv.Atoi(zoneid)
+        izoneid := common.Atou32(zoneid)
         gamePrx := new(rpc.GameService)
         gfPrx := new(rpc.GFService)
         mapPrx := new(rpc.MapService)
         if izoneid != 0 {
-            if izoneid != 8888 && izoneid != 9999 && izoneid > 1000 {
+            if !IsGame(izoneid) {
                 comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+zoneid, mapPrx)
             } else {
                 comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
@@ -76,7 +76,7 @@ func GameCmd(c echo.Context) error {
             buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
 
             if izoneid != 0 {
-                if izoneid == 8888 || izoneid == 9999 || izoneid <= 1000 {
+                if IsGame(izoneid) {
                     ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
                 } else {
                     ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)

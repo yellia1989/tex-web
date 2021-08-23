@@ -87,11 +87,11 @@
 
 		let remainTable = table.render({
 			elem: "#tableId",
-      url: "/api/stat/remain/list",
       where: {datatype: 2},
       text: {
         none: '暂无相关数据',
       },
+      data: [],
 			limit: 30,
 			page: true,
       cellMinWidth: 78,
@@ -223,6 +223,7 @@
       let field = data.field;
       field['datatype'] = 2;
       remainTable.reload({
+        url: "/api/stat/remain/list",
         where: field,
         page: {
           curr: 1,

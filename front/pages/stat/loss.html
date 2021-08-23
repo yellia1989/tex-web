@@ -86,10 +86,10 @@
 
 		let lossTable = table.render({
 			elem: "#tableId",
-      url: "/api/stat/remain/loss",
       text: {
         none: '暂无相关数据',
       },
+      data: [],
 			limit: 30,
 			page: true,
 			cols: [[
@@ -127,6 +127,7 @@
     form.on("submit(search)", function (data) {
       let field = data.field;
       lossTable.reload({
+        url: "/api/stat/remain/loss",
         where: field,
         page: {
           curr: 1,

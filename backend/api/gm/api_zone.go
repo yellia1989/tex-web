@@ -3,6 +3,7 @@ package gm
 import (
     "fmt"
     "time"
+    "sync"
     "strings"
     "strconv"
     "github.com/labstack/echo"
@@ -12,36 +13,60 @@ import (
     "github.com/yellia1989/tex-web/backend/cfg"
 )
 
+// 缓存分区列表
+var zones []rpc.ZoneInfo
+var mu sync.Mutex
+
 type _zoneInfo struct {
     rpc.ZoneInfo
     SPublishTime string `json:"sPublishTime"`
 }
 
 func ZoneMap() map[uint32]rpc.ZoneInfo {
-    comm := cfg.Comm
-
-    dirPrx := new(rpc.DirService)
-    comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
-
     mzone := make(map[uint32]rpc.ZoneInfo)
 
-    var zones []rpc.ZoneInfo
-    dirPrx.GetAllZone(&zones)
-    for _, v := range zones {
+    tmp := updateZoneList(false)
+    for _, v := range tmp {
         mzone[v.IZoneId] = *(v.Copy())
     }
     return mzone
 }
 
-func zoneList(c echo.Context) ([]rpc.ZoneInfo) {
+func IsGame(zoneid uint32) bool {
+    tmp := updateZoneList(false)
+
+    for _, v := range tmp {
+        if v.IZoneId == zoneid {
+            return true
+        }
+    }
+    return false
+}
+
+func updateZoneList(bUpdate bool) ([]rpc.ZoneInfo) {
+    mu.Lock()
+    if len(zones) == 0 {
+        bUpdate = true
+    }
+    if !bUpdate {
+        mu.Unlock()
+        return zones
+    }
+
+    mu.Unlock()
+
     comm := cfg.Comm
 
     dirPrx := new(rpc.DirService)
     comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
 
-    var zones []rpc.ZoneInfo
-    ret, err := dirPrx.GetAllZone(&zones)
-    checkRet(ret, err)
+    var tmp []rpc.ZoneInfo
+    ret, err := dirPrx.GetAllZone(&tmp)
+    if ret == 0 && err == nil {
+        mu.Lock()
+        zones = tmp[:]
+        mu.Unlock()
+    }
 
     return zones
 }
@@ -68,7 +93,9 @@ func ZoneSimpleList(c echo.Context) error {
     }
 
     if bgame {
-        zones2 := zoneList(c)
+        tmp := updateZoneList(false)
+        zones2 := make([]rpc.ZoneInfo, len(tmp), len(tmp))
+        copy(zones2, tmp)
         for i,_ := range zones2 {
             zones2[i].SZoneName = fmt.Sprintf("%s(%d)", zones2[i].SZoneName, zones2[i].IZoneId)
         }
@@ -100,9 +127,9 @@ func ZoneList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
-    zones := zoneList(c)
-    zones2 := make([]_zoneInfo, len(zones))
-    for k,v := range zones {
+    tmp := updateZoneList(true)
+    zones2 := make([]_zoneInfo, len(tmp))
+    for k,v := range tmp {
         zones2[k].IZoneId = v.IZoneId
         zones2[k].SZoneName = v.SZoneName
         zones2[k].SConnServer = v.SConnServer
