@@ -20,6 +20,10 @@ type recharge struct {
     init bool   // 是否初始化成功
 }
 
+func (t *recharge) name() string {
+    return "recharge"
+}
+
 func (t *recharge) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !t.init {
         var rid dsql.NullInt64
@@ -99,19 +103,17 @@ func (t *recharge) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk ui
         size++
     }
 
-    if _rid != 0 {
-        t.buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('recharge',%d,%d);",zoneid, _rid))
+    if _rid == 0 {
+        return nil
     }
+
+    t.buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('recharge',%d,%d);",zoneid, _rid))
 
     if size != 0 {
         t.buff.WriteString("INSERT INTO recharge(zoneid_fk,accountid_fk,date_fk,daytime,product_id,money,first) VALUES")
         t.buff.WriteString(buff.String())
         buff.Reset()
         t.rows = size
-    }
-
-    if t.buff.Len() == 0 {
-        return nil
     }
 
     if err := t.save(to, zoneid); err != nil {
@@ -125,6 +127,10 @@ func (t *recharge) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk ui
 }
 
 func (t *recharge) save(to *dsql.Conn, zoneid uint32) error {
+    if t.buff.Len() == 0 {
+        return nil
+    }
+
     tx, err := to.BeginTx(ctx, nil)
     if err != nil {
         return err
@@ -147,7 +153,7 @@ func (t *recharge) save(to *dsql.Conn, zoneid uint32) error {
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("cron [sync][recharge] cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, t.rows, rowsAffected, zoneid)
+    log.Debugf("cron [sync][recharge] cost: %.2f s, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, t.rows, rowsAffected, zoneid)
 
     t.buff.Reset()
     t.rows = 0

@@ -19,6 +19,10 @@ type logout struct {
     init bool   // 是否初始化成功
 }
 
+func (l *logout) name() string {
+    return "logout"
+}
+
 func (l *logout) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !l.init {
         var rid dsql.NullInt64
@@ -90,19 +94,17 @@ func (l *logout) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint
         size++
     }
 
-    if _rid != 0 {
-        l.buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('logout',%d,%d);",zoneid, _rid))
+    if _rid == 0 {
+        return nil
     }
+
+    l.buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('logout',%d,%d);",zoneid, _rid))
 
     if size > 0 {
         l.buff.WriteString("INSERT INTO logout(zoneid_fk,accountid_fk,date_fk,daytime,online_time) VALUES")
         l.buff.WriteString(buff.String())
         buff.Reset()
         l.rows = size
-    }
-
-    if l.buff.Len() == 0 {
-        return nil
     }
 
     if err := l.save(to, zoneid); err != nil {
@@ -116,6 +118,10 @@ func (l *logout) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint
 }
 
 func (l *logout) save(to *dsql.Conn, zoneid uint32) error {
+    if l.buff.Len() == 0 {
+        return nil
+    }
+
     tx, err := to.BeginTx(ctx, nil)
     if err != nil {
         return err
@@ -138,7 +144,7 @@ func (l *logout) save(to *dsql.Conn, zoneid uint32) error {
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("cron [sync][logout] save cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, l.rows, rowsAffected, zoneid)
+    log.Debugf("cron [sync][logout] save cost: %.2f s, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, l.rows, rowsAffected, zoneid)
 
     l.buff.Reset()
     l.rows = 0
