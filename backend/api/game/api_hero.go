@@ -4,7 +4,7 @@ import (
     "fmt"
 	"strconv"
 	Sql "database/sql"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-go/tools/log"
 )

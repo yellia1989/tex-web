@@ -6,7 +6,7 @@ import (
     "strconv"
     "strings"
     "time"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/common"
     mid "github.com/yellia1989/tex-web/backend/middleware"
