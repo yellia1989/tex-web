@@ -5,7 +5,7 @@ import (
     "sort"
     "strings"
     "crypto/md5"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-web/backend/model"
     "github.com/yellia1989/tex-go/tools/log"
 )

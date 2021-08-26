@@ -5,7 +5,7 @@ import (
     "fmt"
     "encoding/json"
     llog "github.com/yellia1989/tex-go/tools/log"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "github.com/labstack/gommon/log"
 )
 

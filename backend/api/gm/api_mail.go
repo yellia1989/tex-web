@@ -7,7 +7,7 @@ import (
     "strconv"
     "io/ioutil"
     "encoding/json"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/common"

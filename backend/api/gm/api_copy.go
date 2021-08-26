@@ -3,7 +3,7 @@ package gm
 import (
     "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-go/tools/util"
     "github.com/yellia1989/tex-go/tools/log"
     mid "github.com/yellia1989/tex-web/backend/middleware"

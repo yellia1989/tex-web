@@ -4,7 +4,7 @@ import (
     "errors"
     "strconv"
     "strings"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
     "github.com/yellia1989/tex-web/backend/cfg"

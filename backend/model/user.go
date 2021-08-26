@@ -2,7 +2,7 @@ package model
 
 import (
     "fmt"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-web/backend/cfg"
     "golang.org/x/crypto/bcrypt"
     "net/http"
