@@ -1292,6 +1292,10 @@
                 hot_hero: {
                     name: '热点英雄',
                     type: 'text'
+                },
+                block_color: {
+                    name: '方块颜色',
+                    type: 'text'
                 }
             }
         }
