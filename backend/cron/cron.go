@@ -35,7 +35,7 @@ func startCron(name string, f croner, d time.Duration) {
         for {
             select {
             case <- stop:
-                log.Debug("%s cron stop", name)
+                log.Debugf("%s cron stop", name)
                 return
             case t := <- ticker.C: 
                 f(t)
