@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (u/124.156.205.111 r/101.32.168.86)"
+	echo "Usage: $0 env (u/43.131.0.126 r/101.32.168.86)"
 	exit 100
 fi
 
