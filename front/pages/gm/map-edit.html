@@ -26,6 +26,34 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">DB服务器</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbHost" class="layui-input" lay-verify="required" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">DB端口</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbPort" class="layui-input" lay-verify="required" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">DB用户名</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbUser" class="layui-input" lay-verify="required" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">DB密码</label>
+        <div class="layui-input-inline">
+          <input type="text" name="dbPwd" class="layui-input" lay-verify="required" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">更新</button>
         </div>
@@ -42,6 +70,10 @@
       let $ = layui.jquery;
 
       $("input[name=iMapId]").val(parent.editData.iMapId);
+      $("input[name=dbHost]").val(parent.editData.dbHost);
+      $("input[name=dbPort]").val(parent.editData.dbPort);
+      $("input[name=dbUser]").val(parent.editData.dbUser);
+      $("input[name=dbPwd]").val(parent.editData.dbPwd);
 
       let zoneSelect = xmSelect.render({
         el: '#zoneSelect',
