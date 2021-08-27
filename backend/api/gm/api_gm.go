@@ -2,6 +2,7 @@ package gm
 
 import (
     "fmt"
+    "strconv"
     "strings"
     "bytes"
     "encoding/json"
@@ -198,10 +199,15 @@ type _item struct {
 func ItemList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    zoneid := "1"
+    zones := updateZoneList(false)
+    if (len(zones) == 0) {
+        return ctx.SendError(-1, "分区列表为空")
+    }
+
+    var zoneid uint64 = uint64(zones[0].IZoneId)
     scmd := "item_list"
     var result string
-    err := cmd(ctx, zoneid, scmd, &result)
+    err := cmd(ctx, strconv.FormatUint(zoneid, 10), scmd, &result)
     if err !=  nil {
         return err
     }
