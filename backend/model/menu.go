@@ -75,7 +75,7 @@ func (m *Menu) UpdateRole(db *sql.DB) error {
     var roleString string
     roleStrs := make([]string,0)
     for _,v := range m.Role {
-        roleStrs = append(roleStrs, strconv.FormatUint(uint64(v),32))
+        roleStrs = append(roleStrs, strconv.FormatUint(uint64(v),10))
     }
     roleString = strings.Join(roleStrs,",")
     _,err := db.Exec("insert into sys_menu_role(menu_id,role_ids) VALUES (?,?) on duplicate key update role_ids= ?",m.Id,roleString,roleString)
