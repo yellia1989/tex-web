@@ -19,6 +19,10 @@ type role struct {
     init bool   // 是否初始化成功
 }
 
+func (t *role) name() string {
+    return "role"
+}
+
 func (t *role) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !t.init {
         var rid dsql.NullInt64
@@ -57,6 +61,10 @@ func (t *role) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32
             return fmt.Errorf("cron [sync][role] scan err: %s", err.Error())
         }
         t := common.ParseTimeInLocal("2006-01-02 15:04:05", st)
+        if t.After(maxt) {
+            maxt = t
+        }
+
         d := date.Get(t)
         if d == nil {
             // 日期还没准备好
@@ -72,8 +80,7 @@ func (t *role) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32
         }
         z := zzone.Get(rzoneid)
         if z == nil {
-            // 分区还没准备好
-            return nil
+            continue;
         }
         if buff.Len() > 0 {
             buff.WriteString(",")
@@ -81,34 +88,41 @@ func (t *role) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32
         daytime := t.Hour()*3600+t.Minute()*60+t.Second()
         buff.WriteString(fmt.Sprintf("(%d,%d,%d,%d,%d)", z.Id, account.Id, d.Id, daytime, first))
         size++
-
-        if t.After(maxt) {
-            maxt = t
-        }
     }
+
+    if _rid == 0 {
+        return nil
+    }
+
+    if size != 0 {
+        t.buff.WriteString("INSERT INTO role(zoneid_fk,accountid_fk,reg_date_fk,daytime,first) VALUES")
+        t.buff.WriteString(buff.String())
+        t.buff.WriteString("ON DUPLICATE KEY UPDATE reg_date_fk=VALUES(reg_date_fk), first=VALUES(first);")
+        buff.Reset()
+        t.rows = size
+    }
+
+    t.buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('account_newrole',0,%d)", _rid))
+
+    if err := t.save(to, zoneid); err != nil {
+        return fmt.Errorf("cron [sync][role] save err: %s", err.Error())
+    }
+    t.rid = _rid
 
     if !maxt.IsZero() {
         UpdateRoleMaxTime(maxt)
     }
 
-    if buff.Len() > 0 {
-        buff.WriteString("ON DUPLICATE KEY UPDATE reg_date_fk=VALUES(reg_date_fk), first=VALUES(first);")
-        buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('account_newrole',0,%d)", _rid))
-        t.buff.WriteString("INSERT INTO role(zoneid_fk,accountid_fk,reg_date_fk,daytime,first) VALUES")
-        t.buff.WriteString(buff.String())
-        buff.Reset()
-        t.rows = size
-
-        if err := t.save(to, zoneid); err != nil {
-            return fmt.Errorf("cron [sync][role] save err: %s", err.Error())
-        }
-        t.rid = _rid
-    }
+    log.Debugf("cron [sync][role] rid: %d, max role time: %s", t.rid, common.FormatTimeInLocal("2006-01-02 15:04:05", maxt))
 
     return nil
 }
 
 func (t *role) save(to *dsql.Conn, zoneid uint32) error {
+    if t.buff.Len() == 0 {
+        return nil
+    }
+
     tx, err := to.BeginTx(ctx, nil)
     if err != nil {
         return err
@@ -131,7 +145,7 @@ func (t *role) save(to *dsql.Conn, zoneid uint32) error {
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("cron [sync][role] cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d", t2.Sub(t1).Seconds(), size, t.rows, rowsAffected)
+    log.Debugf("cron [sync][role] cost: %.2f s, size: %.2f KB, rows: %d, affect rows: %d", t2.Sub(t1).Seconds(), size, t.rows, rowsAffected)
 
     t.buff.Reset()
     t.rows = 0

@@ -10,6 +10,7 @@ import (
 
 type tabler interface {
     sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error
+    name() string
 }
 
 type zone struct {
@@ -96,10 +97,11 @@ func (z *zone) run() {
                 return
             }
             for _, t := range z.tables {
+                log.Debugf("cron [sync][zone] start zoneid: %d, table: %s", z.zoneid, t.name())
                 if err := t.sync(z.fromdb, z.toconn, z.zoneid, z.id); err != nil {
-                    log.Errorf("cron [sync][zone] sync err: %s, zoneid: %d", err.Error(), z.zoneid)
-                    return
+                    log.Errorf("cron [sync][zone] sync err: %s, zoneid: %d, table: %s", err.Error(), z.zoneid, t.name())
                 }
+                log.Debugf("cron [sync][zone] finish zoneid: %d, table: %s", z.zoneid, t.name())
             }
         }
         }
