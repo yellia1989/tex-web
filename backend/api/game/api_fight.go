@@ -11,6 +11,7 @@ import (
     "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/common"
+    "github.com/yellia1989/tex-web/backend/api/gm"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
     "github.com/yellia1989/tex-web/backend/api/sys"
     "bytes"
@@ -145,7 +146,7 @@ func FightExportReport(c echo.Context) error {
     gfPrx := new(rpc.GFService)
     mapPrx := new(rpc.MapService)
     if izoneid != 0 {
-        if izoneid != 8888 && izoneid != 9999 && izoneid > 1000 {
+        if !gm.IsGame(uint32(izoneid)) {
             comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+ szoneid, mapPrx)
         } else {
             comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+ szoneid, gamePrx)
@@ -163,7 +164,7 @@ func FightExportReport(c echo.Context) error {
     buff.WriteString("zone["+szoneid + "] > " + cmd + "\n")
 
     if izoneid != 0 {
-        if izoneid == 8888 || izoneid == 9999 || izoneid <= 1000 {
+        if gm.IsGame(uint32(izoneid)) {
             ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
         } else {
             ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)
