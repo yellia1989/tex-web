@@ -38,9 +38,9 @@ func (en BulletinFlag) String() string {
 }
 
 type LangContentDataInfo struct {
-	SContent     string `json:"sContent"`
-	SHtmlContent string `json:"sHtmlContent"`
-	STitle       string `json:"sTitle"`
+	SContent     string `json:"sContent" form:"sContent"`
+	SHtmlContent string `json:"sHtmlContent" form:"sHtmlContent"`
+	STitle       string `json:"sTitle" form:"sTitle"`
 }
 
 func (st *LangContentDataInfo) resetDefault() {
@@ -181,18 +181,18 @@ func (st *LangContentDataInfo) WriteStructFromTag(p *codec.Packer, tag uint32, r
 }
 
 type BulletinDataInfo struct {
-	IBulletinId       uint32                         `json:"iBulletinId"`
-	STitle            string                         `json:"sTitle"`
-	SContent          string                         `json:"sContent"`
-	IFlag             uint32                         `json:"iFlag"`
-	SBeginTime        string                         `json:"sBeginTime"`
-	SEndTime          string                         `json:"sEndTime"`
-	IDisplay          uint32                         `json:"iDisplay"`
-	IType             uint32                         `json:"iType"`
-	IPopWindow        uint32                         `json:"iPopWindow"`
-	SPopWindowEndTime string                         `json:"sPopWindowEndTime"`
-	SHtmlContent      string                         `json:"sHtmlContent"`
-	MLangContent      map[string]LangContentDataInfo `json:"mLangContent"`
+	IBulletinId       uint32                         `json:"iBulletinId" form:"iBulletinId"`
+	STitle            string                         `json:"sTitle" form:"sTitle"`
+	SContent          string                         `json:"sContent" form:"sContent"`
+	IFlag             uint32                         `json:"iFlag" form:"iFlag"`
+	SBeginTime        string                         `json:"sBeginTime" form:"sBeginTime"`
+	SEndTime          string                         `json:"sEndTime" form:"sEndTime"`
+	IDisplay          uint32                         `json:"iDisplay" form:"iDisplay"`
+	IType             uint32                         `json:"iType" form:"iType"`
+	IPopWindow        uint32                         `json:"iPopWindow" form:"iPopWindow"`
+	SPopWindowEndTime string                         `json:"sPopWindowEndTime" form:"sPopWindowEndTime"`
+	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
+	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -503,19 +503,19 @@ func (st *BulletinDataInfo) WriteStructFromTag(p *codec.Packer, tag uint32, requ
 }
 
 type NoticeDataInfo struct {
-	INoticeId        uint32                         `json:"iNoticeId"`
-	IType            uint32                         `json:"iType"`
-	SContent         string                         `json:"sContent"`
-	SBeginTime       string                         `json:"sBeginTime"`
-	SEndTime         string                         `json:"sEndTime"`
-	IDisplayInterval uint32                         `json:"iDisplayInterval"`
-	IDisplayType     uint32                         `json:"iDisplayType"`
-	IDisplayNum      uint32                         `json:"iDisplayNum"`
-	IPause           uint32                         `json:"iPause"`
-	VZoneId          []uint32                       `json:"vZoneId"`
-	IMaintenanceTime uint32                         `json:"iMaintenanceTime"`
-	SHtmlContent     string                         `json:"sHtmlContent"`
-	MLangContent     map[string]LangContentDataInfo `json:"mLangContent"`
+	INoticeId        uint32                         `json:"iNoticeId" form:"iNoticeId"`
+	IType            uint32                         `json:"iType" form:"iType"`
+	SContent         string                         `json:"sContent" form:"sContent"`
+	SBeginTime       string                         `json:"sBeginTime" form:"sBeginTime"`
+	SEndTime         string                         `json:"sEndTime" form:"sEndTime"`
+	IDisplayInterval uint32                         `json:"iDisplayInterval" form:"iDisplayInterval"`
+	IDisplayType     uint32                         `json:"iDisplayType" form:"iDisplayType"`
+	IDisplayNum      uint32                         `json:"iDisplayNum" form:"iDisplayNum"`
+	IPause           uint32                         `json:"iPause" form:"iPause"`
+	VZoneId          []uint32                       `json:"vZoneId" form:"vZoneId"`
+	IMaintenanceTime uint32                         `json:"iMaintenanceTime" form:"iMaintenanceTime"`
+	SHtmlContent     string                         `json:"sHtmlContent" form:"sHtmlContent"`
+	MLangContent     map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
 }
 
 func (st *NoticeDataInfo) resetDefault() {
