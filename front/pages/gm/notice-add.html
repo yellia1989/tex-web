@@ -246,6 +246,11 @@
           data.field.sContent = ExecuteJsonData(zhCNeditor.txt.getJSON());
           data.field.sHtmlContent = zhCNeditor.txt.html();
 
+          if (data.field.sHtmlContent == '') {
+            okLayer.redCrossMsg('公告内容不能为空', function () {});
+            return false;
+          }
+
           let lang = {};
           lang["en"] = {"sContent":ExecuteJsonData(ENeditor.txt.getJSON()),"sHtmlContent":ENeditor.txt.html()};
           data.field.sLangContent = okUtils.jsonToString(lang);
