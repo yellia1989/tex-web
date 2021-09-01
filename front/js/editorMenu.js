@@ -145,6 +145,11 @@ function ExecuteJsonData(jsonData) {
             searchData(jsonData[i],outputObject);
         }
     }
+
+    let empty = String.fromCharCode(160) + "\n";
+    if (outputObject.result == empty) {
+        outputObject.result = "";
+    }
+
     return outputObject.result;
 }
-
