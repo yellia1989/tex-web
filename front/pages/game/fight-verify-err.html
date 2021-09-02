@@ -80,9 +80,13 @@
               case 7: ret = '圣山之巅'; break;
               case 8: ret = '联盟远征'; break;
               case 10: ret = '棱镜修炼场'; break;
-              case 11: ret = '章节挑战'; break;
-              case 12: ret = '无尽关卡'; break;
+              case 11: ret = '普通章节挑战'; break;
+              case 12: ret = '无尽章节挑战'; break;
               case 13: ret = '梦境试炼'; break;
+              case 14: ret = '隐秘地牢'; break;
+              case 15: ret = '困难关卡推图'; break;
+              case 16: ret = '困难章节挑战'; break;
+              case 17: ret = '无尽关卡挑战'; break;
               default:
                 ret = d.fight_type;
             }
@@ -131,7 +135,7 @@
 
     function downloadReport() {
       let cmd = ''
-      if (fightType != 11 && fightType != 12) {
+      if (fightType != 11 && fightType != 12 && fightType != 15) {
         cmd = "dump_cmd_fightreport_http" + " " + reportId;
       } else {
         cmd = "dump_cmd_chapterreport_http" + " " + reportId;
