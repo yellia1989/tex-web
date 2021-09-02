@@ -17,8 +17,8 @@ import (
 )
 
 type CmdIDNum struct {
-	IId  uint32 `json:"iId"`
-	INum uint32 `json:"iNum"`
+	IId  uint32 `json:"iId" form:"iId"`
+	INum uint32 `json:"iNum" form:"iNum"`
 }
 
 func (st *CmdIDNum) resetDefault() {
@@ -147,24 +147,24 @@ func (st *CmdIDNum) WriteStructFromTag(p *codec.Packer, tag uint32, require bool
 }
 
 type MailDataInfo struct {
-	IMailId                uint32     `json:"iMailId"`
-	SFrom                  string     `json:"sFrom"`
-	VToUser                []uint64   `json:"vToUser"`
-	STime                  string     `json:"sTime"`
-	STitle                 string     `json:"sTitle"`
-	SContent               string     `json:"sContent"`
-	IDiamond               uint32     `json:"iDiamond"`
-	ICoin                  uint32     `json:"iCoin"`
-	VItems                 []CmdIDNum `json:"vItems"`
-	VSendZoneIds           []uint32   `json:"vSendZoneIds"`
-	IFlag                  uint32     `json:"iFlag"`
-	VRcvZoneIds            []uint32   `json:"vRcvZoneIds"`
-	IArenaCoin             uint32     `json:"iArenaCoin"`
-	IDelTimeAfterOpen      uint32     `json:"iDelTimeAfterOpen"`
-	SUserFileName          string     `json:"sUserFileName"`
-	IKingCoin              uint32     `json:"iKingCoin"`
-	VCustomItem            []string   `json:"vCustomItem"`
-	IDelTimeAfterRcvAttach uint32     `json:"iDelTimeAfterRcvAttach"`
+	IMailId                uint32     `json:"iMailId" form:"iMailId"`
+	SFrom                  string     `json:"sFrom" form:"sFrom"`
+	VToUser                []uint64   `json:"vToUser" form:"vToUser"`
+	STime                  string     `json:"sTime" form:"sTime"`
+	STitle                 string     `json:"sTitle" form:"sTitle"`
+	SContent               string     `json:"sContent" form:"sContent"`
+	IDiamond               uint32     `json:"iDiamond" form:"iDiamond"`
+	ICoin                  uint32     `json:"iCoin" form:"iCoin"`
+	VItems                 []CmdIDNum `json:"vItems" form:"vItems"`
+	VSendZoneIds           []uint32   `json:"vSendZoneIds" form:"vSendZoneIds"`
+	IFlag                  uint32     `json:"iFlag" form:"iFlag"`
+	VRcvZoneIds            []uint32   `json:"vRcvZoneIds" form:"vRcvZoneIds"`
+	IArenaCoin             uint32     `json:"iArenaCoin" form:"iArenaCoin"`
+	IDelTimeAfterOpen      uint32     `json:"iDelTimeAfterOpen" form:"iDelTimeAfterOpen"`
+	SUserFileName          string     `json:"sUserFileName" form:"sUserFileName"`
+	IKingCoin              uint32     `json:"iKingCoin" form:"iKingCoin"`
+	VCustomItem            []string   `json:"vCustomItem" form:"vCustomItem"`
+	IDelTimeAfterRcvAttach uint32     `json:"iDelTimeAfterRcvAttach" form:"iDelTimeAfterRcvAttach"`
 }
 
 func (st *MailDataInfo) resetDefault() {

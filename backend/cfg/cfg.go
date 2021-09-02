@@ -115,7 +115,7 @@ func ParseCfg(file string) (err error) {
     if len(vtmp2) != 2 {
         panic("invalid logdb format")
     }
-    LogDbHost = "10.10.33.13"
+    LogDbHost = "172.16.1.7"
     LogDbUser = vtmp2[0]
     LogDbPwd = vtmp2[1]
     LogDb, err = sql.Open("mysql", logdb)
