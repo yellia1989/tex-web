@@ -73,21 +73,21 @@ func (en IAPReceiptStatus) String() string {
 }
 
 type IAPStatus struct {
-	IReceiptId      uint32 `json:"iReceiptId" form:"iReceiptId"`
-	IReceiptStatus  uint32 `json:"iReceiptStatus" form:"iReceiptStatus"`
-	IDeliverRoleId  uint64 `json:"iDeliverRoleId" form:"iDeliverRoleId"`
-	IDeliverZoneId  uint32 `json:"iDeliverZoneId" form:"iDeliverZoneId"`
-	IProxyRoleId    uint64 `json:"iProxyRoleId" form:"iProxyRoleId"`
-	IProxyZoneId    uint32 `json:"iProxyZoneId" form:"iProxyZoneId"`
-	IAddTime        uint32 `json:"iAddTime" form:"iAddTime"`
-	IVerifyTime     uint32 `json:"iVerifyTime" form:"iVerifyTime"`
-	IDeliverTime    uint32 `json:"iDeliverTime" form:"iDeliverTime"`
-	IRetryNum       uint32 `json:"iRetryNum" form:"iRetryNum"`
-	INextTryTime    uint32 `json:"iNextTryTime" form:"iNextTryTime"`
-	SFailReason     string `json:"sFailReason" form:"sFailReason"`
-	SDeliverItem    string `json:"sDeliverItem" form:"sDeliverItem"`
-	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
+	IReceiptId      uint32 `json:"iReceiptId"`
+	IReceiptStatus  uint32 `json:"iReceiptStatus"`
+	IDeliverRoleId  uint64 `json:"iDeliverRoleId"`
+	IDeliverZoneId  uint32 `json:"iDeliverZoneId"`
+	IProxyRoleId    uint64 `json:"iProxyRoleId"`
+	IProxyZoneId    uint32 `json:"iProxyZoneId"`
+	IAddTime        uint32 `json:"iAddTime"`
+	IVerifyTime     uint32 `json:"iVerifyTime"`
+	IDeliverTime    uint32 `json:"iDeliverTime"`
+	IRetryNum       uint32 `json:"iRetryNum"`
+	INextTryTime    uint32 `json:"iNextTryTime"`
+	SFailReason     string `json:"sFailReason"`
+	SDeliverItem    string `json:"sDeliverItem"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
 }
 
 func (st *IAPStatus) resetDefault() {
@@ -372,13 +372,13 @@ func (st *IAPStatus) WriteStructFromTag(p *codec.Packer, tag uint32, require boo
 }
 
 type IAPTmpOrder struct {
-	SFlowId      string `json:"sFlowId" form:"sFlowId"`
-	IProductId   uint32 `json:"iProductId" form:"iProductId"`
-	IReceiptType uint32 `json:"iReceiptType" form:"iReceiptType"`
-	IRoleId      uint64 `json:"iRoleId" form:"iRoleId"`
-	IZoneId      uint32 `json:"iZoneId" form:"iZoneId"`
-	ICreateTime  uint32 `json:"iCreateTime" form:"iCreateTime"`
-	SPayload     string `json:"sPayload" form:"sPayload"`
+	SFlowId      string `json:"sFlowId"`
+	IProductId   uint32 `json:"iProductId"`
+	IReceiptType uint32 `json:"iReceiptType"`
+	IRoleId      uint64 `json:"iRoleId"`
+	IZoneId      uint32 `json:"iZoneId"`
+	ICreateTime  uint32 `json:"iCreateTime"`
+	SPayload     string `json:"sPayload"`
 }
 
 func (st *IAPTmpOrder) resetDefault() {
@@ -567,9 +567,9 @@ func (st *IAPTmpOrder) WriteStructFromTag(p *codec.Packer, tag uint32, require b
 }
 
 type ApplePurchase struct {
-	SReceiptData    string `json:"sReceiptData" form:"sReceiptData"`
-	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
+	SReceiptData    string `json:"sReceiptData"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
 }
 
 func (st *ApplePurchase) resetDefault() {
@@ -710,16 +710,16 @@ func (st *ApplePurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require
 }
 
 type AppleReceipt struct {
-	IQuantity          uint32 `json:"iQuantity" form:"iQuantity"`
-	SProductId         string `json:"sProductId" form:"sProductId"`
-	STransactionId     string `json:"sTransactionId" form:"sTransactionId"`
-	IPurchaseDate      uint32 `json:"iPurchaseDate" form:"iPurchaseDate"`
-	SBId               string `json:"sBId" form:"sBId"`
-	SBVrs              string `json:"sBVrs" form:"sBVrs"`
-	SOriTransactionId  string `json:"sOriTransactionId" form:"sOriTransactionId"`
-	IOriPurchaseDate   uint32 `json:"iOriPurchaseDate" form:"iOriPurchaseDate"`
-	SAppItemId         string `json:"sAppItemId" form:"sAppItemId"`
-	SVersionExternalId string `json:"sVersionExternalId" form:"sVersionExternalId"`
+	IQuantity          uint32 `json:"iQuantity"`
+	SProductId         string `json:"sProductId"`
+	STransactionId     string `json:"sTransactionId"`
+	IPurchaseDate      uint32 `json:"iPurchaseDate"`
+	SBId               string `json:"sBId"`
+	SBVrs              string `json:"sBVrs"`
+	SOriTransactionId  string `json:"sOriTransactionId"`
+	IOriPurchaseDate   uint32 `json:"iOriPurchaseDate"`
+	SAppItemId         string `json:"sAppItemId"`
+	SVersionExternalId string `json:"sVersionExternalId"`
 }
 
 func (st *AppleReceipt) resetDefault() {
@@ -944,11 +944,11 @@ func (st *AppleReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require 
 }
 
 type GooglePurchase struct {
-	IResponseCode   int32  `json:"iResponseCode" form:"iResponseCode"`
-	SPurchaseData   string `json:"sPurchaseData" form:"sPurchaseData"`
-	SSignature      string `json:"sSignature" form:"sSignature"`
-	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
+	IResponseCode   int32  `json:"iResponseCode"`
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
 }
 
 func (st *GooglePurchase) resetDefault() {
@@ -1113,14 +1113,14 @@ func (st *GooglePurchase) WriteStructFromTag(p *codec.Packer, tag uint32, requir
 }
 
 type GoogleReceipt struct {
-	SOrderId          string `json:"sOrderId" form:"sOrderId"`
-	SProductId        string `json:"sProductId" form:"sProductId"`
-	SPackageName      string `json:"sPackageName" form:"sPackageName"`
-	IPurchaseTime     uint32 `json:"iPurchaseTime" form:"iPurchaseTime"`
-	IPurchaseState    uint32 `json:"iPurchaseState" form:"iPurchaseState"`
-	SDeveloperPayload string `json:"sDeveloperPayload" form:"sDeveloperPayload"`
-	SPurchaseToken    string `json:"sPurchaseToken" form:"sPurchaseToken"`
-	BAutoRenewing     bool   `json:"bAutoRenewing" form:"bAutoRenewing"`
+	SOrderId          string `json:"sOrderId"`
+	SProductId        string `json:"sProductId"`
+	SPackageName      string `json:"sPackageName"`
+	IPurchaseTime     uint32 `json:"iPurchaseTime"`
+	IPurchaseState    uint32 `json:"iPurchaseState"`
+	SDeveloperPayload string `json:"sDeveloperPayload"`
+	SPurchaseToken    string `json:"sPurchaseToken"`
+	BAutoRenewing     bool   `json:"bAutoRenewing"`
 }
 
 func (st *GoogleReceipt) resetDefault() {
@@ -1321,12 +1321,12 @@ func (st *GoogleReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require
 }
 
 type FyPurchase struct {
-	SPurchaseData   string `json:"sPurchaseData" form:"sPurchaseData"`
-	SSignature      string `json:"sSignature" form:"sSignature"`
-	IConnId         uint32 `json:"iConnId" form:"iConnId"`
-	SChannel        string `json:"sChannel" form:"sChannel"`
-	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
 }
 
 func (st *FyPurchase) resetDefault() {
@@ -1503,13 +1503,13 @@ func (st *FyPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bo
 }
 
 type FyReceipt struct {
-	SOrderId        string `json:"sOrderId" form:"sOrderId"`
-	SUuid           string `json:"sUuid" form:"sUuid"`
-	SAppCallbackExt string `json:"sAppCallbackExt" form:"sAppCallbackExt"`
-	IPayAmount      uint32 `json:"iPayAmount" form:"iPayAmount"`
-	ISandBox        uint32 `json:"iSandBox" form:"iSandBox"`
-	IPayTime        uint32 `json:"iPayTime" form:"iPayTime"`
-	ITime           uint32 `json:"iTime" form:"iTime"`
+	SOrderId        string `json:"sOrderId"`
+	SUuid           string `json:"sUuid"`
+	SAppCallbackExt string `json:"sAppCallbackExt"`
+	IPayAmount      uint32 `json:"iPayAmount"`
+	ISandBox        uint32 `json:"iSandBox"`
+	IPayTime        uint32 `json:"iPayTime"`
+	ITime           uint32 `json:"iTime"`
 }
 
 func (st *FyReceipt) resetDefault() {
@@ -1698,13 +1698,13 @@ func (st *FyReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require boo
 }
 
 type HeePayPurchase struct {
-	SPurchaseData   string `json:"sPurchaseData" form:"sPurchaseData"`
-	SSignature      string `json:"sSignature" form:"sSignature"`
-	IConnId         uint32 `json:"iConnId" form:"iConnId"`
-	SChannel        string `json:"sChannel" form:"sChannel"`
-	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
-	ICreateTime     uint32 `json:"iCreateTime" form:"iCreateTime"`
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
+	ICreateTime     uint32 `json:"iCreateTime"`
 }
 
 func (st *HeePayPurchase) resetDefault() {
@@ -1893,14 +1893,14 @@ func (st *HeePayPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, requir
 }
 
 type HeePayReceipt struct {
-	IResult      int32   `json:"iResult" form:"iResult"`
-	SPayMessage  string  `json:"sPayMessage" form:"sPayMessage"`
-	SAgentId     string  `json:"sAgentId" form:"sAgentId"`
-	SJnetBillNo  string  `json:"sJnetBillNo" form:"sJnetBillNo"`
-	SAgentBillId string  `json:"sAgentBillId" form:"sAgentBillId"`
-	IPayType     uint32  `json:"iPayType" form:"iPayType"`
-	FPayAmt      float32 `json:"fPayAmt" form:"fPayAmt"`
-	SRemark      string  `json:"sRemark" form:"sRemark"`
+	IResult      int32   `json:"iResult"`
+	SPayMessage  string  `json:"sPayMessage"`
+	SAgentId     string  `json:"sAgentId"`
+	SJnetBillNo  string  `json:"sJnetBillNo"`
+	SAgentBillId string  `json:"sAgentBillId"`
+	IPayType     uint32  `json:"iPayType"`
+	FPayAmt      float32 `json:"fPayAmt"`
+	SRemark      string  `json:"sRemark"`
 }
 
 func (st *HeePayReceipt) resetDefault() {
@@ -2101,12 +2101,12 @@ func (st *HeePayReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require
 }
 
 type HeePayH5Purchase struct {
-	SPurchaseData   string `json:"sPurchaseData" form:"sPurchaseData"`
-	SSignature      string `json:"sSignature" form:"sSignature"`
-	IConnId         uint32 `json:"iConnId" form:"iConnId"`
-	SChannel        string `json:"sChannel" form:"sChannel"`
-	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
 }
 
 func (st *HeePayH5Purchase) resetDefault() {
@@ -2283,27 +2283,27 @@ func (st *HeePayH5Purchase) WriteStructFromTag(p *codec.Packer, tag uint32, requ
 }
 
 type HeePayH5Receipt struct {
-	SMethod        string `json:"sMethod" form:"sMethod"`
-	SVersion       string `json:"sVersion" form:"sVersion"`
-	SCharset       string `json:"sCharset" form:"sCharset"`
-	SSignType      string `json:"sSignType" form:"sSignType"`
-	SReturnCode    string `json:"sReturnCode" form:"sReturnCode"`
-	SReturnMsg     string `json:"sReturnMsg" form:"sReturnMsg"`
-	SAppId         string `json:"sAppId" form:"sAppId"`
-	SMchId         string `json:"sMchId" form:"sMchId"`
-	SNonceStr      string `json:"sNonceStr" form:"sNonceStr"`
-	SResultCode    string `json:"sResultCode" form:"sResultCode"`
-	SErrCode       string `json:"sErrCode" form:"sErrCode"`
-	SErrCodeDesc   string `json:"sErrCodeDesc" form:"sErrCodeDesc"`
-	SOpenId        string `json:"sOpenId" form:"sOpenId"`
-	SFeeType       string `json:"sFeeType" form:"sFeeType"`
-	ITotalFee      uint32 `json:"iTotalFee" form:"iTotalFee"`
-	ICouponFee     uint32 `json:"iCouponFee" form:"iCouponFee"`
-	STransactionId string `json:"sTransactionId" form:"sTransactionId"`
-	SOutTradeNo    string `json:"sOutTradeNo" form:"sOutTradeNo"`
-	STimeEnd       string `json:"sTimeEnd" form:"sTimeEnd"`
-	SBuyerLogonId  string `json:"sBuyerLogonId" form:"sBuyerLogonId"`
-	SFundBillList  string `json:"sFundBillList" form:"sFundBillList"`
+	SMethod        string `json:"sMethod"`
+	SVersion       string `json:"sVersion"`
+	SCharset       string `json:"sCharset"`
+	SSignType      string `json:"sSignType"`
+	SReturnCode    string `json:"sReturnCode"`
+	SReturnMsg     string `json:"sReturnMsg"`
+	SAppId         string `json:"sAppId"`
+	SMchId         string `json:"sMchId"`
+	SNonceStr      string `json:"sNonceStr"`
+	SResultCode    string `json:"sResultCode"`
+	SErrCode       string `json:"sErrCode"`
+	SErrCodeDesc   string `json:"sErrCodeDesc"`
+	SOpenId        string `json:"sOpenId"`
+	SFeeType       string `json:"sFeeType"`
+	ITotalFee      uint32 `json:"iTotalFee"`
+	ICouponFee     uint32 `json:"iCouponFee"`
+	STransactionId string `json:"sTransactionId"`
+	SOutTradeNo    string `json:"sOutTradeNo"`
+	STimeEnd       string `json:"sTimeEnd"`
+	SBuyerLogonId  string `json:"sBuyerLogonId"`
+	SFundBillList  string `json:"sFundBillList"`
 }
 
 func (st *HeePayH5Receipt) resetDefault() {
@@ -2660,12 +2660,12 @@ func (st *HeePayH5Receipt) WriteStructFromTag(p *codec.Packer, tag uint32, requi
 }
 
 type GameHubPurchase struct {
-	SPurchaseData   string `json:"sPurchaseData" form:"sPurchaseData"`
-	SSignature      string `json:"sSignature" form:"sSignature"`
-	IConnId         uint32 `json:"iConnId" form:"iConnId"`
-	SChannel        string `json:"sChannel" form:"sChannel"`
-	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
-	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
+	SPurchaseData   string `json:"sPurchaseData"`
+	SSignature      string `json:"sSignature"`
+	IConnId         uint32 `json:"iConnId"`
+	SChannel        string `json:"sChannel"`
+	STraceProductId string `json:"sTraceProductId"`
+	STraceFlowId    string `json:"sTraceFlowId"`
 }
 
 func (st *GameHubPurchase) resetDefault() {
@@ -2842,17 +2842,17 @@ func (st *GameHubPurchase) WriteStructFromTag(p *codec.Packer, tag uint32, requi
 }
 
 type GameHubReceipt struct {
-	SChannelId      string  `json:"sChannelId" form:"sChannelId"`
-	SChannelUid     string  `json:"sChannelUid" form:"sChannelUid"`
-	SOrderNo        string  `json:"sOrderNo" form:"sOrderNo"`
-	SCpOrderNo      string  `json:"sCpOrderNo" form:"sCpOrderNo"`
-	SZoneId         string  `json:"sZoneId" form:"sZoneId"`
-	SRoleId         string  `json:"sRoleId" form:"sRoleId"`
-	SGoodsId        string  `json:"sGoodsId" form:"sGoodsId"`
-	FAmount         float32 `json:"fAmount" form:"fAmount"`
-	IPayTime        uint32  `json:"iPayTime" form:"iPayTime"`
-	SPassbackParams string  `json:"sPassbackParams" form:"sPassbackParams"`
-	IIsTest         uint32  `json:"iIsTest" form:"iIsTest"`
+	SChannelId      string  `json:"sChannelId"`
+	SChannelUid     string  `json:"sChannelUid"`
+	SOrderNo        string  `json:"sOrderNo"`
+	SCpOrderNo      string  `json:"sCpOrderNo"`
+	SZoneId         string  `json:"sZoneId"`
+	SRoleId         string  `json:"sRoleId"`
+	SGoodsId        string  `json:"sGoodsId"`
+	FAmount         float32 `json:"fAmount"`
+	IPayTime        uint32  `json:"iPayTime"`
+	SPassbackParams string  `json:"sPassbackParams"`
+	IIsTest         uint32  `json:"iIsTest"`
 }
 
 func (st *GameHubReceipt) resetDefault() {
@@ -3089,14 +3089,14 @@ func (st *GameHubReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, requir
 }
 
 type IAPReceiptInAll struct {
-	IReceiptType      uint32          `json:"iReceiptType" form:"iReceiptType"`
-	StStatus          IAPStatus       `json:"stStatus" form:"stStatus"`
-	StAppleReceipt    AppleReceipt    `json:"stAppleReceipt" form:"stAppleReceipt"`
-	StGoogleReceipt   GoogleReceipt   `json:"stGoogleReceipt" form:"stGoogleReceipt"`
-	StFyReceipt       FyReceipt       `json:"stFyReceipt" form:"stFyReceipt"`
-	StHeePayReceipt   HeePayReceipt   `json:"stHeePayReceipt" form:"stHeePayReceipt"`
-	StHeePayH5Receipt HeePayH5Receipt `json:"stHeePayH5Receipt" form:"stHeePayH5Receipt"`
-	StGameHubReceipt  GameHubReceipt  `json:"stGameHubReceipt" form:"stGameHubReceipt"`
+	IReceiptType      uint32          `json:"iReceiptType"`
+	StStatus          IAPStatus       `json:"stStatus"`
+	StAppleReceipt    AppleReceipt    `json:"stAppleReceipt"`
+	StGoogleReceipt   GoogleReceipt   `json:"stGoogleReceipt"`
+	StFyReceipt       FyReceipt       `json:"stFyReceipt"`
+	StHeePayReceipt   HeePayReceipt   `json:"stHeePayReceipt"`
+	StHeePayH5Receipt HeePayH5Receipt `json:"stHeePayH5Receipt"`
+	StGameHubReceipt  GameHubReceipt  `json:"stGameHubReceipt"`
 }
 
 func (st *IAPReceiptInAll) resetDefault() {
@@ -3304,12 +3304,12 @@ func (st *IAPReceiptInAll) WriteStructFromTag(p *codec.Packer, tag uint32, requi
 }
 
 type ReceiptQueryParam struct {
-	IDeliverZoneId uint32 `json:"iDeliverZoneId" form:"iDeliverZoneId"`
-	IDeliverRoleId uint64 `json:"iDeliverRoleId" form:"iDeliverRoleId"`
-	IReceiptType   uint32 `json:"iReceiptType" form:"iReceiptType"`
-	IReceiptStatus uint32 `json:"iReceiptStatus" form:"iReceiptStatus"`
-	IAddTimeBegin  uint32 `json:"iAddTimeBegin" form:"iAddTimeBegin"`
-	IAddTimeEnd    uint32 `json:"iAddTimeEnd" form:"iAddTimeEnd"`
+	IDeliverZoneId uint32 `json:"iDeliverZoneId"`
+	IDeliverRoleId uint64 `json:"iDeliverRoleId"`
+	IReceiptType   uint32 `json:"iReceiptType"`
+	IReceiptStatus uint32 `json:"iReceiptStatus"`
+	IAddTimeBegin  uint32 `json:"iAddTimeBegin"`
+	IAddTimeEnd    uint32 `json:"iAddTimeEnd"`
 }
 
 func (st *ReceiptQueryParam) resetDefault() {

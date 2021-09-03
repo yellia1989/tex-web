@@ -16,10 +16,10 @@ import (
 )
 
 type ChannelAddr struct {
-	SChannel string `json:"sChannel" form:"sChannel"`
-	SAddress string `json:"sAddress" form:"sAddress"`
-	SRes     string `json:"sRes" form:"sRes"`
-	SShopVer string `json:"sShopVer" form:"sShopVer"`
+	SChannel string `json:"sChannel"`
+	SAddress string `json:"sAddress"`
+	SRes     string `json:"sRes"`
+	SShopVer string `json:"sShopVer"`
 }
 
 func (st *ChannelAddr) resetDefault() {

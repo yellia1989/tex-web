@@ -65,8 +65,8 @@ func (en ZoneStatusType) String() string {
 }
 
 type ZoneVersion struct {
-	SRes string `json:"sRes" form:"sRes"`
-	SExe string `json:"sExe" form:"sExe"`
+	SRes string `json:"sRes"`
+	SExe string `json:"sExe"`
 }
 
 func (st *ZoneVersion) resetDefault() {
@@ -195,22 +195,22 @@ func (st *ZoneVersion) WriteStructFromTag(p *codec.Packer, tag uint32, require b
 }
 
 type ZoneInfo struct {
-	IZoneId           uint32                 `json:"iZoneId" form:"iZoneId"`
-	SZoneName         string                 `json:"sZoneName" form:"sZoneName"`
-	SConnServer       string                 `json:"sConnServer" form:"sConnServer"`
-	SGameServer       string                 `json:"sGameServer" form:"sGameServer"`
-	IZoneFlag         uint32                 `json:"iZoneFlag" form:"iZoneFlag"`
-	IIsManual         uint32                 `json:"iIsManual" form:"iIsManual"`
-	IManualZoneStatus uint32                 `json:"iManualZoneStatus" form:"iManualZoneStatus"`
-	IMaxNum           uint32                 `json:"iMaxNum" form:"iMaxNum"`
-	IPublishTime      uint32                 `json:"iPublishTime" form:"iPublishTime"`
-	IIsKick           uint32                 `json:"iIsKick" form:"iIsKick"`
-	MVersion          map[string]ZoneVersion `json:"mVersion" form:"mVersion"`
-	IMaxOnline        uint32                 `json:"iMaxOnline" form:"iMaxOnline"`
-	ICurNum           uint32                 `json:"iCurNum" form:"iCurNum"`
-	ILastReportTime   uint32                 `json:"iLastReportTime" form:"iLastReportTime"`
-	ICurZoneStatus    uint32                 `json:"iCurZoneStatus" form:"iCurZoneStatus"`
-	ICurOnline        uint32                 `json:"iCurOnline" form:"iCurOnline"`
+	IZoneId           uint32                 `json:"iZoneId"`
+	SZoneName         string                 `json:"sZoneName"`
+	SConnServer       string                 `json:"sConnServer"`
+	SGameServer       string                 `json:"sGameServer"`
+	IZoneFlag         uint32                 `json:"iZoneFlag"`
+	IIsManual         uint32                 `json:"iIsManual"`
+	IManualZoneStatus uint32                 `json:"iManualZoneStatus"`
+	IMaxNum           uint32                 `json:"iMaxNum"`
+	IPublishTime      uint32                 `json:"iPublishTime"`
+	IIsKick           uint32                 `json:"iIsKick"`
+	MVersion          map[string]ZoneVersion `json:"mVersion"`
+	IMaxOnline        uint32                 `json:"iMaxOnline"`
+	ICurNum           uint32                 `json:"iCurNum"`
+	ILastReportTime   uint32                 `json:"iLastReportTime"`
+	ICurZoneStatus    uint32                 `json:"iCurZoneStatus"`
+	ICurOnline        uint32                 `json:"iCurOnline"`
 }
 
 func (st *ZoneInfo) resetDefault() {
@@ -569,19 +569,19 @@ func (st *ZoneInfo) WriteStructFromTag(p *codec.Packer, tag uint32, require bool
 }
 
 type ZoneModifyInfo struct {
-	BModifyZoneName              bool `json:"bModifyZoneName" form:"bModifyZoneName"`
-	BModifyConnServer            bool `json:"bModifyConnServer" form:"bModifyConnServer"`
-	BModifyGameServer            bool `json:"bModifyGameServer" form:"bModifyGameServer"`
-	BModifyZoneFlag              bool `json:"bModifyZoneFlag" form:"bModifyZoneFlag"`
-	BModifyIsManual              bool `json:"bModifyIsManual" form:"bModifyIsManual"`
-	BModifyManualZoneStatus      bool `json:"bModifyManualZoneStatus" form:"bModifyManualZoneStatus"`
-	BModifyMaxNum                bool `json:"bModifyMaxNum" form:"bModifyMaxNum"`
-	BModifyPublishTime           bool `json:"bModifyPublishTime" form:"bModifyPublishTime"`
-	BModifyClientVersion         bool `json:"bModifyClientVersion" form:"bModifyClientVersion"`
-	BModifyForceUpdateVersion    bool `json:"bModifyForceUpdateVersion" form:"bModifyForceUpdateVersion"`
-	BModifyAndClientVersion      bool `json:"bModifyAndClientVersion" form:"bModifyAndClientVersion"`
-	BModifyAndForceUpdateVersion bool `json:"bModifyAndForceUpdateVersion" form:"bModifyAndForceUpdateVersion"`
-	BKick                        bool `json:"bKick" form:"bKick"`
+	BModifyZoneName              bool `json:"bModifyZoneName"`
+	BModifyConnServer            bool `json:"bModifyConnServer"`
+	BModifyGameServer            bool `json:"bModifyGameServer"`
+	BModifyZoneFlag              bool `json:"bModifyZoneFlag"`
+	BModifyIsManual              bool `json:"bModifyIsManual"`
+	BModifyManualZoneStatus      bool `json:"bModifyManualZoneStatus"`
+	BModifyMaxNum                bool `json:"bModifyMaxNum"`
+	BModifyPublishTime           bool `json:"bModifyPublishTime"`
+	BModifyClientVersion         bool `json:"bModifyClientVersion"`
+	BModifyForceUpdateVersion    bool `json:"bModifyForceUpdateVersion"`
+	BModifyAndClientVersion      bool `json:"bModifyAndClientVersion"`
+	BModifyAndForceUpdateVersion bool `json:"bModifyAndForceUpdateVersion"`
+	BKick                        bool `json:"bKick"`
 }
 
 func (st *ZoneModifyInfo) resetDefault() {

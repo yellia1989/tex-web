@@ -47,9 +47,9 @@ func (en CDKeyDeliveryMode) String() string {
 }
 
 type MPProjectConfig struct {
-	SProjectId      string `json:"sProjectId" form:"sProjectId"`
-	SProjectName    string `json:"sProjectName" form:"sProjectName"`
-	SDeliveryServer string `json:"sDeliveryServer" form:"sDeliveryServer"`
+	SProjectId      string `json:"sProjectId"`
+	SProjectName    string `json:"sProjectName"`
+	SDeliveryServer string `json:"sDeliveryServer"`
 }
 
 func (st *MPProjectConfig) resetDefault() {
@@ -190,23 +190,23 @@ func (st *MPProjectConfig) WriteStructFromTag(p *codec.Packer, tag uint32, requi
 }
 
 type CDKeyConfig struct {
-	SProjectId     string `json:"sProjectId" form:"sProjectId"`
-	ICDKeyId       uint32 `json:"iCDKeyId" form:"iCDKeyId"`
-	SCDKeyName     string `json:"sCDKeyName" form:"sCDKeyName"`
-	ICDKeyNum      uint32 `json:"iCDKeyNum" form:"iCDKeyNum"`
-	ICreateMode    uint32 `json:"iCreateMode" form:"iCreateMode"`
-	IDeliveryMode  uint32 `json:"iDeliveryMode" form:"iDeliveryMode"`
-	IBeginTime     uint32 `json:"iBeginTime" form:"iBeginTime"`
-	IEndTime       uint32 `json:"iEndTime" form:"iEndTime"`
-	SRewardInfo    string `json:"sRewardInfo" form:"sRewardInfo"`
-	IExchangeLimit uint32 `json:"iExchangeLimit" form:"iExchangeLimit"`
-	SZoneLimit     string `json:"sZoneLimit" form:"sZoneLimit"`
-	SCustomLimit   string `json:"sCustomLimit" form:"sCustomLimit"`
-	IGeneratedNum  uint32 `json:"iGeneratedNum" form:"iGeneratedNum"`
-	IExchangedNum  uint32 `json:"iExchangedNum" form:"iExchangedNum"`
-	ICommon        uint32 `json:"iCommon" form:"iCommon"`
-	SCommonCdk     string `json:"sCommonCdk" form:"sCommonCdk"`
-	IActive        uint32 `json:"iActive" form:"iActive"`
+	SProjectId     string `json:"sProjectId"`
+	ICDKeyId       uint32 `json:"iCDKeyId"`
+	SCDKeyName     string `json:"sCDKeyName"`
+	ICDKeyNum      uint32 `json:"iCDKeyNum"`
+	ICreateMode    uint32 `json:"iCreateMode"`
+	IDeliveryMode  uint32 `json:"iDeliveryMode"`
+	IBeginTime     uint32 `json:"iBeginTime"`
+	IEndTime       uint32 `json:"iEndTime"`
+	SRewardInfo    string `json:"sRewardInfo"`
+	IExchangeLimit uint32 `json:"iExchangeLimit"`
+	SZoneLimit     string `json:"sZoneLimit"`
+	SCustomLimit   string `json:"sCustomLimit"`
+	IGeneratedNum  uint32 `json:"iGeneratedNum"`
+	IExchangedNum  uint32 `json:"iExchangedNum"`
+	ICommon        uint32 `json:"iCommon"`
+	SCommonCdk     string `json:"sCommonCdk"`
+	IActive        uint32 `json:"iActive"`
 }
 
 func (st *CDKeyConfig) resetDefault() {
@@ -515,10 +515,10 @@ func (st *CDKeyConfig) WriteStructFromTag(p *codec.Packer, tag uint32, require b
 }
 
 type CDKeyInfo struct {
-	SCDKey           string `json:"sCDKey" form:"sCDKey"`
-	SBindAccount     string `json:"sBindAccount" form:"sBindAccount"`
-	IExchangeTime    uint32 `json:"iExchangeTime" form:"iExchangeTime"`
-	SExchangeAccount string `json:"sExchangeAccount" form:"sExchangeAccount"`
+	SCDKey           string `json:"sCDKey"`
+	SBindAccount     string `json:"sBindAccount"`
+	IExchangeTime    uint32 `json:"iExchangeTime"`
+	SExchangeAccount string `json:"sExchangeAccount"`
 }
 
 func (st *CDKeyInfo) resetDefault() {
@@ -671,8 +671,8 @@ func (st *CDKeyInfo) WriteStructFromTag(p *codec.Packer, tag uint32, require boo
 }
 
 type ExchangedCDKeyInfo struct {
-	SCDKey        string `json:"sCDKey" form:"sCDKey"`
-	IExchangeTime uint32 `json:"iExchangeTime" form:"iExchangeTime"`
+	SCDKey        string `json:"sCDKey"`
+	IExchangeTime uint32 `json:"iExchangeTime"`
 }
 
 func (st *ExchangedCDKeyInfo) resetDefault() {
@@ -801,9 +801,9 @@ func (st *ExchangedCDKeyInfo) WriteStructFromTag(p *codec.Packer, tag uint32, re
 }
 
 type AccountExchangeInfo struct {
-	SAccount        string               `json:"sAccount" form:"sAccount"`
-	ICDKeyId        uint32               `json:"iCDKeyId" form:"iCDKeyId"`
-	VExchangedCDKey []ExchangedCDKeyInfo `json:"vExchangedCDKey" form:"vExchangedCDKey"`
+	SAccount        string               `json:"sAccount"`
+	ICDKeyId        uint32               `json:"iCDKeyId"`
+	VExchangedCDKey []ExchangedCDKeyInfo `json:"vExchangedCDKey"`
 }
 
 func (st *AccountExchangeInfo) resetDefault() {

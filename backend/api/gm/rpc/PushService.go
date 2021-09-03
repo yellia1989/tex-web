@@ -44,9 +44,9 @@ func (en PushTaskStatus) String() string {
 }
 
 type PushTargetAccountInfo struct {
-	IAccountId      uint64   `json:"iAccountId" form:"iAccountId"`
-	VDeviceToken    []string `json:"vDeviceToken" form:"vDeviceToken"`
-	VRegistrationId []string `json:"vRegistrationId" form:"vRegistrationId"`
+	IAccountId      uint64   `json:"iAccountId"`
+	VDeviceToken    []string `json:"vDeviceToken"`
+	VRegistrationId []string `json:"vRegistrationId"`
 }
 
 func (st *PushTargetAccountInfo) resetDefault() {
@@ -279,9 +279,9 @@ func (st *PushTargetAccountInfo) WriteStructFromTag(p *codec.Packer, tag uint32,
 }
 
 type PushTargetDeviceInfo struct {
-	IAccountId      uint64 `json:"iAccountId" form:"iAccountId"`
-	SDeviceToken    string `json:"sDeviceToken" form:"sDeviceToken"`
-	SRegistrationId string `json:"sRegistrationId" form:"sRegistrationId"`
+	IAccountId      uint64 `json:"iAccountId"`
+	SDeviceToken    string `json:"sDeviceToken"`
+	SRegistrationId string `json:"sRegistrationId"`
 }
 
 func (st *PushTargetDeviceInfo) resetDefault() {
@@ -422,9 +422,9 @@ func (st *PushTargetDeviceInfo) WriteStructFromTag(p *codec.Packer, tag uint32, 
 }
 
 type PushPayloadInfo struct {
-	SApplePayload  string `json:"sApplePayload" form:"sApplePayload"`
-	SGooglePayload string `json:"sGooglePayload" form:"sGooglePayload"`
-	SUPushPayload  string `json:"sUPushPayload" form:"sUPushPayload"`
+	SApplePayload  string `json:"sApplePayload"`
+	SGooglePayload string `json:"sGooglePayload"`
+	SUPushPayload  string `json:"sUPushPayload"`
 }
 
 func (st *PushPayloadInfo) resetDefault() {
@@ -565,18 +565,18 @@ func (st *PushPayloadInfo) WriteStructFromTag(p *codec.Packer, tag uint32, requi
 }
 
 type PushTaskInfo struct {
-	ITaskId          uint32          `json:"iTaskId" form:"iTaskId"`
-	STaskName        string          `json:"sTaskName" form:"sTaskName"`
-	StPayload        PushPayloadInfo `json:"stPayload" form:"stPayload"`
-	IAddTime         uint32          `json:"iAddTime" form:"iAddTime"`
-	IFinishTime      uint32          `json:"iFinishTime" form:"iFinishTime"`
-	IStatus          uint32          `json:"iStatus" form:"iStatus"`
-	IResolveTotalNum uint32          `json:"iResolveTotalNum" form:"iResolveTotalNum"`
-	IResolveDoneNum  uint32          `json:"iResolveDoneNum" form:"iResolveDoneNum"`
-	IResolveFailNum  uint32          `json:"iResolveFailNum" form:"iResolveFailNum"`
-	IPushTotalNum    uint32          `json:"iPushTotalNum" form:"iPushTotalNum"`
-	IPushDoneNum     uint32          `json:"iPushDoneNum" form:"iPushDoneNum"`
-	IPushFailNum     uint32          `json:"iPushFailNum" form:"iPushFailNum"`
+	ITaskId          uint32          `json:"iTaskId"`
+	STaskName        string          `json:"sTaskName"`
+	StPayload        PushPayloadInfo `json:"stPayload"`
+	IAddTime         uint32          `json:"iAddTime"`
+	IFinishTime      uint32          `json:"iFinishTime"`
+	IStatus          uint32          `json:"iStatus"`
+	IResolveTotalNum uint32          `json:"iResolveTotalNum"`
+	IResolveDoneNum  uint32          `json:"iResolveDoneNum"`
+	IResolveFailNum  uint32          `json:"iResolveFailNum"`
+	IPushTotalNum    uint32          `json:"iPushTotalNum"`
+	IPushDoneNum     uint32          `json:"iPushDoneNum"`
+	IPushFailNum     uint32          `json:"iPushFailNum"`
 }
 
 func (st *PushTaskInfo) resetDefault() {
