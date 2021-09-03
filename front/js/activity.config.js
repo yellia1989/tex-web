@@ -1622,6 +1622,10 @@
                             printer: utils.printItemNumList,
                             parser: utils.parseItemNumList
                         }
+                        extrarewardtime: {
+                            name: '额外奖励的时间(秒)',
+                            type: 'text',
+                        }
                     }
                 }
             }
