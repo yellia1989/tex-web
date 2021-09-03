@@ -85,10 +85,10 @@
 
 		let rechargeTable = table.render({
 			elem: "#tableId",
-      url: "/api/stat/recharge/list",
       text: {
         none: '暂无相关数据',
       },
+      data: [],
 			limit: 30,
 			page: true,
 			cols: [[
@@ -118,6 +118,7 @@
 
     form.on("submit(search)", function (data) {
       rechargeTable.reload({
+        url: "/api/stat/recharge/list",
         where: data.field,
         page: {
           curr: 1,

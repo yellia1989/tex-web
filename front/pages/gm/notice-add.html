@@ -52,10 +52,23 @@
         </div>
       </div>
 
-      <div class="layui-form-item">
+      <div class="layui-form-item" id="content">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <div id="rContnet"></div>
+          <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+              <li class="layui-this">简体中文(默认)</li>
+              <li>英语</li>
+            </ul>
+            <div class="layui-tab-content">
+              <div class="layui-tab-item layui-show">
+                  <div id="zh-CN"></div>
+              </div>
+              <div class="layui-tab-item">
+                  <div id="en"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -113,10 +126,13 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/js/common.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
-    const editor = getDefaultEditor('#rContnet');
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    zhCNeditor = getDefaultEditor('#zh-CN');
+    ENeditor = getDefaultEditor('#en');
+
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
@@ -190,32 +206,29 @@
 
       form.on('select(type)', function (data) {
         if (data.value == "1") {
-          $("#content").removeClass("layui-hide");
-          $("textarea[name=sContent]").attr("lay-verify", "required");
           $("#displayInterval").removeClass("layui-hide");
           $("input[name=iDisplayInterval]").attr("lay-verify", "required|integer");
           $("#displayNum").removeClass("layui-hide");
           $("input[name=iDisplayNum]").attr("lay-verify", "required|integer");
           $("#maintenanceTime").addClass("layui-hide");
           $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
+          $("#content").removeClass("layui-hide");
         } else if (data.value == "2") {
-          $("#content").addClass("layui-hide");
-          $("textarea[name=sContent]").removeAttr("lay-verify");
           $("#displayInterval").addClass("layui-hide");
           $("input[name=iDisplayInterval]").removeAttr("lay-verify");
           $("#displayNum").addClass("layui-hide");
           $("input[name=iDisplayNum]").removeAttr("lay-verify");
           $("#maintenanceTime").removeClass("layui-hide");
           $("input[name=iMaintenanceTime]").attr("lay-verify", "required|integer");
+          $("#content").addClass("layui-hide");
         } else if (data.value == "3") {
-          $("#content").removeClass("layui-hide");
-          $("textarea[name=sContent]").attr("lay-verify", "required");
           $("#displayInterval").addClass("layui-hide");
           $("input[name=iDisplayInterval]").removeAttr("lay-verify");
           $("#displayNum").addClass("layui-hide");
           $("input[name=iDisplayNum]").removeAttr("lay-verify");
           $("#maintenanceTime").addClass("layui-hide");
           $("input[name=iMaintenanceTime]").removeAttr("lay-verify");
+          $("#content").removeClass("layui-hide");
         }
       });
 
@@ -229,10 +242,33 @@
           return false;
         }
 
-        let jsonData = editor.txt.getJSON();
-        let ouputStr = ExecuteJsonData(jsonData);
-        data.field.sContent = ouputStr;
-        data.field.sHtmlContent = editor.txt.html();
+        if (data.field.iType != 2) {
+          data.field.sContent = ExecuteJsonData(zhCNeditor.txt.getJSON());
+          data.field.sHtmlContent = zhCNeditor.txt.html();
+
+          if (data.field.sHtmlContent == '') {
+            okLayer.redCrossMsg('公告内容不能为空', function () {});
+            return false;
+          }
+
+          let lang = {};
+          lang["en"] = {"sContent":ExecuteJsonData(ENeditor.txt.getJSON()),"sHtmlContent":ENeditor.txt.html()};
+          data.field.sLangContent = okUtils.jsonToString(lang);
+
+          if (!checkLang(lang)) {
+            okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
+              okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
+                okLayer.greenTickMsg(response.data, function () {
+                  parent.layer.close(parent.layer.getFrameIndex(window.name));
+                });
+              }).fail(function (error) {
+                console.log(error);
+              });
+              layer.close(index);
+            });
+            return false;
+          }
+        }
 
         okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {

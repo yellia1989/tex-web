@@ -19,6 +19,10 @@ type login struct {
     init bool   // 是否初始化成功
 }
 
+func (l *login) name() string {
+    return "login"
+}
+
 func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !l.init {
         var rid dsql.NullInt64
@@ -65,7 +69,6 @@ func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint3
                 log.Errorf("cron [sync][login] can't find account, accountid: %d", roleid)
                 continue
             }
-            log.Infof("cron [sync][login] can't find account, accountid: %d", roleid)
             return nil
         }
         r := rrole.Get(zoneidFk, account.Id)
@@ -74,7 +77,6 @@ func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint3
                 log.Errorf("cron [sync][login] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
                 continue
             }
-            log.Infof("cron [sync][login] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
             return nil
         }
         if d.Id < r.RegDateFk {
@@ -90,19 +92,17 @@ func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint3
         size++
     }
 
-    if _rid != 0 {
-        l.buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('login',%d,%d);",zoneid, _rid))
+    if _rid == 0 {
+        return nil
     }
+
+    l.buff.WriteString(fmt.Sprintf("REPLACE INTO sync_rid(`table`,zoneid,rid) VALUES('login',%d,%d);",zoneid, _rid))
 
     if size > 0 {
         l.buff.WriteString("INSERT INTO login(zoneid_fk,accountid_fk,date_fk,daytime) VALUES")
         l.buff.WriteString(buff.String())
         buff.Reset()
         l.rows = size
-    }
-
-    if l.buff.Len() == 0 {
-        return nil
     }
 
     if err := l.save(to, zoneid); err != nil {
@@ -116,6 +116,10 @@ func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint3
 }
 
 func (l *login) save(to *dsql.Conn, zoneid uint32) error {
+    if l.buff.Len() == 0 {
+        return nil
+    }
+
     tx, err := to.BeginTx(ctx, nil)
     if err != nil {
         return err
@@ -138,7 +142,7 @@ func (l *login) save(to *dsql.Conn, zoneid uint32) error {
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("cron [sync][login] cost: %.2f ms, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, l.rows, rowsAffected, zoneid)
+    log.Debugf("cron [sync][login] cost: %.2f s, size: %.2f KB, rows: %d, affect rows: %d, zoneid: %d", t2.Sub(t1).Seconds(), size, l.rows, rowsAffected, zoneid)
 
     l.buff.Reset()
     l.rows = 0

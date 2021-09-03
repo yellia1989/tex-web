@@ -96,11 +96,6 @@ func Cron(now time.Time) {
                 // 新增了分区，需要同步
                 // 获取开服时间
                 mu.Lock()
-                if err := checkConn(); err != nil {
-                    mu.Unlock()
-                    log.Errorf("cron [zone] check conn err: %s", err.Error())
-                    return
-                }
 
                 sql := "INSERT INTO zone(zoneid,zonename,openday_fk,logdbhost) VALUES(?,?,?,?)"
                 if _,err := conn.ExecContext(ctx, sql, zoneid, new.SZoneName, d.Id, ip); err != nil {
@@ -146,12 +141,6 @@ func Cron(now time.Time) {
             sql += " WHERE id="+common.U32toa(old.Id)
 
             mu.Lock()
-            if err := checkConn(); err != nil {
-                mu.Unlock()
-                log.Errorf("cron [zone] check conn err: %s", err.Error())
-                return
-            }
-
             if _,err := conn.ExecContext(ctx, sql); err != nil {
                 mu.Unlock()
                 log.Errorf("cron [zone] update err: %s, sql: %s", err.Error(), sql)

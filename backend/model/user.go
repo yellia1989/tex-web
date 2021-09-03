@@ -1,34 +1,23 @@
 package model
 
 import (
-    "net/http"
-    "encoding/json"
+    "fmt"
     "github.com/labstack/echo/v4"
+    "github.com/yellia1989/tex-web/backend/cfg"
     "golang.org/x/crypto/bcrypt"
-    "github.com/yellia1989/tex-go/tools/util"
-    cm "github.com/yellia1989/tex-web/backend/common"
+    "net/http"
+    "regexp"
+    "strconv"
+    "strings"
 )
-
-var users *cm.Map
-
-func init() {
-    bs, _ := util.LoadFromFile("data/users.json")
-    items := make([]*User,0)
-    json.Unmarshal(bs, &items)
-
-    items2 := make([]cm.Item,0)
-    for _, item := range items {
-        items2 = append(items2, item)
-    }
-    users = cm.NewMap("data/users.json", items2)
-}
 
 type User struct {
     Id uint32           `json:"id"`
     UserName string     `json:"username"`
     Password string     `json:"password"`
     Role uint32         `json:"role"`
-    NeedReLogin bool
+    NeedReLogin uint32
+    AllowGmCmd string    `json:"allowGmCmd"`
 }
 
 func (u *User) GetId() uint32 {
@@ -40,6 +29,11 @@ func (u *User) SetId(id uint32) {
 func (u *User) IsAdmin() bool {
     return u.Role == 1
 }
+
+func (u *User) IsNeedLogin() bool {
+    return u.NeedReLogin != 0
+}
+
 func (u *User) CheckPermission(path string, method string) error {
     if u.IsAdmin() {
         return nil
@@ -72,6 +66,26 @@ func (u *User) CheckPermission(path string, method string) error {
         Message: "没有对应的权限",
     }
 }
+
+func (u *User) CheckGmPermission(cmd string) bool {
+    if u.IsAdmin(){
+        return true
+    }
+    reg := regexp.MustCompile(`^([a-zA-z_]*)\s*`)
+    res :=reg.FindStringSubmatch(cmd)
+    if len(res) < 2 {
+        return false
+    }
+    cmd = res[1]
+    cmdArr := strings.Split(u.AllowGmCmd,"\n")
+    for _,v := range cmdArr {
+        if v == cmd{
+            return true
+        }
+    }
+    return false
+}
+
 func (u *User) ComparePwd(password string) bool {
     err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
     return err == nil
@@ -87,72 +101,58 @@ func (u *User) EncodePwd(password string) bool {
 }
 
 func GetUser(id uint32) *User {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
-
-    u := users.GetItem(id)
-    if u == nil {
+    user := &User{}
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from sys_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
         return nil
     }
-    // 复制一份防止原始值被修改
-    u2 := *(u.(*User))
-    return &u2
+    return user
 }
 
 func GetUserByUserName(username string) *User {
-    if users == nil {
-        return nil
-    }
-
     // username不能为空
     if len(username) == 0 {
         return nil
     }
-
-    items := users.GetItems(func (key, v interface{})bool{
-        u := v.(*User)
-        return u.UserName == username
-    })
-    if len(items) == 0 {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
-    if len(items) != 1 {
-        panic("username duplicate")
+    user := &User{}
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from sys_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
+        return nil
     }
-
-    // 复制一份防止原始值被修改
-    u2 := *(items[0].(*User))
-    return &u2
+    return user
 }
 
 func GetUsers() []*User {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
-
-    items := users.GetItems(func (key, v interface{})bool{
-        return true
-    })
-
-    if len(items) == 0 {
+    rows, err := db.Query("select id,username,password,role,need_login,allow_gm_cmd from sys_user")
+    if err!=nil{
         return nil
     }
-
     us := make([]*User,0)
-    for _, item := range items {
-        // 复制一份防止原始值被修改
-        u := *(item.(*User))
-        us = append(us, &u)
+    for rows.Next() {
+        var user User
+        if err := rows.Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
+            return nil
+        }
+        us = append(us,&user)
     }
     return us
 }
 
-func AddUser(username string, password string, role uint32) *User {
-    if users == nil {
+func AddUser(username string, password string, role uint32,allowGmCmd string) *User {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
-
     // username,password不能为空
     if len(username) == 0 || len(password) == 0 {
         return nil
@@ -170,69 +170,75 @@ func AddUser(username string, password string, role uint32) *User {
     if !u.EncodePwd(password) {
         return nil
     }
-    if !users.AddItem(u) {
+    _,err := db.Exec("insert into sys_user(username,password,role,allow_gm_cmd) values(?,?,?,?)",u.UserName,u.Password,u.Role,allowGmCmd)
+    if err!=nil{
         return nil
     }
-
-    // 复制一份防止原始值被修改
-    u2 := *u
-    return &u2
+    return u
 }
 
 func DelUser(u *User) bool {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-
-    return users.DelItem(u)
+    _,err := db.Exec("delete from sys_user where id = ?",u.Id)
+    if err!=nil{
+        return false
+    }
+    return true
 }
 
 func ResetUserNeedReLogin(id uint32) bool {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-
-    u := users.GetItem(id)
-    if u == nil {
+    _,err := db.Exec("update sys_user set need_login = 0 where id = ?",id)
+    if err!=nil {
         return false
     }
-    u2 := *(u.(*User))
-    u2.NeedReLogin = false
-    return users.UpdateItem(&u2)
+    return true
 }
 
 func UpdateUser(u *User) bool {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-    u2 := *u
-    u2.NeedReLogin = true
-    return users.UpdateItem(&u2)
+    _,err := db.Exec("update sys_user set password = ?,role = ?,need_login = 1,allow_gm_cmd=? where id = ?",u.Password,u.Role,u.AllowGmCmd,u.Id)
+    if err!=nil {
+        return false
+    }
+    return true
 }
 
 func DelAllUser() bool {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-
-    return users.DelAllItem()
+    _,err := db.Exec("delete from sys_user")
+    if err!=nil {
+        return false
+    }
+    return true
 }
 
 func DelUserRole(roles []uint32) {
-    items := users.GetItems(func (key, v interface{})bool{
-        u := v.(*User)
-        if util.Contain(roles, u.Role) {
-            return true
-        }
-        return false
-    })
-
-    if len(items) == 0 {
+    db := cfg.StatDb
+    if db == nil {
         return
     }
-    for _, item := range items {
-        u := *(item.(*User))
-        u.Role = 0
-        users.UpdateItem(&u)
+    roleStr := make([]string,len(roles))
+    for _,v := range roles{
+       roleStr = append(roleStr,strconv.FormatUint(uint64(v),10))
+    }
+    sql := "update sys_user set role = 0 where role in (%s)"
+    ids := strings.Join(roleStr,",")
+    sql = fmt.Sprintf(sql,ids)
+    _,err := db.Exec(sql)
+    if err!=nil {
+        return
     }
 }

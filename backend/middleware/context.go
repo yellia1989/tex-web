@@ -11,6 +11,7 @@ import (
 
 const (
     SessionKey = "github.com/yellia1989/tex-web/backend/context"
+    API_KEY = "518a861d3621bb4e039386b0314bc84a"
 )
 
 type Context struct {

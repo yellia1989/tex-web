@@ -46,6 +46,13 @@
         {field: "role", title: "角色", templet: function(d) {
           return '<div id="XM-' + d.id + '" ></div>';
         }},
+				{field: "allowGmCmd", title: "允许GM命令",templet: function(d){
+                    if(d.allowGmCmd !== ""){
+						return "已设置"
+					}else{
+                        return ""
+                    }
+   					}},
 				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
 			]],
       done: function(res){

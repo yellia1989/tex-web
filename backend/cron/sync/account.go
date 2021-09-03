@@ -17,6 +17,10 @@ type account struct {
     init bool   // 是否初始化成功
 }
 
+func (a *account) name() string {
+    return "account"
+}
+
 func (a *account) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32) error {
     if !a.init {
         var rid dsql.NullInt64
@@ -116,7 +120,7 @@ func (a *account) save(to *dsql.Conn, zoneid uint32) error {
     t2 := time.Now()
 
     rowsAffected,_ := result.RowsAffected()
-    log.Debugf("cron [sync][account] cost: %.2f ms, size: %.2f KB, rows: %d, affected rows: %d", t2.Sub(t1).Seconds(), size, a.rows, rowsAffected)
+    log.Debugf("cron [sync][account] cost: %.2f s, size: %.2f KB, rows: %d, affected rows: %d", t2.Sub(t1).Seconds(), size, a.rows, rowsAffected)
 
     a.buff.Reset()
     a.rows = 0

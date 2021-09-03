@@ -35,6 +35,7 @@ func ItemAddLog(c echo.Context) error {
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
 	sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".add_item"
 	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
@@ -92,6 +93,7 @@ func ItemSubLog(c echo.Context) error {
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
 	sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".sub_item"
 	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"

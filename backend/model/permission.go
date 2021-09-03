@@ -1,30 +1,16 @@
 package model
 
 import (
+    "github.com/yellia1989/tex-web/backend/cfg"
     "path"
     "strings"
-    "encoding/json"
-    "github.com/yellia1989/tex-go/tools/util"
-    cm "github.com/yellia1989/tex-web/backend/common"
 )
-
-var perms *cm.Map
-func init() {
-    bs, _ := util.LoadFromFile("data/perms.json")
-    items := make([]*Permission,0)
-    json.Unmarshal(bs, &items)
-
-    items2 := make([]cm.Item,0)
-    for _, item := range items {
-        items2 = append(items2, item)
-    }
-    perms = cm.NewMap("data/perms.json", items2)
-}
 
 type Permission struct {
     Id  uint32              `json:"id"`
     Name string             `json:"name"`
     Paths []string          `json:"paths"`
+    PathString string
 }
 func (p *Permission) GetId() uint32 {
     return p.Id
@@ -41,6 +27,21 @@ func (p *Permission) copy() *Permission {
     copy(p2.Paths, p.Paths)
     return p2
 }
+
+func (p *Permission) InitPath()  {
+    if len(p.PathString)>0 {
+        p.Paths = strings.Split(p.PathString,";")
+    }else {
+        p.Paths = make([]string,0)
+    }
+}
+
+func (p *Permission) StringifyPath()  {
+    if len(p.Paths)>0 {
+        p.PathString = strings.Join(p.Paths,";")
+    }
+}
+
 func (perm *Permission) checkPermission(method string, spath string) bool {
     // /index.html特殊处理
     if spath == "/index.html" || spath == "/" {
@@ -61,42 +62,43 @@ func (perm *Permission) checkPermission(method string, spath string) bool {
 }
 
 func GetPerms() []*Permission {
-    if perms == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
 
-    items := perms.GetItems(func (key, v interface{})bool{
-        return true
-    })
-
-    if len(items) == 0 {
+    rows, err := db.Query("select id,name,paths from sys_perms")
+    if err!=nil {
         return nil
     }
-
     ps := make([]*Permission,0)
-    for _, item := range items {
-        // 复制一份防止原始值被修改
-        p := item.(*Permission).copy()
-        ps = append(ps, p)
+    for rows.Next() {
+        var perm Permission
+        if err := rows.Scan(&perm.Id,&perm.Name,&perm.PathString);err!=nil{
+            return nil
+        }
+        perm.InitPath()
+        ps = append(ps,&perm)
     }
     return ps
 }
 
 func GetPerm(id uint32) *Permission {
-    if perms == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
-
-    p := perms.GetItem(id)
-    if p == nil {
+    perm := &Permission{}
+    if err:=db.QueryRow("select id,name,paths from sys_perms where id = ?",id).Scan(&perm.Id,&perm.Name,&perm.PathString);err!=nil{
         return nil
     }
-    // 复制一份防止原始值被修改
-    return p.(*Permission).copy()
+    perm.InitPath()
+    return perm
 }
 
 func AddPerm(name string, paths []string) *Permission {
-    if perms == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
 
@@ -113,42 +115,44 @@ func AddPerm(name string, paths []string) *Permission {
         paths[i] = strings.Join(tmp, " ")
     }
 
-    // name不能重复
-    items := perms.GetItems(func (key, v interface{})bool{
-        p := v.(*Permission)
-        return p.Name == name
-    })
-    if len(items) != 0 {
+    perm := &Permission{}
+    if err:=db.QueryRow("select id from sys_perms where name = ?",name).Scan(&perm.Id);err==nil {
         return nil
     }
 
     p := &Permission{
         Name: name,
-        Paths: make([]string, len(paths)),
+        Paths: paths,
     }
-    copy(p.Paths, paths)
-
-    if !perms.AddItem(p) {
+    p.StringifyPath()
+    _,err := db.Exec("insert into sys_perms(name,paths) values(?,?)",p.Name,p.PathString)
+    if err!=nil{
         return nil
     }
-
-    // 复制一份防止原始值被修改
-    return p.copy()
+    return p
 }
 
 func DelPerm(p *Permission) bool {
-    if perms == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-
-    return perms.DelItem(p)
+    _,err := db.Exec("delete from sys_perms where id = ?",p.Id)
+    if err!=nil {
+        return false
+    }
+    return true
 }
 
 func UpdatePerm(p *Permission) bool {
-    if users == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-
-    p2 := p.copy()
-    return perms.UpdateItem(p2)
+    p.StringifyPath()
+    _,err := db.Exec("update sys_perms set name = ?,paths = ? where id = ?",p.Name,p.PathString,p.Id)
+    if err!=nil{
+        return false
+    }
+    return true
 }

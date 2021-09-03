@@ -13,7 +13,7 @@
 		    <div class="layui-inline">
 		    	<label class="layui-form-label">分区ID</label>
 		    	<div class="layui-input-inline">
-		    		<input type="text" name="iZoneId" placeholder="请输入分区ID(<=1000)" autocomplete="off" class="layui-input" lay-verify="required|integer|zoneid" lay-verType="tips">
+		    		<input type="text" name="iZoneId" placeholder="请输入分区ID" autocomplete="off" class="layui-input" lay-verify="required|integer" lay-verType="tips">
 		    	</div>
 		    </div>
 		    <div class="layui-inline">
@@ -176,11 +176,6 @@
           }
           if (v.length != l) {
               return '版本号格式不对';
-          }
-        },
-        zoneid: function(value, item) {
-          if (value != 8888 && value != 9999 && value > 1000) {
-            return '分区id<=1000';
           }
         }
       });

@@ -1,20 +1,24 @@
 package main
 
 import (
-    "github.com/yellia1989/tex-web/backend/model"
-    "os"
     "fmt"
-    "strings"
-    "net/http"
-    _ "net/http/pprof"
     "github.com/labstack/echo/v4"
     "github.com/labstack/echo/v4/middleware"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/api"
     "github.com/yellia1989/tex-web/backend/api/stat"
-    "github.com/yellia1989/tex-web/backend/cron"
     "github.com/yellia1989/tex-web/backend/cfg"
-    "github.com/yellia1989/tex-go/tools/log"
+    "github.com/yellia1989/tex-web/backend/cron"
+    mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-web/backend/model"
+    mlog "github.com/yellia1989/tex-web/backend/log"
+    "net/http"
+    _ "net/http/pprof"
+    "os"
+    "syscall"
+    "os/signal"
+    "strings"
+    "context"
 )
 
 func httpErrorHandler(err error, c echo.Context) {
@@ -57,7 +61,7 @@ func httpErrorHandler(err error, c echo.Context) {
                     pUser := model.GetUser(userId)
                     if pUser == nil {
                         bReLogin = true
-                    }else if pUser.NeedReLogin {
+                    }else if pUser.IsNeedLogin() {
                         bReLogin = true
                     }
                 }
@@ -85,14 +89,24 @@ func main() {
         os.Exit(-1)
     }
 
+    model.InitMenu()
+
     debug := cfg.Debug
     framework_debug := cfg.FrameworkDebug
+
+    if debug {
+        log.SetLevel(log.DEBUG)
+    }
+
+    if framework_debug {
+        log.SetFrameworkLevel(log.DEBUG)
+    }
 
     // Echo instance
     e := echo.New()
     e.Debug = debug
+    e.Logger = mlog.GetLogger()
     e.HTTPErrorHandler = httpErrorHandler
-    e.Logger.SetHeader("${time_custom}|${short_file}:${line}|${level}|")
 
     // Middleware
     e.Pre(middleware.RemoveTrailingSlash())
@@ -112,16 +126,24 @@ func main() {
 
     api.RegisterHandler(e.Group("/api"))
 
-    if debug {
-        log.SetLevel(log.DEBUG)
-    }
-
-    if framework_debug {
-        log.SetFrameworkLevel(log.DEBUG)
-    }
-
     go func() {                                                                                                                                                        
         log.Debug(http.ListenAndServe(":16060", nil))
+    }()
+
+    go func() {
+        closeCh := make(chan os.Signal, 1)
+        signal.Notify(closeCh, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
+        for {
+            select {
+            case <-closeCh:
+                ctx := context.Background()
+                if err := e.Shutdown(ctx); err != nil {
+                    log.Errorf("shutdown err: %s", err.Error())
+                } else {
+                    return
+                }
+            }
+        }
     }()
 
     stat.InitCondition()
@@ -130,7 +152,12 @@ func main() {
     cron.Start()
 
     // Start server
-    e.Logger.Fatal(e.Start(cfg.Listen))
+    err := e.Start(cfg.Listen)
+    if err != nil && err != http.ErrServerClosed {
+        log.Errorf("stop http server err: %s", err.Error())
+    } else {
+        log.Debug("http server is stopped")
+    }
 
     // Stop Cron
     cron.Stop()

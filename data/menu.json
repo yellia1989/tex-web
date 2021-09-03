@@ -2,8 +2,9 @@
   {
     "id": 1,
     "title": "每日数据",
+    "href": "",
     "fontFamily": "ok-icon",
-    "icon": "&#xe722;",
+    "icon": "\u0026#xe722;",
     "spread": false,
     "checked": false,
     "children": [
@@ -12,82 +13,61 @@
         "title": "注册",
         "href": "stat/newadd.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe736;",
+        "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 102,
         "title": "新增留存",
         "href": "stat/remain.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe736;",
+        "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 103,
         "title": "新增留存(全服去重)",
         "href": "stat/remain2.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe736;",
+        "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 104,
         "title": "流失",
         "href": "stat/loss.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe736;",
+        "icon": "\u0026#xe736;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 105,
         "title": "充值总况",
         "href": "stat/recharge.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe7d1;",
+        "icon": "\u0026#xe7d1;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 106,
         "title": "充值跟踪",
         "href": "stat/recharge-track.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe7d1;",
+        "icon": "\u0026#xe7d1;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       }
-    ],
-    "role": [
-      3
     ]
   },
   {
@@ -95,61 +75,49 @@
     "title": "GM工具",
     "href": "",
     "fontFamily": "ok-icon",
-    "icon": "&#xe654;",
+    "icon": "\u0026#xe654;",
     "spread": false,
     "checked": false,
     "children": [
       {
         "id": 201,
         "title": "GM",
+        "href": "",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
           {
-          "id": 20101,
-          "title": "GM1",
-          "href": "gm/gm.html",
-          "fontFamily": "ok-icon",
-          "icon": "&#xe654;",
-          "spread": false,
-          "checked": false,
-          "role": [
-            4,
-            3
-          ]
+            "id": 20101,
+            "title": "GM1",
+            "href": "gm/gm.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
           },
           {
-          "id": 20102,
-          "title": "GM2",
-          "href": "gm/gm.html",
-          "fontFamily": "ok-icon",
-          "icon": "&#xe654;",
-          "spread": false,
-          "checked": false,
-          "role": [
-            4,
-            3
-          ]
+            "id": 20102,
+            "title": "GM2",
+            "href": "gm/gm.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
           },
           {
-          "id": 20103,
-          "title": "GM3",
-          "href": "gm/gm.html",
-          "fontFamily": "ok-icon",
-          "icon": "&#xe654;",
-          "spread": false,
-          "checked": false,
-          "role": [
-            4,
-            3
-          ]
+            "id": 20103,
+            "title": "GM3",
+            "href": "gm/gm.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
           }
-        ],
-        "role": [
-          4,
-          3
         ]
       },
       {
@@ -157,174 +125,127 @@
         "title": "分区管理",
         "href": "gm/dir.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": true,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 203,
         "title": "渠道管理",
         "href": "gm/channel.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 204,
         "title": "Registry管理",
         "href": "gm/registry.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 205,
         "title": "邮件管理",
         "href": "gm/mail.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 206,
         "title": "公告管理",
         "href": "gm/bulletin.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 207,
         "title": "跑马灯",
         "href": "gm/notice.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 208,
         "title": "白名单",
         "href": "gm/whitelist.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 209,
         "title": "CDK管理",
         "href": "gm/cdk.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 210,
         "title": "活动管理",
         "href": "gm/activity.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 212,
         "title": "屏蔽字测试",
         "href": "gm/dirty.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 213,
         "title": "地图管理",
         "href": "gm/map.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 214,
         "title": "推送管理",
         "href": "gm/push.html",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          4,
-          3
-        ]
+        "children": null
       },
       {
         "id": 215,
         "title": "福利管理",
+        "href": "",
         "fontFamily": "ok-icon",
-        "icon": "&#xe654;",
+        "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
         "children": [
@@ -333,39 +254,33 @@
             "title": "任务管理",
             "href": "gm/welfare.html",
             "fontFamily": "ok-icon",
-            "icon": "&#xe654;",
+            "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              4,
-              3
-            ]
+            "children": null
           },
           {
             "id": 21502,
             "title": "玩家福利记录",
             "href": "gm/welfare-role.html",
             "fontFamily": "ok-icon",
-            "icon": "&#xe654;",
+            "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              4,
-              3
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          4,
-          3
         ]
+      },
+      {
+        "id": 216,
+        "title": "数据拷贝",
+        "href": "gm/copy.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
       }
-    ],
-    "role": [
-      4,
-      3
     ]
   },
   {
@@ -385,10 +300,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 702,
@@ -398,10 +310,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 703,
@@ -411,10 +320,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 704,
@@ -424,10 +330,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       },
       {
         "id": 705,
@@ -437,14 +340,8 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          1
-        ]
+        "children": null
       }
-    ],
-    "role": [
-      1
     ]
   },
   {
@@ -452,7 +349,7 @@
     "title": "游戏数据查询",
     "href": "",
     "fontFamily": "ok-icon",
-    "icon": "&#xe7c5;",
+    "icon": "\u0026#xe7c5;",
     "spread": false,
     "checked": false,
     "children": [
@@ -464,11 +361,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          4
-        ]
+        "children": null
       },
       {
         "id": 802,
@@ -487,11 +380,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 80202,
@@ -501,16 +390,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -530,11 +411,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 80302,
@@ -544,16 +421,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -573,16 +442,8 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
         ]
       },
       {
@@ -602,11 +463,7 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           },
           {
             "id": 80402,
@@ -616,16 +473,49 @@
             "icon": "\u0026#xe654;",
             "spread": false,
             "checked": false,
-            "children": null,
-            "role": [
-              3,
-              4
-            ]
+            "children": null
           }
-        ],
-        "role": [
-          3,
-          4
+        ]
+      },
+      {
+        "id": 813,
+        "title": "邮件记录",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 81301,
+            "title": "邮件发送记录",
+            "href": "game/mail-send.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          },
+          {
+            "id": 81302,
+            "title": "邮件领取记录",
+            "href": "game/mail-rev.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          },
+          {
+            "id": 81303,
+            "title": "邮件删除记录",
+            "href": "game/mail-del.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          }
         ]
       },
       {
@@ -693,11 +583,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          4
-        ]
+        "children": null
       },
       {
         "id": 812,
@@ -707,10 +593,57 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3,
-          4
+        "children": null
+      },
+      {
+        "id": 814,
+        "title": "聊天记录",
+        "href": "game/chat-newest.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 81401,
+            "title": "实时聊天",
+            "href": "game/chat-newest.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          },
+          {
+            "id": 81402,
+            "title": "聊天历史",
+            "href": "game/chat-history.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          },
+          {
+            "id": 81403,
+            "title": "屏蔽字聊天",
+            "href": "game/chat-maskhistory.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          },
+          {
+            "id": 81404,
+            "title": "屏蔽字设置",
+            "href": "game/chat-mask.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          }
         ]
       },
       {
@@ -784,10 +717,6 @@
           4
         ]
       }
-    ],
-    "role": [
-      3,
-      4
     ]
   },
   {
@@ -795,7 +724,7 @@
     "title": "实时数据",
     "href": "",
     "fontFamily": "ok-icon",
-    "icon": "&#xe660;",
+    "icon": "\u0026#xe660;",
     "spread": false,
     "checked": false,
     "children": [
@@ -807,10 +736,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 902,
@@ -820,10 +746,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 903,
@@ -833,10 +756,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 904,
@@ -846,10 +766,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 905,
@@ -859,10 +776,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
-        ]
+        "children": null
       },
       {
         "id": 906,
@@ -872,14 +786,112 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
-        "children": null,
-        "role": [
-          3
+        "children": null
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "监控报警",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "\u0026#xe654;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 1001,
+        "title": "资源获取管理",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 100101,
+            "title": "资源获取途径",
+            "href": "gm/res.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          },
+          {
+            "id": 100102,
+            "title": "报错信息详情",
+            "href": "gm/res-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          }
+        ]
+      },
+      {
+        "id": 1002,
+        "title": "资源数量报错信息",
+        "href": "gm/res-num-err.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 1003,
+        "title": "客户端报错管理",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 100302,
+            "title": "客户端报错信息",
+            "href": "game/client-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          },
+          {
+            "id": 100302,
+            "title": "客户端报错处理",
+            "href": "game/client-err-dispose.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          }
+        ]
+      },
+      {
+        "id": 1004,
+        "title": "战斗验证失败报警",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": [
+          {
+            "id": 100401,
+            "title": "战斗验证失败日志",
+            "href": "game/fight-verify-err.html",
+            "fontFamily": "ok-icon",
+            "icon": "\u0026#xe654;",
+            "spread": false,
+            "checked": false,
+            "children": null
+          }
         ]
       }
-    ],
-    "role": [
-      3
     ]
   },
   {

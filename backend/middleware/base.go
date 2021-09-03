@@ -7,6 +7,9 @@ import (
 
 func pathIgnore(c echo.Context) bool {
     path := c.Request().URL.Path
+    if strings.HasPrefix(path, "/api/public/gm") {
+        return true
+    }
     suffix := strings.Split(path, ".")
     switch suffix[len(suffix)-1] {
     case "html":

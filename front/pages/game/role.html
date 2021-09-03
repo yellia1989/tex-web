@@ -68,7 +68,6 @@
     okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
       zoneSelect.update({
         data: response.data["game"],
-        initValue: [1],
       });
     }).fail(function (error) {
       console.log(error);
@@ -76,11 +75,10 @@
 
     let roleTable = table.render({
       elem: "#tableId",
-      url: "/api/game/role/list",
-      where: {zoneid: 1},
       text: {
         none: '暂无相关数据',
       },
+      data: [],
       limit: 30,
       page: true,
       cols: [[
@@ -147,6 +145,7 @@
 
     form.on("submit(search)", function (data) {
       roleTable.reload({
+        url: "/api/game/role/list",
         where: data.field,
         page: {
           curr: 1,
