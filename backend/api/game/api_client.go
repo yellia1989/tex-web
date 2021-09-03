@@ -6,7 +6,7 @@ import (
     "strconv"
     "encoding/base64"
     "github.com/yellia1989/tex-web/backend/common"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
     mid "github.com/yellia1989/tex-web/backend/middleware"

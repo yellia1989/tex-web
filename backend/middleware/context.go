@@ -3,7 +3,7 @@ package middleware
 import (
     "net/http"
     "strconv"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "github.com/gorilla/sessions"
     "github.com/labstack/echo-contrib/session"
     "github.com/yellia1989/tex-web/backend/model"

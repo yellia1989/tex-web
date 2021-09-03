@@ -4,7 +4,7 @@ import (
     "fmt"
 	"strconv"
     "encoding/json"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-go/tools/util"
 	"github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
