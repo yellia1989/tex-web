@@ -5,18 +5,17 @@ const { $, BtnMenu, DropListMenu, PanelMenu, DropList, Panel, Tooltip } = E
 
 class MyColorMenu extends BtnMenu {
     constructor(editor) {
+        let $id = editor.id + "colorPicker";
         // data-title属性表示当鼠标悬停在该按钮上时提示该按钮的功能简述
         const $elem = E.$(
-            `<div class="w-e-menu" data-title="MyColor">
-                <div style="margin:0 auto" id="colorPicker"></div>
-            </div>`
+            '<div class="w-e-menu" data-title="颜色"><div style="margin:0 auto" id="'+$id+'"></div></div>'
         )
         super($elem, editor)
         layui.use('colorpicker', function(){
             var colorpicker = layui.colorpicker;
             //渲染
             colorpicker.render({
-                elem: '#colorPicker'  //绑定元素
+                elem: '#'+$id
                 ,done: function(color){
                     if(editor.selection.isSelectionEmpty()){
                         return true;
@@ -148,6 +147,12 @@ function ExecuteJsonData(jsonData) {
             searchData(jsonData[i],outputObject);
         }
     }
+
+    let empty = String.fromCharCode(160) + "\n";
+    if (outputObject.result == empty) {
+        outputObject.result = "";
+    }
+
     return outputObject.result;
 }
 

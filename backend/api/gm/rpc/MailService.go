@@ -146,25 +146,169 @@ func (st *CmdIDNum) WriteStructFromTag(p *codec.Packer, tag uint32, require bool
 	return nil
 }
 
+type MailLangContent struct {
+	SFrom    string `json:"sFrom" form:"sFrom"`
+	STitle   string `json:"sTitle" form:"sTitle"`
+	SContent string `json:"sContent" form:"sContent"`
+}
+
+func (st *MailLangContent) resetDefault() {
+}
+func (st *MailLangContent) Copy() *MailLangContent {
+	ret := NewMailLangContent()
+	ret.SFrom = st.SFrom
+	ret.STitle = st.STitle
+	ret.SContent = st.SContent
+	return ret
+}
+func NewMailLangContent() *MailLangContent {
+	ret := &MailLangContent{}
+	ret.resetDefault()
+	return ret
+}
+func (st *MailLangContent) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sFrom")+fmt.Sprintf("%v\n", st.SFrom))
+	util.Tab(buff, t+1, util.Fieldname("sTitle")+fmt.Sprintf("%v\n", st.STitle))
+	util.Tab(buff, t+1, util.Fieldname("sContent")+fmt.Sprintf("%v\n", st.SContent))
+}
+func (st *MailLangContent) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SFrom, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STitle, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SContent, 2, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *MailLangContent) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *MailLangContent) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SFrom != "" {
+		err = p.WriteString(0, st.SFrom)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STitle != "" {
+		err = p.WriteString(1, st.STitle)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SContent != "" {
+		err = p.WriteString(2, st.SContent)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *MailLangContent) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 type MailDataInfo struct {
-	IMailId                uint32     `json:"iMailId" form:"iMailId"`
-	SFrom                  string     `json:"sFrom" form:"sFrom"`
-	VToUser                []uint64   `json:"vToUser" form:"vToUser"`
-	STime                  string     `json:"sTime" form:"sTime"`
-	STitle                 string     `json:"sTitle" form:"sTitle"`
-	SContent               string     `json:"sContent" form:"sContent"`
-	IDiamond               uint32     `json:"iDiamond" form:"iDiamond"`
-	ICoin                  uint32     `json:"iCoin" form:"iCoin"`
-	VItems                 []CmdIDNum `json:"vItems" form:"vItems"`
-	VSendZoneIds           []uint32   `json:"vSendZoneIds" form:"vSendZoneIds"`
-	IFlag                  uint32     `json:"iFlag" form:"iFlag"`
-	VRcvZoneIds            []uint32   `json:"vRcvZoneIds" form:"vRcvZoneIds"`
-	IArenaCoin             uint32     `json:"iArenaCoin" form:"iArenaCoin"`
-	IDelTimeAfterOpen      uint32     `json:"iDelTimeAfterOpen" form:"iDelTimeAfterOpen"`
-	SUserFileName          string     `json:"sUserFileName" form:"sUserFileName"`
-	IKingCoin              uint32     `json:"iKingCoin" form:"iKingCoin"`
-	VCustomItem            []string   `json:"vCustomItem" form:"vCustomItem"`
-	IDelTimeAfterRcvAttach uint32     `json:"iDelTimeAfterRcvAttach" form:"iDelTimeAfterRcvAttach"`
+	IMailId                uint32                     `json:"iMailId" form:"iMailId"`
+	SFrom                  string                     `json:"sFrom" form:"sFrom"`
+	VToUser                []uint64                   `json:"vToUser" form:"vToUser"`
+	STime                  string                     `json:"sTime" form:"sTime"`
+	STitle                 string                     `json:"sTitle" form:"sTitle"`
+	SContent               string                     `json:"sContent" form:"sContent"`
+	IDiamond               uint32                     `json:"iDiamond" form:"iDiamond"`
+	ICoin                  uint32                     `json:"iCoin" form:"iCoin"`
+	VItems                 []CmdIDNum                 `json:"vItems" form:"vItems"`
+	VSendZoneIds           []uint32                   `json:"vSendZoneIds" form:"vSendZoneIds"`
+	IFlag                  uint32                     `json:"iFlag" form:"iFlag"`
+	VRcvZoneIds            []uint32                   `json:"vRcvZoneIds" form:"vRcvZoneIds"`
+	IArenaCoin             uint32                     `json:"iArenaCoin" form:"iArenaCoin"`
+	IDelTimeAfterOpen      uint32                     `json:"iDelTimeAfterOpen" form:"iDelTimeAfterOpen"`
+	SUserFileName          string                     `json:"sUserFileName" form:"sUserFileName"`
+	IKingCoin              uint32                     `json:"iKingCoin" form:"iKingCoin"`
+	VCustomItem            []string                   `json:"vCustomItem" form:"vCustomItem"`
+	IDelTimeAfterRcvAttach uint32                     `json:"iDelTimeAfterRcvAttach" form:"iDelTimeAfterRcvAttach"`
+	MLangContent           map[string]MailLangContent `json:"mLangContent" form:"mLangContent"`
 }
 
 func (st *MailDataInfo) resetDefault() {
@@ -204,6 +348,10 @@ func (st *MailDataInfo) Copy() *MailDataInfo {
 		ret.VCustomItem[i] = v
 	}
 	ret.IDelTimeAfterRcvAttach = st.IDelTimeAfterRcvAttach
+	ret.MLangContent = make(map[string]MailLangContent)
+	for k, v := range st.MLangContent {
+		ret.MLangContent[k] = *(v.Copy())
+	}
 	return ret
 }
 func NewMailDataInfo() *MailDataInfo {
@@ -287,6 +435,23 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 		util.Tab(buff, t+1, "]\n")
 	}
 	util.Tab(buff, t+1, util.Fieldname("iDelTimeAfterRcvAttach")+fmt.Sprintf("%v\n", st.IDelTimeAfterRcvAttach))
+	util.Tab(buff, t+1, util.Fieldname("mLangContent")+strconv.Itoa(len(st.MLangContent)))
+	if len(st.MLangContent) == 0 {
+		buff.WriteString(", {}\n")
+	} else {
+		buff.WriteString(", {\n")
+	}
+	for k, v := range st.MLangContent {
+		util.Tab(buff, t+1+1, "(\n")
+		util.Tab(buff, t+1+2, util.Fieldname("")+fmt.Sprintf("%v\n", k))
+		util.Tab(buff, t+1+2, util.Fieldname("")+"{\n")
+		v.Visit(buff, t+1+2+1)
+		util.Tab(buff, t+1+2, "}\n")
+		util.Tab(buff, t+1+1, ")\n")
+	}
+	if len(st.MLangContent) != 0 {
+		util.Tab(buff, t+1, "}\n")
+	}
 }
 func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -455,6 +620,35 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	err = up.ReadUint32(&st.IDelTimeAfterRcvAttach, 20, false)
 	if err != nil {
 		return err
+	}
+
+	has, ty, err = up.SkipToTag(21, false)
+	if err != nil {
+		return err
+	}
+	if has {
+		if ty != codec.SdpType_Map {
+			return fmt.Errorf("tag:%d got wrong type %d", 21, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
+		if err != nil {
+			return err
+		}
+		st.MLangContent = make(map[string]MailLangContent)
+		for i := uint32(0); i < length; i++ {
+			var k string
+			err = up.ReadString(&k, 0, true)
+			if err != nil {
+				return err
+			}
+			var v MailLangContent
+			err = v.ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return err
+			}
+			st.MLangContent[k] = v
+		}
 	}
 
 	_ = length
@@ -667,6 +861,30 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 		err = p.WriteUint32(20, st.IDelTimeAfterRcvAttach)
 		if err != nil {
 			return err
+		}
+	}
+
+	length = uint32(len(st.MLangContent))
+	if false || length != 0 {
+		err = p.WriteHeader(21, codec.SdpType_Map)
+		if err != nil {
+			return err
+		}
+		err = p.WriteNumber32(length)
+		if err != nil {
+			return err
+		}
+		for _k, _v := range st.MLangContent {
+			if true || _k != "" {
+				err = p.WriteString(0, _k)
+				if err != nil {
+					return err
+				}
+			}
+			err = _v.WriteStructFromTag(p, 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
