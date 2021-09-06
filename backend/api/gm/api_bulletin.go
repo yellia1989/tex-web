@@ -4,6 +4,7 @@ import (
     "sort"
     "strings"
     "strconv"
+    "encoding/json"
     "github.com/labstack/echo/v4"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/api/gm/rpc"
@@ -62,6 +63,11 @@ func BulletinAdd(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    sLangContent := ctx.FormValue("sLangContent")
+    if sLangContent != "" {
+        json.Unmarshal([]byte(sLangContent), &bulletin.MLangContent)
+    }
+
     comm := cfg.Comm
 
     bulletinPrx := new(rpc.BulletinService)
@@ -116,6 +122,11 @@ func BulletinUpdate(c echo.Context) error {
 
     if sTitle == "" || sContent == "" || sHtmlContent == "" || sBeginTime == "" || sEndTime == "" {
         return ctx.SendError(-1, "参数非法")
+    }
+
+    sLangContent := ctx.FormValue("sLangContent")
+    if sLangContent != "" {
+        json.Unmarshal([]byte(sLangContent), &bulletin.MLangContent)
     }
 
     comm := cfg.Comm

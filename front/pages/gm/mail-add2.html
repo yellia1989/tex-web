@@ -11,26 +11,58 @@
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
-      <div class="layui-form-item">
-        <label class="layui-form-label">发件人</label>
-        <div class="layui-input-block">
-          <input type="text" name="sFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+      <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+          <li class="layui-this">简体中文(默认)</li>
+          <li>英语</li>
+        </ul>
+        <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+            <div class="layui-form-item">
+              <label class="layui-form-label">发件人</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="zh-CNContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">发件人</label>
+              <div class="layui-input-block">
+                <input type="text" id="enFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="enTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="enContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
-        <div class="layui-input-block">
-          <input type="text" name="sTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
-        </div>
-      </div>
-
-	    <div class="layui-form-item layui-form-text">
-		    <label class="layui-form-label">内容</label>
-		    <div class="layui-input-block">
-		    	<textarea name="sContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
-		    </div>
-		  </div>
 
       <div class="layui-form-item">
         <div class="layui-inline">
@@ -110,6 +142,7 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/js/common.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     layui.use(['form', 'okLayer', 'okUtils', 'upload', 'element'], function () {
@@ -177,11 +210,60 @@
         }
       });
 
+      function getParam() {
+        let sFrom = $("#zh-CNFrom").val();
+        let sTitle = $("#zh-CNTitle").val();
+        let sContent = $("#zh-CNContent").val();
+        let lang = {};
+        lang["en"] = {"sFrom": $("#enFrom").val(),"sTitle": $("#enTitle").val(),"sContent": $("#enContent").val()};
+
+        let sLangContent = okUtils.jsonToString(lang);
+
+        let iDelTimeAfterOpen = $('select[name="iDelTimeAfterOpen"]').val();
+        let iDelTimeAfterRcvAttach = $('select[name="iDelTimeAfterRcvAttach"]').val();
+        let iZoneId = zoneSelect1.getValue('valueStr');
+        let iRoleId = $('input[name="iRoleId"]').val();
+        let param = {sFrom: sFrom, sTitle: sTitle, sContent: sContent, sLangContent: sLangContent, iDelTimeAfterOpen: iDelTimeAfterOpen, iDelTimeAfterRcvAttach: iDelTimeAfterRcvAttach, iZoneId: iZoneId, iRoleId: iRoleId};
+
+        return {'p': param, 'lang': lang};
+      }
+
+      function cmpParam(old, n) {
+        for (k in old) {
+          if (k == "zoneids" || k == "iZoneId" || k == "iRoleId" || k == "filepath") continue;
+          if (old[k] != n[k]) {
+            return false;
+          }
+        }
+        return true
+      }
+
       //监听提交
       var mailparam;
       form.on('submit(test)', function (data) {
-        let param = {sFrom: data.field.sFrom, sTitle: data.field.sTitle, sContent: data.field.sContent, iDelTimeAfterOpen: data.field.iDelTimeAfterOpen, iDelTimeAfterRcvAttach: data.field.iDelTimeAfterRcvAttach, iZoneId: data.field.zoneid, iRoleId: data.field.iRoleId};
-        okUtils.ajax("/api/gm/mail/testsend", "post", param, true).done(function (response) {
+        let param = getParam();
+        if (!checkLang(param.lang)) {
+          okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
+            okUtils.ajax("/api/gm/mail/testsend", "post", param.p, true).done(function (response) {
+              okLayer.greenTickMsg(response.data, function () {
+                $("#send").attr("class", "layui-btn");
+                $("#send").attr("disabled",false);
+                $("#file").attr("class", "layui-btn");
+                $("#file").attr("disabled",false);
+                zoneSelect1.update({
+                  disabled: true,
+                });
+                mailparam = param.p;
+              });
+            }).fail(function (error) {
+              console.log(error);
+            });
+            layer.close(index);
+          });
+          return false;
+        }
+
+        okUtils.ajax("/api/gm/mail/testsend", "post", param.p, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             $("#send").attr("class", "layui-btn");
             $("#send").attr("disabled",false);
@@ -190,7 +272,7 @@
             zoneSelect1.update({
               disabled: true,
             });
-            mailparam = param;
+            mailparam = param.p;
           });
         }).fail(function (error) {
           console.log(error);
@@ -199,6 +281,11 @@
       });
 
       $('#send').click(function () {
+        if (!cmpParam(mailparam, getParam().p)) {
+          okLayer.redCryMsg("检测到邮件内容发送改变，请重新发送测试邮件");
+          return;
+        }
+
         mailparam.filepath = $("input[name='filepath']").val();
         if (mailparam.filepath == "") {
           okLayer.redCryMsg("请上传文件");
