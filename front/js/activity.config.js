@@ -478,6 +478,10 @@
                     name: '累计充值档位',
                     type: 'text',
                     parser: parseInt,
+                },
+                hero_id: {
+                    name: '额外展示档位展示的英雄id:单位表id',
+                    type: 'text',
                 }
             }
         }
@@ -1621,10 +1625,11 @@
                             type: 'longtext',
                             printer: utils.printItemNumList,
                             parser: utils.parseItemNumList
-                        }
+                        },
                         extrarewardtime: {
                             name: '额外奖励的时间(秒)',
                             type: 'text',
+                            parser: parseInt,
                         }
                     }
                 }
