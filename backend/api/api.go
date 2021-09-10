@@ -1,11 +1,11 @@
 package api
 
 import (
-	"github.com/labstack/echo"
-	"github.com/yellia1989/tex-web/backend/api/game"
-	"github.com/yellia1989/tex-web/backend/api/gm"
-	"github.com/yellia1989/tex-web/backend/api/stat"
-	"github.com/yellia1989/tex-web/backend/api/sys"
+    "github.com/labstack/echo/v4"
+    "github.com/yellia1989/tex-web/backend/api/game"
+    "github.com/yellia1989/tex-web/backend/api/gm"
+    "github.com/yellia1989/tex-web/backend/api/stat"
+    "github.com/yellia1989/tex-web/backend/api/sys"
 )
 
 func RegisterHandler(group *echo.Group) {

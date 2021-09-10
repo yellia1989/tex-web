@@ -16,26 +16,44 @@
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
-      <div class="layui-form-item">
-        <label class="layui-form-label">标题</label>
-        <div class="layui-input-block">
-          <input type="text" name="sTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
-            lay-verify="required" lay-verType="tips">
-        </div>
-      </div>
+      <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+          <li class="layui-this">简体中文(默认)</li>
+          <li>英语</li>
+        </ul>
+        <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
+                  lay-verify="required" lay-verType="tips">
+              </div>
+            </div>
 
-      <div class="layui-form-item">
-        <label class="layui-form-label">内容</label>
-        <div class="layui-input-block">
-          <div id="rContnet"></div>
-        </div>
-      </div>
-
-      <div class="layui-form-item">
-        <label class="layui-form-label">内容2</label>
-        <div class="layui-input-block">
-          <textarea name="sContent" placeholder="请编辑内容" class="layui-textarea" lay-verify="required"
-                    lay-verType="tips"></textarea>
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="zh-CN"></div>
+                <textarea id="zh-CNHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="enTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="en"></div>
+                <textarea id="enHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -99,15 +117,18 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/js/common.js"></script>
   <script>
-    const editor = getDefaultEditor('#rContnet');
+    zhCNeditor = getDefaultEditor('#zh-CN');
+    ENeditor = getDefaultEditor('#en');
 
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
       let $ = layui.jquery;
+      let element = layui.element;
 
       laydate.render({
         elem: "#iBeginTime", type: "datetime"
@@ -119,11 +140,16 @@
         elem:"#iPopWindowEndTime", type:"datetime"
       });
 
+      zhCNeditor.config.onchange = function (newHtml) {
+        let jsonData = zhCNeditor.txt.getJSON();
+        let ouputStr = ExecuteJsonData(jsonData);
+        $(zhCNeditor.toolbarSelector+"Html").val(ouputStr);
+      }
 
-      editor.config.onchange = function (newHtml) {
-           let jsonData = editor.txt.getJSON();
-           let ouputStr = ExecuteJsonData(jsonData);
-           $("textarea[name='sContent']").val(ouputStr);
+      ENeditor.config.onchange = function (newHtml) {
+        let jsonData = ENeditor.txt.getJSON();
+        let ouputStr = ExecuteJsonData(jsonData);
+        $(ENeditor.toolbarSelector+"Html").val(ouputStr);
       }
 
       form.on('select(type)', function(data){
@@ -153,8 +179,33 @@
           return false;
         }
 
-        data.field.sHtmlContent = editor.txt.html();
+        data.field.sTitle = $('#zh-CNTitle').val();
+        data.field.sContent = $('#zh-CNHtml').val();
+        data.field.sHtmlContent = zhCNeditor.txt.html();
 
+        if (data.field.sTitle == "" || data.field.sContent == "" || data.field.sHtmlContent == "") {
+          okLayer.redCrossMsg('默认语言的配置不能为空', function () {});
+          return false;
+        }
+
+        let lang = {};
+        lang["en"] = {"sTitle": $('#enTitle').val(), "sContent": $('#enHtml').val(), "sHtmlContent": ENeditor.txt.html()};
+        if (!checkLang(lang)) {
+          okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
+            data.field.sLangContent = okUtils.jsonToString(lang);
+            okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {
+              okLayer.greenTickMsg(response.data, function () {
+                parent.layer.close(parent.layer.getFrameIndex(window.name));
+              });
+            }).fail(function (error) {
+              console.log(error);
+            });
+            layer.close(index);
+          });
+          return false;
+        }
+
+        data.field.sLangContent = okUtils.jsonToString(lang);
         okUtils.ajax("/api/gm/bulletin/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

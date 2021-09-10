@@ -1,4 +1,4 @@
-module rpc
+module rpc 
 {
 
 enum BulletinFlag
@@ -6,6 +6,13 @@ enum BulletinFlag
     BulletinFlag_Normal     = 0,
     BulletinFlag_NotBegin   = 1,
     BulletinFlag_HasOver    = 2,
+};
+
+struct LangContentDataInfo
+{
+    0   optional string sContent;
+    1   optional string sHtmlContent;
+    2   optional string sTitle;
 };
 
 struct BulletinDataInfo
@@ -21,6 +28,7 @@ struct BulletinDataInfo
     9 optional unsigned int     iPopWindow; // 是否弹窗显示
     10 optional string          sPopWindowEndTime; // 弹窗显示结束时间
     11 optional string          sHtmlContent;  //html内容
+    12 optional map<string,LangContentDataInfo> mLangContent;
 };
 
 struct NoticeDataInfo
@@ -37,6 +45,7 @@ struct NoticeDataInfo
     9 optional vector<unsigned int>     vZoneId;
     10 optional unsigned int    iMaintenanceTime;
     11 optional string          sHtmlContent;  //html内容
+    12 optional map<string,LangContentDataInfo> mLangContent;
 };
 
 interface BulletinService

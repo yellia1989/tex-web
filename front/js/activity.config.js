@@ -446,6 +446,10 @@
                            parser: utils.parseItemNumList
                         }
                     }
+                },
+                independent_step: {
+                    name: '需要额外展示的挡位(挡位类型, 挡位)',
+                    type: 'text',
                 }
             },
             client_param: {
@@ -604,8 +608,6 @@
                    printer: utils.printItemNumList,
                    parser: utils.parseItemNumList
                 },
-            },
-            server_param: {
                 condition: {
                     name: '达成条件',
                     type: 'select',
@@ -614,7 +616,9 @@
                         '2': '通关关卡'
                     },
                     parser: parseInt
-                },
+                }
+            },
+            server_param: {
                 cond_param: {
                     name: '条件参数',
                     type: 'text',
@@ -697,8 +701,6 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 }
-            },
-            server_param: {
             }
         }
     };
@@ -768,6 +770,7 @@
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
                         '13': '天赋技能解锁',
+                        '14': '钻石变更时',
                     },
                     parser: parseInt
                 },
@@ -920,6 +923,17 @@
                 rune_level: {
                     name: '购买符文的等级(-区分)',
                     type: 'midtext'
+                },
+                growth_gift_step: {
+                    name: '成长礼包活动阶段',
+                    type: 'select',
+                    options: {
+                        '1': '野蛮成长礼包',
+                        '2': '急速成长礼包',
+                        '3': '快速成长礼包',
+                        '4': '加速成长礼包',
+                    },
+                    parser: parseInt
                 }
             }
         }
@@ -1579,6 +1593,41 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                }
+            }
+        }
+    };
+    // 23
+    activityTypeDefine[23] = {
+        name: '开服活动',
+        fieldOption: {
+            comm_param: {
+                activity_order: {
+                    name: '加入开服活动',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '显示顺序',
+                            type: 'text',
+                            isMapKey: true
+                        },
+                        activityId: {
+                            name: '活动id,活动id,活动id',
+                            type: 'text',
+                        },
+                        extrareward: {
+                            name: '额外奖励:id,num;id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        },
+                        extrarewardtime: {
+                            name: '额外奖励的时间(秒)',
+                            type: 'text',
+                            parser: parseInt,
+                        }
+                    }
                 }
             }
         }

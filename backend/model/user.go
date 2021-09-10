@@ -3,7 +3,7 @@ package model
 import (
     "net/http"
     "encoding/json"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     "golang.org/x/crypto/bcrypt"
     "github.com/yellia1989/tex-go/tools/util"
     cm "github.com/yellia1989/tex-web/backend/common"

@@ -4,7 +4,8 @@ import (
     "sort"
 	"strconv"
 	"strings"
-	"github.com/labstack/echo"
+	"encoding/json"
+	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/common"
 	"github.com/yellia1989/tex-web/backend/cfg"
@@ -67,6 +68,11 @@ func NoticeAdd(c echo.Context) error {
 	if sBeginTime == "" || sEndTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
+
+    sLangContent := ctx.FormValue("sLangContent")
+    if sLangContent != "" {
+        json.Unmarshal([]byte(sLangContent), &notice.MLangContent)
+    }
 
     comm := cfg.Comm
 

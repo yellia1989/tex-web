@@ -37,18 +37,162 @@ func (en BulletinFlag) String() string {
 	return ret
 }
 
+type LangContentDataInfo struct {
+	SContent     string `json:"sContent" form:"sContent"`
+	SHtmlContent string `json:"sHtmlContent" form:"sHtmlContent"`
+	STitle       string `json:"sTitle" form:"sTitle"`
+}
+
+func (st *LangContentDataInfo) resetDefault() {
+}
+func (st *LangContentDataInfo) Copy() *LangContentDataInfo {
+	ret := NewLangContentDataInfo()
+	ret.SContent = st.SContent
+	ret.SHtmlContent = st.SHtmlContent
+	ret.STitle = st.STitle
+	return ret
+}
+func NewLangContentDataInfo() *LangContentDataInfo {
+	ret := &LangContentDataInfo{}
+	ret.resetDefault()
+	return ret
+}
+func (st *LangContentDataInfo) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sContent")+fmt.Sprintf("%v\n", st.SContent))
+	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
+	util.Tab(buff, t+1, util.Fieldname("sTitle")+fmt.Sprintf("%v\n", st.STitle))
+}
+func (st *LangContentDataInfo) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SContent, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SHtmlContent, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STitle, 2, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *LangContentDataInfo) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *LangContentDataInfo) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SContent != "" {
+		err = p.WriteString(0, st.SContent)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SHtmlContent != "" {
+		err = p.WriteString(1, st.SHtmlContent)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STitle != "" {
+		err = p.WriteString(2, st.STitle)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *LangContentDataInfo) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 type BulletinDataInfo struct {
-	IBulletinId       uint32 `json:"iBulletinId"`
-	STitle            string `json:"sTitle"`
-	SContent          string `json:"sContent"`
-	IFlag             uint32 `json:"iFlag"`
-	SBeginTime        string `json:"sBeginTime"`
-	SEndTime          string `json:"sEndTime"`
-	IDisplay          uint32 `json:"iDisplay"`
-	IType             uint32 `json:"iType"`
-	IPopWindow        uint32 `json:"iPopWindow"`
-	SPopWindowEndTime string `json:"sPopWindowEndTime"`
-	SHtmlContent      string `json:"sHtmlContent"`
+	IBulletinId       uint32                         `json:"iBulletinId" form:"iBulletinId"`
+	STitle            string                         `json:"sTitle" form:"sTitle"`
+	SContent          string                         `json:"sContent" form:"sContent"`
+	IFlag             uint32                         `json:"iFlag" form:"iFlag"`
+	SBeginTime        string                         `json:"sBeginTime" form:"sBeginTime"`
+	SEndTime          string                         `json:"sEndTime" form:"sEndTime"`
+	IDisplay          uint32                         `json:"iDisplay" form:"iDisplay"`
+	IType             uint32                         `json:"iType" form:"iType"`
+	IPopWindow        uint32                         `json:"iPopWindow" form:"iPopWindow"`
+	SPopWindowEndTime string                         `json:"sPopWindowEndTime" form:"sPopWindowEndTime"`
+	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
+	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -66,6 +210,10 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	ret.IPopWindow = st.IPopWindow
 	ret.SPopWindowEndTime = st.SPopWindowEndTime
 	ret.SHtmlContent = st.SHtmlContent
+	ret.MLangContent = make(map[string]LangContentDataInfo)
+	for k, v := range st.MLangContent {
+		ret.MLangContent[k] = *(v.Copy())
+	}
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -85,6 +233,23 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iPopWindow")+fmt.Sprintf("%v\n", st.IPopWindow))
 	util.Tab(buff, t+1, util.Fieldname("sPopWindowEndTime")+fmt.Sprintf("%v\n", st.SPopWindowEndTime))
 	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
+	util.Tab(buff, t+1, util.Fieldname("mLangContent")+strconv.Itoa(len(st.MLangContent)))
+	if len(st.MLangContent) == 0 {
+		buff.WriteString(", {}\n")
+	} else {
+		buff.WriteString(", {\n")
+	}
+	for k, v := range st.MLangContent {
+		util.Tab(buff, t+1+1, "(\n")
+		util.Tab(buff, t+1+2, util.Fieldname("")+fmt.Sprintf("%v\n", k))
+		util.Tab(buff, t+1+2, util.Fieldname("")+"{\n")
+		v.Visit(buff, t+1+2+1)
+		util.Tab(buff, t+1+2, "}\n")
+		util.Tab(buff, t+1+1, ")\n")
+	}
+	if len(st.MLangContent) != 0 {
+		util.Tab(buff, t+1, "}\n")
+	}
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -135,6 +300,35 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	err = up.ReadString(&st.SHtmlContent, 11, false)
 	if err != nil {
 		return err
+	}
+
+	has, ty, err = up.SkipToTag(12, false)
+	if err != nil {
+		return err
+	}
+	if has {
+		if ty != codec.SdpType_Map {
+			return fmt.Errorf("tag:%d got wrong type %d", 12, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
+		if err != nil {
+			return err
+		}
+		st.MLangContent = make(map[string]LangContentDataInfo)
+		for i := uint32(0); i < length; i++ {
+			var k string
+			err = up.ReadString(&k, 0, true)
+			if err != nil {
+				return err
+			}
+			var v LangContentDataInfo
+			err = v.ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return err
+			}
+			st.MLangContent[k] = v
+		}
 	}
 
 	_ = length
@@ -240,6 +434,30 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 		}
 	}
 
+	length = uint32(len(st.MLangContent))
+	if false || length != 0 {
+		err = p.WriteHeader(12, codec.SdpType_Map)
+		if err != nil {
+			return err
+		}
+		err = p.WriteNumber32(length)
+		if err != nil {
+			return err
+		}
+		for _k, _v := range st.MLangContent {
+			if true || _k != "" {
+				err = p.WriteString(0, _k)
+				if err != nil {
+					return err
+				}
+			}
+			err = _v.WriteStructFromTag(p, 0, true)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	_ = length
 	return err
 }
@@ -285,18 +503,19 @@ func (st *BulletinDataInfo) WriteStructFromTag(p *codec.Packer, tag uint32, requ
 }
 
 type NoticeDataInfo struct {
-	INoticeId        uint32   `json:"iNoticeId"`
-	IType            uint32   `json:"iType"`
-	SContent         string   `json:"sContent"`
-	SBeginTime       string   `json:"sBeginTime"`
-	SEndTime         string   `json:"sEndTime"`
-	IDisplayInterval uint32   `json:"iDisplayInterval"`
-	IDisplayType     uint32   `json:"iDisplayType"`
-	IDisplayNum      uint32   `json:"iDisplayNum"`
-	IPause           uint32   `json:"iPause"`
-	VZoneId          []uint32 `json:"vZoneId"`
-	IMaintenanceTime uint32   `json:"iMaintenanceTime"`
-	SHtmlContent     string   `json:"sHtmlContent"`
+	INoticeId        uint32                         `json:"iNoticeId" form:"iNoticeId"`
+	IType            uint32                         `json:"iType" form:"iType"`
+	SContent         string                         `json:"sContent" form:"sContent"`
+	SBeginTime       string                         `json:"sBeginTime" form:"sBeginTime"`
+	SEndTime         string                         `json:"sEndTime" form:"sEndTime"`
+	IDisplayInterval uint32                         `json:"iDisplayInterval" form:"iDisplayInterval"`
+	IDisplayType     uint32                         `json:"iDisplayType" form:"iDisplayType"`
+	IDisplayNum      uint32                         `json:"iDisplayNum" form:"iDisplayNum"`
+	IPause           uint32                         `json:"iPause" form:"iPause"`
+	VZoneId          []uint32                       `json:"vZoneId" form:"vZoneId"`
+	IMaintenanceTime uint32                         `json:"iMaintenanceTime" form:"iMaintenanceTime"`
+	SHtmlContent     string                         `json:"sHtmlContent" form:"sHtmlContent"`
+	MLangContent     map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
 }
 
 func (st *NoticeDataInfo) resetDefault() {
@@ -318,6 +537,10 @@ func (st *NoticeDataInfo) Copy() *NoticeDataInfo {
 	}
 	ret.IMaintenanceTime = st.IMaintenanceTime
 	ret.SHtmlContent = st.SHtmlContent
+	ret.MLangContent = make(map[string]LangContentDataInfo)
+	for k, v := range st.MLangContent {
+		ret.MLangContent[k] = *(v.Copy())
+	}
 	return ret
 }
 func NewNoticeDataInfo() *NoticeDataInfo {
@@ -349,6 +572,23 @@ func (st *NoticeDataInfo) Visit(buff *bytes.Buffer, t int) {
 	}
 	util.Tab(buff, t+1, util.Fieldname("iMaintenanceTime")+fmt.Sprintf("%v\n", st.IMaintenanceTime))
 	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
+	util.Tab(buff, t+1, util.Fieldname("mLangContent")+strconv.Itoa(len(st.MLangContent)))
+	if len(st.MLangContent) == 0 {
+		buff.WriteString(", {}\n")
+	} else {
+		buff.WriteString(", {\n")
+	}
+	for k, v := range st.MLangContent {
+		util.Tab(buff, t+1+1, "(\n")
+		util.Tab(buff, t+1+2, util.Fieldname("")+fmt.Sprintf("%v\n", k))
+		util.Tab(buff, t+1+2, util.Fieldname("")+"{\n")
+		v.Visit(buff, t+1+2+1)
+		util.Tab(buff, t+1+2, "}\n")
+		util.Tab(buff, t+1+1, ")\n")
+	}
+	if len(st.MLangContent) != 0 {
+		util.Tab(buff, t+1, "}\n")
+	}
 }
 func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -421,6 +661,35 @@ func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 	err = up.ReadString(&st.SHtmlContent, 11, false)
 	if err != nil {
 		return err
+	}
+
+	has, ty, err = up.SkipToTag(12, false)
+	if err != nil {
+		return err
+	}
+	if has {
+		if ty != codec.SdpType_Map {
+			return fmt.Errorf("tag:%d got wrong type %d", 12, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
+		if err != nil {
+			return err
+		}
+		st.MLangContent = make(map[string]LangContentDataInfo)
+		for i := uint32(0); i < length; i++ {
+			var k string
+			err = up.ReadString(&k, 0, true)
+			if err != nil {
+				return err
+			}
+			var v LangContentDataInfo
+			err = v.ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return err
+			}
+			st.MLangContent[k] = v
+		}
 	}
 
 	_ = length
@@ -543,6 +812,30 @@ func (st *NoticeDataInfo) WriteStruct(p *codec.Packer) error {
 		err = p.WriteString(11, st.SHtmlContent)
 		if err != nil {
 			return err
+		}
+	}
+
+	length = uint32(len(st.MLangContent))
+	if false || length != 0 {
+		err = p.WriteHeader(12, codec.SdpType_Map)
+		if err != nil {
+			return err
+		}
+		err = p.WriteNumber32(length)
+		if err != nil {
+			return err
+		}
+		for _k, _v := range st.MLangContent {
+			if true || _k != "" {
+				err = p.WriteString(0, _k)
+				if err != nil {
+					return err
+				}
+			}
+			err = _v.WriteStructFromTag(p, 0, true)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

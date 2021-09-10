@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (u/124.156.205.111 r/101.32.168.86)"
+	echo "Usage: $0 env (u/81.69.196.54 r/101.32.168.86)"
 	exit 100
 fi
 
@@ -10,7 +10,7 @@ source remote_cmd.sh
 
 case "$env" in
     u)
-    ip=124.156.205.111
+    ip=81.69.196.54
     cp ../conf_u.cfg conf.cfg
     ;;
     r)
@@ -28,8 +28,7 @@ runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
-#tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
+tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'
