@@ -1087,11 +1087,16 @@
                              isMapKey: true
                          },
                          step: {
-                             name: '个数:人数:商品id:vip:diamond:price:id,num;id,num',
+                             name: '商品个数:可参与人数:vip等级:钻石:原价',
                              type: 'textarea',
                          },
                      }
-                 }
+                 },
+                iRefreshOffset: {
+                    name: '刷新时间偏移(秒)',
+                    type: 'text',
+                    parser: parseInt
+                }
             },
             client_param: {
                 heroes: {
