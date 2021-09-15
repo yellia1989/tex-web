@@ -159,15 +159,15 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/stat/zone/list", stat.ZoneList)
     group.GET("/stat/date/marklist", stat.MarkList)
 
-    group.GET("/gm/res/list", gm.ResControlList)
-    group.GET("/gm/res/actionlist", gm.ActionList)
-    group.POST("/gm/res/add", gm.ActionAdd)
-    group.POST("/gm/res/edit", gm.ActionEdit)
-    group.POST("/gm/res/del", gm.ActionDel)
-    group.GET("/gm/res_err/err_info", gm.ResErrInfo)
+    group.GET("/gm/res/list", gm.ResControlList)     // 资源监控列表
+    group.GET("/gm/res/actionlist", gm.ActionList)   // 资源获取途径监控列表
+    group.POST("/gm/res/add", gm.ActionAdd)          // 增加资源监控项
+    group.POST("/gm/res/edit", gm.ActionEdit)        // 编辑资源监控项
+    group.POST("/gm/res/del", gm.ActionDel)          // 删除资源监控项
+    group.GET("/gm/res_err/err_info", gm.ResErrInfo) // 资源获取途径异常信息
     group.GET("/gm/res_err/err_detail", gm.ResErrDetail)
-    group.POST("/gm/res/add_res_control", gm.ResAppendResControl)
-    group.POST("/gm/res/add_res_action", gm.ResAppendAction)
-    group.GET("/gm/res_num_err/err_info", gm.ResNumErrInfo)
+    group.POST("/gm/res/add_res_control", gm.ResAppendResControl) // 增加资源获取途径
+    group.POST("/gm/res/add_res_action", gm.ResAppendAction)      // 增加获取途径项
+    group.GET("/gm/res_num_err/err_info", gm.ResNumErrInfo)       // 资源数量获取异常异常信息
     group.GET("/gm/res_num_err/err_detail", gm.ResNumErrDetail)
 }
