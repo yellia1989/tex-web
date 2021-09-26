@@ -35,7 +35,7 @@ func filterMenu(ms []*model.Menu, role uint32, bAdmin bool) []*model.Menu {
         }
 
         // 导入数据菜单只有内网才看得见
-        if m.Id == 216 && cfg.ServerID != "1" {
+        if m.Id == 216 && cfg.ServerID != "2" {
             continue
         }
 

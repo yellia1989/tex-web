@@ -64,9 +64,9 @@ func init() {
 func Get(accountid uint32) *Account {
     a, err := accounts.Get(accountid)
     if a == nil {
-        //if err != dsql.ErrNoRows {
+        if err != dsql.ErrNoRows {
             log.Errorf("cron [account] get cache account err: %s, accountid: %d", err.Error(), accountid)
-        //}
+        }
         return nil
     }
     return a.(*Account)

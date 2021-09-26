@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>用户管理</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="/css/oksub.css">
-	<script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <meta charset="UTF-8">
+  <title>用户管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 <body>
 <div class="ok-body">
-	<table id="tableId" lay-filter="tableFilter"></table>
+  <table id="tableId" lay-filter="tableFilter"></table>
 </div>
 <!--js逻辑-->
 <script src="/lib/layui/layui.js"></script>
@@ -17,12 +17,12 @@
 <script>
   var roles;
   var userdata;
-	layui.use(["element", "table", "okLayer", "okUtils"], function () {
-		let table = layui.table;
-		let okLayer = layui.okLayer;
-		let okUtils = layui.okUtils;
+  layui.use(["element", "table", "okLayer", "okUtils"], function () {
+    let table = layui.table;
+    let okLayer = layui.okLayer;
+    let okUtils = layui.okUtils;
     let xmSelect = layui.xmSelect;
-		okLoading.close();
+    okLoading.close();
 
     okUtils.ajax("/api/role/list", "get", null, false).done(function (response) {
       roles = response.data;
@@ -30,31 +30,31 @@
       console.log(error);
     });
 
-		let userTable = table.render({
-			elem: "#tableId",
+    let userTable = table.render({
+      elem: "#tableId",
       url: "/api/user/list",
       text: {
         none: '暂无相关数据',
       },
-			limit: 30,
-			page: true,
-			toolbar: "#toolbarTpl",
-			cols: [[
-				{type: "checkbox", title: "序号"},
-				{field: "id", title: "用户ID", width: 90},
-				{field: "username", title: "用户名"},
+      limit: 30,
+      page: true,
+      toolbar: "#toolbarTpl",
+      cols: [[
+        {type: "checkbox", title: "序号"},
+        {field: "id", title: "用户ID", width: 90},
+        {field: "username", title: "用户名"},
         {field: "role", title: "角色", templet: function(d) {
           return '<div id="XM-' + d.id + '" ></div>';
         }},
-				{field: "allowGmCmd", title: "允许GM命令",templet: function(d){
-                    if(d.allowGmCmd !== ""){
-						return "已设置"
-					}else{
-                        return ""
-                    }
-   					}},
-				{title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
-			]],
+        {field: "allowGmCmd", title: "允许GM命令",templet: function(d){
+          if(d.allowGmCmd !== ""){
+            return "已设置"
+          } else {
+            return ""
+          }
+        }},
+        {title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right'}
+      ]],
       done: function(res){
         //修改一些css样式, 这里虽然能够使用, 但是还是不太友好, 努力中...
         var cells = document.querySelectorAll('div[lay-id="tableId"] .layui-table-cell');
@@ -86,87 +86,87 @@
               okUtils.ajax("/api/user/update/role", "post", {id: item.id, role:d.arr[0].id}, false).done(function (res) {
                 userTable.reload();
               }).fail(function (error) {
-				      	console.log(error);
-				      });
+                console.log(error);
+              });
             }
           })
           xm.setValue([item.role]);
           item.__xm = xm;
         })
       }
-		});
+    });
 
-		table.on("toolbar(tableFilter)", function (obj) {
-			switch (obj.event) {
-				case "add":
-					add();
-					break;
-				case "batchDel":
-					batchDel();
-					break;
-			}
-		});
+    table.on("toolbar(tableFilter)", function (obj) {
+      switch (obj.event) {
+        case "add":
+          add();
+          break;
+        case "batchDel":
+          batchDel();
+          break;
+      }
+    });
 
-		table.on("tool(tableFilter)", function (obj) {
-			let data = obj.data;
-			switch (obj.event) {
-				case "edit":
+    table.on("tool(tableFilter)", function (obj) {
+      let data = obj.data;
+      switch (obj.event) {
+        case "edit":
           userdata = data;
-					edit(data.id);
-					break;
-				case "del":
-					del(data.id);
-					break;
-			}
-		});
+          edit(data.id);
+          break;
+        case "del":
+          del(data.id);
+          break;
+      }
+    });
 
-		function add() {
-			okLayer.open("添加用户", "/system/user-add.html", "90%", "90%", null, function () {
-				userTable.reload();
-			})
-		}
+    function add() {
+      okLayer.open("添加用户", "/system/user-add.html", "90%", "90%", null, function () {
+        userTable.reload();
+      })
+    }
 
-		function batchDel() {
-			okLayer.confirm("确定要批量删除吗？", function (index) {
-				layer.close(index);
-				let idsStr = okUtils.tableBatchCheck(table);
-				if (idsStr) {
-					okUtils.ajax("/api/user/del", "post", {idsStr: idsStr}, true).done(function (response) {
-						okUtils.tableSuccessMsg(response.data);
-					}).fail(function (error) {
-						console.log(error)
-					});
-				}
-			});
-		}
+    function batchDel() {
+      okLayer.confirm("确定要批量删除吗？", function (index) {
+        layer.close(index);
+        let idsStr = okUtils.tableBatchCheck(table);
+        if (idsStr) {
+          okUtils.ajax("/api/user/del", "post", {idsStr: idsStr}, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        }
+      });
+    }
 
-		function edit(id) {
-			okLayer.open("编辑用户", "/system/user-edit.html", "90%", "90%", null, function () {
-				userTable.reload();
-			})
-		}
+    function edit(id) {
+      okLayer.open("编辑用户", "/system/user-edit.html", "90%", "90%", null, function () {
+        userTable.reload();
+      })
+    }
 
-		function del(id) {
-			okLayer.confirm("确定要删除吗？", function () {
-				okUtils.ajax("/api/user/del", "post", {idsStr: id}, true).done(function (response) {
-					okUtils.tableSuccessMsg(response.data);
-				}).fail(function (error) {
-					console.log(error)
-				});
-			})
-		}
-	})
+    function del(id) {
+      okLayer.confirm("确定要删除吗？", function () {
+        okUtils.ajax("/api/user/del", "post", {idsStr: id}, true).done(function (response) {
+          okUtils.tableSuccessMsg(response.data);
+        }).fail(function (error) {
+          console.log(error)
+        });
+      })
+    }
+  })
 </script>
 <!-- 头工具栏模板 -->
 <script type="text/html" id="toolbarTpl">
-	<div class="layui-btn-container">
-		<div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
-		<div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
-	</div>
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+  </div>
 </script>
 <script type="text/html" id="operationTpl">
-	<a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
-	<a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
 </script>
 </body>
 </html>

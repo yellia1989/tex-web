@@ -2,50 +2,50 @@
 <html>
 <head>
   <meta charset="UTF-8">
-	<title>新增用户</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="/css/oksub.css">
+  <title>新增用户</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
 </head>
 <body>
 <div class="ok-body">
   <form class="layui-form layui-form-pane ok-form">
     <div class="layui-form-item">
-		  <label class="layui-form-label">用户名</label>
-		  <div class="layui-input-block">
-	    	<input type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input" lay-verify="username|required" lay-verType="tips">
-			  </div>
+      <label class="layui-form-label">用户名</label>
+      <div class="layui-input-block">
+        <input type="text" name="username" placeholder="请输入用户名" autocomplete="off" class="layui-input" lay-verify="username|required" lay-verType="tips">
+        </div>
     </div>
-	  <div class="layui-form-item">
-			  <label class="layui-form-label">密码</label>
-			  <div class="layui-input-block">
-			  	<input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input" lay-verify="password|required" lay-verType="tips">
-			  </div>
-		</div>
-	  <div class="layui-form-item">
-			  <label class="layui-form-label">确认密码</label>
-			  <div class="layui-input-block">
-			  	<input type="password" name="password2" placeholder="请再次输入密码" autocomplete="off" class="layui-input" lay-verify="password2|required" lay-verType="tips">
-			  </div>
-		</div>
-	  <div class="layui-form-item">
-			  <label class="layui-form-label">角色</label>
-			  <div class="layui-input-block">
+    <div class="layui-form-item">
+        <label class="layui-form-label">密码</label>
+        <div class="layui-input-block">
+          <input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input" lay-verify="password|required" lay-verType="tips">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">确认密码</label>
+        <div class="layui-input-block">
+          <input type="password" name="password2" placeholder="请再次输入密码" autocomplete="off" class="layui-input" lay-verify="password2|required" lay-verType="tips">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色</label>
+        <div class="layui-input-block">
           <div id="roleSelect"></div>
-			  </div>
-		</div>
-	  <div class="layui-form-item">
-		  <label class="layui-form-label">允许GM命令(一行一个)</label>
-		  <div class="layui-input-block">
+        </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">允许GM命令(一行一个)</label>
+      <div class="layui-input-block">
           <textarea name="allowGmCmd" placeholder="请编辑内容" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
-		  </div>
-	  </div>
-		<div class="layui-form-item">
-			<div class="layui-input-block">
-				<button class="layui-btn" lay-submit lay-filter="add">添加</button>
-				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-			</div>
-		</div>
-	</form>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="add">添加</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>
 </div>
 <script src="/lib/layui/layui.js"></script>
 <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
@@ -100,12 +100,12 @@
     form.on('submit(add)', function(data){
       okUtils.ajax("/api/user/add", "post", data.field, true).done(function (response) {
         okLayer.greenTickMsg(response.data, function () {
-					parent.layer.close(parent.layer.getFrameIndex(window.name));
-				});
-		  }).fail(function (error) {
+          parent.layer.close(parent.layer.getFrameIndex(window.name));
+        });
+      }).fail(function (error) {
           console.log(error);
       });
-		  return false;
+      return false;
     });
   });
 </script>

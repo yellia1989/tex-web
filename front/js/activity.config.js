@@ -51,7 +51,6 @@
             9: '商店购买次数',
             10: '王者竞技场获得积分',
             11: '宠物积分',
-            16: '圣山积分',
         },
         ActType3:{
             1: '道具消耗',
@@ -66,7 +65,6 @@
             13: '天赋点购买次数',
             14: '宝石购买次数',
             15: '符文碎片购买次数',
-            17: '点金手购买次数',
         },
         ActType4:{
             1: '王者竞技场',
@@ -330,9 +328,9 @@
                     type: 'text',
                 },
                 show_step: {
-                    name: '可显示档位',
-                    type: 'text',
-                }
+                    name: '显示档位',
+                    type: "text"
+                },
             }
         }
     };
@@ -452,15 +450,6 @@
                 independent_step: {
                     name: '需要额外展示的挡位(挡位类型, 挡位)',
                     type: 'text',
-                },
-                is_new_service: {
-                    name: '是否是新服活动',
-                    type: 'select',
-                    options: {
-                        '0' : '否',
-                        '1' : '是',
-                    },
-                    parser: parseInt,
                 }
             },
             client_param: {
@@ -480,6 +469,16 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 },
+                every_day_pos: {
+                    name: '每日充值档位',
+                    type: 'text',
+                    parser: parseInt,
+                },
+                total_money_pos: {
+                    name: '累计充值档位',
+                    type: 'text',
+                    parser: parseInt,
+                }
             }
         }
     };
@@ -603,70 +602,12 @@
         name: '免费福利',
         fieldOption: {
             comm_param: {
-                quest:{
-                    name: '任务',
-                    type: 'map',
-                    groupFieldOption: {
-                        _: {
-                            name: '任务ID',
-                            type: 'text',
-                            isMapKey: true,
-                            parser: parseInt
-                        },
-                        condition: {
-                            name: '条件类型',
-                            type: 'select',
-                            options: {
-                                1: '购买月卡',
-                                2: '通关关卡'
-                            },
-                            parser: parseInt
-                        },
-                        cond_param: {
-                            name: '条件值',
-                            type: 'text',
-                            parser: parseInt
-                        },
-                        type : {
-                            name: 'BUFF类型',
-                            type: 'select',
-                            options: {
-                                '1': '免费英雄招募速度',
-                            },
-                            parser: parseInt
-                        },
-                        value: {
-                            name: '加成值',
-                            type: 'text',
-                            parser: parseInt
-                        },
-                        effectTime: {
-                            name: '生效时间(秒)',
-                            type: 'text',
-                            parser: parseInt
-                        }
-                    }
+                reward: {
+                   name: '奖励:id,num',
+                   type: 'longtext',
+                   printer: utils.printItemNumList,
+                   parser: utils.parseItemNumList
                 },
-                step: {
-                   name: '奖励',
-                   type: 'map',
-                   groupFieldOption: {
-                        _: {
-                            name: '可选奖励列表',
-                            type: 'text',
-                            isMapKey: true,
-                            parser: parseInt
-                       },
-                       reward: {
-                           name: '奖励:id,num',
-                           type: 'longtext',
-                           printer: utils.printItemNumList,
-                           parser: utils.parseItemNumList
-                       }
-                    }
-                }
-            },
-            server_param: {
                 condition: {
                     name: '达成条件',
                     type: 'select',
@@ -675,7 +616,9 @@
                         '2': '通关关卡'
                     },
                     parser: parseInt
-                },
+                }
+            },
+            server_param: {
                 cond_param: {
                     name: '条件参数',
                     type: 'text',
@@ -698,14 +641,6 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
-                },
-                template: {
-                    name: '福利类型',
-                    type: 'select',
-                    options: {
-                        'month_card' : '月卡福利',
-                        'stage' : '通关回馈',
-                    }
                 }
             }
         }
@@ -715,8 +650,8 @@
         name: '成长基金',
         fieldOption: {
             comm_param: {
-                step_day: {
-                    name: '成长基金奖励',
+                step: {
+                    name: '奖励',
                     type: 'map',
                     groupFieldOption: {
                          _: {
@@ -725,32 +660,8 @@
                             isMapKey: true,
                             parser: parseInt
                          },
-                         buyreward: {
-                           name: '进阶奖励:id,num',
-                           type: 'longtext',
-                           printer: utils.printItemNumList,
-                           parser: utils.parseItemNumList
-                         }
-                    }
-                },
-                step_stage: {
-                    name: '关卡基金奖励',
-                    type: 'map',
-                    groupFieldOption: {
-                         _: {
-                            name: '档位',
-                            type: 'text',
-                            isMapKey: true,
-                            parser: parseInt
-                         },
-                         freereward: {
-                           name: '免费奖励:id,num',
-                           type: 'longtext',
-                           printer: utils.printItemNumList,
-                           parser: utils.parseItemNumList
-                         },
-                         buyreward: {
-                           name: '进阶奖励:id,num',
+                         reward: {
+                           name: '奖励:id,num',
                            type: 'longtext',
                            printer: utils.printItemNumList,
                            parser: utils.parseItemNumList
@@ -790,8 +701,6 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 }
-            },
-            server_param: {
             }
         }
     };
@@ -822,10 +731,6 @@
                     name: '角标',
                     type: 'text',
                 },
-                slogan: {
-                    name: '宣传语',
-                    type: 'text',
-                },
                 detail_bg: {
                     name: '活动背景',
                     type: 'text',
@@ -845,15 +750,6 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
-                },
-                is_new_service: {
-                    name: '是否是新服活动',
-                    type: 'select',
-                    options: {
-                        '0' : '否',
-                        '1' : '是',
-                    },
-                    parser: parseInt,
                 }
             },
             server_param: {
@@ -874,8 +770,7 @@
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
                         '13': '天赋技能解锁',
-                        '14': '充值犹豫时',
-                        '15': '钻石变更时'
+                        '14': '钻石变更时',
                     },
                     parser: parseInt
                 },
@@ -1031,7 +926,13 @@
                 },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
-                    type: 'midtext',
+                    type: 'select',
+                    options: {
+                        '1': '野蛮成长礼包',
+                        '2': '急速成长礼包',
+                        '3': '快速成长礼包',
+                        '4': '加速成长礼包',
+                    },
                     parser: parseInt
                 }
             }
@@ -1291,10 +1192,6 @@
                 },
                 hot_hero: {
                     name: '热点英雄',
-                    type: 'text'
-                },
-                block_color: {
-                    name: '方块颜色',
                     type: 'text'
                 }
             }
@@ -1598,11 +1495,11 @@
                             type: 'select',
                             options: {
                                 '1': '1. 完成成就(加入联盟)',
-                                '2': '2. 借用英雄并胜利 白嫖英雄',
-                                '3': '3. 在共享兽栏中领取一只宠物',
-                                '4': '4. 联盟参加圆桌会议（膜拜一次）',
-                                '5': '5. 联盟排行榜领取奖励',
-                                '6': '6. 给盟友浇水5次'
+                                '2': '2. 多人对决借用英雄',
+                                '3': '3. 在篝火派对中获得一次金币',
+                                '4': '4. 联盟参加圆桌会议',
+                                '5': '5. 给盟友赠送礼物',
+                                '6': '6. 联盟商店兑换炼金石'
                             },
                             parser: parseInt
                         },
@@ -1637,7 +1534,7 @@
                     vertical: true,
                     groupFieldOption: {
                         _: {
-                            name: '累计vip点:',
+                            name: '金额:money',
                             type: 'text',
                             isMapKey: true
                         },
@@ -1702,54 +1599,34 @@
     };
     // 23
     activityTypeDefine[23] = {
-        name: '祝福限时反馈',
+        name: '开服活动',
         fieldOption: {
             comm_param: {
-                step: {
-                    name: '奖励',
+                activity_order: {
+                    name: '加入开服活动',
                     type: 'map',
+                    vertical: true,
                     groupFieldOption: {
-                         _: {
-                            name: '档位,概率',
+                        _: {
+                            name: '显示顺序',
                             type: 'text',
-                            isMapKey: true,
-                         },
-                         reward: {
-                           name: '奖励:id,num',
-                           type: 'longtext',
-                           printer: utils.printItemNumList,
-                           parser: utils.parseItemNumList
-                         }
+                            isMapKey: true
+                        },
+                        activityId: {
+                            name: '活动id,活动id,活动id',
+                            type: 'text',
+                        },
+                        extrareward: {
+                            name: '额外奖励:id,num;id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        }
                     }
-                },
-                add_times_productid: {
-                    name: '增加抽奖次数的商品:商品id,商品id,商品id',
-                    type: 'text',
-                },
-                extra_times_productid: {
-                    name: '额外的抽奖次数的商品:商品id',
-                    type: 'text',
-                    parser: parseInt
                 }
-            },
-            server_param: {
-                auto_open_day: {
-                    name: '自动开始的开服天数',
-                    type: 'text',
-                    parser: parseInt
-                },
-                certainly_reward: {
-                    name: '必出的奖励:第几次,挡位',
-                    type: 'text'
-                },
-                open_time: {
-                    name: '触发后的持续时间',
-                    type: 'text',
-                    parser: parseInt
-                }
-            },
+            }
         }
-    };  
+    };
 
     // 当前活动类型
     var currentActivityType;

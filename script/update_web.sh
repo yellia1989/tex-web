@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (d/47.103.96.228 u/106.15.139.153 r/47.241.161.10 robot/101.133.160.60)"
+	echo "Usage: $0 env (u/81.69.196.54 r/101.32.168.86)"
 	exit 100
 fi
 
@@ -9,25 +9,13 @@ env="$1"
 source remote_cmd.sh
 
 case "$env" in
-    d)
-    ip=47.103.96.228
-    cp ../conf_d.cfg conf.cfg
-    ;;
     u)
-    ip=106.15.139.153
+    ip=81.69.196.54
     cp ../conf_u.cfg conf.cfg
     ;;
     r)
-    ip=47.241.161.10
+    ip=101.32.168.86
     cp ../conf_r.cfg conf.cfg
-    ;;
-    t)
-    ip=101.132.43.124
-    cp ../conf_t.cfg conf.cfg
-    ;;
-    robot)
-    ip=101.133.160.60
-    cp ../conf_robot.cfg conf.cfg
     ;;
     *)
     echo "invalid env"
