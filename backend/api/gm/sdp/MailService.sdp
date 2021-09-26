@@ -1,4 +1,4 @@
-module rpc
+module rpc 
 {
 
 struct CmdIDNum
@@ -13,6 +13,7 @@ struct MailLangContent
     1   optional string sTitle;
     2   optional string sContent;
 };
+
 
 struct MailDataInfo
 {
