@@ -39,8 +39,6 @@ var TimeZone *time.Location
 // 日志数据库
 var LogDb *sql.DB
 
-var LogDbHost string
-
 // 日志数据库连接用户名
 var LogDbUser string
 
@@ -73,6 +71,9 @@ var StatChannels []string
 
 // 聊天消息脏字检测间隔
 var ChatMaskInterval time.Duration
+
+// 服务器id
+var ServerID string
 
 func ParseCfg(file string) (err error) {
     if Config == nil {
@@ -115,7 +116,6 @@ func ParseCfg(file string) (err error) {
     if len(vtmp2) != 2 {
         panic("invalid logdb format")
     }
-    LogDbHost = "172.16.1.7"
     LogDbUser = vtmp2[0]
     LogDbPwd = vtmp2[1]
     LogDb, err = sql.Open("mysql", logdb)
@@ -161,6 +161,8 @@ func ParseCfg(file string) (err error) {
     StatChannels = strings.Split(tmp, ",")
 
     ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1m")
+
+    ServerID = cfg.GetCfg("server", "")
 
     return
 }

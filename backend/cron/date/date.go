@@ -97,7 +97,7 @@ func Cron(now time.Time) {
     mu.Unlock()
 
     dateFrom := dateMax
-    dateTo := now
+    dateTo := now.Add(time.Hour*24*30)
 
     for i := dateFrom; i.After(dateTo) == false; i = i.Add(time.Hour*24) {
         _, err := dates.Get(common.Atou32(i.Format("20060102")))

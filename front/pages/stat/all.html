@@ -212,10 +212,10 @@
 
 		let ltvTable = table.render({
 			elem: "#tableId2",
-      url: "/api/stat/all/ltv",
       text: {
         none: '暂无相关数据',
       },
+      data: [],
       cellMinWidth: 40,
 			limit: 30,
 			page: true,
@@ -315,7 +315,8 @@
     });
 
     form.on("submit(search2)", function (data) {
-      ltvTable.reload({
+        ltvTable.reload({
+        url: "/api/stat/all/ltv",
         where: data.field,
         page: {
           curr: 1,

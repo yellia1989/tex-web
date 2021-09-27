@@ -37,9 +37,7 @@ class MyColorMenu extends BtnMenu {
     tryChangeActive() {
 
     }
-
 }
-
 
 // 注册菜单
 E.registerMenu('myColorKey', MyColorMenu);
@@ -155,4 +153,3 @@ function ExecuteJsonData(jsonData) {
 
     return outputObject.result;
 }
-

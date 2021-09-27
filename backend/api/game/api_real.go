@@ -18,7 +18,7 @@ func realtime(day string, table string) ([]uint32,error) {
 
     sql := "SELECT time, sum(num) as num FROM realtime_"+table+" WHERE "
     if table == "income" {
-        sql = "SELECT time, round(sum(num)/100) as num FROM realtime_"+table+" WHERE "
+        sql = "SELECT time, round(sum(num)/100) as num FROM realtime_"+table+" WHERE zone_id != 8888 AND zone_id != 9999 AND"
     }
 
     sql += " time between '"+ timebegin +"' and '"+ timeend +"'"

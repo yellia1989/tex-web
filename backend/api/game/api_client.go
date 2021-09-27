@@ -1,14 +1,15 @@
 package game
 
 import (
-    "sort"
-    "strings"
-    "strconv"
     "encoding/base64"
-    "github.com/yellia1989/tex-web/backend/common"
+    "sort"
+    "strconv"
+    "strings"
+
     "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
+    "github.com/yellia1989/tex-web/backend/common"
     mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -29,7 +30,6 @@ func (a errSimpleInfoBy) Less(i, j int) bool {
     TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
     TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
 
-
     if a[i].ClientVersion != a[j].ClientVersion {
         return a[i].ClientVersion > a[j].ClientVersion
     }
@@ -42,9 +42,9 @@ func (a errSimpleInfoBy) Less(i, j int) bool {
 }
 
 type errInfo struct {
-    ErrTime    string `json:"err_time"`
-    ZoneId     uint32 `json:"zone_id"`
-    RoleId     uint32 `json:"role_id"`
+    ErrTime string `json:"err_time"`
+    ZoneId  uint32 `json:"zone_id"`
+    RoleId  uint32 `json:"role_id"`
 }
 
 type errInfoBy []errInfo
@@ -63,11 +63,11 @@ func (a errInfoBy) Less(i, j int) bool {
 }
 
 type disposeInfo struct {
-    ErrMessage     string `json:"err_info"`
-    ErrMessageMd5  string `json:"err_info_md5"`
-    ClientVersion  string `json:"client_version"`
-    Status         uint32 `json:"status"`
-    Note           string `json:"err_note"`
+    ErrMessage    string `json:"err_info"`
+    ErrMessageMd5 string `json:"err_info_md5"`
+    ClientVersion string `json:"client_version"`
+    Status        uint32 `json:"status"`
+    Note          string `json:"err_note"`
 }
 
 type disposeInfoBy []disposeInfo
@@ -77,7 +77,6 @@ func (a disposeInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a disposeInfoBy) Less(i, j int) bool {
     return a[i].ClientVersion > a[j].ClientVersion
 }
-
 
 func ErrInfo(c echo.Context) error {
     ctx := c.(*mid.Context)
@@ -144,15 +143,14 @@ func ErrInfo(c echo.Context) error {
         bFind := false
         for _, disInfo := range slDisposeInfo {
             if errInfo.ErrMessageMd5 == disInfo.ErrMessageMd5 && errInfo.ClientVersion == disInfo.ClientVersion {
-               slSimpleErrInfo[k].Status = disInfo.Status
-               bFind = true;
+                slSimpleErrInfo[k].Status = disInfo.Status
+                bFind = true
             }
         }
-        if (!bFind) {
-            slSimpleErrInfo[k].Status = 1;
+        if !bFind {
+            slSimpleErrInfo[k].Status = 1
         }
     }
-
 
     sort.Sort(errSimpleInfoBy(slSimpleErrInfo))
 
@@ -175,7 +173,7 @@ func ErrDetail(c echo.Context) error {
     db := cfg.LogDb
     sql := "SELECT time, zoneid, roleid FROM client_error "
     sql += "WHERE stackmd5 = '" + sErrInfoMd5 + "'"
-    sql += "AND client_version = '"+ sClientVersion + "'"
+    sql += "AND client_version = '" + sClientVersion + "'"
 
     log.Infof("sql: %s", sql)
 
@@ -202,7 +200,6 @@ func ErrDetail(c echo.Context) error {
 
     sort.Sort(errInfoBy(slErrInfo))
     vErrInfo := common.GetPage(slErrInfo, page, limit)
-
 
     return ctx.SendArray(vErrInfo, len(slErrInfo))
 }
@@ -279,7 +276,7 @@ func DisposeList(c echo.Context) error {
     }
 
     sort.Sort(disposeInfoBy(slDisposeInfo))
-    vDisposeInfo:= common.GetPage(slDisposeInfo, page, limit)
+    vDisposeInfo := common.GetPage(slDisposeInfo, page, limit)
 
     return ctx.SendArray(vDisposeInfo, len(slDisposeInfo))
 }
@@ -289,7 +286,7 @@ func AddDisposeNote(c echo.Context) error {
     sErrInfoMd5 := ctx.FormValue("sErrInfoMd5")
     sClientVersion := ctx.FormValue("sClientVersion")
     sNote := ctx.FormValue("sNote")
-    if sErrInfoMd5 == "" || sClientVersion == "" || sNote == ""{
+    if sErrInfoMd5 == "" || sClientVersion == "" || sNote == "" {
         return ctx.SendError(-1, "参数非法")
     }
 

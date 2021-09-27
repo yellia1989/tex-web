@@ -70,7 +70,7 @@ func Get(zoneid uint32, accountid uint32) *Role {
     r, err := roles.Get(zoneAccountKey{zoneid, accountid})
     if r == nil {
         if err != dsql.ErrNoRows {
-            log.Errorf("cron [role] get cache role err: %s", err.Error())
+            log.Errorf("cron [role] get cache role err: %s, zoneid: %d, accountid: %d", err.Error(), zoneid, accountid)
         }
         return nil
     }

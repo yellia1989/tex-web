@@ -86,7 +86,7 @@ func (m *Map) UpdateItem(u Item) bool {
         return false
     }
     m.items.Store(u.GetId(), u)
-    return m.save() == nil
+    return true
 }
 
 func (m *Map) save() error {

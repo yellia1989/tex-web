@@ -29,6 +29,7 @@ func OnlineTime(c echo.Context) error {
     if err != nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
 	sql := "SELECT roleid,sum(online_time) as online_time FROM log_zone_"+zoneid+".logout "
 	sql += "WHERE time BETWEEN '"+startTime+"' AND '"+endTime+"' GROUP BY roleid ORDER BY sum(online_time)"

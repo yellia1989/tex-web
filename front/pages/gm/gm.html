@@ -96,19 +96,27 @@
       });
 
       okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true, gf: true, map: true}, false).done(function (response) {
+        let zoneid = 0;
+        let mapid = 0;
+        if (response.data["game"] != null) {
+          zoneid = response.data["game"][0].iZoneId;
+        }
+        if (response.data["map"] != null) {
+          mapid = response.data["map"][0].iZoneId;
+        }
         zoneSelect.update({
           data: [
             {sZoneName: '挂机服务器', children: response.data["game"]},
             {sZoneName: 'slg服务器', children: response.data["map"]},
           ],
-          initValue: [1],
+          initValue: [zoneid],
         });
         zoneSelect2.update({
           data: [
             {sZoneName: 'slg服务器', children: response.data["map"]},
             {sZoneName: '挂机服务器', children: response.data["game"]},
           ],
-          initValue: [10001],
+          initValue: [mapid],
         });
       }).fail(function (error) {
         console.log(error);

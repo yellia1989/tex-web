@@ -86,3 +86,28 @@ func getAllZone() []*zone {
 
     return zones
 }
+
+// 获取除8888和9999外的分区列表
+func getAllRealZone() []*zone {
+    tmps := getAllZone()
+    zones := make([]*zone, 0, len(tmps))
+    for _, v := range tmps {
+        if v.Zoneid != 8888 && v.Zoneid != 9999 {
+            zones = append(zones, v)
+        }
+    }
+
+    return zones
+}
+
+func getAllRealZoneId() []uint32 {
+    zones := getAllRealZone()
+    zoneids := make([]uint32, len(zones))
+    i := 0
+    for _, v := range zones {
+        zoneids[i] = v.ID
+        i += 1
+    }
+
+    return zoneids
+}

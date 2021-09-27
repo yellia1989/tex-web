@@ -15,7 +15,7 @@ import (
 type _mapData struct {
     IMapId uint32 `json:"iMapId"`
     VZoneId []uint32 `json:"vZoneId"`
-	DbHost  string   `json:"dbHost"`
+    DbHost  string   `json:"dbHost"`
 	DbUser  string   `json:"dbUser"`
 	DbPwd   string   `json:"dbPwd"`
 	DbPort  string   `json:"dbPort"`
@@ -167,7 +167,7 @@ func MapAdd(c echo.Context) error {
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO t_maplist(mapid,zoneids,dbhost,dbport,dbuser,dbpwd) VALUES(?,?,?,?,?,?)", mapid, zoneids,dbHost,dbPort,dbUser,dbPwd)
+    _, err = tx.Exec("INSERT INTO t_maplist(mapid,zoneids,dbhost,dbport,dbuser,dbpwd) VALUES(?,?,?,?,?,?)", mapid, zoneids,dbHost,dbPort,dbUser,dbPwd)
 	if err != nil {
 		return err
 	}
@@ -244,7 +244,7 @@ func MapEdit(c echo.Context) error {
 		return err
 	}
 
-	_, err = tx.Exec("UPDATE t_maplist SET zoneids=?,dbhost=?,dbport=?,dbuser=?,dbpwd=? WHERE mapid=?", zoneids,dbHost,dbPort,dbUser,dbPwd,mapid)
+    _, err = tx.Exec("UPDATE t_maplist SET zoneids=?,dbhost=?,dbport=?,dbuser=?,dbpwd=? WHERE mapid=?", zoneids,dbHost,dbPort,dbUser,dbPwd,mapid)
 	if err != nil {
 		return err
 	}
@@ -282,13 +282,12 @@ func GameDb(zoneid uint32) (error, string) {
 
     var mapid uint32
     var zoneids string
-	var dbHost string
-	var dbPort string
-	var dbUser string
-	var dbPwd string
-
+    var dbHost string
+    var dbPort string
+    var dbUser string
+    var dbPwd string
     for rows.Next() {
-		if err := rows.Scan(&mapid, &zoneids,&dbHost,&dbPort,&dbUser,&dbPwd); err != nil {
+        if err := rows.Scan(&mapid, &zoneids,&dbHost,&dbPort,&dbUser,&dbPwd); err != nil {
             return err,""
         }
         ids := common.Atou32v(zoneids, ",")
@@ -300,7 +299,8 @@ func GameDb(zoneid uint32) (error, string) {
     if err := rows.Err(); err != nil {
         return err,""
     }
-	conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/db_map_%d", dbUser,dbPwd,dbHost,dbPort,mapid)
+
+    conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/db_map_%d", dbUser,dbPwd,dbHost,dbPort,mapid)
 
     return nil,conn
 }

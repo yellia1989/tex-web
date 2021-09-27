@@ -92,7 +92,6 @@
     okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
       zoneSelect.update({
         data: response.data["game"],
-        initValue: [1],
       });
     }).fail(function (error) {
       console.log(error);

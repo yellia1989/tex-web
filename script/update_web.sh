@@ -28,7 +28,7 @@ runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjvf $web conf.cfg ../front ../web ../start.sh ../stop.sh ../sql
+tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'

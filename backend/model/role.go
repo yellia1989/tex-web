@@ -1,29 +1,21 @@
 package model
 
 import (
-    "encoding/json"
-    "github.com/yellia1989/tex-go/tools/util"
-    cm "github.com/yellia1989/tex-web/backend/common"
+    "database/sql"
+    "fmt"
+    "github.com/yellia1989/tex-go/tools/log"
+    "github.com/yellia1989/tex-web/backend/cfg"
+    "strconv"
+    "strings"
 )
-
-var roles *cm.Map
-func init() {
-    bs, _ := util.LoadFromFile("data/roles.json")
-    items := make([]*Role,0)
-    json.Unmarshal(bs, &items)
-
-    items2 := make([]cm.Item,0)
-    for _, item := range items {
-        items2 = append(items2, item)
-    }
-    roles = cm.NewMap("data/roles.json", items2)
-}
 
 type Role struct {
     Id  uint32              `json:"id"`
     Name string             `json:"name"`
     Perms []uint32          `json:"perms"`
+    PermString string
 }
+
 func (r *Role) GetId() uint32 {
     return r.Id
 }
@@ -40,103 +32,192 @@ func (r *Role) copy() *Role {
     return r2
 }
 
+func (p *Role) InitPath()  {
+    p.Perms = make([]uint32,0)
+    if len(p.PermString)>0 {
+        tempStrArr := strings.Split(p.PermString,",")
+        for _,v:= range tempStrArr {
+            if id,err:=strconv.ParseUint(v,10,32);err==nil{
+                p.Perms = append(p.Perms, uint32(id))
+            }
+        }
+    }
+}
+
+func (p *Role) StringifyPath()  {
+    if len(p.Perms)>0 {
+        tempStrArr := make([]string,0)
+        for _,v := range p.Perms{
+            tempStrArr = append(tempStrArr, strconv.FormatUint(uint64(v),10))
+        }
+        p.PermString = strings.Join(tempStrArr,",")
+    }
+}
+
 func GetRoles() []*Role {
-    if roles == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
 
-    items := roles.GetItems(func (key, v interface{})bool{
-        return true
-    })
-
-    if len(items) == 0 {
+    rows, err := db.Query("select id,name,(select group_concat(perm_id) from sys_role_perm where role_id = r.id) as perms from sys_role r")
+    if err!=nil {
         return nil
     }
-
     rs := make([]*Role,0)
-    for _, item := range items {
-        // 复制一份防止原始值被修改
-        r := item.(*Role).copy()
-        rs = append(rs, r)
+    var nullStr sql.NullString
+    for rows.Next() {
+        var role Role
+        if err := rows.Scan(&role.Id,&role.Name,&nullStr);err!=nil {
+            log.Errorf("[role] get roles err: %s", err.Error())
+            return nil
+        }
+        if nullStr.Valid {
+            role.PermString = nullStr.String
+        }
+        role.InitPath()
+        rs = append(rs,&role)
     }
     return rs
 }
 
 func GetRole(id uint32) *Role {
-    if roles == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
 
-    item := roles.GetItem(id)
-    if item == nil {
+    role := &Role{}
+    var nullStr sql.NullString
+    if err:=db.QueryRow("select id,name,(select group_concat(perm_id) from sys_role_perm where role_id = r.id) as perms from sys_role r where id = ?",id).Scan(&role.Id,&role.Name,&nullStr);err!=nil{
         return nil
     }
-
-    return item.(*Role).copy()
+    if nullStr.Valid {
+        role.PermString = nullStr.String
+    }
+    role.InitPath()
+    return role
 }
 
 func AddRole(name string, perms []uint32) *Role {
-    if roles == nil {
+    db := cfg.StatDb
+    if db == nil {
         return nil
     }
 
-    items := roles.GetItems(func (key, v interface{})bool{
-        r := v.(*Role)
-        return r.Name == name
-    })
-
-    if len(items) != 0 {
+    role := &Role{}
+    if err:=db.QueryRow("select id from sys_role where name = ?",name).Scan(&role.Id);err==nil{
         return nil
     }
 
     r := &Role{
         Name: name,
-        Perms: make([]uint32,len(perms)),
+        Perms: perms,
     }
-    copy(r.Perms,perms)
-    if !roles.AddItem(r) {
+
+    tx,err:= db.Begin()
+    if err!= nil {
         return nil
     }
 
-    return r.copy()
+    result,err := tx.Exec("insert into sys_role(name) values(?)", r.Name)
+    if err!=nil {
+        tx.Rollback()
+        return nil
+    }
+    insertId,err:= result.LastInsertId()
+    if err!=nil {
+        tx.Rollback()
+        return nil
+    }
+    r.Id = uint32(insertId)
+    for _,v:= range r.Perms {
+        _,err := tx.Exec("insert into sys_role_perm(role_id,perm_id) values(?,?)", r.Id,v)
+        if err!=nil {
+            tx.Rollback()
+            return nil
+        }
+    }
+    err = tx.Commit()
+    if err!=nil {
+        tx.Rollback()
+        return nil
+    }
+    return r
 }
 
 func DelRole(r *Role) bool {
-    if roles == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-
-    return roles.DelItem(r)
+    tx,err:= db.Begin()
+    if err!= nil {
+        return false
+    }
+    _,err = tx.Exec("delete from sys_role where id = ?",r.Id)
+    if err!=nil {
+        tx.Rollback()
+        return false
+    }
+    _,err = tx.Exec("delete from sys_role_perm where role_id = ?",r.Id)
+    if err!=nil {
+        tx.Rollback()
+        return false
+    }
+    err = tx.Commit()
+    if err!=nil {
+        tx.Rollback()
+        return false
+    }
+    return true
 }
 
 func UpdateRole(r *Role) bool {
-    if roles == nil {
+    db := cfg.StatDb
+    if db == nil {
         return false
     }
-
-    r2 := r.copy()
-    return roles.UpdateItem(r2)
+    tx,err:= db.Begin()
+    if err!= nil {
+        return false
+    }
+    _,err = tx.Exec("update sys_role set name = ? where id = ?",r.Name,r.Id)
+    if err!=nil {
+        tx.Rollback()
+        return false
+    }
+    _,err = tx.Exec("delete from sys_role_perm where role_id = ?",r.Id)
+    if err!=nil {
+        tx.Rollback()
+        return false
+    }
+    for _,v:= range r.Perms {
+        _,err := tx.Exec("insert into sys_role_perm(role_id,perm_id) values(?,?)", r.Id,v)
+        if err!=nil {
+            tx.Rollback()
+            return false
+        }
+    }
+    err = tx.Commit()
+    if err!=nil {
+        tx.Rollback()
+        return false
+    }
+    return true
 }
 
 func DelRolePerm(perms []uint32) {
-    items := roles.GetItems(func (key, v interface{})bool{
-        r := v.(*Role)
-        for _, p := range r.Perms {
-            if util.Contain(perms, p) {
-                return true
-            }
-        }
-        return false
-    })
-
-    if len(items) == 0 {
+    db := cfg.StatDb
+    if db == nil {
         return
     }
-    for _, item := range items {
-        r := item.(*Role).copy()
-        for _, id := range perms {
-            util.SliceRemoveUint32(&r.Perms, id)
-        }
-        roles.UpdateItem(r)
+    permStr := make([]string,len(perms))
+    for _,v := range perms {
+        permStr = append(permStr,strconv.FormatUint(uint64(v),10))
     }
+    sql := "delete sys_role_perm where perm_id in  (%s)"
+    ids := strings.Join(permStr,",")
+    sql = fmt.Sprintf(sql,ids)
+    db.Exec(sql)
 }

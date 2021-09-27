@@ -49,8 +49,9 @@ func MailSendLog(c echo.Context) error {
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".send_mail"
+    sqlcount := "SELECT count(*) as total FROM send_mail"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
@@ -60,7 +61,7 @@ func MailSendLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,mailid,sendtime,templateid,itemid,itemnum FROM log_zone_"+zoneid+".send_mail"
+    sql := "SELECT _rid as id,mailid,sendtime,templateid,itemid,itemnum FROM send_mail"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
@@ -106,8 +107,9 @@ func MailRevLog(c echo.Context) error {
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".rcv_mail"
+    sqlcount := "SELECT count(*) as total FROM rcv_mail"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
@@ -117,7 +119,7 @@ func MailRevLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,mailid,time,itemid,itemnum FROM log_zone_"+zoneid+".rcv_mail"
+    sql := "SELECT _rid as id,mailid,time,itemid,itemnum FROM rcv_mail"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
@@ -163,8 +165,9 @@ func MailDelLog(c echo.Context) error {
     if db == nil {
         return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
     }
+    defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM log_zone_"+zoneid+".del_mail"
+    sqlcount := "SELECT count(*) as total FROM del_mail"
     sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
@@ -174,7 +177,7 @@ func MailDelLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,mailid,time FROM log_zone_"+zoneid+".del_mail"
+    sql := "SELECT _rid as id,mailid,time FROM del_mail"
     sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow

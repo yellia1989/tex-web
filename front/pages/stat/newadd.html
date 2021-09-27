@@ -49,10 +49,10 @@
 
 		let newaddTable = table.render({
 			elem: "#tableId",
-      url: "/api/stat/newadd/list",
       text: {
         none: '暂无相关数据',
       },
+      data: [],
 			limit: 30,
 			page: true,
 			cols: [[
@@ -75,6 +75,7 @@
 
     form.on("submit(search)", function (data) {
       newaddTable.reload({
+        url: "/api/stat/newadd/list",
         where: data.field,
         page: {
           curr: 1,

@@ -84,6 +84,7 @@ layui.define(["layer"], function (exprots) {
                 type: type || "get",
                 data: params || {},
                 dataType: "json",
+                timeout: 3000,
                 beforeSend: function () {
                     if (load) {
                         loadIndex = layer.load(0, {shade: 0.3});
