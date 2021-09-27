@@ -516,7 +516,6 @@ func (st *CDKeyConfig) WriteStructFromTag(p *codec.Packer, tag uint32, require b
 
 type CDKeyInfo struct {
 	SCDKey           string `json:"sCDKey" form:"sCDKey"`
-	SBindAccount     string `json:"sBindAccount" form:"sBindAccount"`
 	IExchangeTime    uint32 `json:"iExchangeTime" form:"iExchangeTime"`
 	SExchangeAccount string `json:"sExchangeAccount" form:"sExchangeAccount"`
 }
@@ -526,7 +525,6 @@ func (st *CDKeyInfo) resetDefault() {
 func (st *CDKeyInfo) Copy() *CDKeyInfo {
 	ret := NewCDKeyInfo()
 	ret.SCDKey = st.SCDKey
-	ret.SBindAccount = st.SBindAccount
 	ret.IExchangeTime = st.IExchangeTime
 	ret.SExchangeAccount = st.SExchangeAccount
 	return ret
@@ -538,7 +536,6 @@ func NewCDKeyInfo() *CDKeyInfo {
 }
 func (st *CDKeyInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sCDKey")+fmt.Sprintf("%v\n", st.SCDKey))
-	util.Tab(buff, t+1, util.Fieldname("sBindAccount")+fmt.Sprintf("%v\n", st.SBindAccount))
 	util.Tab(buff, t+1, util.Fieldname("iExchangeTime")+fmt.Sprintf("%v\n", st.IExchangeTime))
 	util.Tab(buff, t+1, util.Fieldname("sExchangeAccount")+fmt.Sprintf("%v\n", st.SExchangeAccount))
 }
@@ -549,10 +546,6 @@ func (st *CDKeyInfo) ReadStruct(up *codec.UnPacker) error {
 	var ty uint32
 	st.resetDefault()
 	err = up.ReadString(&st.SCDKey, 0, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SBindAccount, 1, false)
 	if err != nil {
 		return err
 	}
@@ -603,12 +596,6 @@ func (st *CDKeyInfo) WriteStruct(p *codec.Packer) error {
 	var length uint32
 	if false || st.SCDKey != "" {
 		err = p.WriteString(0, st.SCDKey)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SBindAccount != "" {
-		err = p.WriteString(1, st.SBindAccount)
 		if err != nil {
 			return err
 		}

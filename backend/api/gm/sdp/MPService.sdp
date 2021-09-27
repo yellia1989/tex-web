@@ -44,7 +44,6 @@ struct CDKeyConfig
 struct CDKeyInfo
 {
 	0 optional string		sCDKey;
-	1 optional string		sBindAccount;
 	2 optional unsigned int	iExchangeTime;
 	3 optional string		sExchangeAccount;
 };

@@ -48,6 +48,7 @@ const (
 	Error_ConnNotInManager                = -203
 	Error_ZoneIdMismatch                  = -204
 	Error_ZonePublishTime                 = -205
+	Error_ConnMaxNum                      = -206
 	Error_MP_NoProject                    = -301
 	Error_MP_NoCDKeyId                    = -302
 	Error_MP_CDKeyRunOut                  = -305
@@ -90,20 +91,6 @@ const (
 	Error_IAP_AB_PurchaseState            = -815
 	Error_IAP_AB_APPID_Mismatch           = -816
 	Error_IAP_AB_SignTransData            = -817
-	Error_IAP_HeePay_AMOUNT               = -818
-	Error_IAP_HeePay_CreateOrder          = -819
-	Error_IAP_HeePay_PurchaseData         = -820
-	Error_IAP_HeePay_Sign                 = -821
-	Error_IAP_HeePay_Verify_Network       = -822
-	Error_IAP_HeePay_AgentId              = -823
-	Error_IAP_HeePay_QueryDismatch        = -824
-	Error_IAP_HeePay_HasOrderToPay        = -825
-	Error_IAP_HeePayH5_CreateOrder        = -826
-	Error_IAP_HeePayH5_PurchaseData       = -827
-	Error_IAP_HeePayH5_Sign               = -828
-	Error_IAP_HeePayH5_AppId              = -829
-	Error_IAP_HeePayH5_MchId              = -830
-	Error_IAP_HeePayH5_AMOUNT             = -831
 	Error_GCM_Service                     = -1001
 	Error_GCM_PushFail                    = -1002
 	Error_UPUSH_Service                   = -1003
@@ -155,8 +142,6 @@ const (
 	Error_Hero_RuneLevelBeenMax           = 1046
 	Error_RuneNotEnough                   = 1047
 	Error_Hero_SkillHasLearned            = 1048
-	Error_ZoonExpNotEnough                = 1049
-	Error_ZoonName_LengthLimit            = 1050
 	Error_Stage_Cheat                     = 1055
 	Error_Stage_InvalidTeam               = 1056
 	Error_Stage_MaxTeam                   = 1057
@@ -275,12 +260,12 @@ const (
 	Error_CrowdFund_Recharging            = 1189
 	Error_BranchStage_GameOver            = 1190
 	Error_AdvMap_Injuring                 = 1191
-	Error_Item_OnlyUseOne                 = 1192
-	Error_Item_EffectExist                = 1193
-	Error_Pet_MaxSlotSize                 = 1194
-	Error_Hero_Syncing                    = 1195
-	Error_Zoon_CancelMate                 = 1196
-	Error_ZoonSlotNotEnough               = 1197
+	Error_CreateRole_NoSpace              = 1192
+	Error_Common_CondNotMet               = 1193
+	Error_Item_Overflow                   = 1194
+	Error_Common_MazeStagePassed          = 1195
+	Error_Forward_Execute                 = 1196
+	Error_Common_Rewarded                 = 1197
 	Error_Obj_NotExists                   = 10000
 	Error_Role_Reborn                     = 10001
 	Error_Map_RandPos                     = 10002
@@ -347,6 +332,7 @@ const (
 	Error_RoleMap_Null                    = 10076
 	Error_Flag_AllianceOnlyOne            = 10077
 	Error_Alliance_PostNotEnough          = 10078
+	Error_ZoonSlotNotEnough               = 10079
 )
 
 func (en ErrorCode) String() string {
@@ -438,6 +424,8 @@ func (en ErrorCode) String() string {
 		ret = "Error_ZoneIdMismatch"
 	case Error_ZonePublishTime:
 		ret = "Error_ZonePublishTime"
+	case Error_ConnMaxNum:
+		ret = "Error_ConnMaxNum"
 	case Error_MP_NoProject:
 		ret = "Error_MP_NoProject"
 	case Error_MP_NoCDKeyId:
@@ -522,34 +510,6 @@ func (en ErrorCode) String() string {
 		ret = "Error_IAP_AB_APPID_Mismatch"
 	case Error_IAP_AB_SignTransData:
 		ret = "Error_IAP_AB_SignTransData"
-	case Error_IAP_HeePay_AMOUNT:
-		ret = "Error_IAP_HeePay_AMOUNT"
-	case Error_IAP_HeePay_CreateOrder:
-		ret = "Error_IAP_HeePay_CreateOrder"
-	case Error_IAP_HeePay_PurchaseData:
-		ret = "Error_IAP_HeePay_PurchaseData"
-	case Error_IAP_HeePay_Sign:
-		ret = "Error_IAP_HeePay_Sign"
-	case Error_IAP_HeePay_Verify_Network:
-		ret = "Error_IAP_HeePay_Verify_Network"
-	case Error_IAP_HeePay_AgentId:
-		ret = "Error_IAP_HeePay_AgentId"
-	case Error_IAP_HeePay_QueryDismatch:
-		ret = "Error_IAP_HeePay_QueryDismatch"
-	case Error_IAP_HeePay_HasOrderToPay:
-		ret = "Error_IAP_HeePay_HasOrderToPay"
-	case Error_IAP_HeePayH5_CreateOrder:
-		ret = "Error_IAP_HeePayH5_CreateOrder"
-	case Error_IAP_HeePayH5_PurchaseData:
-		ret = "Error_IAP_HeePayH5_PurchaseData"
-	case Error_IAP_HeePayH5_Sign:
-		ret = "Error_IAP_HeePayH5_Sign"
-	case Error_IAP_HeePayH5_AppId:
-		ret = "Error_IAP_HeePayH5_AppId"
-	case Error_IAP_HeePayH5_MchId:
-		ret = "Error_IAP_HeePayH5_MchId"
-	case Error_IAP_HeePayH5_AMOUNT:
-		ret = "Error_IAP_HeePayH5_AMOUNT"
 	case Error_GCM_Service:
 		ret = "Error_GCM_Service"
 	case Error_GCM_PushFail:
@@ -652,10 +612,6 @@ func (en ErrorCode) String() string {
 		ret = "Error_RuneNotEnough"
 	case Error_Hero_SkillHasLearned:
 		ret = "Error_Hero_SkillHasLearned"
-	case Error_ZoonExpNotEnough:
-		ret = "Error_ZoonExpNotEnough"
-	case Error_ZoonName_LengthLimit:
-		ret = "Error_ZoonName_LengthLimit"
 	case Error_Stage_Cheat:
 		ret = "Error_Stage_Cheat"
 	case Error_Stage_InvalidTeam:
@@ -892,18 +848,18 @@ func (en ErrorCode) String() string {
 		ret = "Error_BranchStage_GameOver"
 	case Error_AdvMap_Injuring:
 		ret = "Error_AdvMap_Injuring"
-	case Error_Item_OnlyUseOne:
-		ret = "Error_Item_OnlyUseOne"
-	case Error_Item_EffectExist:
-		ret = "Error_Item_EffectExist"
-	case Error_Pet_MaxSlotSize:
-		ret = "Error_Pet_MaxSlotSize"
-	case Error_Hero_Syncing:
-		ret = "Error_Hero_Syncing"
-	case Error_Zoon_CancelMate:
-		ret = "Error_Zoon_CancelMate"
-	case Error_ZoonSlotNotEnough:
-		ret = "Error_ZoonSlotNotEnough"
+	case Error_CreateRole_NoSpace:
+		ret = "Error_CreateRole_NoSpace"
+	case Error_Common_CondNotMet:
+		ret = "Error_Common_CondNotMet"
+	case Error_Item_Overflow:
+		ret = "Error_Item_Overflow"
+	case Error_Common_MazeStagePassed:
+		ret = "Error_Common_MazeStagePassed"
+	case Error_Forward_Execute:
+		ret = "Error_Forward_Execute"
+	case Error_Common_Rewarded:
+		ret = "Error_Common_Rewarded"
 	case Error_Obj_NotExists:
 		ret = "Error_Obj_NotExists"
 	case Error_Role_Reborn:
@@ -1036,6 +992,8 @@ func (en ErrorCode) String() string {
 		ret = "Error_Flag_AllianceOnlyOne"
 	case Error_Alliance_PostNotEnough:
 		ret = "Error_Alliance_PostNotEnough"
+	case Error_ZoonSlotNotEnough:
+		ret = "Error_ZoonSlotNotEnough"
 	}
 	return ret
 }

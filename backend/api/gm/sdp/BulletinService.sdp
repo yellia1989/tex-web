@@ -1,4 +1,4 @@
-module rpc 
+module rpc
 {
 
 enum BulletinFlag
