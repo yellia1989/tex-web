@@ -182,4 +182,8 @@ func RegisterHandler(group *echo.Group) {
 
     group.GET("/public/gm/get_zone_list", gm.GetZoneList) // 获取当前环境的服务器列表
     group.GET("/public/gm/dump_role", gm.DumpRole) // 复制玩家数据
+
+    group.GET("/game/fight-verify/err_info", game.FightErrInfo)            // 战斗验证失败日志列表
+    group.POST("/game/fight-verify/export-report", game.FightExportReport) // 导出战斗日志
+    group.POST("/game/fight-verify/export-log", game.FightExportLog)       // 导出战斗日志
 }
