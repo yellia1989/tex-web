@@ -221,7 +221,7 @@ func RealStat(c echo.Context) error {
     data["rgeRoleNumTotal"] = rgeRoleNumTotal
 
     var activeToday uint32 // 今日活跃
-    actives, err := getActiveByDate(nil, now.ID, now.ID, roleCond)
+    actives, err := getActiveByDate(getAllRealZoneId(), now.ID, now.ID, roleCond)
     if err != nil {
         return err
     }
@@ -231,7 +231,7 @@ func RealStat(c echo.Context) error {
     data["activeToday"] = activeToday
 
     var newaddToday uint32 // 今日新增
-    rolesToday, err := getRoleNumByDate(nil, now.ID, now.ID, roleCond)
+    rolesToday, err := getRoleNumByDate(getAllRealZoneId(), now.ID, now.ID, roleCond)
     if err != nil {
         return err
     }
@@ -241,7 +241,7 @@ func RealStat(c echo.Context) error {
     data["newaddToday"] = newaddToday
 
     var newaddTotal uint32 // 累计新增
-    newaddTotal, err = getRoleNumUtilNow(roleCond)
+    newaddTotal, err = getRoleNumUtilNow(getAllRealZoneId(), roleCond)
     if err != nil {
         return err
     }

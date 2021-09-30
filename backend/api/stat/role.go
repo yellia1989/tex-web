@@ -82,10 +82,10 @@ func (r *role) String() string {
 }
 
 // 统计到目前为止总创角
-func getRoleNumUtilNow(cond *condition) (uint32,error) {
+func getRoleNumUtilNow(vzoneid []uint32, cond *condition) (uint32,error) {
     now := getDateByTime(time.Now())
 
-    m, err := getRoleNumUtilDate(nil, now.ID, cond)
+    m, err := getRoleNumUtilDate(vzoneid, now.ID, cond)
     if err != nil {
         return 0, err
     }

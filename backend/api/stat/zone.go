@@ -92,7 +92,7 @@ func getAllRealZone() []*zone {
     tmps := getAllZone()
     zones := make([]*zone, 0, len(tmps))
     for _, v := range tmps {
-        if v.Zoneid != 8888 && v.Zoneid != 9999 {
+        if v.Zoneid != 8888 && v.Zoneid != 9999 && v.Zoneid != 1 {
             zones = append(zones, v)
         }
     }
