@@ -1037,7 +1037,7 @@
                     options: options.optYesNo,
                     parser: parseInt
                 },
-                skillponit_less_talentlevelupcost: {
+                talentponit_less_talentlevelupcost: {
                     name: '当前拥有提纯试剂小于上次天赋升级所消耗的量',
                     type: 'select',
                     options: options.optYesNo,
