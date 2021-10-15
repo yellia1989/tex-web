@@ -1085,6 +1085,10 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
+                },
+                them : {
+                    name: '在线奖励主题',
+                    type: 'text',
                 }
             }
         }
