@@ -1087,7 +1087,7 @@
                              isMapKey: true
                          },
                          step: {
-                             name: '商品个数:可参与人数:vip等级:钻石:原价',
+                             name: '商品个数:可参与人数:vip等级:钻石:限购次数（0无限制）:原价',
                              type: 'textarea',
                          },
                      }
