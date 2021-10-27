@@ -1776,7 +1776,41 @@
                 }
             },
         }
-    };  
+    };
+    activityTypeDefine[24] = {
+        name: '开服活动',
+        fieldOption: {
+            comm_param: {
+                activity_order: {
+                    name: '加入开服活动',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '显示顺序',
+                            type: 'text',
+                            isMapKey: true
+                        },
+                        activityId: {
+                            name: '活动id,活动id,活动id',
+                            type: 'text',
+                        },
+                        extrareward: {
+                            name: '额外奖励:id,num;id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        },
+                        extrarewardtime: {
+                            name: '额外奖励的时间(秒)',
+                            type: 'text',
+                            parser: parseInt,
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     // 当前活动类型
     var currentActivityType;
