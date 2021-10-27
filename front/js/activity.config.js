@@ -869,7 +869,7 @@
                         '6': '技能升级',
                         '7': '英雄升级',
                         '8': '购买符文',
-                        '9': '英雄历练升级',
+                        '9': '英雄历练升级或更新怪校验',
                         '10': '主线任务进度变化',
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
@@ -1025,6 +1025,24 @@
                     options: options.optYesNo,
                     parser: parseInt
                 },
+                gem_less_refreshcardcost: {
+                    name: '当前拥有源质琉璃小于上次历练升级或更换怪所消耗的量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                rune_less_buyrunecost: {
+                    name: '当前拥有符文晶块小于上次购买符文所消耗的量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                talentponit_less_talentlevelupcost: {
+                    name: '当前拥有提纯试剂小于上次天赋升级所消耗的量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
                 rune_level: {
                     name: '购买符文的等级(-区分)',
                     type: 'midtext'
@@ -1066,6 +1084,10 @@
                 },
                 recommond: {
                     name: '焦点参数(秒)',
+                    type: 'text',
+                },
+                them : {
+                    name: '在线奖励主题',
                     type: 'text',
                 }
             }
