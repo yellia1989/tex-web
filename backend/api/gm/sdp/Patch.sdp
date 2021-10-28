@@ -1,0 +1,54 @@
+module rpc
+{
+    enum PatchTaskStatus
+    {
+        PatchTaskStatus_NOT_START,
+        PatchTaskStatus_RUNNING,
+        PatchTaskStatus_SUCCESS,
+        PatchTaskStatus_FAILED,
+        PatchTaskStatus_CANCEL,
+    };
+
+    struct PatchTaskItemReq
+    {
+        0   optional string sTaskNo;
+        2   optional string sApp;
+        3   optional string sServer;
+        4   optional string sDivision;
+        5   optional string sNodeName;
+        6   optional string sCommand;
+        7   optional map<string,string> mParam;
+    };
+
+    struct PatchTaskItemRsp
+    {
+        0   optional PatchTaskItemReq req;
+        1   optional unsigned int iStatus;
+        2   optional unsigned int iStartTime;
+        3   optional unsigned int iEndTime;
+        4   optional string sResult;
+        5   optional unsigned int iPercent;
+    };
+
+    struct PatchTaskReq
+    {
+        0   optional string sTaskNo;
+        2   optional vector<PatchTaskItemReq> vItem;
+    };
+
+    struct PatchTaskRsp
+    {
+        0   optional string sTaskNo;
+        1   optional unsigned int iStatus;
+        2   optional unsigned int iCreateTime;
+        3   optional vector<PatchTaskItemRsp> vItem;
+    };
+
+    interface Patch
+    {
+        int downloadPatch(string sFilePath, unsigned long iPos, out vector<char> sBuff, out bool bEnd);
+        int addTask(PatchTaskReq stTaskReq);
+        int getTask(string sTaskNo, out PatchTaskRsp stTaskRsp);
+        int cancelTask(string sTaskNo);
+    };
+};
