@@ -941,7 +941,7 @@
                     type: 'midtext',
                 },
                 recharge_money_range: {
-                    name: '充值美金范围(-区分)',
+                    name: '充值金额范围(-区分,单位是分 100分=1元)',
                     type: 'midtext',
                 },
                 recharge_last_time: {
