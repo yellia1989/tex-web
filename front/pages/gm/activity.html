@@ -213,10 +213,10 @@
       }
 
       function batchLock(lock) {
-	let msg = "确定要批量加锁吗？";
-	if (lock == 0) {
-	  msg = "确定要批量解锁吗？";
-	}
+        let msg = "确定要批量加锁吗？";
+        if (lock == 0) {
+          msg = "确定要批量解锁吗？";
+        }
         okLayer.confirm(msg, function (index) {
           layer.close(index);
           let idsStr = okUtils.tableBatchCheck(table);
