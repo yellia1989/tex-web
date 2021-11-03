@@ -1,9 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
@@ -80,14 +83,37 @@ func ServerList(c echo.Context) error {
 	return ctx.SendArray(logs, total)
 }
 
-func ServerStart(ctx echo.Context) error {
-	return nil
-}
+func ServerOperator(c echo.Context) error {
+	ctx := c.(*mid.Context)
 
-func ServerStop(ctx echo.Context) error {
-	return nil
-}
+	app := ctx.FormValue("app")
+	server := ctx.FormValue("server")
+	division := ctx.FormValue("division")
+	cmd := ctx.FormValue("cmd")
 
-func ServerRestart(ctx echo.Context) error {
-	return nil
+	if app == "" || server == "" || cmd == ""{
+		return ctx.SendError(-1, "参数为空")
+	}
+
+	req := rpc.PatchTaskReq{}
+	req.STaskNo = strconv.FormatInt(time.Now().UnixNano(), 10)
+	reqItem := rpc.PatchTaskItemReq{}
+	reqItem.STaskNo = req.STaskNo
+	reqItem.SApp = app
+	reqItem.SServer = server
+	reqItem.SDivision = division
+	reqItem.SNodeName = "192.168.0.16"
+	reqItem.SCommand = cmd
+	req.VItem = append(req.VItem, reqItem)
+
+	comm := cfg.Comm
+	patchPrx := new(rpc.Patch)
+	comm.StringToProxy("tex.mfwpatch.PatchObj", patchPrx)
+
+	ret, err := patchPrx.AddTask(req)
+	if ret != 0 || err != nil {
+		return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+	}
+
+	return ctx.SendResponse("启动中")
 }

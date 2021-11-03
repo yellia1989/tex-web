@@ -10,104 +10,91 @@
 </head>
 
 <body>
-<div class="ok-body">
-  <table id="tableId" lay-filter="tableFilter"></table>
-</div>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
 
-<!--js逻辑-->
-<script src="/lib/layui/layui.js"></script>
-<script>
-  layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
-    let table = layui.table;
-    let okLayer = layui.okLayer;
-    let okUtils = layui.okUtils;
-    let form = layui.form;
-    okLoading.close();
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      let form = layui.form;
+      okLoading.close();
 
-    let serverTable = table.render({
-      elem: "#tableId",
-      url: "/api/server/list",
-      text: {
-        none: '暂无相关数据',
-      },
-      limit: 30,
-      page: true,
-      toolbar: "#toolbarTpl",
-      defaultToolbar: ['filter'],
-      cols: [[
-        { type: "checkbox", title: "序号", fixed: 'left' },
-        { field: "server", title: "服务", width: 90, fixed: 'left' },
-        { field: "division", title: "分区", width: 90, fixed: 'left' },
-        { field: "node", title: "节点", width: 90 },
-        { field: "setting_stat", title: "设置状态", width: 90, align: "center", templet: function (d) {
-          switch (d.setting_stat) {
-            case 1: return "自动重启";
-            case 0: return "不重启";
-          }
-        }},
-        { field: "cur_stat", title: "当前状态", width: 150, templet: function(d) {
-          switch (d.cur_stat) {
-            case 1: return "运行中";
-          }
-        }},
-        { field: "pid", title: "进程ID", width: 90},
-        { field: "version", title:"版本", width: 90},
-        { field: "release_user", title: "发布人", align: "center"},
-        { field: "release_time", title: "发布时间", align: "center"},
-        { title: "操作", align: "center", templet: "#operationTpl", width: 100, fixed: 'right' }
-      ]]
-    });
-
-    function stop(data) {
-      let req = {}
-      okUtils.ajax("/api/server/stop", "post", req, true).done(function (response) {
-        okUtils.tableSuccessMsg(response.data);
-      }).fail(function (error) {
-        console.log(error)
+      let serverTable = table.render({
+        elem: "#tableId",
+        url: "/api/server/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        defaultToolbar: ['filter'],
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "server", title: "服务", width: 90, fixed: 'left' },
+          { field: "division", title: "分区", width: 90, fixed: 'left' },
+          { field: "node", title: "节点", width: 90 },
+          {
+            field: "setting_stat", title: "设置状态", width: 90, align: "center", templet: function (d) {
+              switch (d.setting_stat) {
+                case 1: return "自动重启";
+                case 0: return "不重启";
+              }
+            }
+          },
+          {
+            field: "cur_stat", title: "当前状态", width: 150, templet: function (d) {
+              switch (d.cur_stat) {
+                case 1: return "运行中";
+              }
+            }
+          },
+          { field: "pid", title: "进程ID", width: 90 },
+          { field: "version", title: "版本", width: 90 },
+          { field: "release_user", title: "发布人", align: "center" },
+          { field: "release_time", title: "发布时间", align: "center" },
+          { title: "操作", align: "center", templet: "#operationTpl", width: 100, fixed: 'right' }
+        ]]
       });
-    }
-    function start(data) {
-      let req = {}
-      okUtils.ajax("/api/server/start", "post", req, true).done(function (response) {
-        okUtils.tableSuccessMsg(response.data);
-      }).fail(function (error) {
-        console.log(error)
-      });
-    }
-    function restart(data) {
-      let req = {}
-      okUtils.ajax("/api/server/restart", "post", req, true).done(function (response) {
-        okUtils.tableSuccessMsg(response.data);
-      }).fail(function (error) {
-        console.log(error)
-      });
-    }
 
-    table.on("tool(tableFilter)", function (obj) {
-      let data = obj.data;
-      switch (obj.event) {
-        case "edit":
-          break;
-        case "stop":
-          stop(data);
-          break;
-        case "start":
-          start(data);
-          break;
-        case "restart":
-          restart();
-          break;
+      function serverOperator(data, cmd) {
+        let req = {
+          "app": data.app,
+          "server": data.server,
+          "division": data.division,
+          "cmd": cmd
+        }
+        okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
+          okUtils.tableSuccessMsg(response.data);
+        }).fail(function (error) {
+          console.log(error)
+        });
       }
-    });
-  });
-</script>
 
-<script type="text/html" id="operationTpl">
-  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
-  <button class="layui-btn" lay-event="stop">停止</button>
-  <button class="layui-btn" lay-event="start">启动</button>
-  <button class="layui-btn" lay-event="restart">重启</button>
-</script>
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            break;
+          default:
+            serverOperator(data, obj.event);
+            break;
+        }
+      });
+    });
+  </script>
+
+  <script type="text/html" id="operationTpl">
+    <a href="javascript:" title="编辑" lay-event="edit">编辑</a>
+    <a href="javascript:" title="停止" lay-event="stop">停止</a>
+    <a href="javascript:" title="启动" lay-event="start">启动</a>
+    <a href="javascript:" title="重启" lay-event="restart">重启</a>
+  </script>
 </body>
 
 </html>

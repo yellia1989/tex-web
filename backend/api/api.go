@@ -185,7 +185,5 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/public/gm/dump_role", gm.DumpRole) // 复制玩家数据
 
     group.GET("/server/list", server.ServerList) // 获取服务器列表
-    group.POST("/server/start", server.ServerStart) // 启动
-    group.POST("/server/stop", server.ServerStop) // 停止
-    group.POST("/server/restart", server.ServerRestart) // 重启
+    group.POST("/server/operator", server.ServerOperator) // 操作服务器
 }
