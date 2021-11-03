@@ -3,13 +3,15 @@ package server
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+
+	dsql "database/sql"
 
 	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
-    dsql "database/sql"
 )
 
 type serverData struct {
@@ -29,6 +31,9 @@ func ServerList(c echo.Context) error {
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
+	app := strings.TrimSpace(ctx.QueryParam("app"))
+	server := strings.TrimSpace(ctx.QueryParam("server"))
+
 	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
@@ -46,6 +51,16 @@ func ServerList(c echo.Context) error {
 	}
 
 	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server"
+	where := ""
+	if app != "" {
+		where += "app = " + app
+	}
+	if server != "" {
+		where += "server = " + server
+	}
+	if where != "" {
+		sql += " WHERE " + where
+	}
 	var total int
 	err = tx.QueryRow("SELECT count(*) as total FROM (" + sql + ") a").Scan(&total)
 	if err != nil {
@@ -67,13 +82,13 @@ func ServerList(c echo.Context) error {
 	logs := make([]serverData, 0)
 	for rows.Next() {
 		var r serverData
-        var profile dsql.NullString
+		var profile dsql.NullString
 		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.SettingStat, &r.CurStat, &profile, &r.TemplateName, &r.Pid); err != nil {
 			return err
 		}
-        if profile.Valid {
-            r.ProfileConfTemplate = profile.String
-        }
+		if profile.Valid {
+			r.ProfileConfTemplate = profile.String
+		}
 		logs = append(logs, r)
 	}
 
@@ -96,7 +111,7 @@ func ServerOperator(c echo.Context) error {
 	division := ctx.FormValue("division")
 	cmd := ctx.FormValue("cmd")
 
-	if app == "" || server == "" || cmd == ""{
+	if app == "" || server == "" || cmd == "" {
 		return ctx.SendError(-1, "参数为空")
 	}
 
@@ -120,5 +135,5 @@ func ServerOperator(c echo.Context) error {
 		return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
 	}
 
-	return ctx.SendResponse("启动中")
+	return ctx.SendResponse("操作成功")
 }
