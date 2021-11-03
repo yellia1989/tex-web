@@ -37,22 +37,25 @@
       cols: [[
         { type: "checkbox", title: "序号", fixed: 'left' },
         { field: "server", title: "服务", width: 90, fixed: 'left' },
-        { field: "zone", title: "分区", width: 90, fixed: 'left' },
-        { field: "endpoint", title: "节点", width: 90 },
-        { field: "reset_type", title: "设置状态", width: 90, align: "center", templet: function (d) {
-          let act = activity.config.activityTypeDefine[d.activity_type];
-          return act ? act.name : '未知类型';
+        { field: "division", title: "分区", width: 90, fixed: 'left' },
+        { field: "node", title: "节点", width: 90 },
+        { field: "setting_stat", title: "设置状态", width: 90, align: "center", templet: function (d) {
+          switch (d.setting_stat) {
+            case 1: return "自动重启";
+            case 0: return "不重启";
+          }
         }},
-        { field: "status", title: "当前状态", width: 150},
+        { field: "cur_stat", title: "当前状态", width: 150, templet: function(d) {
+          switch (d.cur_stat) {
+            case 1: return "运行中";
+          }
+        }},
         { field: "pid", title: "进程ID", width: 90},
         { field: "version", title:"版本", width: 90},
         { field: "release_user", title: "发布人", align: "center"},
         { field: "release_time", title: "发布时间", align: "center"},
         { title: "操作", align: "center", templet: "#operationTpl", width: 100, fixed: 'right' }
-      ]],
-      data: {
-        "server": "conn"
-      }
+      ]]
     });
 
     function stop(data) {
