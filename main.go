@@ -8,7 +8,7 @@ import (
     "github.com/yellia1989/tex-web/backend/api"
     "github.com/yellia1989/tex-web/backend/api/stat"
     "github.com/yellia1989/tex-web/backend/cfg"
-    "github.com/yellia1989/tex-web/backend/cron"
+    //"github.com/yellia1989/tex-web/backend/cron"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/model"
     mlog "github.com/yellia1989/tex-web/backend/log"
@@ -149,7 +149,7 @@ func main() {
     stat.InitCondition()
 
     // Start Cron
-    cron.Start()
+    //cron.Start()
 
     // Start server
     err := e.Start(cfg.Listen)
@@ -160,7 +160,7 @@ func main() {
     }
 
     // Stop Cron
-    cron.Stop()
+    //cron.Stop()
 
     log.FlushLogger()
 }

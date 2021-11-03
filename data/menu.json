@@ -783,6 +783,7 @@
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": false,
+        "children": null
       }
     ]
   }

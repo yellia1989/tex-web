@@ -9,6 +9,7 @@ import (
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+    dsql "database/sql"
 )
 
 type serverData struct {
@@ -66,9 +67,13 @@ func ServerList(c echo.Context) error {
 	logs := make([]serverData, 0)
 	for rows.Next() {
 		var r serverData
-		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.SettingStat, &r.CurStat, &r.ProfileConfTemplate, &r.TemplateName, &r.Pid); err != nil {
+        var profile dsql.NullString
+		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.SettingStat, &r.CurStat, &profile, &r.TemplateName, &r.Pid); err != nil {
 			return err
 		}
+        if profile.Valid {
+            r.ProfileConfTemplate = profile.String
+        }
 		logs = append(logs, r)
 	}
 
