@@ -11,9 +11,12 @@
 </head>
 
 <body>
-<div class="layui-progress layui-progress-big" lay-filter="p" lay-showPercent="true">
-  <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
-</div>
+  <div id="show">
+    <div class="layui-progress layui-progress-big" lay-filter="p" lay-showPercent="true">
+      <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+    </div>
+
+  </div>
 
   <script src="/lib/layui/layui.js"></script>
   <script>
@@ -25,22 +28,36 @@
       let element = layui.element;
       okLoading.close();
 
-      let val = 0;
+      function createElement(name, value) {
+        return '<li><div class="layui-menu-body-title">' + name + ': ' + value + '</div></li>';
+      }
+      function updateShow(data) {
+        let d = $("#show");
+        let val = '<div class="layui-panel"> <ul class="layui-menu">';
+        val += createElement("状态", data["iStatus"]);
+        val += createElement("创建时间", data["iCreateTime"]);
+        val += '<li class="layui-menu-item-group layui-menu-item-down" lay-options="{type: "group"}"> <div class="layui-menu-body-title"> 子任务列表 </div> <ul>';
+        // 多个子任务
+        let vSubTask = data["vItem"];
+        for (let v of vSubTask) {
+          val += createElement("状态", v["iStatus"]);
+          val += createElement("开始时间", v["iStartTime"]);
+          val += createElement("耗时", v["iEndTime"] - v["iStartTime"]);
+          val += createElement("结果", v["sResult"]);
+          val += createElement("百分比", v["iPercent"]);
+        }
+        val += '</ul></li>';
+
+        val += '</ul></div>';
+
+        d.html(val);
+      }
       function code() {
         okUtils.ajax("/api/server/getTask", "get", { taskNo: parent.taskNo }, false).done(function (response) {
-          let status = 0
-          if (response.data.hasOwnProperty('iStatus')) {
-            status = response.data['iStatus'];
-          }
-          if (status == 2) {
-            element.progress("p", "100%");
-          } else {
-            val += 10;
-            element.progress("p", val + "%");
-            setTimeout(code, 1000);
-          }
+          updateShow(response.data)
+          setTimeout(code, 1000);
         }).fail(function (error) {
-            okLayer.redCrossMsg(error.msg);
+          okLayer.redCrossMsg(error.msg);
         });
       };
       code();

@@ -97,15 +97,11 @@
         }
         okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
           taskNo = response.data;
-          function cb() {
-            serverTable.reload();
-          }
           let param = {
             type: 2,
             title : "任务详情",
             content: "./task-info.html",
             area: ['50%', "50%"],
-            end: cb,
           }
           layer.open(param);
         }).fail(function (error) {
@@ -134,6 +130,12 @@
         });
         return false;
       });
+
+      function update() {
+        serverTable.reload();
+        setTimeout(update, 2000);
+      }
+      setTimeout(update, 2000);
 
     });
   </script>
