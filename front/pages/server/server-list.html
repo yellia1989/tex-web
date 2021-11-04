@@ -40,9 +40,9 @@
   <script src="/lib/layui/layui.js"></script>
   <script>
     var taskNo;
-    layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
+    layui.use(["element", "table", "form", "layer", "okUtils"], function () {
       let table = layui.table;
-      let okLayer = layui.okLayer;
+      let layer = layui.layer;
       let okUtils = layui.okUtils;
       let form = layui.form;
       okLoading.close();
@@ -97,9 +97,19 @@
         }
         okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
           taskNo = response.data;
-          okLayer.open("任务详情", "./task-info.html", "100%", "100%", function () { })
+          function cb() {
+            serverTable.reload();
+          }
+          let param = {
+            type: 2,
+            title : "任务详情",
+            content: "./task-info.html",
+            anim: okLayer.animChoose(),
+            end: cb,
+          }
+          layer.open(param);
         }).fail(function (error) {
-          console.log(error)
+          console.log(error);
         });
       }
 
