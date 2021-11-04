@@ -39,6 +39,7 @@
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
   <script>
+    var taskNo;
     layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
@@ -83,7 +84,7 @@
           { field: "version", title: "版本" },
           { field: "release_user", title: "发布人", align: "center" },
           { field: "release_time", title: "发布时间", align: "center" },
-          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
         ]]
       });
 
@@ -95,7 +96,7 @@
           "cmd": cmd
         }
         okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
-          var taskNo = response.taskNo;
+          taskNo = response.data;
           okLayer.open("任务详情", "./task-info.html", "100%", "100%", function () { })
         }).fail(function (error) {
           console.log(error)

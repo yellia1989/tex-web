@@ -139,7 +139,7 @@ func ServerOperator(c echo.Context) error {
 		return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
 	}
 
-	return ctx.SendResponse("taskNo: " + req.STaskNo)
+	return ctx.SendResponse(req.STaskNo)
 }
 
 func GetTask(c echo.Context) error {
@@ -155,7 +155,10 @@ func GetTask(c echo.Context) error {
 	comm.StringToProxy("tex.mfwpatch.PatchObj", patchPrx)
 
 	taskRsp := &rpc.PatchTaskRsp{}
-	patchPrx.GetTask(taskNo, taskRsp)
+	ret, err := patchPrx.GetTask(taskNo, taskRsp)
+	if ret != 0 || err != nil {
+		return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+	}
 
 	return ctx.SendResponse(taskRsp)
 }

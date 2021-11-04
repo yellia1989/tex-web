@@ -16,9 +16,10 @@
   <script>
     layui.use(["okUtils", "util"], function () {
       let $ = layui.jquery;
+      let okUtils = layui.okUtils;
       okLoading.close();
 
-      okUtils.ajax("/api/server/getTask", "post", { "taskNo": taskNo }, true).done(function (response) {
+      okUtils.ajax("/api/server/getTask", "get", { taskNo : parent.taskNo }, true).done(function (response) {
         $("textarea[name='info']").val(response.data);
       }).fail(function (error) {
         $("textarea[name='info']").val(error.msg);
