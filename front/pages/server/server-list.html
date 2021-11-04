@@ -95,7 +95,8 @@
           "cmd": cmd
         }
         okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
-          okUtils.tableSuccessMsg(response.data);
+          var taskNo = response.taskNo;
+          okLayer.open("任务详情", "./task-info.html", "100%", "100%", function () { })
         }).fail(function (error) {
           console.log(error)
         });
@@ -113,7 +114,7 @@
       });
 
       form.on("submit(search)", function (data) {
-        roleTable.reload({
+        serverTable.reload({
           url: "/api/server/list",
           where: data.field,
           page: {

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>任务详情</title>
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <textarea name="info" class="layui-textarea" rows="30"></textarea>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(["okUtils", "util"], function () {
+      let $ = layui.jquery;
+      okLoading.close();
+
+      okUtils.ajax("/api/server/getTask", "post", { "taskNo": taskNo }, true).done(function (response) {
+        $("textarea[name='info']").val(response.data);
+      }).fail(function (error) {
+        $("textarea[name='info']").val(error.msg);
+      });
+    });
+  </script>
+
+</body>
+
+</html>

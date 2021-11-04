@@ -53,10 +53,14 @@ func ServerList(c echo.Context) error {
 	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server"
 	where := ""
 	if app != "" {
-		where += "app = " + app
+		where += "app = '" + app + "'"
 	}
 	if server != "" {
-		where += "server = " + server
+		if where == "" {
+			where += "server = '" + server + "'"
+		} else {
+			where += " AND server = '" + server + "'"
+		}
 	}
 	if where != "" {
 		sql += " WHERE " + where
@@ -135,5 +139,23 @@ func ServerOperator(c echo.Context) error {
 		return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
 	}
 
-	return ctx.SendResponse("操作成功")
+	return ctx.SendResponse("taskNo: " + req.STaskNo)
+}
+
+func GetTask(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	taskNo := ctx.FormValue("taskNo")
+	if taskNo == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+	comm := cfg.Comm
+	patchPrx := new(rpc.Patch)
+	comm.StringToProxy("tex.mfwpatch.PatchObj", patchPrx)
+
+	taskRsp := &rpc.PatchTaskRsp{}
+	patchPrx.GetTask(taskNo, taskRsp)
+
+	return ctx.SendResponse(taskRsp)
 }

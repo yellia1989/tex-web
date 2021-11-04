@@ -186,4 +186,5 @@ func RegisterHandler(group *echo.Group) {
 
     group.GET("/server/list", server.ServerList) // 获取服务器列表
     group.POST("/server/operator", server.ServerOperator) // 操作服务器
+    group.GET("/server/getTask", server.GetTask) // 获取执行信息
 }
