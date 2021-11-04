@@ -7,39 +7,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>任务详情</title>
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <link rel="stylesheet" href="/lib/layui/css/layui.css">
 </head>
 
 <body>
-  <textarea name="info" class="layui-textarea"></textarea>
+<div class="layui-progress layui-progress-big" lay-filter="p" lay-showPercent="true">
+  <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+</div>
 
   <script src="/lib/layui/layui.js"></script>
   <script>
-    layui.use(["okUtils", "util"], function () {
+    layui.use(["okUtils", "okLayer", "util", "element"], function () {
       let $ = layui.jquery;
       let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
       let util = layui.util;
+      let element = layui.element;
       okLoading.close();
 
-      let now = new Date().getTime();
-      util.countdown(now + 5, now, function (data, serverTime, timer) {
-        okUtils.ajax("/api/server/getTask", "get", { taskNo: parent.taskNo }, true).done(function (response) {
-          let info = "";
-          for (let key in response.data) {
-            if (key == "vItem") {
-              info += key + "{\n";
-              for (let index in response.data[key]) {
-                info += "\t" + index + ": " + response.data[key][index].toString() + "\n";
-              }
-              info += "}\n"
-            } else {
-              info += key + ": " + response.data[key].toString() + "\n";
-            }
+      let val = 0;
+      function code() {
+        okUtils.ajax("/api/server/getTask", "get", { taskNo: parent.taskNo }, false).done(function (response) {
+          let status = 0
+          if (response.data.hasOwnProperty('iStatus')) {
+            status = response.data['iStatus'];
           }
-          $("textarea[name='info']").val(info);
+          if (status == 2) {
+            element.progress("p", "100%");
+          } else {
+            val += 10;
+            element.progress("p", val + "%");
+            setTimeout(code, 1000);
+          }
         }).fail(function (error) {
-          $("textarea[name='info']").val(error.msg);
+            okLayer.redCrossMsg(error.msg);
         });
-      });
+      };
+      code();
 
     });
   </script>
