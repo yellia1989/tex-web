@@ -88,6 +88,11 @@
         ]]
       });
 
+      function update() {
+        serverTable.reload();
+        setTimeout(serverTable.reload(), 2000);
+      }
+
       function serverOperator(data, cmd) {
         let req = {
           "app": data.app,
@@ -101,7 +106,9 @@
             type: 2,
             title : "任务详情",
             content: "./task-info.html",
-            area: ['50%', "50%"],
+            area: ['80%', "80%"],
+            end: update,
+            closeBtn: 2,
           }
           layer.open(param);
         }).fail(function (error) {
@@ -130,12 +137,6 @@
         });
         return false;
       });
-
-      function update() {
-        serverTable.reload();
-        setTimeout(update, 2000);
-      }
-      setTimeout(update, 2000);
 
     });
   </script>
