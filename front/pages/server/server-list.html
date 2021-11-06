@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>服务管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
@@ -67,16 +66,17 @@
             field: "setting_stat", title: "设置状态", align: "center", templet: function (d) {
               switch (d.setting_stat) {
                 case 1: return "自动重启";
-                case 0: return "不重启";
+                case 0: return "<font color='#FF5722'>不重启</font>";
               }
             }
           },
           {
             field: "cur_stat", title: "当前状态", templet: function (d) {
               switch (d.cur_stat) {
-                case 0: return "停止";
-                case 1: return "运行中";
-                case 2: return "启动中";
+                case 0: return "<font color='#FF5722'>停止</font>";
+                case 1: return "<font color='#5FB878'>运行中</font>";
+                case 2: return "<font color='#FFB800'>启动中</font>";
+                default: return "未知状态: " + d.cur_stat;
               }
             }
           },
@@ -125,17 +125,6 @@
         }
       });
 
-      form.on("submit(search)", function (data) {
-        serverTable.reload({
-          url: "/api/server/list",
-          where: data.field,
-          page: {
-            curr: 1,
-          }
-        });
-        return false;
-      });
-
       table.on("toolbar(tableFilter)", function (obj) {
         switch (obj.event) {
           case "batchStop":
@@ -148,6 +137,17 @@
             batchOperator("restart");
             break;
         }
+      });
+
+      form.on("submit(search)", function (data) {
+        serverTable.reload({
+          url: "/api/server/list",
+          where: data.field,
+          page: {
+            curr: 1,
+          }
+        });
+        return false;
       });
 
       function batchOperator(cmd) {
@@ -191,9 +191,9 @@
   </script>
 
 <script type="text/html" id="toolbarTpl">
-    <a href="javescript:" lay-event="batchStop">停止</a>
-    <a href="javescript:" lay-event="batchStart">启动</a>
-    <a href="javescript:" lay-event="batchRestart">重启</a>
+    <span style="cursor:pointer" lay-event="batchStop">停止</span>
+    <span style="cursor:pointer" lay-event="batchStart">启动</span>
+    <span style="cursor:pointer" lay-event="batchRestart">重启</span>
 </script>
 
 </body>
