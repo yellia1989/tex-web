@@ -14,7 +14,7 @@ var mylog *myLogger
 func init() {
     mylog = &myLogger{logger: llog.GetDefaultLogger()}
     mylog.logger.SetLogName("web")
-    //mylog.logger.SetFileRoller("./", 10, 50)
+    mylog.logger.SetFileRoller("./", 10, 50)
 }
 
 type myLogger struct {
