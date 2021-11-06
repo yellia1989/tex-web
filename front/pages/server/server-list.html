@@ -94,11 +94,9 @@
       }
 
       function serverOperator(data, cmd) {
+        let vItem = [{ "sApp": data.app, "sServer": data.server, "sDivision": data.division, "sCommand": cmd }]
         let req = {
-          "app": data.app,
-          "server": data.server,
-          "division": data.division,
-          "cmd": cmd
+          "vItem": JSON.stringify(vItem),
         }
         okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
           taskNo = response.data;
@@ -112,7 +110,7 @@
           }
           layer.open(param);
         }).fail(function (error) {
-          console.log(error);
+          console.log(error.msg);
         });
       }
 
@@ -138,6 +136,50 @@
         return false;
       });
 
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "batchStop":
+            batchOperator("stop");
+            break;
+          case "batchStart":
+            batchOperator("start");
+            break;
+          case "batchRestart":
+            batchOperator("restart");
+            break;
+        }
+      });
+
+      function batchOperator(cmd) {
+        let checkStatus = table.checkStatus("tableId");
+        if (checkStatus.data.length == 0) {
+          layer.msg("未选择有效数据", {offset: "t", anim: 6});
+          return;
+        }
+        let vItem = [];
+        for (let v of checkStatus.data) {
+          vItem.push({"sApp":v.app, "sServer":v.server, "sDivision":v.division, "sCommand":cmd});
+        }
+
+        let req = {
+          "vItem": JSON.stringify(vItem),
+        }
+        okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
+          taskNo = response.data;
+          let param = {
+            type: 2,
+            title : "任务详情",
+            content: "./task-info.html",
+            area: ['80%', "80%"],
+            end: update,
+            closeBtn: 2,
+          }
+          layer.open(param);
+        }).fail(function (error) {
+          console.log(error.msg);
+        });
+      }
+
     });
   </script>
 
@@ -147,6 +189,13 @@
     <a href="javascript:" title="启动" lay-event="start">启动</a>
     <a href="javascript:" title="重启" lay-event="restart">重启</a>
   </script>
+
+<script type="text/html" id="toolbarTpl">
+    <a href="javescript:" lay-event="batchStop">停止</a>
+    <a href="javescript:" lay-event="batchStart">启动</a>
+    <a href="javescript:" lay-event="batchRestart">重启</a>
+</script>
+
 </body>
 
 </html>

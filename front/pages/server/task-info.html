@@ -52,7 +52,7 @@
         let succNum = 0;
         for (let i = 0; i < vSubTask.length; i++) {
           let v = vSubTask[i];
-          if (v["iStatus"] == 3) {
+          if (v["iStatus"] > 2) {
             vFailTask.push(i);
           } else {
             vOtherTask.push(i);
@@ -100,9 +100,13 @@
         element.render('collapse', 'show-menu');
       }
       function code() {
+        if (parent.taskNo == "") {
+          okLayer.redCrossMsg("任务id为空");
+          return;
+        }
         okUtils.ajax("/api/server/getTask", "get", { taskNo: parent.taskNo }, false).done(function (response) {
           updateShow(response.data)
-          if (response.data["iStatus"] == 0) {
+          if (response.data["iStatus"] < 2) {
             setTimeout(code, 1000);
           }
         }).fail(function (error) {

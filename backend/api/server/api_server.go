@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
+    "encoding/json"
 
 	dsql "database/sql"
 
+    "github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/cfg"
@@ -110,25 +111,24 @@ func ServerList(c echo.Context) error {
 func ServerOperator(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	app := ctx.FormValue("app")
-	server := ctx.FormValue("server")
-	division := ctx.FormValue("division")
-	cmd := ctx.FormValue("cmd")
+	sVItem := ctx.FormValue("vItem")
 
-	if app == "" || server == "" || cmd == "" {
+	if sVItem == "" {
 		return ctx.SendError(-1, "参数为空")
 	}
 
-	req := rpc.PatchTaskReq{}
-	req.STaskNo = strconv.FormatInt(time.Now().UnixNano(), 10)
-	reqItem := rpc.PatchTaskItemReq{}
-	reqItem.STaskNo = req.STaskNo
-	reqItem.SApp = app
-	reqItem.SServer = server
-	reqItem.SDivision = division
-	reqItem.SNodeName = "192.168.0.16"
-	reqItem.SCommand = cmd
-	req.VItem = append(req.VItem, reqItem)
+    req := rpc.PatchTaskReq{}
+	req.STaskNo = uuid.NewString();
+    err := json.Unmarshal([]byte(sVItem), &req.VItem)
+    if err != nil {
+        return err
+    }
+    for i := 0; i < len(req.VItem); i++ {
+        v := &req.VItem[i]
+        v.STaskNo = uuid.NewString()
+        v.SNodeName = "192.168.0.16"
+    }
+    fmt.Printf("%v", req)
 
 	comm := cfg.Comm
 	patchPrx := new(rpc.Patch)
@@ -136,7 +136,11 @@ func ServerOperator(c echo.Context) error {
 
 	ret, err := patchPrx.AddTask(req)
 	if ret != 0 || err != nil {
-		return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+        if err != nil {
+            return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+        } else {
+            return fmt.Errorf("opt failed, ret:%d", ret)
+        }
 	}
 
 	return ctx.SendResponse(req.STaskNo)
@@ -154,10 +158,14 @@ func GetTask(c echo.Context) error {
 	patchPrx := new(rpc.Patch)
 	comm.StringToProxy("tex.mfwpatch.PatchObj", patchPrx)
 
-	taskRsp := &rpc.PatchTaskRsp{}
+	taskRsp := rpc.NewPatchTaskRsp()
 	ret, err := patchPrx.GetTask(taskNo, taskRsp)
 	if ret != 0 || err != nil {
-		return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+        if err != nil {
+            return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+        } else {
+            return fmt.Errorf("opt failed, ret:%d", ret)
+        }
 	}
 
 	return ctx.SendResponse(taskRsp)
