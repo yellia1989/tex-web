@@ -66,16 +66,17 @@
             field: "setting_stat", title: "设置状态", align: "center", templet: function (d) {
               switch (d.setting_stat) {
                 case 1: return "自动重启";
-                case 0: return "不重启";
+                case 0: return "<font color='#FF5722'>不重启</font>";
               }
             }
           },
           {
             field: "cur_stat", title: "当前状态", templet: function (d) {
               switch (d.cur_stat) {
-                case 0: return "停止";
-                case 1: return "运行中";
-                case 2: return "启动中";
+                case 0: return "<font color='#FF5722'>停止</font>";
+                case 1: return "<font color='#5FB878'>运行中</font>";
+                case 2: return "<font color='#FFB800'>启动中</font>";
+                default: return "未知状态: " + d.cur_stat;
               }
             }
           },
