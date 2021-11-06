@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>服务管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
@@ -125,17 +124,6 @@
         }
       });
 
-      form.on("submit(search)", function (data) {
-        serverTable.reload({
-          url: "/api/server/list",
-          where: data.field,
-          page: {
-            curr: 1,
-          }
-        });
-        return false;
-      });
-
       table.on("toolbar(tableFilter)", function (obj) {
         switch (obj.event) {
           case "batchStop":
@@ -148,6 +136,17 @@
             batchOperator("restart");
             break;
         }
+      });
+
+      form.on("submit(search)", function (data) {
+        serverTable.reload({
+          url: "/api/server/list",
+          where: data.field,
+          page: {
+            curr: 1,
+          }
+        });
+        return false;
       });
 
       function batchOperator(cmd) {
@@ -191,9 +190,9 @@
   </script>
 
 <script type="text/html" id="toolbarTpl">
-    <a href="javescript:" lay-event="batchStop">停止</a>
-    <a href="javescript:" lay-event="batchStart">启动</a>
-    <a href="javescript:" lay-event="batchRestart">重启</a>
+    <span style="cursor:pointer" lay-event="batchStop">停止</span>
+    <span style="cursor:pointer" lay-event="batchStart">启动</span>
+    <span style="cursor:pointer" lay-event="batchRestart">重启</span>
 </script>
 
 </body>
