@@ -143,8 +143,8 @@ func TemplateDatail(c echo.Context) error {
 	patchPrx := new(rpc.Patch)
 	comm.StringToProxy("tex.mfwpatch.PatchObj", patchPrx)
 
-	var content *string
-	ret, err := patchPrx.GetTemplate(name, content)
+    content := ""
+	ret, err := patchPrx.GetTemplate(name, &content)
 	if ret != 0 || err != nil {
 		if err != nil {
 			return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())

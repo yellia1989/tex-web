@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>模板管理</title>
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <link rel="stylesheet" href="/css/oksub.css">
 </head>
 
 <body>
@@ -41,6 +42,10 @@
     var editData;
     layui.use(["element", "table", "form", "layer", "okLayer", "okUtils"], function () {
       let table = layui.table;
+      let form = layui.form;
+      let layer = layui.layer;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
       okLoading.close();
 
       let curTable = table.render({
@@ -54,7 +59,6 @@
         toolbar: "#toolbarTpl",
         defaultToolbar: ['filter'],
         cols: [[
-          { type: "checkbox", title: "序号", fixed: 'left' },
           { field: "id", title: "模板", fixed: 'left' },
           { field: "parent", title: "父模板名", fixed: 'left' },
           { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
@@ -112,7 +116,14 @@
 
       function show(data) {
         okUtils.ajax("/api/server/template_detail", "get", { name: data.id }, true).done(function (response) {
-          layer.msg(response.data);
+          let param = {
+            title: "模板详情",
+            type: 1,
+            anim: okLayer.animChoose(),
+            area: ["90%", "90%"],
+            content: "<pre style='width: 100%; white-space: pre-wrap overflow-y:hidden'><xmp>"+ response.data + " </xmp></pre>"
+          };
+          layer.open(param);
         }).fail(function (error) {
           console.log(error)
         });

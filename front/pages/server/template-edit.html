@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>编辑模板</title>
+  <link rel="stylesheet" href="/css/oksub.css">
 </head>
 
 <body>
@@ -14,7 +15,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">模板名</label>
         <div class="layui-input-block">
-          <input type="text" id="name" class="layui-input" readonly="true">
+          <input type="text" id="name" class="layui-input" readonly="true" disabled="true">
         </div>
       </div>
 
@@ -29,7 +30,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">内容</label>
         <div class="layui-input-block">
-          <input type="text" id="content" placeholder="请输入内容" autocomplete="off" class="layui-input" lay-verType="tips">
+          <textarea id="content" placeholder="请输入内容" class="layui-textarea" rows="20"></textarea>
         </div>
       </div>
 
