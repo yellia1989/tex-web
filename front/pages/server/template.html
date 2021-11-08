@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模板管理</title>
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <div class="layui-inline">
+
+          <div class="layui-input-inline">
+            <input class="layui-input" placeholder="请输入模板" autocomplete="off" name="name">
+          </div>
+          <div class="layui-input-inline">
+            <input class="layui-input" placeholder="请输入父模板名" autocomplete="off" name="parent">
+          </div>
+
+          <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="search">
+              <i class="layui-icon layui-icon-search"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </form>
+
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    var editData;
+    layui.use(["element", "table", "form", "layer", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      okLoading.close();
+
+      let curTable = table.render({
+        elem: "#tableId",
+        url: "/api/server/template_list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        defaultToolbar: ['filter'],
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "id", title: "模板", fixed: 'left' },
+          { field: "parent", title: "父模板名", fixed: 'left' },
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
+        ]],
+        parseData: function (res) {
+          for (i = 0; res.data && i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].name;
+          }
+          return res;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "show":
+            show(data);
+            break;
+          case "edit":
+            edit(data);
+            break;
+          case "del":
+            del(data);
+            break;
+        }
+      });
+
+      form.on("submit(search)", function (data) {
+        curTable.reload({
+          url: "/api/server/template_list",
+          where: data.field,
+          page: {
+            curr: 1,
+          }
+        });
+        return false;
+      });
+
+      function edit(data) {
+        editData = data;
+        okLayer.open("编辑模板", "template-edit.html", "90%", "90%", null, function () {
+          curTable.reload();
+        })
+      }
+
+      function del(data) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/server/template_del", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.msg);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+
+      function show(data) {
+        okUtils.ajax("/api/server/template_detail", "get", { name: data.id }, true).done(function (response) {
+          layer.msg(response.data);
+        }).fail(function (error) {
+          console.log(error)
+        });
+      }
+
+    });
+  </script>
+
+  <script type="text/html" id="operationTpl">
+    <a href="javascript:" title="查看" lay-event="show">查看</a>
+    <a href="javascript:" title="编辑" lay-event="edit">编辑</a>
+    <a href="javascript:" title="删除" lay-event="del">删除</a>
+  </script>
+
+</body>
+
+</html>

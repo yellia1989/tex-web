@@ -1,14 +1,14 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
-    "encoding/json"
 
 	dsql "database/sql"
 
-    "github.com/google/uuid"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/cfg"
@@ -117,18 +117,18 @@ func ServerOperator(c echo.Context) error {
 		return ctx.SendError(-1, "参数为空")
 	}
 
-    req := rpc.PatchTaskReq{}
-	req.STaskNo = uuid.NewString();
-    err := json.Unmarshal([]byte(sVItem), &req.VItem)
-    if err != nil {
-        return err
-    }
-    for i := 0; i < len(req.VItem); i++ {
-        v := &req.VItem[i]
-        v.STaskNo = uuid.NewString()
-        v.SNodeName = "192.168.0.16"
-    }
-    fmt.Printf("%v", req)
+	req := rpc.PatchTaskReq{}
+	req.STaskNo = uuid.NewString()
+	err := json.Unmarshal([]byte(sVItem), &req.VItem)
+	if err != nil {
+		return err
+	}
+	for i := 0; i < len(req.VItem); i++ {
+		v := &req.VItem[i]
+		v.STaskNo = uuid.NewString()
+		v.SNodeName = "192.168.0.16"
+	}
+	fmt.Printf("%v", req)
 
 	comm := cfg.Comm
 	patchPrx := new(rpc.Patch)
@@ -136,11 +136,11 @@ func ServerOperator(c echo.Context) error {
 
 	ret, err := patchPrx.AddTask(req)
 	if ret != 0 || err != nil {
-        if err != nil {
-            return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
-        } else {
-            return fmt.Errorf("opt failed, ret:%d", ret)
-        }
+		if err != nil {
+			return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+		} else {
+			return fmt.Errorf("opt failed, ret:%d", ret)
+		}
 	}
 
 	return ctx.SendResponse(req.STaskNo)
@@ -161,11 +161,11 @@ func GetTask(c echo.Context) error {
 	taskRsp := rpc.NewPatchTaskRsp()
 	ret, err := patchPrx.GetTask(taskNo, taskRsp)
 	if ret != 0 || err != nil {
-        if err != nil {
-            return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
-        } else {
-            return fmt.Errorf("opt failed, ret:%d", ret)
-        }
+		if err != nil {
+			return fmt.Errorf("opt failed, ret:%d, err:%s", ret, err.Error())
+		} else {
+			return fmt.Errorf("opt failed, ret:%d", ret)
+		}
 	}
 
 	return ctx.SendResponse(taskRsp)

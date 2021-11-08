@@ -88,11 +88,6 @@
         ]]
       });
 
-      function update() {
-        serverTable.reload();
-        setTimeout(serverTable.reload(), 2000);
-      }
-
       function serverOperator(data, cmd) {
         let vItem = [{ "sApp": data.app, "sServer": data.server, "sDivision": data.division, "sCommand": cmd }]
         let req = {
@@ -102,10 +97,9 @@
           taskNo = response.data;
           let param = {
             type: 2,
-            title : "任务详情",
+            title: "任务详情",
             content: "./task-info.html",
             area: ['80%', "80%"],
-            end: update,
             closeBtn: 2,
           }
           layer.open(param);
@@ -140,6 +134,7 @@
       });
 
       form.on("submit(search)", function (data) {
+        console.log(data); // TODO: del
         serverTable.reload({
           url: "/api/server/list",
           where: data.field,
@@ -153,12 +148,12 @@
       function batchOperator(cmd) {
         let checkStatus = table.checkStatus("tableId");
         if (checkStatus.data.length == 0) {
-          layer.msg("未选择有效数据", {offset: "t", anim: 6});
+          layer.msg("未选择有效数据", { offset: "t", anim: 6 });
           return;
         }
         let vItem = [];
         for (let v of checkStatus.data) {
-          vItem.push({"sApp":v.app, "sServer":v.server, "sDivision":v.division, "sCommand":cmd});
+          vItem.push({ "sApp": v.app, "sServer": v.server, "sDivision": v.division, "sCommand": cmd });
         }
 
         let req = {
@@ -168,10 +163,9 @@
           taskNo = response.data;
           let param = {
             type: 2,
-            title : "任务详情",
+            title: "任务详情",
             content: "./task-info.html",
             area: ['80%', "80%"],
-            end: update,
             closeBtn: 2,
           }
           layer.open(param);
@@ -179,6 +173,13 @@
           console.log(error.msg);
         });
       }
+
+      // 定时刷新
+      function update() {
+        serverTable.reload();
+        setTimeout(update, 5000);
+      }
+      update();
 
     });
   </script>
@@ -190,11 +191,11 @@
     <a href="javascript:" title="重启" lay-event="restart">重启</a>
   </script>
 
-<script type="text/html" id="toolbarTpl">
+  <script type="text/html" id="toolbarTpl">
     <span style="cursor:pointer" lay-event="batchStop">停止</span>
     <span style="cursor:pointer" lay-event="batchStart">启动</span>
     <span style="cursor:pointer" lay-event="batchRestart">重启</span>
-</script>
+  </script>
 
 </body>
 
