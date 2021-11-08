@@ -50,5 +50,7 @@ module rpc
         int addTask(PatchTaskReq stTaskReq);
         int getTask(string sTaskNo, out PatchTaskRsp stTaskRsp);
         int cancelTask(string sTaskNo);
+        
+        int getTemplate(string sTemplateName, out string sContent);
     };
 };
