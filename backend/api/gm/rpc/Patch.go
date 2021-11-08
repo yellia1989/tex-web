@@ -1001,12 +1001,45 @@ func (s *Patch) CancelTask(sTaskNo string) (int32, error) {
 	_ = length
 	return ret, nil
 }
+func (s *Patch) GetTemplate(sTemplateName string, sContent *string) (int32, error) {
+	p := codec.NewPacker()
+	var ret int32
+	var err error
+	var has bool
+	var ty uint32
+	var length uint32
+	if true || sTemplateName != "" {
+		err = p.WriteString(1, sTemplateName)
+		if err != nil {
+			return ret, err
+		}
+	}
+	var rsp *protocol.ResponsePacket
+	err = s.proxy.Invoke("getTemplate", p.ToBytes(), &rsp)
+	if err != nil {
+		return ret, err
+	}
+	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
+	err = up.ReadInt32(&ret, 0, true)
+	if err != nil {
+		return ret, err
+	}
+	err = up.ReadString(&(*sContent), 2, true)
+	if err != nil {
+		return ret, err
+	}
+	_ = has
+	_ = ty
+	_ = length
+	return ret, nil
+}
 
 type _PatchImpl interface {
 	DownloadPatch(ctx context.Context, sFilePath string, iPos uint64, sBuff *[]byte, bEnd *bool) (int32, error)
 	AddTask(ctx context.Context, stTaskReq PatchTaskReq) (int32, error)
 	GetTask(ctx context.Context, sTaskNo string, stTaskRsp *PatchTaskRsp) (int32, error)
 	CancelTask(ctx context.Context, sTaskNo string) (int32, error)
+	GetTemplate(ctx context.Context, sTemplateName string, sContent *string) (int32, error)
 }
 
 func _PatchDownloadPatchImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
@@ -1143,6 +1176,40 @@ func _PatchCancelTaskImpl(ctx context.Context, serviceImpl interface{}, up *code
 	_ = has
 	return nil
 }
+func _PatchGetTemplateImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+	var err error
+	var length uint32
+	var ty uint32
+	var has bool
+	impl := serviceImpl.(_PatchImpl)
+	var p1 string
+	err = up.ReadString(&p1, 1, true)
+	if err != nil {
+		return err
+	}
+	var p2 string
+	var ret int32
+	ret, err = impl.GetTemplate(ctx, p1, &p2)
+	if err != nil {
+		return err
+	}
+	if true || ret != 0 {
+		err = p.WriteInt32(0, ret)
+		if err != nil {
+			return err
+		}
+	}
+	if true || p2 != "" {
+		err = p.WriteString(2, p2)
+		if err != nil {
+			return err
+		}
+	}
+	_ = length
+	_ = ty
+	_ = has
+	return nil
+}
 
 func (s *Patch) Dispatch(ctx context.Context, serviceImpl interface{}, req *protocol.RequestPacket) {
 	current := net.ContextGetCurrent(ctx)
@@ -1175,6 +1242,12 @@ func (s *Patch) Dispatch(ctx context.Context, serviceImpl interface{}, req *prot
 		texret = protocol.SDPSERVERSUCCESS
 	case "cancelTask":
 		err = _PatchCancelTaskImpl(ctx, serviceImpl, up, p)
+		if err != nil {
+			break
+		}
+		texret = protocol.SDPSERVERSUCCESS
+	case "getTemplate":
+		err = _PatchGetTemplateImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
