@@ -163,7 +163,7 @@ func TemplateUpdate(c echo.Context) error {
 	parent := ctx.FormValue("parent")
 	content := ctx.FormValue("content")
 
-	if name == "" || parent == "" || content == "" {
+	if name == "" || parent == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
@@ -187,4 +187,38 @@ func TemplateUpdate(c echo.Context) error {
 	}
 
 	return ctx.SendResponse("更新模板成功")
+}
+
+func TemplateAdd(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	name := ctx.FormValue("name")
+	parent := ctx.FormValue("parent")
+	content := ctx.FormValue("content")
+
+	if name == "" || parent == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+	db := cfg.GameGlobalDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	_, err := db.Exec("USE " + cfg.GameDbPrefix + "db_tex")
+	if err != nil {
+		return err
+	}
+
+	sql := "INSERT INTO t_template (name, parent, content) VALUES"
+	sql += "(" + name + "," + parent + "," + content + ");"
+
+	c.Logger().Debug(sql)
+
+	_, err = db.Exec(sql)
+	if err != nil {
+		return err
+	}
+
+	return ctx.SendResponse("添加模板成功")
 }

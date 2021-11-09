@@ -191,4 +191,5 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/server/template_list", server.TemplateList) // 获取模板列表
     group.GET("/server/template_detail", server.TemplateDatail) // 获取模板详情
     group.POST("/server/template_update", server.TemplateUpdate) // 编辑模板
+    group.POST("/server/template_add", server.TemplateAdd) // 增加模板
 }

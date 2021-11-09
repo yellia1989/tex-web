@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>编辑模板</title>
+  <title>增加模板</title>
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
 
@@ -15,7 +15,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">模板名</label>
         <div class="layui-input-block">
-          <input type="text" id="name" class="layui-input" readonly="true" disabled="true">
+          <input type="text" id="name" class="layui-input" disabled="true">
         </div>
       </div>
 
@@ -36,7 +36,7 @@
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="update">更新</button>
+          <button class="layui-btn" lay-submit lay-filter="add">添加</button>
         </div>
       </div>
 
@@ -48,7 +48,6 @@
   <script>
     layui.use(['form', 'element'], function () {
       let form = layui.form;
-      let $ = layui.jquery;
 
       let parentSelect = xmSelect.render({
         el: '#parentSelect',
@@ -73,16 +72,9 @@
         }
       });
 
-      const data = parent.editData;
-      $('#name').val(data.name);
-      $('#content').val(data.content);
-      parentSelect.update({
-        initValue: data.parent
-      });
-
-      form.on('submit(update)', function (data) {
+      form.on('submit(add)', function (data) {
         console.log(data);
-        okUtils.ajax("/api/server/template_update", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/server/template_add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
