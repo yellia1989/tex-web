@@ -117,10 +117,10 @@
 
       function del(data) {
         okLayer.confirm("确定要删除吗？", function () {
-            if (data.id == "default") {
-              okLayer.redCrossMsg("不能删除default");
-              return;
-            }
+          if (data.id == "default") {
+            okLayer.redCrossMsg("不能删除default");
+            return;
+          }
           okUtils.ajax("/api/server/template_del", "post", { idsStr: data.id }, true).done(function (response) {
             okUtils.tableSuccessMsg(response.data);
           }).fail(function (error) {
@@ -136,7 +136,7 @@
             type: 1,
             anim: okLayer.animChoose(),
             area: ["90%", "90%"],
-            content: "<pre style='width: 100%; white-space: pre-wrap overflow-y:hidden'><xmp>"+ response.data + " </xmp></pre>"
+            content: "<pre style='width: 100%; white-space: pre-wrap overflow-y:hidden'><xmp>" + response.data + " </xmp></pre>"
           };
           layer.open(param);
         }).fail(function (error) {

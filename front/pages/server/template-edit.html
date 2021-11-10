@@ -56,7 +56,7 @@
       let keys = [];
       for (let key of parent.allTemplate) {
         if (key == data.name) continue;
-        keys.push({name: key, value: key});
+        keys.push({ name: key, value: key });
       }
 
       let parentSelect = xmSelect.render({
@@ -82,7 +82,7 @@
       $('#content').val(data.content);
       parentSelect.setValue([data.parent]);
       if (data.name == "default") {
-        parentSelect.update({disabled: true});
+        parentSelect.update({ disabled: true });
       }
 
       form.on('submit(update)', function (data) {

@@ -109,12 +109,12 @@ func TemplateDel(c echo.Context) error {
 	if len(ids) == 0 {
 		return ctx.SendError(-1, "模板不存在")
 	}
-    vId := strings.Split(ids, ",")
-             for _, id := range vId {
-                 if (id == "default") {
-                    return ctx.SendError(-1, "不能删除default")
-                 }
-             }
+	vId := strings.Split(ids, ",")
+	for _, id := range vId {
+		if id == "default" {
+			return ctx.SendError(-1, "不能删除default")
+		}
+	}
 
 	db := cfg.GameGlobalDb
 	if db == nil {
@@ -149,7 +149,7 @@ func TemplateDatail(c echo.Context) error {
 	patchPrx := new(rpc.Patch)
 	comm.StringToProxy("tex.mfwpatch.PatchObj", patchPrx)
 
-    content := ""
+	content := ""
 	ret, err := patchPrx.GetTemplate(name, &content)
 	if ret != 0 || err != nil {
 		if err != nil {
@@ -172,18 +172,18 @@ func TemplateUpdate(c echo.Context) error {
 	if name == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
-    if name == "default"{
-        if parent != "" {
-            return ctx.SendError(-1, "default不能拥有父模板")
-        }
-        if content == "" {
-            return ctx.SendError(-1, "default不能为空")
-        }
-    } else {
-        if parent == "" {
-            return ctx.SendError(-1, "必须选择父模板")
-        }
-    }
+	if name == "default" {
+		if parent != "" {
+			return ctx.SendError(-1, "default不能拥有父模板")
+		}
+		if content == "" {
+			return ctx.SendError(-1, "default不能为空")
+		}
+	} else {
+		if parent == "" {
+			return ctx.SendError(-1, "必须选择父模板")
+		}
+	}
 
 	db := cfg.GameGlobalDb
 	if db == nil {
