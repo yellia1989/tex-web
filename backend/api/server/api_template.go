@@ -102,13 +102,19 @@ func TemplateList(c echo.Context) error {
 	return ctx.SendArray(logs, total)
 }
 
-func DelTemplate(c echo.Context) error {
+func TemplateDel(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	ids := ctx.FormValue("idsStr")
 
 	if len(ids) == 0 {
 		return ctx.SendError(-1, "模板不存在")
 	}
+    vId := strings.Split(ids, ",")
+             for _, id := range vId {
+                 if (id == "default") {
+                    return ctx.SendError(-1, "不能删除default")
+                 }
+             }
 
 	db := cfg.GameGlobalDb
 	if db == nil {
@@ -120,7 +126,7 @@ func DelTemplate(c echo.Context) error {
 		return err
 	}
 
-	sql := "DELETE FROM t_template WHERE name IN" + ids
+	sql := "DELETE FROM t_template WHERE name IN (" + ids + ")"
 	c.Logger().Debug(sql)
 
 	_, err = db.Exec(sql)
@@ -163,9 +169,21 @@ func TemplateUpdate(c echo.Context) error {
 	parent := ctx.FormValue("parent")
 	content := ctx.FormValue("content")
 
-	if name == "" || parent == "" {
+	if name == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
+    if name == "default"{
+        if parent != "" {
+            return ctx.SendError(-1, "default不能拥有父模板")
+        }
+        if content == "" {
+            return ctx.SendError(-1, "default不能为空")
+        }
+    } else {
+        if parent == "" {
+            return ctx.SendError(-1, "必须选择父模板")
+        }
+    }
 
 	db := cfg.GameGlobalDb
 	if db == nil {
@@ -177,8 +195,8 @@ func TemplateUpdate(c echo.Context) error {
 		return err
 	}
 
-	sql := "UPDATE t_template SET parent = " + parent + ", content = " + content
-	sql += "WHERE name = " + name
+	sql := "UPDATE t_template SET parent = '" + parent + "', content = '" + content + "'"
+	sql += "WHERE name = '" + name + "'"
 	c.Logger().Debug(sql)
 
 	_, err = db.Exec(sql)
@@ -210,8 +228,8 @@ func TemplateAdd(c echo.Context) error {
 		return err
 	}
 
-	sql := "INSERT INTO t_template (name, parent, content) VALUES"
-	sql += "(" + name + "," + parent + "," + content + ");"
+	sql := "INSERT IGNORE INTO t_template (name, parent, content) VALUES"
+	sql += "('" + name + "','" + parent + "','" + content + "');"
 
 	c.Logger().Debug(sql)
 

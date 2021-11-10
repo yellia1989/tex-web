@@ -20,10 +20,9 @@
       </div>
 
       <div class="layui-form-item">
-        <div class="layui-inline">
-          <div class="layui-input-inline" style="width:250px">
-            <div id="parentSelect"></div>
-          </div>
+        <label class="layui-form-label">父模板</label>
+        <div class="layui-input-inline" style="width:250px">
+          <div id="parentSelect"></div>
         </div>
       </div>
 
@@ -46,24 +45,30 @@
   <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
-    layui.use(['form', 'element'], function () {
+    layui.use(['form', 'element', 'okUtils', 'okLayer'], function () {
       let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
       let $ = layui.jquery;
+
+      const data = parent.editData;
+
+      let keys = [];
+      for (let key of parent.allTemplate) {
+        if (key == data.name) continue;
+        keys.push({name: key, value: key});
+      }
 
       let parentSelect = xmSelect.render({
         el: '#parentSelect',
         name: 'parentName',
-        data: parent.allTemplate.keys(),
-        tips: '父模板',
+        data: keys,
         filterable: true,
+        tips: '',
         radio: true,
         model: {
           label: {
-            type: 'block',
-            block: {
-              //是否显示删除图标
-              showIcon: true,
-            }
+            type: 'text',
           }
         },
         autoRow: true,
@@ -73,16 +78,20 @@
         }
       });
 
-      const data = parent.editData;
       $('#name').val(data.name);
       $('#content').val(data.content);
-      parentSelect.update({
-        initValue: data.parent
-      });
+      parentSelect.setValue([data.parent]);
+      if (data.name == "default") {
+        parentSelect.update({disabled: true});
+      }
 
       form.on('submit(update)', function (data) {
-        console.log(data);
-        okUtils.ajax("/api/server/template_update", "post", data.field, true).done(function (response) {
+        let req = {
+          'name': $('#name').val(),
+          'parent': parentSelect.getValue()[0]['value'],
+          'content': $('#content').val(),
+        }
+        okUtils.ajax("/api/server/template_update", "post", req, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });

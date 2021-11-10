@@ -134,7 +134,6 @@
       });
 
       form.on("submit(search)", function (data) {
-        console.log(data); // TODO: del
         serverTable.reload({
           url: "/api/server/list",
           where: data.field,

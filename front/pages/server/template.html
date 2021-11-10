@@ -65,6 +65,7 @@
           { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
         ]],
         parseData: function (res) {
+          allTemplate.clear();
           for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].name;
             allTemplate.add(res.data[i].name);
@@ -102,7 +103,6 @@
       table.on("toolbar(tableFilter)", function (obj) {
         switch (obj.event) {
           case "add":
-            console.log(obj);
             add();
             break;
         }
@@ -117,8 +117,12 @@
 
       function del(data) {
         okLayer.confirm("确定要删除吗？", function () {
-          okUtils.ajax("/api/server/template_del", "post", { idsStr: id }, true).done(function (response) {
-            okUtils.tableSuccessMsg(response.msg);
+            if (data.id == "default") {
+              okLayer.redCrossMsg("不能删除default");
+              return;
+            }
+          okUtils.ajax("/api/server/template_del", "post", { idsStr: data.id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
           }).fail(function (error) {
             console.log(error)
           });
@@ -156,7 +160,9 @@
   </script>
 
   <script type="text/html" id="toolbarTpl">
-    <span style="cursor:pointer" lay-event="add">添加</span>
+    <div class="layui-btn-container">
+      <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    </div>
   </script>
 
 </body>
