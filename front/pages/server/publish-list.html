@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>服务管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+      var editServer
+      var selectNode
+    layui.use(["element", "table", "form", "layer", "okUtils","upload"], function () {
+      let table = layui.table;
+      let layer = layui.layer;
+      let okUtils = layui.okUtils;
+      let form = layui.form;
+      let upload = layui.upload;
+      okLoading.close();
+      editServer = parent.editServer;
+
+      let serverTable = table.render({
+        elem: "#tableId",
+        url: "/api/server/list",
+        where: {"app":editServer.app,"server":editServer.server},
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        defaultToolbar: ['filter'],
+        cols: [[
+          { type: "checkbox", title: "序号", fixed: 'left' },
+          { field: "division", title: "分区", fixed: 'left' },
+          { field: "node", title: "节点" },
+          {
+            field: "setting_stat", title: "设置状态", align: "center", templet: function (d) {
+              switch (d.setting_stat) {
+                case 1: return "自动重启";
+                case 0: return "<font color='#FF5722'>不重启</font>";
+              }
+            }
+          },
+          {
+            field: "cur_stat", title: "当前状态", templet: function (d) {
+              switch (d.cur_stat) {
+                case 0: return "<font color='#FF5722'>停止</font>";
+                case 1: return "<font color='#5FB878'>运行中</font>";
+                case 2: return "<font color='#FFB800'>启动中</font>";
+                default: return "未知状态: " + d.cur_stat;
+              }
+            }
+          },
+          { field: "pid", title: "进程ID" },
+          { field: "version", title: "版本" },
+          { field: "release_user", title: "发布人", align: "center" },
+          { field: "release_time", title: "发布时间", align: "center" },
+        ]]
+      });
+
+        upload.render({ //允许上传的文件后缀
+            elem: '#uploadPatch'
+            ,url: '/api/server/uploadPatch' //此处配置你自己的上传接口即可
+            ,data: {"server":editServer.server}
+            ,accept: 'file' //普通文件
+            ,exts: 'tar.gz' //只允许上传压缩文件
+            ,done: function(res){
+                if (res.code === 0) {
+                    layer.msg(res.data);
+                } else {
+                    layer.msg(res.msg);
+                }
+            }
+        });
+
+        function openDetail() {
+            let checkStatus = table.checkStatus("tableId");
+            if (checkStatus.data.length === 0) {
+                layer.msg("未选择有效数据", {offset: "t", anim: 6});
+                return;
+            }
+
+            selectNode = checkStatus.data
+
+            let param = {
+                type: 2,
+                title : "发布管理",
+                content: "./publish-detail.html",
+                area: ['90%', "90%"],
+                end: function () {
+
+                },
+                closeBtn: 2,
+            }
+            layer.open(param);
+        }
+
+        function openManage() {
+            let param = {
+                type: 2,
+                title : "发布包管理",
+                content: "./patch-list.html",
+                area: ['90%', "90%"],
+                end: function () {
+
+                },
+                closeBtn: 2,
+            }
+            layer.open(param);
+        }
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "manage":
+            openManage();
+            break;
+          case "publish":
+            openDetail();
+            break;
+          default:
+            break;
+        }
+      });
+
+    });
+  </script>
+
+<script type="text/html" id="toolbarTpl">
+    <button type="button" class="layui-btn layui-btn-normal" lay-event="upload" id="uploadPatch">上传发布包</button>
+    <button type="button" class="layui-btn layui-btn-normal" lay-event="publish">发布选中节点</button>
+    <button type="button" class="layui-btn layui-btn-primary" lay-event="manage">管理发布包</button>
+</script>
+
+</body>
+
+</html>

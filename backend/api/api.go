@@ -187,4 +187,8 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/server/list", server.ServerList) // 获取服务器列表
     group.POST("/server/operator", server.ServerOperator) // 操作服务器
     group.GET("/server/getTask", server.GetTask) // 获取执行信息
+    group.POST("/server/uploadPatch", server.UploadPatch) // 上传发布包
+    group.GET("/server/downloadPatch", server.DownloadPatch) // 下载发布包
+    group.GET("/server/deletePatch", server.DeletePatch) // 删除发布包
+    group.GET("/server/patchList", server.PatchList) // 发布包列表
 }
