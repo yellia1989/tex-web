@@ -34,7 +34,7 @@
       }
       function formatDate(time) {
         let d = new Date(time * 1000);
-        return '' + d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        return '' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
       }
       function errText(v) {
         return '<span style="color: #FF5722; font-weight: bold">' + v + '</span>';
@@ -61,7 +61,7 @@
             ++succNum;
           }
         }
-        val += createElement("失败/成功/总数", "" + errText(vFailTask.length) + '/' + succNum + '/' + vSubTask.length , "layui-show");
+        val += createElement("失败/成功/总数", "" + errText(vFailTask.length) + '/' + succNum + '/' + vSubTask.length, "layui-show");
 
         let quest = createHead();
         let num = 1;
@@ -72,7 +72,7 @@
           subTask += createElement("结果", v["sResult"], "layui-show");
           subTask += createTail();
 
-          quest += createElement(errText('失败的子任务'+num), subTask, "layui-show");
+          quest += createElement(errText('失败的子任务' + num), subTask, "layui-show");
         }
         for (let i = 0; i < vOtherTask.length; ++i, ++num) {
           let v = vSubTask[vOtherTask[i]];
@@ -85,7 +85,7 @@
           subTask += createElement("百分比", v["iPercent"]);
           subTask += createTail();
 
-          quest += createElement('子任务'+num, subTask);
+          quest += createElement('子任务' + num, subTask);
         }
         quest += createTail();
         if (vFailTask.length != 0) {
