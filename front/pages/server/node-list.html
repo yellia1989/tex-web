@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>节点管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    var taskNo;
+    var editServer;
+    layui.use(["element", "table", "form", "layer", "okUtils"], function () {
+      let table = layui.table;
+      let layer = layui.layer;
+      let okUtils = layui.okUtils;
+      let form = layui.form;
+      okLoading.close();
+
+      let serverTable = table.render({
+        elem: "#tableId",
+        url: "/api/server/nodeList",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        defaultToolbar: ['filter'],
+        cols: [[
+          { field: "node", title: "节点", fixed: 'left' },
+          { field: "obj", title: "obj", fixed: 'left' },
+          {
+            field: "cur_stat", title: "当前状态", templet: function (d) {
+              switch (d.cur_stat) {
+                case 0: return "<font color='#FF5722'>停止</font>";
+                case 1: return "<font color='#5FB878'>运行中</font>";
+                default: return "未知状态: " + d.cur_stat;
+              }
+            }
+          },
+          { field: "heartbeat_time", title: "上次心跳时间" },
+          { field: "loadavg1", title: "负载(1分钟)" },
+          { field: "loadavg5", title: "负载(5分钟)", align: "center" },
+          { field: "loadavg15", title: "负载(15分钟)", align: "center" },
+        ]]
+      });
+
+      // 定时刷新
+      function update() {
+        serverTable.reload();
+        setTimeout(update, 5000);
+      }
+
+      update();
+
+    });
+  </script>
+
+</body>
+
+</html>

@@ -794,6 +794,16 @@
         "spread": false,
         "checked": false,
         "children": null
+      },
+      {
+        "id": 1103,
+        "title": "节点管理",
+        "href": "server/node-list.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
       }
     ]
   }
