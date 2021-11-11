@@ -1,13 +1,16 @@
 package server
 
 import (
+	"crypto/md5"
+	dsql "database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/yellia1989/tex-web/backend/common"
+	"io"
+	"os"
+	"path"
 	"strconv"
 	"strings"
-
-	dsql "database/sql"
-
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
@@ -27,6 +30,16 @@ type serverData struct {
 	Pid                 int    `json:"pid"`
 }
 
+type patchData struct {
+	Id 					int	   `json:"id"`
+	Remark				string `json:"remark"`
+	Version				string `json:"version"`
+	Server              string `json:"server"`
+	File	            string `json:"file"`
+	Md5                 string `json:"md5"`
+	UploadTime          string `json:"upload_time"`
+}
+
 func ServerList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
@@ -36,33 +49,22 @@ func ServerList(c echo.Context) error {
 	server := strings.TrimSpace(ctx.QueryParam("server"))
 	node := strings.TrimSpace(ctx.QueryParam("node"))
 
-	db := cfg.GameGlobalDb
+	db := cfg.TexDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
+	var vParam []interface{}
 
-	_, err = tx.Exec("USE " + cfg.GameDbPrefix + "db_tex")
-	if err != nil {
-		return err
-	}
-
-	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server"
+	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server where 1=1"
 	where := ""
 	if app != "" {
-		where += "app = '" + app + "'"
+		where += " and app = ?"
+		vParam = append(vParam, app)
 	}
 	if server != "" {
-		if where == "" {
-			where += "server = '" + server + "'"
-		} else {
-			where += " AND server = '" + server + "'"
-		}
+		where += " and server = ?"
+		vParam = append(vParam,server)
 	}
 	if node != "" {
 		if where == "" {
@@ -72,21 +74,23 @@ func ServerList(c echo.Context) error {
 		}
 	}
 	if where != "" {
-		sql += " WHERE " + where
+		sql += where
 	}
 	var total int
-	err = tx.QueryRow("SELECT count(*) as total FROM (" + sql + ") a").Scan(&total)
+	err := db.QueryRow("SELECT count(*) from t_server where 1=1" + where,vParam...).Scan(&total)
 	if err != nil {
 		return err
 	}
 
-	limitstart := strconv.Itoa((page - 1) * limit)
-	limitrow := strconv.Itoa(limit)
-	sql += " LIMIT " + limitstart + "," + limitrow
+	sql += " LIMIT ?,?"
+
+	limitstart := (page - 1) * limit
+	vParam = append(vParam, limitstart)
+	vParam = append(vParam, limit)
 
 	c.Logger().Debug(sql)
 
-	rows, err := tx.Query(sql)
+	rows, err := db.Query(sql,vParam...)
 	if err != nil {
 		return err
 	}
@@ -106,10 +110,6 @@ func ServerList(c echo.Context) error {
 	}
 
 	if err := rows.Err(); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return err
 	}
 
@@ -177,4 +177,185 @@ func GetTask(c echo.Context) error {
 	}
 
 	return ctx.SendResponse(taskRsp)
+}
+
+func UploadPatch(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	server := ctx.FormValue("server")
+	remark := ctx.FormValue("remark")
+	version := ctx.FormValue("version")
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		return err
+	}
+
+	if server == "" || version == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	//打开用户上传的文件
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	md5hash := md5.New()
+	if _, err = io.Copy(md5hash, src); err != nil {
+		return err
+	}
+
+	md5Str := fmt.Sprintf("%x",md5hash.Sum(nil))
+
+	row := db.QueryRow("select id from t_patch where md5 = ?",md5Str)
+	if row.Scan() != dsql.ErrNoRows {
+		return ctx.SendError(-1, "文件已存在")
+	}
+
+	_,err = src.Seek(0,0)
+	if err != nil {
+		return err
+	}
+
+	dst,err := os.Create(path.Join(cfg.UploadPatchPrefix,file.Filename))
+	defer dst.Close()
+
+	if err != nil {
+		return err
+	}
+
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	_,err = db.Exec("insert into t_patch(server,file,md5,remark,version) values(?,?,?,?,?)",server,file.Filename,md5Str,remark,version)
+	if err != nil{
+		return ctx.SendError(-1, err.Error())
+	}
+
+	return ctx.SendResponse("上传成功")
+}
+
+func DownloadPatch(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	id := ctx.QueryParam("id")
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+	var fileName string
+	err := db.QueryRow("select file from t_patch where id=?",id).Scan(&fileName)
+	if err != nil {
+		return err
+	}
+
+	filePath := path.Join(cfg.UploadPatchPrefix,fileName)
+	exist,err := common.PathExists(filePath)
+	if err != nil {
+		return err
+	}
+
+	if exist{
+		return ctx.Attachment(filePath,fileName)
+	} else {
+		return ctx.SendError(-1,"文件不存在")
+	}
+}
+
+func DeletePatch(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	id := ctx.QueryParam("id")
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+	var fileName string
+	err := db.QueryRow("select file from t_patch where id=?",id).Scan(&fileName)
+	if err != nil {
+		return err
+	}
+
+	filePath:= path.Join(cfg.UploadPatchPrefix,fileName)
+
+	exist,err := common.PathExists(filePath)
+	if err != nil {
+		return err
+	}
+
+	if exist {
+		err = os.Remove(filePath)
+		if err != nil {
+			return err
+		}
+	}
+
+	_,err = db.Exec("delete from t_patch where id=?",id)
+	if err != nil {
+		return err
+	}
+
+	return ctx.SendResponse("删除成功")
+}
+
+func PatchList(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+
+	server := strings.TrimSpace(ctx.QueryParam("server"))
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	var vParam []interface{}
+	sql := "select id,server, file, md5, upload_time,remark,version from t_patch where 1=1"
+	where := ""
+	if server != "" {
+		where += " and server = ?"
+		vParam = append(vParam, server)
+	}
+	sql += where
+	var total int
+	err := db.QueryRow("select count(id) from t_patch where 1=1" + where,vParam...).Scan(&total)
+	if err!= nil{
+		return err
+	}
+
+	if limit !=0 && page !=0 {
+		limitstart := strconv.Itoa((page - 1) * limit)
+		limitrow := strconv.Itoa(limit)
+		sql += " limit ?,?"
+		vParam = append(vParam, limitstart)
+		vParam = append(vParam, limitrow)
+	}
+
+	c.Logger().Debug(sql)
+
+	rows, err := db.Query(sql,vParam...)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	logs := make([]patchData, 0)
+	for rows.Next() {
+		var r patchData
+		if err := rows.Scan(&r.Id, &r.Server, &r.File, &r.Md5, &r.UploadTime,&r.Remark,&r.Version); err != nil {
+			return err
+		}
+		logs = append(logs, r)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	return ctx.SendArray(logs, total)
 }

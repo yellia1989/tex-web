@@ -194,4 +194,9 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/server/template_del", server.TemplateDel) // 删除模板
     group.POST("/server/template_add", server.TemplateAdd) // 增加模板
     group.GET("/server/template_allname", server.TemplateAllName) // 获取所有模板名称
+
+    group.POST("/server/uploadPatch", server.UploadPatch) // 上传发布包
+    group.GET("/server/downloadPatch", server.DownloadPatch) // 下载发布包
+    group.GET("/server/deletePatch", server.DeletePatch) // 删除发布包
+    group.GET("/server/patchList", server.PatchList) // 发布包列表
 }
