@@ -34,6 +34,7 @@ func ServerList(c echo.Context) error {
 
 	app := strings.TrimSpace(ctx.QueryParam("app"))
 	server := strings.TrimSpace(ctx.QueryParam("server"))
+	node := strings.TrimSpace(ctx.QueryParam("node"))
 
 	db := cfg.GameGlobalDb
 	if db == nil {
@@ -61,6 +62,13 @@ func ServerList(c echo.Context) error {
 			where += "server = '" + server + "'"
 		} else {
 			where += " AND server = '" + server + "'"
+		}
+	}
+	if node != "" {
+		if where == "" {
+			where += "node = '" + node + "'"
+		} else {
+			where += " AND node = '" + node + "'"
 		}
 	}
 	if where != "" {

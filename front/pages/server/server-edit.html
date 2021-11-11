@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>编辑服务</title>
+  <link rel="stylesheet" href="/css/oksub.css">
+  <link rel="stylesheet" href="/lib/layui/css/layui.css">
+  <meta http-equiv="refresh" content="10">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">应用</label>
+        <div class="layui-input-inline">
+          <input type="text" id="app" class="layui-input">
+        </div>
+        <label class="layui-form-label">服务</label>
+        <div class="layui-input-inline">
+          <input type="text" id="server" class="layui-input">
+        </div>
+        <label class="layui-form-label">分区</label>
+        <div class="layui-input-inline">
+          <input type="text" id="division" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">设置状态</label>
+        <div class="layui-input-inline">
+          <select id="setting_stat">
+            <option value="0">否</option>
+            <option value="1">是</option>
+          </select>
+        </div>
+        <label class="layui-form-label">选择模板</label>
+        <div class="layui-input-inline">
+          <div id="templateSelect"></div>
+        </div>
+      </div>
+
+      <table id="endpoint" class="layui-table" lay-skin="line" style="float: center">
+        <colgroup>
+          <col width="15%">
+          <col width="7%">
+          <col width="3%">
+          <col width="3%">
+          <col width="3%">
+          <col width="3%">
+          <col width="3%">
+          <col width="3%">
+          <col width="3%">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>OBJ</th>
+            <th>节点</th>
+            <th>端口</th>
+            <th>端口类型</th>
+            <th>协议</th>
+            <th>线程数</th>
+            <th>最大连接数</th>
+            <th>队列最大长度</th>
+            <th>队列超时时间(ms)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input type="text" id="OBJ" lay-verify="required" class="layui-input">
+            </td>
+            <td>
+              <input type="text" id="node" lay-verify="required" class="layui-input">
+            </td>
+            <td>
+              <div class="layui-input-inline">
+                <input type="text" id="port" lay-verify="number|required" placeholder="0~65536" class="layui-input">
+              </div>
+            </td>
+            <td>
+              <div class="layui-input-inline">
+                <input type="text" id="port_type" lay-verify="required" value="tcp" class="layui-input">
+              </div>
+            </td>
+            <td>
+              <div class="layui-input-inline">
+                <select id="protocol">
+                  <option value="mfw">mfw</option>
+                  <option value="nomfw">非mfw</option>
+                </select>
+              </div>
+            </td>
+            <td>
+              <div class="layui-input-inline">
+                <input type="text" id="thread_num" lay-verify="number|required" value="1" class="layui-input">
+              </div>
+            </td>
+            <td>
+              <div class="layui-input-inline">
+                <input type="text" id="max_conn" lay-verify="number|required" value="1024" class="layui-input">
+              </div>
+            </td>
+            <td>
+              <div class="layui-input-inline">
+                <input type="text" id="queue_cap" lay-verify="number|required" value="10240" class="layui-input">
+              </div>
+            </td>
+            <td>
+              <div class="layui-input-inline">
+                <input type="text" id="queue_timeout" lay-verify="number|required" value="3600000" class="layui-input">
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="add">添加</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'element', 'okUtils', 'okLayer'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      let templateSelect = xmSelect.render({
+        el: '#templateSelect',
+        name: 'templateName',
+        filterable: true,
+        radio: true,
+        model: {
+          label: {
+            type: 'text',
+          }
+        },
+        autoRow: true,
+        toolbar: {
+          show: true,
+          list: ["CLEAR"]
+        },
+        initValue: ['default']
+      });
+      okUtils.ajax("/api/server/template_allname", "get", null, false).done(function (response) {
+        let data = [];
+        for (let v of response.data) {
+          data.push({ name: v, value: v });
+        }
+        templateSelect.update({
+          data: data,
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      form.on('submit(update)', function (data) {
+        let req = {
+          app: $('#app').val(),
+          server: $('#server').val(),
+          division: $('#division').val(),
+          setting_stat: $('#setting_stat option:selected').val(),
+          template_name: templateSelect.getValue()[0]['value'],
+          obj: $('#OBJ').val(),
+          node: $('#node').val(),
+          port: $('#port').val(),
+          port_type: $('#port_type').val(),
+          protocol: $('#protocol option:selected').val(),
+          thread_num: $('#thread_num').val(),
+          max_conn: $('#max_conn').val(),
+          queue_cap: $('#queue_cap').val(),
+          queue_timeout: $('#queue_timeout').val()
+        }
+        okUtils.ajax("/api/server/template_update", "post", req, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+
+</body>
+
+</html>

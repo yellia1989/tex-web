@@ -240,3 +240,51 @@ func TemplateAdd(c echo.Context) error {
 
 	return ctx.SendResponse("添加模板成功")
 }
+
+func TemplateAllName(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	db := cfg.GameGlobalDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE " + cfg.GameDbPrefix + "db_tex")
+	if err != nil {
+		return err
+	}
+
+	sql := "SELECT name FROM t_template"
+	c.Logger().Debug(sql)
+
+	rows, err := tx.Query(sql)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	logs := make([]string, 0)
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return err
+		}
+		logs = append(logs, name)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return ctx.SendArray(logs, len(logs))
+}

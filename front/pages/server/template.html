@@ -40,7 +40,6 @@
   <script src="/lib/layui/layui.js"></script>
   <script>
     var editData;
-    var allTemplate = new Set();
     layui.use(["element", "table", "form", "layer", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let form = layui.form;
@@ -65,10 +64,8 @@
           { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
         ]],
         parseData: function (res) {
-          allTemplate.clear();
           for (i = 0; res.data && i < res.data.length; ++i) {
             res.data[i].id = res.data[i].name;
-            allTemplate.add(res.data[i].name);
           }
           return res;
         }
