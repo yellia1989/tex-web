@@ -51,6 +51,8 @@ var GameGlobalDb *sql.DB
 // 统计数据库
 var StatDb *sql.DB
 
+var TexDb *sql.DB
+
 // gamedb prefix
 var GameDbPrefix string
 
@@ -74,6 +76,8 @@ var ChatMaskInterval time.Duration
 
 // 服务器id
 var ServerID string
+
+var UploadPatchPrefix string
 
 func ParseCfg(file string) (err error) {
     if Config == nil {
@@ -141,6 +145,15 @@ func ParseCfg(file string) (err error) {
         panic(fmt.Sprintf("create stat db err: %s", err.Error()))
     }
 
+    texdb := cfg.GetCfg("texdb", "")
+    if len(texdb) == 0 {
+        panic("texdb required")
+    }
+    TexDb, err = sql.Open("mysql", texdb)
+    if err != nil {
+        panic(fmt.Sprintf("create texdb db err: %s", err.Error()))
+    }
+
     GameDbPrefix = cfg.GetCfg("gamedb-prefix", "")
 
     clog := cfg.GetSubCfg("log")
@@ -163,6 +176,8 @@ func ParseCfg(file string) (err error) {
     ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1m")
 
     ServerID = cfg.GetCfg("server", "")
+
+    UploadPatchPrefix = cfg.GetCfg("upload-patch-prefix","")
 
     return
 }

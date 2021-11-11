@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>服务管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form" style="margin: 30px">
+      <div class="layui-form-item">
+        <label class="layui-form-label">应用服务名</label>
+      </div>
+      <div class="layui-form-item">
+        <div id="app_server"></div>
+      </div>
+      <div class="layui-form-item" style="margin-top: 30px">
+        <label class="layui-form-label">待发布节点</label>
+      </div>
+      <div class="layui-form-item" id="zones">
+      </div>
+      <div class="layui-form-item" style="margin-top: 30px">
+        <div class="layui-input-inline" style="width: 100%">
+          <div id="patchSelect"></div>
+          <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="publish" style="margin-top: 25px">发布</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    var taskNo;
+    layui.use(["element", "table", "form", "layer", "okUtils"], function () {
+      let form = layui.form;
+      let layer = layui.layer;
+      let $ = layui.jquery;
+      let okUtils = layui.okUtils;
+      let xmSelect = layui.xmSelect;
+      okLoading.close();
+
+      let editServer = parent.editServer
+      let selectNode = parent.selectNode
+
+      $("#app_server").text(editServer.app + "." + editServer.server)
+      for (let v of selectNode) {
+        let zoneButton = "<button type='button' class='layui-btn'>"
+        zoneButton += v.node
+        if (v.division !== "") {
+          zoneButton += "(" + v.division + ")"
+        }
+        zoneButton += "</button>"
+        $("#zones").append(zoneButton)
+      }
+
+      let patchSelect = xmSelect.render({
+        el: '#patchSelect',
+        name: 'fileName',
+        prop: {
+          value: 'id',
+          name: 'file',
+        },
+        tips: '请选择一个发布包',
+        layVerify: 'required',
+        layVerType: 'tips',
+        radio: true,
+        clickClose: true,
+        model: {
+          label: {
+            type: 'block',
+            block: {
+              //是否显示删除图标
+              showIcon: false,
+            }
+          }
+        }
+      });
+
+      okUtils.ajax("/api/server/patchList", "get", {server: editServer.server}, false).done(function (response) {
+        patchSelect.update({
+          data: [
+            { file: '发布包', children: response.data},
+          ],
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      form.on('submit(publish)', function (data) {
+        let id = patchSelect.getValue('valueStr');
+
+        let vItem = [];
+        for (let v of selectNode) {
+          vItem.push({"sApp":editServer.app, "sServer":editServer.server, "sDivision":v.division, "sCommand": "patch","mParam" : { "patchid": id }},);
+        }
+
+        let req = {
+          "vItem": JSON.stringify(vItem),
+        }
+
+        okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
+          taskNo = response.data;
+          let param = {
+            type: 2,
+            title : "任务详情",
+            content: "./task-info.html",
+            area: ['90%', "90%"],
+            closeBtn: 2,
+          }
+          layer.open(param);
+        }).fail(function (error) {
+          console.log(error.msg);
+        });
+
+        return false;
+      });
+
+    });
+
+
+
+  </script>
+
+
+</body>
+
+</html>
