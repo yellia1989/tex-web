@@ -68,21 +68,6 @@
         ]]
       });
 
-        upload.render({ //允许上传的文件后缀
-            elem: '#uploadPatch'
-            ,url: '/api/server/uploadPatch' //此处配置你自己的上传接口即可
-            ,data: {"server":editServer.server}
-            ,accept: 'file' //普通文件
-            ,exts: 'tar.gz' //只允许上传压缩文件
-            ,done: function(res){
-                if (res.code === 0) {
-                    layer.msg(res.data);
-                } else {
-                    layer.msg(res.msg);
-                }
-            }
-        });
-
         function openDetail() {
             let checkStatus = table.checkStatus("tableId");
             if (checkStatus.data.length === 0) {
@@ -96,7 +81,7 @@
                 type: 2,
                 title : "发布管理",
                 content: "./publish-detail.html",
-                area: ['90%', "90%"],
+                area: ['60%', "60%"],
                 end: function () {
 
                 },
@@ -119,6 +104,20 @@
             layer.open(param);
         }
 
+        function openUpload() {
+            let param = {
+                type: 2,
+                title : "发布包上传",
+                content: "./publish-upload.html",
+                area: ['35%', "50%"],
+                end: function () {
+
+                },
+                closeBtn: 2,
+            }
+            layer.open(param);
+        }
+
       table.on("toolbar(tableFilter)", function (obj) {
         switch (obj.event) {
           case "manage":
@@ -126,6 +125,9 @@
             break;
           case "publish":
             openDetail();
+            break;
+          case "upload":
+            openUpload();
             break;
           default:
             break;
@@ -136,7 +138,7 @@
   </script>
 
 <script type="text/html" id="toolbarTpl">
-    <button type="button" class="layui-btn layui-btn-normal" lay-event="upload" id="uploadPatch">上传发布包</button>
+    <button type="button" class="layui-btn layui-btn-normal" lay-event="upload">上传发布包</button>
     <button type="button" class="layui-btn layui-btn-normal" lay-event="publish">发布选中节点</button>
     <button type="button" class="layui-btn layui-btn-primary" lay-event="manage">管理发布包</button>
 </script>

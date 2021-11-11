@@ -33,6 +33,8 @@ type serverData struct {
 
 type patchData struct {
 	Id 					int	   `json:"id"`
+	Remark				string `json:"remark"`
+	Version				string `json:"version"`
 	Server              string `json:"server"`
 	File	            string `json:"file"`
 	Md5                 string `json:"md5"`
@@ -47,50 +49,41 @@ func ServerList(c echo.Context) error {
 	app := strings.TrimSpace(ctx.QueryParam("app"))
 	server := strings.TrimSpace(ctx.QueryParam("server"))
 
-	db := cfg.GameGlobalDb
+	db := cfg.TexDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
+	var vParam []interface{}
 
-	_, err = tx.Exec("USE " + cfg.GameDbPrefix + "db_tex")
-	if err != nil {
-		return err
-	}
-
-	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server"
+	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server where 1=1"
 	where := ""
 	if app != "" {
-		where += "app = '" + app + "'"
+		where += " and app = ?"
+		vParam = append(vParam, app)
 	}
 	if server != "" {
-		if where == "" {
-			where += "server = '" + server + "'"
-		} else {
-			where += " AND server = '" + server + "'"
-		}
+		where += " and server = ?"
+		vParam = append(vParam,server)
 	}
 	if where != "" {
-		sql += " WHERE " + where
+		sql += where
 	}
 	var total int
-	err = tx.QueryRow("SELECT count(*) as total FROM (" + sql + ") a").Scan(&total)
+	err := db.QueryRow("SELECT count(*) from t_server where 1=1" + where,vParam...).Scan(&total)
 	if err != nil {
 		return err
 	}
 
-	limitstart := strconv.Itoa((page - 1) * limit)
-	limitrow := strconv.Itoa(limit)
-	sql += " LIMIT " + limitstart + "," + limitrow
+	sql += " LIMIT ?,?"
+
+	limitstart := (page - 1) * limit
+	vParam = append(vParam, limitstart)
+	vParam = append(vParam, limit)
 
 	c.Logger().Debug(sql)
 
-	rows, err := tx.Query(sql)
+	rows, err := db.Query(sql,vParam...)
 	if err != nil {
 		return err
 	}
@@ -110,10 +103,6 @@ func ServerList(c echo.Context) error {
 	}
 
 	if err := rows.Err(); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return err
 	}
 
@@ -186,9 +175,15 @@ func GetTask(c echo.Context) error {
 func UploadPatch(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	server := ctx.FormValue("server")
+	remark := ctx.FormValue("remark")
+	version := ctx.FormValue("version")
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		return err
+	}
+
+	if server == "" || version == "" {
+		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.TexDb
@@ -231,7 +226,7 @@ func UploadPatch(c echo.Context) error {
 		return err
 	}
 
-	_,err = db.Exec("insert into t_patch(server,file,md5) values(?,?,?)",server,file.Filename,md5Str)
+	_,err = db.Exec("insert into t_patch(server,file,md5,remark,version) values(?,?,?,?,?)",server,file.Filename,md5Str,remark,version)
 	if err != nil{
 		return ctx.SendError(-1, err.Error())
 	}
@@ -263,17 +258,6 @@ func DownloadPatch(c echo.Context) error {
 	} else {
 		return ctx.SendError(-1,"文件不存在")
 	}
-
-	//file, err := os.Open(path.Join(cfg.UploadPatchPrefix,fileName))
-	//if err != nil {
-	//	return err
-	//}
-	//defer file.Close()
-	//content,err := ioutil.ReadAll(file)
-	//if err != nil {
-	//	return err
-	//}
-
 }
 
 func DeletePatch(c echo.Context) error {
@@ -324,7 +308,7 @@ func PatchList(c echo.Context) error {
 	}
 
 	var vParam []interface{}
-	sql := "select id,server, file, md5, upload_time from t_patch where 1=1"
+	sql := "select id,server, file, md5, upload_time,remark,version from t_patch where 1=1"
 	where := ""
 	if server != "" {
 		where += " and server = ?"
@@ -356,7 +340,7 @@ func PatchList(c echo.Context) error {
 	logs := make([]patchData, 0)
 	for rows.Next() {
 		var r patchData
-		if err := rows.Scan(&r.Id, &r.Server, &r.File, &r.Md5, &r.UploadTime); err != nil {
+		if err := rows.Scan(&r.Id, &r.Server, &r.File, &r.Md5, &r.UploadTime,&r.Remark,&r.Version); err != nil {
 			return err
 		}
 		logs = append(logs, r)
