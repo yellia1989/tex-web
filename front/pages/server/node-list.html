@@ -36,10 +36,10 @@
         page: true,
         defaultToolbar: ['filter'],
         cols: [[
-          { field: "node", title: "节点", fixed: 'left' },
-          { field: "obj", title: "obj", fixed: 'left' },
+          { field: "node", title: "节点", width: '10%' },
+          { field: "obj", title: "obj", width: '50%' },
           {
-            field: "cur_stat", title: "当前状态", templet: function (d) {
+            field: "cur_stat", title: "当前状态", width: '10%', templet: function (d) {
               switch (d.cur_stat) {
                 case 0: return "<font color='#FF5722'>停止</font>";
                 case 1: return "<font color='#5FB878'>运行中</font>";
@@ -47,10 +47,10 @@
               }
             }
           },
-          { field: "heartbeat_time", title: "上次心跳时间" },
+          { field: "heartbeat_time", title: "上次心跳时间", width: '10%' },
           { field: "loadavg1", title: "负载(1分钟)" },
-          { field: "loadavg5", title: "负载(5分钟)", align: "center" },
-          { field: "loadavg15", title: "负载(15分钟)", align: "center" },
+          { field: "loadavg5", title: "负载(5分钟)" },
+          { field: "loadavg15", title: "负载(15分钟)" },
         ]]
       });
     });

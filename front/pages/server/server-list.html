@@ -201,6 +201,9 @@
             content: "./task-info.html",
             area: ['80%', "80%"],
             closeBtn: 2,
+            end: function() {
+              serverTable.reload();
+            }
           }
           layer.open(param);
         }).fail(function (error) {
