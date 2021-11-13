@@ -21,6 +21,16 @@ import (
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
+type nodeData struct {
+	Node          string  `json:"node"`
+	Obj           string  `json:"obj"`
+	SettingStat   int     `json:"setting_stat"`
+	CurStat       int     `json:"cur_stat"`
+	HeartbeatTime string  `json:"heartbeat_time"`
+	LoadAvg1      float32 `json:"loadavg1"`
+	LoadAvg5      float32 `json:"loadavg5"`
+	LoadAvg15     float32 `json:"loadavg15"`
+}
 type ServerData struct {
 	App                 string `json:"app"`
 	Server              string `json:"server"`
@@ -57,6 +67,56 @@ type patchData struct {
 	File       string `json:"file"`
 	Md5        string `json:"md5"`
 	UploadTime string `json:"upload_time"`
+}
+
+func NodeList(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	page, _ := strconv.Atoi(ctx.QueryParam("page"))
+	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	var vParam []interface{}
+
+	sql := "SELECT name, obj, setting_stat, cur_stat, heartbeat_time, load_avg1, load_avg5, load_avg15 FROM t_node_info where 1=1"
+
+	var total int
+	err := db.QueryRow("SELECT count(*) from t_node_info where 1=1", vParam...).Scan(&total)
+	if err != nil {
+		return err
+	}
+
+	sql += " LIMIT ?,?"
+
+	limitstart := (page - 1) * limit
+	vParam = append(vParam, limitstart)
+	vParam = append(vParam, limit)
+
+	c.Logger().Debug(sql)
+
+	rows, err := db.Query(sql, vParam...)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	logs := make([]nodeData, 0)
+	for rows.Next() {
+		var r nodeData
+		if err := rows.Scan(&r.Node, &r.Obj, &r.SettingStat, &r.CurStat, &r.HeartbeatTime, &r.LoadAvg1, &r.LoadAvg5, &r.LoadAvg15); err != nil {
+			return err
+		}
+		logs = append(logs, r)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	return ctx.SendArray(logs, total)
 }
 
 func ServerList(c echo.Context) error {
