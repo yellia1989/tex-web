@@ -21,6 +21,12 @@
           <div class="layui-input-inline">
             <input class="layui-input" placeholder="请输入服务名" autocomplete="off" name="server">
           </div>
+          <div class="layui-input-inline">
+            <input class="layui-input" placeholder="请输入分区" autocomplete="off" name="division">
+          </div>
+          <div class="layui-input-inline">
+            <input class="layui-input" placeholder="请输入节点" autocomplete="off" name="node">
+          </div>
 
           <div class="layui-input-inline">
             <button class="layui-btn" lay-submit lay-filter="search">
@@ -39,12 +45,14 @@
   <script src="/lib/layui/layui.js"></script>
   <script>
     var taskNo;
+    var editData;
     var editServer;
-    layui.use(["element", "table", "form", "layer", "okUtils"], function () {
+    layui.use(["element", "table", "form", "layer", "okUtils", "okLayer",], function () {
       let table = layui.table;
       let layer = layui.layer;
       let okUtils = layui.okUtils;
       let form = layui.form;
+      let okLayer = layui.okLayer;
       okLoading.close();
 
       let serverTable = table.render({
@@ -62,9 +70,10 @@
           { field: "app", title: "应用", fixed: 'left' },
           { field: "server", title: "服务", fixed: 'left' },
           { field: "division", title: "分区", fixed: 'left' },
-          { field: "node", title: "节点" },
+          { field: "node", title: "节点", fixed: 'left' },
+          { field: "template_name", title: "模板名", fixed: 'left' },
           {
-            field: "setting_stat", title: "设置状态", align: "center", templet: function (d) {
+            field: "setting_stat", title: "设置状态", fixed: 'left', align: "center", templet: function (d) {
               switch (d.setting_stat) {
                 case 1: return "自动重启";
                 case 0: return "<font color='#FF5722'>不重启</font>";
@@ -90,7 +99,7 @@
       });
 
       function serverOperator(data, cmd) {
-        let vItem = [{ "sApp": data.app, "sServer": data.server, "sDivision": data.division, "sCommand": cmd }]
+        let vItem = [{ "sApp": data.app, "sServer": data.server, "sDivision": data.division, "sNodeName": data.node, "sCommand": cmd }]
         let req = {
           "vItem": JSON.stringify(vItem),
         }
@@ -113,6 +122,7 @@
         let data = obj.data;
         switch (obj.event) {
           case "edit":
+            edit(data);
             break;
           case "publish":
             editServer = data;
@@ -135,6 +145,12 @@
           case "batchRestart":
             batchOperator("restart");
             break;
+          case "add":
+            add();
+            break;
+          case "batchDel":
+            batchDel();
+            break;
         }
       });
 
@@ -152,11 +168,11 @@
       function openPublish() {
         let param = {
           type: 2,
-          title : "发布设置",
+          title: "发布设置",
           content: "./publish-list.html",
           area: ['90%', "90%"],
           end: function () {
-            
+
           },
           closeBtn: 2,
         }
@@ -171,11 +187,11 @@
         }
         let vItem = [];
         for (let v of checkStatus.data) {
-          vItem.push({ "sApp": v.app, "sServer": v.server, "sDivision": v.division, "sCommand": cmd });
+          vItem.push({ "sApp": v.app, "sServer": v.server, "sDivision": v.division, "sNodeName": v.node, "sCommand": cmd });
         }
 
         let req = {
-          "vItem": JSON.stringify(vItem),
+          "vItem": okUtils.jsonToString(vItem),
         }
         okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
           taskNo = response.data;
@@ -189,6 +205,43 @@
           layer.open(param);
         }).fail(function (error) {
           console.log(error.msg);
+        });
+      }
+
+      function add() {
+        okLayer.open("增加服务", "./server-add.html", "90%", "90%", null, function () {
+          serverTable.reload();
+        });
+      }
+
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let checkStatus = table.checkStatus("tableId");
+          if (checkStatus.data.length == 0) {
+            layer.msg("未选择有效数据", { offset: "t", anim: 6 });
+            return;
+          }
+          let servers = [];
+          for (let v of checkStatus.data) {
+            servers.push({ "app": v.app, "server": v.server, "division": v.division, "node": v.node });
+          }
+
+          let req = {
+            "servers": okUtils.jsonToString(servers),
+          }
+          okUtils.ajax("/api/server/del", "post", req, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        });
+      }
+
+      function edit(data) {
+        editData = data;
+        okLayer.open("编辑服务", "./server-edit.html", "90%", "90%", null, function () {
+          serverTable.reload();
         });
       }
 
@@ -211,6 +264,8 @@
   </script>
 
   <script type="text/html" id="toolbarTpl">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchDel"><a href="javascript:" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a></div>
     <span style="cursor:pointer" lay-event="batchStop">停止</span>
     <span style="cursor:pointer" lay-event="batchStart">启动</span>
     <span style="cursor:pointer" lay-event="batchRestart">重启</span>

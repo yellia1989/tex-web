@@ -51,15 +51,9 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      let keys = [];
-      for (let key of parent.allTemplate) {
-        keys.push({ name: key, value: key });
-      }
-
       let parentSelect = xmSelect.render({
         el: '#parentSelect',
         name: 'parentName',
-        data: keys,
         filterable: true,
         radio: true,
         model: {
@@ -74,11 +68,22 @@
         },
         initValue: ['default']
       });
+      okUtils.ajax("/api/server/template_allname", "get", null, false).done(function (response) {
+        let data = [];
+        for (let v of response.data) {
+          data.push({ name: v, value: v });
+        }
+        parentSelect.update({
+          data: data
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
 
       form.on('submit(add)', function (data) {
         let req = {
           'name': $('#name').val(),
-          'parent': parentSelect.getValue()[0]['value'],
+          'parent': parentSelect.getValue('valueStr'),
           'content': $('#content').val(),
         }
         okUtils.ajax("/api/server/template_add", "post", req, true).done(function (response) {
