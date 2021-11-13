@@ -53,15 +53,6 @@
           { field: "loadavg15", title: "负载(15分钟)", align: "center" },
         ]]
       });
-
-      // 定时刷新
-      function update() {
-        serverTable.reload();
-        setTimeout(update, 5000);
-      }
-
-      update();
-
     });
   </script>
 

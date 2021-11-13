@@ -266,8 +266,8 @@ func ServerDetail(c echo.Context) error {
 	division := ctx.FormValue("division")
 	node := ctx.FormValue("node")
 
-	if app == "" || server == "" || division == "" || node == "" {
-		ctx.SendError(-1, "参数非法")
+	if app == "" || server == "" || node == "" {
+		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.TexDb
@@ -280,6 +280,7 @@ func ServerDetail(c echo.Context) error {
 	sql += where
 
 	c.Logger().Debug(sql)
+
 	data := ServerDetailData{
 		Services: make([]ServiceData, 0, 1),
 	}

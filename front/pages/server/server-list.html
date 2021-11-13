@@ -244,14 +244,6 @@
           serverTable.reload();
         });
       }
-
-      // 定时刷新
-      function update() {
-        serverTable.reload();
-        setTimeout(update, 5000);
-      }
-      update();
-
     });
   </script>
 
