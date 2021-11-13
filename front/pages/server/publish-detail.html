@@ -64,7 +64,7 @@
         name: 'fileName',
         prop: {
           value: 'id',
-          name: 'file',
+          name: 'name',
         },
         tips: '请选择一个发布包',
         layVerify: 'required',
@@ -77,16 +77,32 @@
             block: {
               //是否显示删除图标
               showIcon: false,
+              template: function(item, sels){
+                return 'version:'+item.version+"|upload_time:"+item.upload_time+"|remark:"+item.remark;
+              },
             }
           }
+        },
+        template({ item, sels, name, value }){
+          return (item.default == 1 ? '<span class="layui-badge layui-bg-orange" style="margin-top: 10px;margin-right: 10px;">默认 </span> ': '')+'version:'+item.version+"|upload_time:"+item.upload_time+"|remark:"+item.remark;
         }
       });
 
       okUtils.ajax("/api/server/patchList", "get", {server: editServer.server}, false).done(function (response) {
+        let patchs = [];
+        let def = 0;
+        let newest = 0;
+        for (let p of response.data) {
+          if (p.default == 1) def = p.id;
+          if (newest == 0) newest = p.id;
+          patchs.push(p);
+        }
+        if (def == 0) {
+          def = newest;
+        }
         patchSelect.update({
-          data: [
-            { file: '发布包', children: response.data},
-          ],
+          data: patchs,
+          initValue: [def]
         });
       }).fail(function (error) {
         console.log(error);
