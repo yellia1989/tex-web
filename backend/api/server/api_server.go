@@ -206,8 +206,11 @@ func ServerOperator(c echo.Context) error {
 		return ctx.SendError(-1, "参数为空")
 	}
 
+    user := ctx.GetUser()
+
 	req := rpc.PatchTaskReq{}
 	req.STaskNo = uuid.NewString()
+    req.SUsername = user.UserName
 	err := json.Unmarshal([]byte(sVItem), &req.VItem)
 	if err != nil {
 		return err

@@ -484,8 +484,9 @@ func (st *PatchTaskItemRsp) WriteStructFromTag(p *codec.Packer, tag uint32, requ
 }
 
 type PatchTaskReq struct {
-	STaskNo string             `json:"sTaskNo" form:"sTaskNo"`
-	VItem   []PatchTaskItemReq `json:"vItem" form:"vItem"`
+	STaskNo   string             `json:"sTaskNo" form:"sTaskNo"`
+	SUsername string             `json:"sUsername" form:"sUsername"`
+	VItem     []PatchTaskItemReq `json:"vItem" form:"vItem"`
 }
 
 func (st *PatchTaskReq) resetDefault() {
@@ -493,6 +494,7 @@ func (st *PatchTaskReq) resetDefault() {
 func (st *PatchTaskReq) Copy() *PatchTaskReq {
 	ret := NewPatchTaskReq()
 	ret.STaskNo = st.STaskNo
+	ret.SUsername = st.SUsername
 	ret.VItem = make([]PatchTaskItemReq, len(st.VItem))
 	for i, v := range st.VItem {
 		ret.VItem[i] = *(v.Copy())
@@ -506,6 +508,7 @@ func NewPatchTaskReq() *PatchTaskReq {
 }
 func (st *PatchTaskReq) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sTaskNo")+fmt.Sprintf("%v\n", st.STaskNo))
+	util.Tab(buff, t+1, util.Fieldname("sUsername")+fmt.Sprintf("%v\n", st.SUsername))
 	util.Tab(buff, t+1, util.Fieldname("vItem")+strconv.Itoa(len(st.VItem)))
 	if len(st.VItem) == 0 {
 		buff.WriteString(", []\n")
@@ -528,6 +531,10 @@ func (st *PatchTaskReq) ReadStruct(up *codec.UnPacker) error {
 	var ty uint32
 	st.resetDefault()
 	err = up.ReadString(&st.STaskNo, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SUsername, 1, false)
 	if err != nil {
 		return err
 	}
@@ -592,6 +599,12 @@ func (st *PatchTaskReq) WriteStruct(p *codec.Packer) error {
 	var length uint32
 	if false || st.STaskNo != "" {
 		err = p.WriteString(0, st.STaskNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SUsername != "" {
+		err = p.WriteString(1, st.SUsername)
 		if err != nil {
 			return err
 		}

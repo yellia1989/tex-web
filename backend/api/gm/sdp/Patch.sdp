@@ -33,6 +33,7 @@ module rpc
     struct PatchTaskReq
     {
         0   optional string sTaskNo;
+        1   optional string sUsername;
         2   optional vector<PatchTaskItemReq> vItem;
     };
 
