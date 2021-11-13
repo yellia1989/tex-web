@@ -67,6 +67,7 @@ type patchData struct {
 	File       string `json:"file"`
 	Md5        string `json:"md5"`
 	UploadTime string `json:"upload_time"`
+    Default    int    `json:"default"` 
 }
 
 func NodeList(c echo.Context) error {
@@ -609,7 +610,7 @@ func PatchList(c echo.Context) error {
 	}
 
 	var vParam []interface{}
-	sql := "select id,server, file, md5, upload_time,remark,version from t_patch where 1=1"
+	sql := "select id,server,file,md5,upload_time,remark,version,def from t_patch where 1=1"
 	where := ""
 	if server != "" {
 		where += " and server = ?"
@@ -641,7 +642,7 @@ func PatchList(c echo.Context) error {
 	logs := make([]patchData, 0)
 	for rows.Next() {
 		var r patchData
-		if err := rows.Scan(&r.Id, &r.Server, &r.File, &r.Md5, &r.UploadTime, &r.Remark, &r.Version); err != nil {
+		if err := rows.Scan(&r.Id, &r.Server, &r.File, &r.Md5, &r.UploadTime, &r.Remark, &r.Version, &r.Default); err != nil {
 			return err
 		}
 		logs = append(logs, r)
