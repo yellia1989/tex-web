@@ -36,22 +36,22 @@ type ServerData struct {
 	Server              string `json:"server"`
 	Division            string `json:"division"`
 	Node                string `json:"node"`
-	SettingStat         int    `json:"setting_stat,string"`
-	CurStat             int    `json:"cur_stat,string"`
+	SettingStat         int    `json:"setting_stat"`
+	CurStat             int    `json:"cur_stat"`
 	ProfileConfTemplate string `json:"profile_conf_template"`
 	TemplateName        string `json:"template_name"`
-	Pid                 int    `json:"pid,string"`
+	Pid                 int    `json:"pid"`
 }
 
 type ServiceData struct {
 	Service      string `json:"service"`
-	Port         int    `json:"port,string"`
+	Port         int    `json:"port"`
 	PortType     string `json:"port_type"`
-	ThreadNum    int    `json:"thread_num,string"`
+	ThreadNum    int    `json:"thread_num"`
 	Protocol     string `json:"protocol"`
-	MaxConn      int    `json:"max_conn,string"`
-	QueueCap     int    `json:"queue_cap,string"`
-	QueueTimeout int    `json:"queue_timeout,string"`
+	MaxConn      int    `json:"max_conn"`
+	QueueCap     int    `json:"queue_cap`
+	QueueTimeout int    `json:"queue_timeout"`
 }
 
 type ServerDetailData struct {

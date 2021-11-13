@@ -155,16 +155,22 @@
         let services = table.cache.tableId;
         for (s of services) {
           s['service'] = s.obj.substring(s.obj.lastIndexOf('.') + 1, s.obj.length);
+          s['port'] = parseInt(s.port, 10);
+          s['thread_num'] = parseInt(s.thread_num, 10);
+          s['max_conn'] = parseInt(s.max_conn, 10);
+          s['queue_cap'] = parseInt(s.queue_cap, 10);
+          s['queue_timeout'] = parseInt(s.queue_timeout, 10);
         }
         let req = {
           app: $('#app').val(),
           server: $('#server').val(),
           division: $('#division').val(),
           node: $('#node').val(),
-          setting_stat: $('#setting_stat').val(),
+          setting_stat: parseInt($('#setting_stat').val()),
           template_name: templateSelect.getValue('valueStr'),
           services: services,
         }
+        console.log(req)
         okUtils.ajax("/api/server/update", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
