@@ -50,7 +50,7 @@ type ServiceData struct {
 	ThreadNum    int    `json:"thread_num"`
 	Protocol     string `json:"protocol"`
 	MaxConn      int    `json:"max_conn"`
-	QueueCap     int    `json:"queue_cap`
+	QueueCap     int    `json:"queue_cap"`
 	QueueTimeout int    `json:"queue_timeout"`
 }
 
