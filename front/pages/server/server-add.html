@@ -16,15 +16,15 @@
       <div class="layui-form-item">
         <label class="layui-form-label">应用</label>
         <div class="layui-input-inline">
-          <input type="text" id="app" class="layui-input">
+          <input type="text" id="app" placeholder="app" class="layui-input">
         </div>
         <label class="layui-form-label">服务</label>
         <div class="layui-input-inline">
-          <input type="text" id="server" class="layui-input">
+          <input type="text" id="server" placeholder="server" class="layui-input">
         </div>
         <label class="layui-form-label">分区</label>
         <div class="layui-input-inline">
-          <input type="text" id="division" class="layui-input">
+          <input type="text" id="division" placeholder="division" class="layui-input">
         </div>
       </div>
 
@@ -40,86 +40,19 @@
         <div class="layui-input-inline">
           <div id="templateSelect"></div>
         </div>
+        <label class="layui-form-label">节点</label>
+        <div class="layui-input-inline">
+          <input type="text" id="node" placeholder="node" class="layui-input">
+        </div>
       </div>
 
-      <table id="endpoint" class="layui-table" lay-skin="line" style="float: center">
-        <colgroup>
-          <col width="15%">
-          <col width="7%">
-          <col width="3%">
-          <col width="3%">
-          <col width="3%">
-          <col width="3%">
-          <col width="3%">
-          <col width="3%">
-          <col width="3%">
-        </colgroup>
-        <thead>
-          <tr>
-            <th>OBJ</th>
-            <th>节点</th>
-            <th>端口</th>
-            <th>端口类型</th>
-            <th>协议</th>
-            <th>线程数</th>
-            <th>最大连接数</th>
-            <th>队列最大长度</th>
-            <th>队列超时时间(ms)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <input type="text" id="OBJ" lay-verify="required" class="layui-input">
-            </td>
-            <td>
-              <input type="text" id="node" lay-verify="required" class="layui-input">
-            </td>
-            <td>
-              <div class="layui-input-inline">
-                <input type="text" id="port" lay-verify="number|required" placeholder="0~65536" class="layui-input">
-              </div>
-            </td>
-            <td>
-              <div class="layui-input-inline">
-                <input type="text" id="port_type" lay-verify="required" value="tcp" class="layui-input">
-              </div>
-            </td>
-            <td>
-              <div class="layui-input-inline">
-                <select id="protocol">
-                  <option value="mfw">mfw</option>
-                  <option value="nomfw">非mfw</option>
-                </select>
-              </div>
-            </td>
-            <td>
-              <div class="layui-input-inline">
-                <input type="text" id="thread_num" lay-verify="number|required" value="1" class="layui-input">
-              </div>
-            </td>
-            <td>
-              <div class="layui-input-inline">
-                <input type="text" id="max_conn" lay-verify="number|required" value="1024" class="layui-input">
-              </div>
-            </td>
-            <td>
-              <div class="layui-input-inline">
-                <input type="text" id="queue_cap" lay-verify="number|required" value="10240" class="layui-input">
-              </div>
-            </td>
-            <td>
-              <div class="layui-input-inline">
-                <input type="text" id="queue_timeout" lay-verify="number|required" value="3600000" class="layui-input">
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="layui-form-item">
+        <table id="tableId" lay-filter="tableFilter"></table>
+      </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="add">添加</button>
+          <button class="layui-btn" lay-submit lay-filter="add">增加</button>
         </div>
       </div>
 
@@ -129,10 +62,11 @@
   <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
-    layui.use(['form', 'element', 'okUtils', 'okLayer'], function () {
+    layui.use(['form', 'element', 'okUtils', 'okLayer', 'table'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
+      let table = layui.table;
       let $ = layui.jquery;
 
       let templateSelect = xmSelect.render({
@@ -150,7 +84,6 @@
           show: true,
           list: ["CLEAR"]
         },
-        initValue: ['default']
       });
       okUtils.ajax("/api/server/template_allname", "get", null, false).done(function (response) {
         let data = [];
@@ -159,29 +92,46 @@
         }
         templateSelect.update({
           data: data,
+          initValue: ['default']
         });
       }).fail(function (error) {
         console.log(error);
       });
 
+      let curTable = table.render({
+        elem: "#tableId",
+        data: [{ port_type: 'tcp', protocol: 'mfw', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '3600000' }],
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        defaultToolbar: ['filter'],
+        cols: [[
+          { field: "obj", title: "obj", fixed: 'left', edit: 'text', width: '30%', align: 'center'},
+          { field: "port", title: "端口", edit: 'text', width: '10%', align: 'center' },
+          { field: "port_type", title: "端口类型", edit: 'text', width: '10%', align: 'center' },
+          { field: "protocol", title: "协议", edit: 'text', width: '10%', align: 'center' },
+          { field: "thread_num", title: "线程数", edit: 'text', width: '10%', align: 'center' },
+          { field: "max_conn", title: "最大连接数", edit: 'text', width: '10%', align: 'center' },
+          { field: "queue_cap", title: "队列最大长度", edit: 'text', width: '10%', align: 'center' },
+          { field: "queue_timeout", title: "队列超时时间(ms)", edit: 'text', align: 'center'},
+        ]]
+      });
+
       form.on('submit(add)', function (data) {
+        let services = table.cache.tableId;
+        for (s of services) {
+          s['service'] = s.obj.substring(s.obj.lastIndexOf('.') + 1, s.obj.length);
+        }
         let req = {
           app: $('#app').val(),
           server: $('#server').val(),
           division: $('#division').val(),
-          setting_stat: $('#setting_stat option:selected').val(),
-          template_name: templateSelect.getValue()[0]['value'],
-          obj: $('#OBJ').val(),
           node: $('#node').val(),
-          port: $('#port').val(),
-          port_type: $('#port_type').val(),
-          protocol: $('#protocol option:selected').val(),
-          thread_num: $('#thread_num').val(),
-          max_conn: $('#max_conn').val(),
-          queue_cap: $('#queue_cap').val(),
-          queue_timeout: $('#queue_timeout').val()
+          setting_stat: $('#setting_stat').val(),
+          template_name: templateSelect.getValue('valueStr'),
+          services: services,
         }
-        okUtils.ajax("/api/server/template_add", "post", req, true).done(function (response) {
+        okUtils.ajax("/api/server/add", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
@@ -190,7 +140,27 @@
         });
         return false;
       });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case 'add-row': {
+            let dataBak = table.cache.tableId;
+            dataBak.push({ port_type: 'tcp', protocol: 'mfw', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '3600000' });
+            curTable.reload({
+              data: dataBak
+            });
+            break;
+          }
+        }
+      });
+
     });
+  </script>
+
+  <script type="text/html" id="toolbarTpl">
+    <div class="layui-btn-container">
+      <div class="layui-inline" lay-event="add-row"><i class="layui-icon layui-icon-add-1"></i></div>
+    </div>
   </script>
 
 </body>

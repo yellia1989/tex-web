@@ -187,6 +187,10 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/server/list", server.ServerList) // 获取服务器列表
     group.POST("/server/operator", server.ServerOperator) // 操作服务器
     group.GET("/server/getTask", server.GetTask) // 获取执行信息
+    group.GET("/server/detail", server.ServerDetail) // 获取服务详情
+    group.POST("/server/update", server.ServerUpdate) // 更新服务
+    group.POST("/server/add", server.ServerAdd) // 增加服务
+    group.POST("/server/del", server.ServerDel) // 删除服务
 
     group.GET("/server/template_list", server.TemplateList) // 获取模板列表
     group.GET("/server/template_detail", server.TemplateDatail) // 获取模板详情

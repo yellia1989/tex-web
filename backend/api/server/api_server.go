@@ -5,39 +5,58 @@ import (
 	dsql "database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/yellia1989/tex-web/backend/common"
 	"io"
 	"os"
 	"path"
 	"strconv"
 	"strings"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	tex "github.com/yellia1989/tex-go/service"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/cfg"
+	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
-type serverData struct {
+type ServerData struct {
 	App                 string `json:"app"`
 	Server              string `json:"server"`
 	Division            string `json:"division"`
 	Node                string `json:"node"`
-	SettingStat         int    `json:"setting_stat"`
-	CurStat             int    `json:"cur_stat"`
+	SettingStat         int    `json:"setting_stat,string"`
+	CurStat             int    `json:"cur_stat,string"`
 	ProfileConfTemplate string `json:"profile_conf_template"`
 	TemplateName        string `json:"template_name"`
-	Pid                 int    `json:"pid"`
+	Pid                 int    `json:"pid,string"`
+}
+
+type ServiceData struct {
+	Service      string `json:"service"`
+	Port         int    `json:"port,string"`
+	PortType     string `json:"port_type"`
+	ThreadNum    int    `json:"thread_num,string"`
+	Protocol     string `json:"protocol"`
+	MaxConn      int    `json:"max_conn,string"`
+	QueueCap     int    `json:"queue_cap,string"`
+	QueueTimeout int    `json:"queue_timeout,string"`
+}
+
+type ServerDetailData struct {
+	ServerData
+	Services []ServiceData `json:"services"`
 }
 
 type patchData struct {
-	Id 					int	   `json:"id"`
-	Remark				string `json:"remark"`
-	Version				string `json:"version"`
-	Server              string `json:"server"`
-	File	            string `json:"file"`
-	Md5                 string `json:"md5"`
-	UploadTime          string `json:"upload_time"`
+	Id         int    `json:"id"`
+	Remark     string `json:"remark"`
+	Version    string `json:"version"`
+	Server     string `json:"server"`
+	File       string `json:"file"`
+	Md5        string `json:"md5"`
+	UploadTime string `json:"upload_time"`
 }
 
 func ServerList(c echo.Context) error {
@@ -47,6 +66,7 @@ func ServerList(c echo.Context) error {
 
 	app := strings.TrimSpace(ctx.QueryParam("app"))
 	server := strings.TrimSpace(ctx.QueryParam("server"))
+	division := strings.TrimSpace(ctx.QueryParam("division"))
 	node := strings.TrimSpace(ctx.QueryParam("node"))
 
 	db := cfg.TexDb
@@ -56,28 +76,28 @@ func ServerList(c echo.Context) error {
 
 	var vParam []interface{}
 
-	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server where 1=1"
+	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server WHERE 1=1"
 	where := ""
 	if app != "" {
-		where += " and app = ?"
+		where += " AND app = ?"
 		vParam = append(vParam, app)
 	}
 	if server != "" {
-		where += " and server = ?"
-		vParam = append(vParam,server)
+		where += " AND server = ?"
+		vParam = append(vParam, server)
+	}
+	if division != "" {
+		where += " AND division = ?"
+		vParam = append(vParam, division)
 	}
 	if node != "" {
-		if where == "" {
-			where += "node = '" + node + "'"
-		} else {
-			where += " AND node = '" + node + "'"
-		}
+		where += " AND node = ?"
+		vParam = append(vParam, node)
 	}
-	if where != "" {
-		sql += where
-	}
+	sql += where
+
 	var total int
-	err := db.QueryRow("SELECT count(*) from t_server where 1=1" + where,vParam...).Scan(&total)
+	err := db.QueryRow("SELECT count(*) FROM t_server WHERE 1=1"+where, vParam...).Scan(&total)
 	if err != nil {
 		return err
 	}
@@ -90,15 +110,15 @@ func ServerList(c echo.Context) error {
 
 	c.Logger().Debug(sql)
 
-	rows, err := db.Query(sql,vParam...)
+	rows, err := db.Query(sql, vParam...)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	logs := make([]serverData, 0)
+	logs := make([]ServerData, 0)
 	for rows.Next() {
-		var r serverData
+		var r ServerData
 		var profile dsql.NullString
 		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.SettingStat, &r.CurStat, &profile, &r.TemplateName, &r.Pid); err != nil {
 			return err
@@ -134,7 +154,6 @@ func ServerOperator(c echo.Context) error {
 	for i := 0; i < len(req.VItem); i++ {
 		v := &req.VItem[i]
 		v.STaskNo = uuid.NewString()
-		v.SNodeName = "192.168.0.16"
 	}
 	fmt.Printf("%v", req)
 
@@ -179,6 +198,220 @@ func GetTask(c echo.Context) error {
 	return ctx.SendResponse(taskRsp)
 }
 
+func ServerDetail(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	app := ctx.FormValue("app")
+	server := ctx.FormValue("server")
+	division := ctx.FormValue("division")
+	node := ctx.FormValue("node")
+
+	if app == "" || server == "" || division == "" || node == "" {
+		ctx.SendError(-1, "参数非法")
+	}
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server"
+	where := " WHERE app = '" + app + "' AND server = '" + server + "' AND node = '" + node + "' AND division = '" + division + "'"
+	sql += where
+
+	c.Logger().Debug(sql)
+	data := ServerDetailData{
+		Services: make([]ServiceData, 0, 1),
+	}
+
+	row := db.QueryRow(sql)
+	var profile dsql.NullString
+	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.SettingStat, &data.CurStat, &profile, &data.TemplateName, &data.Pid)
+	if err != nil {
+		return err
+	}
+	if profile.Valid {
+		data.ProfileConfTemplate = profile.String
+	}
+
+	sql2 := "SELECT service, endpoint, thread_num, protocol, max_conn, queue_cap, queue_timeout FROM t_service"
+	sql2 += where
+	rows2, err := db.Query(sql2)
+	if err != nil {
+		return err
+	}
+	defer rows2.Close()
+
+	for rows2.Next() {
+		sEndpoint := ""
+		r := ServiceData{}
+		if err := rows2.Scan(&r.Service, &sEndpoint, &r.ThreadNum, &r.Protocol, &r.MaxConn, &r.QueueCap, &r.QueueTimeout); err != nil {
+			return err
+		}
+
+		endpoint, err := tex.NewEndpoint(sEndpoint)
+		if err != nil {
+			return err
+		}
+		r.Port = endpoint.Port
+		r.PortType = endpoint.Proto
+		data.Services = append(data.Services, r)
+	}
+
+	return ctx.SendResponse(data)
+}
+
+func ServerUpdate(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	sServer := ctx.FormValue("server")
+	req := ServerDetailData{}
+
+	json.Unmarshal([]byte(sServer), &req)
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+	defer tx.Rollback()
+
+	sql := "UPDATE t_server SET setting_stat = ?, template_name = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
+	c.Logger().Debug(sql)
+
+	_, err = tx.Exec(sql, req.SettingStat, req.TemplateName, req.App, req.Server, req.Division, req.Node)
+	if err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+
+	for _, v := range req.Services {
+		endpoint := tex.Endpoint{
+			Proto:       v.PortType,
+			IP:          req.Node,
+			Port:        v.Port,
+			Idletimeout: time.Duration(v.QueueTimeout) * time.Millisecond,
+		}
+		sEndpoint := endpoint.String()
+		sql2 := "INSERT INTO t_service (app, server, division, node, service, endpoint, thread_num, protocol, max_conn, queue_cap, queue_timeout) VALUES (?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE endpoint = ?, thread_num = ?, protocol = ?, max_conn = ?, queue_cap = ?, queue_timeout = ?"
+
+		c.Logger().Debug(sql2)
+		if _, err := tx.Exec(sql2, req.App, req.Server, req.Division, req.Node, v.Service, sEndpoint, v.ThreadNum, v.Protocol, v.MaxConn, v.QueueCap, v.QueueTimeout, sEndpoint, v.ThreadNum, v.Protocol, v.MaxConn, v.QueueCap, v.QueueTimeout); err != nil {
+			return ctx.SendError(-1, err.Error())
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+
+	return ctx.SendResponse("更新服务成功")
+}
+
+func ServerAdd(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	sServer := ctx.FormValue("server")
+	req := ServerDetailData{}
+
+	json.Unmarshal([]byte(sServer), &req)
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+	defer tx.Rollback()
+
+	sql := "INSERT INTO t_server (app, server, division, node, setting_stat, template_name) VALUES (?,?,?,?,?,?)"
+	c.Logger().Debug(sql)
+
+	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.SettingStat, req.TemplateName)
+	if err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+
+	sql2 := "INSERT INTO t_service (app, server, division, node, service, endpoint, thread_num, protocol, max_conn, queue_cap, queue_timeout) VALUES "
+	values := make([]string, 0, 1)
+	params := make([]interface{}, 0, 11)
+	for _, v := range req.Services {
+		endpoint := tex.Endpoint{
+			Proto:       v.PortType,
+			IP:          req.Node,
+			Port:        v.Port,
+			Idletimeout: time.Duration(v.QueueTimeout) * time.Millisecond,
+		}
+		str := "(?,?,?,?,?,?,?,?,?,?,?)"
+		values = append(values, str)
+		params = append(params, req.App, req.Server, req.Division, req.Node, v.Service, endpoint.String(), v.ThreadNum, v.Protocol, v.MaxConn, v.QueueCap, v.QueueTimeout)
+	}
+	sql2 += strings.Join(values, ",") + ";"
+	c.Logger().Debug(sql2, params)
+
+	_, err = tx.Exec(sql2, params...)
+	if err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+	if err := tx.Commit(); err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+
+	return ctx.SendResponse("添加服务成功")
+}
+
+func ServerDel(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	sServers := ctx.FormValue("servers")
+	if sServers == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+	servers := make([]ServerData, 0, 1)
+	err := json.Unmarshal([]byte(sServers), &servers)
+	if err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+	defer tx.Rollback()
+
+	for _, v := range servers {
+		sql := "DELETE FROM t_server WHERE app = ? AND server = ? AND division = ? AND node = ?"
+		c.Logger().Debug(sql)
+		_, err = tx.Exec(sql, v.App, v.Server, v.Division, v.Node)
+		if err != nil {
+			return err
+		}
+
+		sql2 := "DELETE FROM t_service WHERE app = ? AND server = ? AND division = ? AND node = ?"
+		c.Logger().Debug(sql2)
+		_, err = tx.Exec(sql2, v.App, v.Server, v.Division, v.Node)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return ctx.SendError(-1, err.Error())
+	}
+
+	return ctx.SendResponse("删除服务成功")
+}
+
 func UploadPatch(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	server := ctx.FormValue("server")
@@ -210,19 +443,19 @@ func UploadPatch(c echo.Context) error {
 		return err
 	}
 
-	md5Str := fmt.Sprintf("%x",md5hash.Sum(nil))
+	md5Str := fmt.Sprintf("%x", md5hash.Sum(nil))
 
-	row := db.QueryRow("select id from t_patch where md5 = ?",md5Str)
+	row := db.QueryRow("select id from t_patch where md5 = ?", md5Str)
 	if row.Scan() != dsql.ErrNoRows {
 		return ctx.SendError(-1, "文件已存在")
 	}
 
-	_,err = src.Seek(0,0)
+	_, err = src.Seek(0, 0)
 	if err != nil {
 		return err
 	}
 
-	dst,err := os.Create(path.Join(cfg.UploadPatchPrefix,file.Filename))
+	dst, err := os.Create(path.Join(cfg.UploadPatchPrefix, file.Filename))
 	defer dst.Close()
 
 	if err != nil {
@@ -233,8 +466,8 @@ func UploadPatch(c echo.Context) error {
 		return err
 	}
 
-	_,err = db.Exec("insert into t_patch(server,file,md5,remark,version) values(?,?,?,?,?)",server,file.Filename,md5Str,remark,version)
-	if err != nil{
+	_, err = db.Exec("insert into t_patch(server,file,md5,remark,version) values(?,?,?,?,?)", server, file.Filename, md5Str, remark, version)
+	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
 
@@ -249,21 +482,21 @@ func DownloadPatch(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 	var fileName string
-	err := db.QueryRow("select file from t_patch where id=?",id).Scan(&fileName)
+	err := db.QueryRow("select file from t_patch where id=?", id).Scan(&fileName)
 	if err != nil {
 		return err
 	}
 
-	filePath := path.Join(cfg.UploadPatchPrefix,fileName)
-	exist,err := common.PathExists(filePath)
+	filePath := path.Join(cfg.UploadPatchPrefix, fileName)
+	exist, err := common.PathExists(filePath)
 	if err != nil {
 		return err
 	}
 
-	if exist{
-		return ctx.Attachment(filePath,fileName)
+	if exist {
+		return ctx.Attachment(filePath, fileName)
 	} else {
-		return ctx.SendError(-1,"文件不存在")
+		return ctx.SendError(-1, "文件不存在")
 	}
 }
 
@@ -275,14 +508,14 @@ func DeletePatch(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 	var fileName string
-	err := db.QueryRow("select file from t_patch where id=?",id).Scan(&fileName)
+	err := db.QueryRow("select file from t_patch where id=?", id).Scan(&fileName)
 	if err != nil {
 		return err
 	}
 
-	filePath:= path.Join(cfg.UploadPatchPrefix,fileName)
+	filePath := path.Join(cfg.UploadPatchPrefix, fileName)
 
-	exist,err := common.PathExists(filePath)
+	exist, err := common.PathExists(filePath)
 	if err != nil {
 		return err
 	}
@@ -294,7 +527,7 @@ func DeletePatch(c echo.Context) error {
 		}
 	}
 
-	_,err = db.Exec("delete from t_patch where id=?",id)
+	_, err = db.Exec("delete from t_patch where id=?", id)
 	if err != nil {
 		return err
 	}
@@ -323,12 +556,12 @@ func PatchList(c echo.Context) error {
 	}
 	sql += where
 	var total int
-	err := db.QueryRow("select count(id) from t_patch where 1=1" + where,vParam...).Scan(&total)
-	if err!= nil{
+	err := db.QueryRow("select count(id) from t_patch where 1=1"+where, vParam...).Scan(&total)
+	if err != nil {
 		return err
 	}
 
-	if limit !=0 && page !=0 {
+	if limit != 0 && page != 0 {
 		limitstart := strconv.Itoa((page - 1) * limit)
 		limitrow := strconv.Itoa(limit)
 		sql += " limit ?,?"
@@ -338,7 +571,7 @@ func PatchList(c echo.Context) error {
 
 	c.Logger().Debug(sql)
 
-	rows, err := db.Query(sql,vParam...)
+	rows, err := db.Query(sql, vParam...)
 	if err != nil {
 		return err
 	}
@@ -347,7 +580,7 @@ func PatchList(c echo.Context) error {
 	logs := make([]patchData, 0)
 	for rows.Next() {
 		var r patchData
-		if err := rows.Scan(&r.Id, &r.Server, &r.File, &r.Md5, &r.UploadTime,&r.Remark,&r.Version); err != nil {
+		if err := rows.Scan(&r.Id, &r.Server, &r.File, &r.Md5, &r.UploadTime, &r.Remark, &r.Version); err != nil {
 			return err
 		}
 		logs = append(logs, r)
