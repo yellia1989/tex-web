@@ -67,11 +67,12 @@
         defaultToolbar: ['filter'],
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "app", title: "应用", fixed: 'left' },
-          { field: "server", title: "服务", fixed: 'left' },
-          { field: "division", title: "分区", fixed: 'left' },
-          { field: "node", title: "节点", fixed: 'left' },
+          { field: "app", title: "应用", fixed: 'left', minWidth: '100' },
+          { field: "server", title: "服务", fixed: 'left', minWidth: '150' },
+          { field: "division", title: "分区", fixed: 'left', minWidth: '150' },
+          { field: "node", title: "节点", fixed: 'left', minWidth: '150' },
           { field: "template_name", title: "模板名", fixed: 'left' },
+          { field: "profile_conf_template", title: "自定义模板", fixed: 'left'},
           {
             field: "setting_stat", title: "设置状态", fixed: 'left', align: "center", templet: function (d) {
               switch (d.setting_stat) {
@@ -91,10 +92,11 @@
             }
           },
           { field: "pid", title: "进程ID" },
-          { field: "version", title: "版本" },
-          { field: "release_user", title: "发布人", align: "center" },
-          { field: "release_time", title: "发布时间", align: "center" },
-          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
+          { field: "prom_port", title: "监听端口" },
+          { field: "publish_version", title: "版本" },
+          { field: "publish_username", title: "发布人", align: "center" },
+          { field: "publish_time", title: "发布时间", align: "center", minWidth: '200' },
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', minWidth: 200 }
         ]]
       });
 
@@ -110,7 +112,9 @@
             title: "任务详情",
             content: "./task-info.html",
             area: ['80%', "80%"],
-            closeBtn: 2,
+            end: function () {
+              serverTable.reload();
+            }
           }
           layer.open(param);
         }).fail(function (error) {
@@ -174,7 +178,6 @@
           end: function () {
 
           },
-          closeBtn: 2,
         }
         layer.open(param);
       }
@@ -200,8 +203,7 @@
             title: "任务详情",
             content: "./task-info.html",
             area: ['80%', "80%"],
-            closeBtn: 2,
-            end: function() {
+            end: function () {
               serverTable.reload();
             }
           }

@@ -41,6 +41,10 @@ type ServerData struct {
 	ProfileConfTemplate string `json:"profile_conf_template"`
 	TemplateName        string `json:"template_name"`
 	Pid                 int    `json:"pid"`
+	PublishVersion      string `json:"publish_version"`
+	PublishUserName     string `json:"publish_username"`
+	PublishTime         string `json:"publish_time"`
+	PromPort            int    `json:"prom_port"`
 }
 
 type ServiceData struct {
@@ -67,7 +71,7 @@ type patchData struct {
 	File       string `json:"file"`
 	Md5        string `json:"md5"`
 	UploadTime string `json:"upload_time"`
-    Default    int    `json:"default"` 
+	Default    int    `json:"default"`
 }
 
 func NodeList(c echo.Context) error {
@@ -137,7 +141,7 @@ func ServerList(c echo.Context) error {
 
 	var vParam []interface{}
 
-	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server WHERE 1=1"
+	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port FROM t_server WHERE 1=1"
 	where := ""
 	if app != "" {
 		where += " AND app = ?"
@@ -180,12 +184,21 @@ func ServerList(c echo.Context) error {
 	logs := make([]ServerData, 0)
 	for rows.Next() {
 		var r ServerData
-		var profile dsql.NullString
-		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.SettingStat, &r.CurStat, &profile, &r.TemplateName, &r.Pid); err != nil {
+		var profile, version, username, publishTime dsql.NullString
+		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.SettingStat, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort); err != nil {
 			return err
 		}
 		if profile.Valid {
 			r.ProfileConfTemplate = profile.String
+		}
+		if version.Valid {
+			r.PublishVersion = version.String
+		}
+		if username.Valid {
+			r.PublishUserName = username.String
+		}
+		if publishTime.Valid {
+			r.PublishTime = publishTime.String
 		}
 		logs = append(logs, r)
 	}
@@ -206,11 +219,11 @@ func ServerOperator(c echo.Context) error {
 		return ctx.SendError(-1, "参数为空")
 	}
 
-    user := ctx.GetUser()
+	user := ctx.GetUser()
 
 	req := rpc.PatchTaskReq{}
 	req.STaskNo = uuid.NewString()
-    req.SUsername = user.UserName
+	req.SUsername = user.UserName
 	err := json.Unmarshal([]byte(sVItem), &req.VItem)
 	if err != nil {
 		return err
@@ -344,10 +357,10 @@ func ServerUpdate(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "UPDATE t_server SET setting_stat = ?, template_name = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
+	sql := "UPDATE t_server SET setting_stat = ?, template_name = ?, profile_conf_template = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.SettingStat, req.TemplateName, req.App, req.Server, req.Division, req.Node)
+	_, err = tx.Exec(sql, req.SettingStat, req.TemplateName, req.ProfileConfTemplate, req.App, req.Server, req.Division, req.Node)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
@@ -393,10 +406,10 @@ func ServerAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "INSERT INTO t_server (app, server, division, node, setting_stat, template_name) VALUES (?,?,?,?,?,?)"
+	sql := "INSERT INTO t_server (app, server, division, node, setting_stat, template_name, profile_conf_template) VALUES (?,?,?,?,?,?,?)"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.SettingStat, req.TemplateName)
+	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.SettingStat, req.TemplateName, req.ProfileConfTemplate)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
