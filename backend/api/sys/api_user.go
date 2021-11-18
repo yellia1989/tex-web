@@ -179,6 +179,8 @@ func UserPwd(c echo.Context) error {
     username := ctx.FormValue("username")
     oldpassword := ctx.FormValue("oldpassword")
     password := ctx.FormValue("password")
+    terminalUser := ctx.FormValue("terminalUser")
+    terminalKey := ctx.FormValue("terminalKey")
 
     if username == "" || oldpassword == "" || password == "" {
         return ctx.SendError(-1, "参数非法")
@@ -193,8 +195,20 @@ func UserPwd(c echo.Context) error {
         return ctx.SendError(-1, "原始密码不对")
     }
 
-    if !u.EncodePwd(password) || !model.UpdateUser(u) {
+    if !u.EncodePwd(password) {
         return ctx.SendError(-1, "修改密码失败")
+    }
+
+    if terminalUser != ""{
+        u.TerminalUser = terminalUser
+    }
+
+    if terminalKey != ""{
+        u.TerminalKey = terminalKey
+    }
+
+    if !model.UpdateUser(u) {
+        return ctx.SendError(-1, "修改信息失败")
     }
 
     return ctx.SendResponse("修改密码成功")
