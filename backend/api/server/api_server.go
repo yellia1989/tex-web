@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/crypto/ssh/terminal"
+	_ "golang.org/x/crypto/ssh/terminal"
 	"io"
 	"net"
 	"os"
@@ -106,7 +106,7 @@ func (wsw *wsWrapper) Read(p []byte) (n int, err error) {
 
 var upgrader = websocket.Upgrader{}
 
-func websocketHandle(con *websocket.Conn,ip string,user string,key string){
+func websocketHandle(con *websocket.Conn,ip string,cols string,rows string,user string,key string){
 	rw := io.ReadWriter(&wsWrapper{con})
 	webprintln := func(data string){
 		rw.Write([]byte(data+"\r\n"))
@@ -144,7 +144,6 @@ func websocketHandle(con *websocket.Conn,ip string,user string,key string){
 		return
 	}
 	defer session.Close()
-	fd := int(os.Stdin.Fd())
 	session.Stdout = rw
 	session.Stderr = rw
 	session.Stdin = rw
@@ -153,7 +152,8 @@ func websocketHandle(con *websocket.Conn,ip string,user string,key string){
 		ssh.TTY_OP_ISPEED: 14400,
 		ssh.TTY_OP_OSPEED: 14400,
 	}
-	termWidth, termHeight, err := terminal.GetSize(fd)
+	termWidth,_ := strconv.Atoi(cols)
+    termHeight,_ := strconv.Atoi(rows)
 	err = session.RequestPty("xterm",termHeight,termWidth, modes)
 	if err != nil {
 		webprintln(err.Error())
@@ -174,6 +174,8 @@ func websocketHandle(con *websocket.Conn,ip string,user string,key string){
 func ShellWs(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	node := ctx.QueryParam("node")
+    cols := ctx.QueryParam("cols")
+    rows := ctx.QueryParam("rows")
 
 	u := ctx.GetUser()
 	if u == nil {
@@ -191,7 +193,7 @@ func ShellWs(c echo.Context) error {
 	} else if err != nil {
 		return ctx.SendError(-1,err)
 	}
-	go websocketHandle(con,node,u.TerminalUser,u.TerminalKey)
+	go websocketHandle(con,node,cols,rows,u.TerminalUser,u.TerminalKey)
 	return ctx.SendResponse("")
 }
 

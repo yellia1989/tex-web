@@ -22,8 +22,10 @@
   <script src="/js/xterm.min.js"></script>
   <script src="/js/fullscreen.min.js"></script>
   <script>
-    console.log(parent.editServer)
-    var wsUri = 'ws://'+ window.location.host + '/api/server/shellWs?node=' + parent.editServer.node;
+    var containerWidth = window.screen.height;
+    var cols = Math.floor((containerWidth - 30) / 9);
+    var rows = Math.floor(window.innerHeight/17)+1; 
+    var wsUri = 'ws://'+ window.location.host + '/api/server/shellWs?node=' + parent.editServer.node + '&cols=' + cols + '&rows=' + rows;
 
     function init() {
       shellWebSocket();
@@ -32,7 +34,7 @@
     function shellWebSocket() {
       websocket = new WebSocket(wsUri);
       terminal = document.getElementById('#terminal');
-      term = new Terminal({cursorBlink: true});
+      term = new Terminal({cursorBlink: true, rows: rows, cols: cols});
       term.on('data', function(data) {
         websocket.send(data);
       });
