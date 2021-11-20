@@ -204,7 +204,7 @@ func FightExportLog(c echo.Context) error {
     db := cfg.LogDb
     var sql string
 
-    if (fightType != 11 && fightType != 12 && fightType != 15) {
+    if (!IsChapterFight(fightType)) {
         sql = fmt.Sprintf("SELECT log,client_version FROM fight_verify_error WHERE log_md5 = '%s' and is_server = %d",logmd5,isServer)
     } else {
         sql = fmt.Sprintf("SELECT log,client_version FROM chapter_verify_error WHERE report_id = '%s' and is_server = %d",reportid,isServer)
@@ -224,7 +224,7 @@ func FightExportLog(c echo.Context) error {
             return err
         }
 
-        if (fightType != 11 && fightType != 12 && fightType != 15) {
+        if (!IsChapterFight(fightType)) {
             decodeBytes, _ := base64.StdEncoding.DecodeString(log)
             log = string(decodeBytes)
         }
@@ -234,4 +234,19 @@ func FightExportLog(c echo.Context) error {
     resp["log"] = log
     resp["version"] = version
     return ctx.SendResponse(resp)
+}
+
+func IsChapterFight(iFighType int) bool {
+    switch(iFighType) {
+        case 12:
+        case 18:
+        case 20:
+        case 22:
+        case 24:
+            return true;
+        default:
+            return false;
+    }
+
+    return false;
 }

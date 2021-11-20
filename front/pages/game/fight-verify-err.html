@@ -84,9 +84,15 @@
               case 12: ret = '无尽章节挑战'; break;
               case 13: ret = '梦境试炼'; break;
               case 14: ret = '隐秘地牢'; break;
-              case 15: ret = '困难章节挑战'; break;
-              case 16: ret = '困难关卡挑战'; break;
               case 17: ret = '无尽关卡挑战'; break;
+              case 18: ret = '龙域推图'; break;
+              case 19: ret = '龙域关卡挑战'; break;
+              case 20: ret = '深渊地牢推图'; break;
+              case 21: ret = '深渊地牢关卡挑战'; break;
+              case 22: ret = '金币副本推图'; break;
+              case 23: ret = '金币副本关卡挑战'; break;
+              case 24: ret = '英雄经验副本推图'; break;
+              case 25: ret = '英雄经验副本关卡挑战'; break;
               default:
                 ret = d.fight_type;
             }
@@ -96,11 +102,11 @@
         {field: "chapter_type", title: "章节类型" , templet: function(d) {
             let ret = ''
             switch(d.chapter_type) {
-              case 1: ret = '简单关卡'; break;
-              case 2: ret = '龙域关卡'; break;
-              case 3: ret = '无尽关卡'; break;
-              case 4: ret = '困难关卡'; break;
-              case 5: ret = '深渊关卡'; break;
+              case 1: ret = '龙域关卡'; break;
+              case 2: ret = '无尽关卡'; break;
+              case 3: ret = '迷宫探险'; break;
+              case 4: ret = '金币副本'; break;
+              case 5: ret = '经验副本'; break;
               default:
                 ret = d.chapter_type;
             }

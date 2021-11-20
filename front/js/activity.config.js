@@ -764,6 +764,11 @@
                     type: 'text',
                     parser: parseInt
                 },
+                coeffproductid: {
+                    name: '折扣商品id(只对关卡基金生效)',
+                    type: 'text',
+                    parser: parseInt
+                },
                 condition: {
                     name: '基金类型',
                     type: 'select',
@@ -1237,6 +1242,10 @@
                 },
                 recommond: {
                     name: '焦点参数(秒)',
+                    type: 'text',
+                },
+                show_sort: {
+                    name: '英雄显示顺序(公有参数里的整卡id)',
                     type: 'text',
                 }
             },
