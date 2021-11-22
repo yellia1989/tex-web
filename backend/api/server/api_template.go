@@ -26,7 +26,7 @@ func TemplateList(c echo.Context) error {
 	name := strings.TrimSpace(ctx.QueryParam("name"))
 	parent := strings.TrimSpace(ctx.QueryParam("parent"))
 
-	db := cfg.GameGlobalDb
+	db := cfg.TexDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -36,11 +36,6 @@ func TemplateList(c echo.Context) error {
 		return err
 	}
 	defer tx.Rollback()
-
-	_, err = tx.Exec("USE " + cfg.GameDbPrefix + "db_tex")
-	if err != nil {
-		return err
-	}
 
 	sql := "SELECT name, content, parent FROM t_template"
 	where := ""
@@ -116,20 +111,15 @@ func TemplateDel(c echo.Context) error {
 		}
 	}
 
-	db := cfg.GameGlobalDb
+	db := cfg.TexDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	_, err := db.Exec("USE " + cfg.GameDbPrefix + "db_tex")
-	if err != nil {
-		return err
-	}
-
-	sql := "DELETE FROM t_template WHERE name IN (" + ids + ")"
+	sql := "DELETE FROM t_template WHERE name IN ('" + ids + "')"
 	c.Logger().Debug(sql)
 
-	_, err = db.Exec(sql)
+	_, err := db.Exec(sql)
 	if err != nil {
 		return err
 	}
@@ -185,21 +175,16 @@ func TemplateUpdate(c echo.Context) error {
 		}
 	}
 
-	db := cfg.GameGlobalDb
+	db := cfg.TexDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
-	}
-
-	_, err := db.Exec("USE " + cfg.GameDbPrefix + "db_tex")
-	if err != nil {
-		return err
 	}
 
 	sql := "UPDATE t_template SET parent = '" + parent + "', content = '" + content + "'"
 	sql += "WHERE name = '" + name + "'"
 	c.Logger().Debug(sql)
 
-	_, err = db.Exec(sql)
+	_, err := db.Exec(sql)
 	if err != nil {
 		return err
 	}
@@ -218,14 +203,9 @@ func TemplateAdd(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db := cfg.GameGlobalDb
+	db := cfg.TexDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
-	}
-
-	_, err := db.Exec("USE " + cfg.GameDbPrefix + "db_tex")
-	if err != nil {
-		return err
 	}
 
 	sql := "INSERT IGNORE INTO t_template (name, parent, content) VALUES"
@@ -233,7 +213,7 @@ func TemplateAdd(c echo.Context) error {
 
 	c.Logger().Debug(sql)
 
-	_, err = db.Exec(sql)
+	_, err := db.Exec(sql)
 	if err != nil {
 		return err
 	}
@@ -244,7 +224,7 @@ func TemplateAdd(c echo.Context) error {
 func TemplateAllName(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	db := cfg.GameGlobalDb
+	db := cfg.TexDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
@@ -254,11 +234,6 @@ func TemplateAllName(c echo.Context) error {
 		return err
 	}
 	defer tx.Rollback()
-
-	_, err = tx.Exec("USE " + cfg.GameDbPrefix + "db_tex")
-	if err != nil {
-		return err
-	}
 
 	sql := "SELECT name FROM t_template"
 	c.Logger().Debug(sql)
