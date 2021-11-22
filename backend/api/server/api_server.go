@@ -5,8 +5,6 @@ import (
 	dsql "database/sql"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/crypto/ssh"
-	_ "golang.org/x/crypto/ssh/terminal"
 	"io"
 	"net"
 	"os"
@@ -14,6 +12,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/ssh"
+	_ "golang.org/x/crypto/ssh/terminal"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -106,12 +107,12 @@ func (wsw *wsWrapper) Read(p []byte) (n int, err error) {
 
 var upgrader = websocket.Upgrader{}
 
-func websocketHandle(con *websocket.Conn,ip string,cols string,rows string,user string,key string){
+func websocketHandle(con *websocket.Conn, ip string, cols string, rows string, user string, key string) {
 	rw := io.ReadWriter(&wsWrapper{con})
-	webprintln := func(data string){
-		rw.Write([]byte(data+"\r\n"))
+	webprintln := func(data string) {
+		rw.Write([]byte(data + "\r\n"))
 	}
-	con.SetCloseHandler(func(code int, text string) error{
+	con.SetCloseHandler(func(code int, text string) error {
 		con.Close()
 		return nil
 	})
@@ -122,17 +123,17 @@ func websocketHandle(con *websocket.Conn,ip string,cols string,rows string,user 
 		return
 	}
 
-	sshConfig :=  &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{ ssh.PublicKeys(signer) },
-		Timeout:10 * time.Second,
-		HostKeyCallback:func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+	sshConfig := &ssh.ClientConfig{
+		User:    user,
+		Auth:    []ssh.AuthMethod{ssh.PublicKeys(signer)},
+		Timeout: 10 * time.Second,
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
 			return nil
 		},
 	}
 
 	ip = ip + ":22"
-	client, err := ssh.Dial("tcp",ip, sshConfig)
+	client, err := ssh.Dial("tcp", ip, sshConfig)
 	if err != nil {
 		webprintln(err.Error())
 		return
@@ -152,9 +153,9 @@ func websocketHandle(con *websocket.Conn,ip string,cols string,rows string,user 
 		ssh.TTY_OP_ISPEED: 14400,
 		ssh.TTY_OP_OSPEED: 14400,
 	}
-	termWidth,_ := strconv.Atoi(cols)
-    termHeight,_ := strconv.Atoi(rows)
-	err = session.RequestPty("xterm",termHeight,termWidth, modes)
+	termWidth, _ := strconv.Atoi(cols)
+	termHeight, _ := strconv.Atoi(rows)
+	err = session.RequestPty("xterm", termHeight, termWidth, modes)
 	if err != nil {
 		webprintln(err.Error())
 		return
@@ -174,8 +175,8 @@ func websocketHandle(con *websocket.Conn,ip string,cols string,rows string,user 
 func ShellWs(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	node := ctx.QueryParam("node")
-    cols := ctx.QueryParam("cols")
-    rows := ctx.QueryParam("rows")
+	cols := ctx.QueryParam("cols")
+	rows := ctx.QueryParam("rows")
 
 	u := ctx.GetUser()
 	if u == nil {
@@ -186,14 +187,14 @@ func ShellWs(c echo.Context) error {
 		return ctx.SendError(-1, "ssh账号不存在")
 	}
 
-	con,err := upgrader.Upgrade(ctx.Response(),ctx.Request(),nil)
+	con, err := upgrader.Upgrade(ctx.Response(), ctx.Request(), nil)
 	if _, ok := err.(websocket.HandshakeError); ok {
 		c.Logger().Error("Not a websocket connection")
-		return ctx.SendError(-1,"Not a websocket handshake")
+		return ctx.SendError(-1, "Not a websocket handshake")
 	} else if err != nil {
-		return ctx.SendError(-1,err)
+		return ctx.SendError(-1, err)
 	}
-	go websocketHandle(con,node,cols,rows,u.TerminalUser,u.TerminalKey)
+	go websocketHandle(con, node, cols, rows, u.TerminalUser, u.TerminalKey)
 	return ctx.SendResponse("")
 }
 
