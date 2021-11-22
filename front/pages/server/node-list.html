@@ -17,7 +17,6 @@
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
   <script>
-    var taskNo;
     var editServer;
     layui.use(["element", "table", "form", "layer", "okUtils"], function () {
       let table = layui.table;
@@ -37,7 +36,7 @@
         defaultToolbar: ['filter'],
         cols: [[
           { field: "node", title: "节点", width: '10%' },
-          { field: "obj", title: "obj", width: '50%' },
+          { field: "obj", title: "obj", width: '45%' },
           {
             field: "cur_stat", title: "当前状态", width: '10%', templet: function (d) {
               switch (d.cur_stat) {
@@ -51,9 +50,40 @@
           { field: "loadavg1", title: "负载(1分钟)" },
           { field: "loadavg5", title: "负载(5分钟)" },
           { field: "loadavg15", title: "负载(15分钟)" },
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
         ]]
       });
+
+      function openTerminal() {
+        let param = {
+          type: 2,
+          title: "终端",
+          content: "./web-terminal.html",
+          area: ['90%', "90%"],
+          end: function () {
+
+          },
+        }
+        layer.open(param);
+      }
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "terminal":
+            editServer = data
+            openTerminal()
+            break;
+          default:
+            break;
+        }
+      });
+
     });
+  </script>
+
+  <script type="text/html" id="operationTpl">
+    <a href="javascript:" title="终端" lay-event="terminal">终端</a>
   </script>
 
 </body>

@@ -18,6 +18,8 @@ type User struct {
     Role uint32         `json:"role"`
     NeedReLogin uint32
     AllowGmCmd string    `json:"allowGmCmd"`
+    TerminalUser string  `json:"terminalUser"`
+    TerminalKey string   `json:"terminalKey"`
 }
 
 func (u *User) GetId() uint32 {
@@ -106,7 +108,7 @@ func GetUser(id uint32) *User {
         return nil
     }
     user := &User{}
-    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from sys_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&user.TerminalUser,&user.TerminalKey);err!=nil{
         return nil
     }
     return user
@@ -122,7 +124,7 @@ func GetUserByUserName(username string) *User {
         return nil
     }
     user := &User{}
-    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd from sys_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&user.TerminalUser,&user.TerminalKey);err!=nil{
         return nil
     }
     return user
@@ -133,14 +135,14 @@ func GetUsers() []*User {
     if db == nil {
         return nil
     }
-    rows, err := db.Query("select id,username,password,role,need_login,allow_gm_cmd from sys_user")
+    rows, err := db.Query("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user")
     if err!=nil{
         return nil
     }
     us := make([]*User,0)
     for rows.Next() {
         var user User
-        if err := rows.Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd);err!=nil{
+        if err := rows.Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&user.TerminalUser,&user.TerminalKey);err!=nil{
             return nil
         }
         us = append(us,&user)
@@ -206,7 +208,7 @@ func UpdateUser(u *User) bool {
     if db == nil {
         return false
     }
-    _,err := db.Exec("update sys_user set password = ?,role = ?,need_login = 1,allow_gm_cmd=? where id = ?",u.Password,u.Role,u.AllowGmCmd,u.Id)
+    _,err := db.Exec("update sys_user set password = ?,role = ?,need_login = 1,allow_gm_cmd=?,terminal_user=?,terminal_key=? where id = ?",u.Password,u.Role,u.AllowGmCmd,u.TerminalUser,u.TerminalKey,u.Id)
     if err!=nil {
         return false
     }
