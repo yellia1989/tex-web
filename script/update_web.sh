@@ -10,7 +10,7 @@ source remote_cmd.sh
 
 case "$env" in
     d)
-    ip=47.103.96.228
+    ip=192.168.0.15
     cp ../conf_d.cfg conf.cfg
     ;;
     u)
@@ -40,7 +40,7 @@ runcmd root@$ip "mkdir /data/web/backup"
 
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjvf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
+tar -cjf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
 
 if [ ! -f $web ]; then
     echo '打包web失败'
