@@ -10,7 +10,7 @@ source remote_cmd.sh
 
 case "$env" in
     d)
-    ip=192.168.0.15
+    ip=47.103.96.228
     cp ../conf_d.cfg conf.cfg
     ;;
     u)
