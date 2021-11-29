@@ -29,7 +29,7 @@ case "$env" in
     cc_ip=101.133.160.60
     ;;
     *)
-    echo "$env_helper"
+    echo "invalid env, $env_helper"
     exit 0
     ;;
 esac
