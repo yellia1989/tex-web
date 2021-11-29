@@ -1,7 +1,11 @@
 #!/bin/bash
 
+set -u
+set -e
+
+env_helper="env (d/192.168.0.15 u/106.15.139.153 r/47.241.161.10 robot/101.133.160.60)"
 if [ $# -ne 1 ] ;then
-	echo "Usage: $0 env (d/47.103.96.228 u/106.15.139.153 r/47.241.161.10 robot/101.133.160.60)"
+	echo "Usage: $0 $env_helper"
 	exit 100
 fi
 
@@ -10,50 +14,28 @@ source remote_cmd.sh
 
 case "$env" in
     d)
-    ip=47.103.96.228
-    cp ../conf_d.cfg conf.cfg
+    cc_ip=192.168.0.15
     ;;
     u)
-    ip=106.15.139.153
-    cp ../conf_u.cfg conf.cfg
+    cc_ip=106.15.139.153
     ;;
     r)
-    ip=47.241.161.10
-    cp ../conf_r.cfg conf.cfg
+    cc_ip=47.241.161.10
     ;;
     t)
-    ip=101.132.43.124
-    cp ../conf_t.cfg conf.cfg
+    cc_ip=101.132.43.124
     ;;
     robot)
-    ip=101.133.160.60
-    cp ../conf_robot.cfg conf.cfg
+    cc_ip=101.133.160.60
     ;;
     *)
-    echo "invalid env"
+    echo "$env_helper"
     exit 0
     ;;
 esac
 
-runcmd root@$ip "[ ! -f /data/web ] && mkdir /data/web"
-runcmd root@$ip "mkdir /data/web/backup"
-
+./upload_cc.sh $env
 web="web`date +%Y%m%d`.tar.gz"
+runcmd root@$cc_ip "cd /data/tex/tools/script && ./cc_install_web.sh $web"
 
-tar -cjf $web conf.cfg ../front ../web ../data ../start.sh ../stop.sh ../sql
-
-if [ ! -f $web ]; then
-    echo '打包web失败'
-    exit 0
-fi
-
-echo "拷贝文件时间较长， 请耐心等待。。。"
-putfile root@$ip ../update.sh /data/web/
-putfile root@$ip $web /data/web/backup/
-
-echo "更新web中。。。"
-runcmd root@$ip "cd /data/web && ./update.sh $web"
-
-rm -rf $web
-rm -rf conf.cfg
 exit 0
