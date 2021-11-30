@@ -6,4 +6,6 @@ if [ -f ./stop.sh ]; then
     ./stop.sh && rm -rf front
 fi
 
-tar -xjvf backup/$web && ./start.sh
+tar -xjf backup/$web
+chown root:root ./*
+./start.sh

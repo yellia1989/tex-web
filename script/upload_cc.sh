@@ -1,8 +1,6 @@
 #!/bin/bash
 
-set -u
-set -e
-
+# 上传包到cc机器
 env_helper="env (d/192.168.0.15 u/106.15.139.153 r/47.241.161.10 robot/101.133.160.60)"
 if [ $# -ne 1 ] ;then
 	echo "Usage: $0 $env_helper"
@@ -34,8 +32,22 @@ case "$env" in
     ;;
 esac
 
-./upload_cc.sh $env
-web="web`date +%Y%m%d`.tar.gz"
-runcmd root@$cc_ip "cd /data/tex/tools/script && ./cc_install_web.sh $web"
+path=/data/web/backup/tmp
+runcmd root@$cc_ip "mkdir -p $path"
 
+web="web`date +%Y%m%d`.tar.gz"
+
+tar -cjf $web ../front ../web ../data ../start.sh ../stop.sh
+
+if [ ! -f $web ]; then
+    echo '打包web失败'
+    exit 0
+fi
+
+echo "拷贝文件时间较长， 请耐心等待。。。"
+putfile root@$cc_ip ../conf.cfg $path
+putfile root@$cc_ip ../update.sh $path
+putfile root@$cc_ip $web $path
+
+rm -rf $web
 exit 0
