@@ -30,7 +30,7 @@ fi
 
 echo "拷贝文件时间较长， 请耐心等待。。。"
 
-path=/data/web/version_backup/
+path=/data/patch/web
 runcmd yk@$cc_ip "mkdir -p $path"
 putfile yk@$cc_ip $web $path
 
