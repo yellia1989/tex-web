@@ -21,7 +21,7 @@ case "$env" in
 esac
 web="web`date +%Y%m%d`.tar.gz"
 
-tar -cjf $web ../front ../web ../data ../sql ../conf.cfg ../start.sh ../stop.sh
+tar -czf $web ../front ../web ../data ../sql ../conf.cfg ../start.sh ../stop.sh
 
 if [ ! -f $web ]; then
     echo '打包web失败'
