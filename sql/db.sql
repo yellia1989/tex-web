@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.17, for linux-glibc2.5 (x86_64)
 --
--- Host: 172.19.248.171    Database: db_stat
+-- Host: 192.168.0.18    Database: db_stat
 -- ------------------------------------------------------
 -- Server version	5.6.17
 
@@ -417,4 +417,4 @@ CREATE TABLE `zone` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-07-26 11:08:17
+-- Dump completed on 2021-12-03 12:13:55

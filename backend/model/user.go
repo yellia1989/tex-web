@@ -5,6 +5,7 @@ import (
     "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-web/backend/cfg"
     "golang.org/x/crypto/bcrypt"
+    "database/sql"
     "net/http"
     "regexp"
     "strconv"
@@ -108,8 +109,16 @@ func GetUser(id uint32) *User {
         return nil
     }
     user := &User{}
-    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&user.TerminalUser,&user.TerminalKey);err!=nil{
+    var terminalUser sql.NullString
+    var terminalKey sql.NullString 
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user where id = ?",id).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&terminalUser,&terminalKey);err!=nil{
         return nil
+    }
+    if terminalUser.Valid {
+        user.TerminalUser = terminalUser.String
+    }
+    if terminalKey.Valid {
+        user.TerminalKey = terminalKey.String
     }
     return user
 }
@@ -124,8 +133,16 @@ func GetUserByUserName(username string) *User {
         return nil
     }
     user := &User{}
-    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&user.TerminalUser,&user.TerminalKey);err!=nil{
+    var terminalUser sql.NullString
+    var terminalKey sql.NullString 
+    if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&terminalUser,&terminalKey);err!=nil{
         return nil
+    }
+    if terminalUser.Valid {
+        user.TerminalUser = terminalUser.String
+    }
+    if terminalKey.Valid {
+        user.TerminalKey = terminalKey.String
     }
     return user
 }
@@ -142,8 +159,16 @@ func GetUsers() []*User {
     us := make([]*User,0)
     for rows.Next() {
         var user User
-        if err := rows.Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&user.TerminalUser,&user.TerminalKey);err!=nil{
+        var terminalUser sql.NullString
+        var terminalKey sql.NullString 
+        if err := rows.Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&terminalUser,&terminalKey);err!=nil{
             return nil
+        }
+        if terminalUser.Valid {
+            user.TerminalUser = terminalUser.String
+        }
+        if terminalKey.Valid {
+            user.TerminalKey = terminalKey.String
         }
         us = append(us,&user)
     }
