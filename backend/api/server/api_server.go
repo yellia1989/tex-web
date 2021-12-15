@@ -29,7 +29,6 @@ import (
 type nodeData struct {
 	Node          string  `json:"node"`
 	Obj           string  `json:"obj"`
-	SettingStat   int     `json:"setting_stat"`
 	CurStat       int     `json:"cur_stat"`
 	HeartbeatTime string  `json:"heartbeat_time"`
 	LoadAvg1      float32 `json:"loadavg1"`
@@ -41,8 +40,8 @@ type ServerData struct {
 	Server              string `json:"server"`
 	Division            string `json:"division"`
 	Node                string `json:"node"`
-	SettingStat         int    `json:"setting_stat"`
 	CurStat             int    `json:"cur_stat"`
+	AutoStart     int     `json:"auto_start"`
 	ProfileConfTemplate string `json:"profile_conf_template"`
 	TemplateName        string `json:"template_name"`
 	Pid                 int    `json:"pid"`
@@ -50,6 +49,7 @@ type ServerData struct {
 	PublishUserName     string `json:"publish_username"`
 	PublishTime         string `json:"publish_time"`
 	PromPort            int    `json:"prom_port"`
+	ManualStop    int     `json:"manual_stop"`
 }
 
 type ServiceData struct {
@@ -210,7 +210,7 @@ func NodeList(c echo.Context) error {
 
 	var vParam []interface{}
 
-	sql := "SELECT name, obj, setting_stat, cur_stat, heartbeat_time, load_avg1, load_avg5, load_avg15 FROM t_node_info where 1=1"
+	sql := "SELECT name, obj, cur_stat, heartbeat_time, load_avg1, load_avg5, load_avg15 FROM t_node_info where 1=1"
 
 	var total int
 	err := db.QueryRow("SELECT count(*) from t_node_info where 1=1", vParam...).Scan(&total)
@@ -235,7 +235,7 @@ func NodeList(c echo.Context) error {
 	logs := make([]nodeData, 0)
 	for rows.Next() {
 		var r nodeData
-		if err := rows.Scan(&r.Node, &r.Obj, &r.SettingStat, &r.CurStat, &r.HeartbeatTime, &r.LoadAvg1, &r.LoadAvg5, &r.LoadAvg15); err != nil {
+		if err := rows.Scan(&r.Node, &r.Obj, &r.CurStat, &r.HeartbeatTime, &r.LoadAvg1, &r.LoadAvg5, &r.LoadAvg15); err != nil {
 			return err
 		}
 		logs = append(logs, r)
@@ -265,7 +265,7 @@ func ServerList(c echo.Context) error {
 
 	var vParam []interface{}
 
-	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port FROM t_server WHERE 1=1"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port,manual_stop FROM t_server WHERE 1=1"
 	where := ""
 	if app != "" {
 		where += " AND app = ?"
@@ -309,7 +309,7 @@ func ServerList(c echo.Context) error {
 	for rows.Next() {
 		var r ServerData
 		var profile, version, username, publishTime dsql.NullString
-		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.SettingStat, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort); err != nil {
+		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.AutoStart, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort, &r.ManualStop); err != nil {
 			return err
 		}
 		if profile.Valid {
@@ -416,7 +416,7 @@ func ServerDetail(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	sql := "SELECT app, server, division, node, setting_stat, cur_stat, profile_conf_template, template_name, pid FROM t_server"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid FROM t_server"
 	where := " WHERE app = '" + app + "' AND server = '" + server + "' AND node = '" + node + "' AND division = '" + division + "'"
 	sql += where
 
@@ -428,7 +428,7 @@ func ServerDetail(c echo.Context) error {
 
 	row := db.QueryRow(sql)
 	var profile dsql.NullString
-	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.SettingStat, &data.CurStat, &profile, &data.TemplateName, &data.Pid)
+	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.AutoStart, &data.CurStat, &profile, &data.TemplateName, &data.Pid)
 	if err != nil {
 		return err
 	}
@@ -481,10 +481,10 @@ func ServerUpdate(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "UPDATE t_server SET setting_stat = ?, template_name = ?, profile_conf_template = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
+	sql := "UPDATE t_server SET auto_start = ?, template_name = ?, profile_conf_template = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.SettingStat, req.TemplateName, req.ProfileConfTemplate, req.App, req.Server, req.Division, req.Node)
+	_, err = tx.Exec(sql, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.App, req.Server, req.Division, req.Node)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
@@ -530,10 +530,10 @@ func ServerAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "INSERT INTO t_server (app, server, division, node, setting_stat, template_name, profile_conf_template) VALUES (?,?,?,?,?,?,?)"
+	sql := "INSERT INTO t_server (app, server, division, node, auto_start, template_name, profile_conf_template) VALUES (?,?,?,?,?,?,?)"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.SettingStat, req.TemplateName, req.ProfileConfTemplate)
+	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.AutoStart, req.TemplateName, req.ProfileConfTemplate)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
