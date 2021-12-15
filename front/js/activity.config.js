@@ -1100,21 +1100,11 @@
                     options: options.optYesNo,
                     parser: parseInt
                 },
-                rune_less_buyrunecost: {
-                    name: '当前拥有符文晶块小于上次购买符文所消耗的量',
-                    type: 'select',
-                    options: options.optYesNo,
-                    parser: parseInt
-                },
                 talentponit_less_talentlevelupcost: {
                     name: '当前拥有提纯试剂小于上次天赋升级所消耗的量',
                     type: 'select',
                     options: options.optYesNo,
                     parser: parseInt
-                },
-                rune_level: {
-                    name: '购买符文的等级(-区分)',
-                    type: 'midtext'
                 },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
