@@ -1925,6 +1925,12 @@
                         }
                     }
                 }
+            },
+            client_param: {
+                main_recommond: {
+                    name: '主城推送',
+                    type: 'text'
+                }
             }
         }
     };
