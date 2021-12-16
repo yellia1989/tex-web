@@ -91,6 +91,14 @@
               }
             }
           },
+          {
+            field: "manual_stop", title: "是否手动停止", align: "center", templet: function (d) {
+              switch (d.manual_stop) {
+                case 1: return "是";
+                case 0: return "<font color='#FF5722'>否</font>";
+              }
+            }
+          },
           { field: "template_name", title: "模板名" },
           { field: "profile_conf_template", title: "自定义模板" },
           { field: "publish_version", title: "版本" },
