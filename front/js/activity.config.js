@@ -1580,7 +1580,7 @@
                     parser: parseInt
                 },
                 stage_range: {
-                    name: '挂机关卡范围(-区分)',
+                    name: '章节范围(-区分)',
                     type: 'midtext'
                 },
                 hero_equip: {
