@@ -67,12 +67,12 @@
         defaultToolbar: ['filter'],
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "app", title: "应用", fixed: 'left', minWidth: '60' },
-          { field: "server", title: "服务", fixed: 'left', minWidth: '100' },
-          { field: "division", title: "分区", fixed: 'left', minWidth: '150' },
-          { field: "node", title: "节点", fixed: 'left', minWidth: '150' },
+          { field: "app", title: "应用", fixed: 'left', minWidth: '100' },
+          { field: "server", title: "服务", fixed: 'left', minWidth: '120' },
+          { field: "division", title: "分区", fixed: 'left', minWidth: '140' },
+          { field: "node", title: "节点", fixed: 'left', minWidth: '140' },
           {
-            field: "cur_stat", title: "当前状态", templet: function (d) {
+            field: "cur_stat", title: "当前状态", minWidth: '80', templet: function (d) {
               switch (d.cur_stat) {
                 case 0: return "<font color='#FF5722'>停止</font>";
                 case 1: return "<font color='#5FB878'>运行中</font>";
@@ -81,10 +81,10 @@
               }
             }
           },
-          { field: "pid", title: "进程ID" },
-          { field: "prom_port", title: "监听端口" },
+          { field: "pid", title: "进程ID", minWidth: '80' },
+          { field: "prom_port", title: "监听端口", minWidth: '80' },
           {
-            field: "auto_start", title: "是否自动重启", align: "center", templet: function (d) {
+            field: "auto_start", title: "自动重启", align: "center", minWidth: '80', templet: function (d) {
               switch (d.auto_start) {
                 case 1: return "是";
                 case 0: return "<font color='#FF5722'>否</font>";
@@ -92,19 +92,18 @@
             }
           },
           {
-            field: "manual_stop", title: "是否手动停止", align: "center", templet: function (d) {
+            field: "manual_stop", title: "手动停止", align: "center", minWidth: '80', templet: function (d) {
               switch (d.manual_stop) {
                 case 1: return "是";
                 case 0: return "<font color='#FF5722'>否</font>";
               }
             }
           },
-          { field: "template_name", title: "模板名" },
-          { field: "profile_conf_template", title: "自定义模板" },
-          { field: "publish_version", title: "版本" },
-          { field: "publish_username", title: "发布人", align: "center" },
-          { field: "publish_time", title: "发布时间", align: "center", minWidth: '200' },
-          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', minWidth: 200 }
+          { field: "template_name", title: "模板名", minWidth: '120'},
+          { field: "publish_version", title: "版本", minWidth: '120'},
+          { field: "publish_username", title: "发布人", align: "center",minWidth: '100'},
+          { field: "publish_time", title: "发布时间", align: "center", minWidth: '160' },
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', minWidth: '240' }
         ]]
       });
 
