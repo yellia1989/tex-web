@@ -61,6 +61,7 @@ type ServiceData struct {
 	MaxConn      int    `json:"max_conn"`
 	QueueCap     int    `json:"queue_cap"`
 	QueueTimeout int    `json:"queue_timeout"`
+    Timeout      int    `json:"timeout"`
 }
 
 type ServerDetailData struct {
@@ -457,6 +458,7 @@ func ServerDetail(c echo.Context) error {
 		}
 		r.Port = endpoint.Port
 		r.PortType = endpoint.Proto
+        r.Timeout = int(endpoint.Idletimeout.Milliseconds())
 		data.Services = append(data.Services, r)
 	}
 
@@ -494,7 +496,7 @@ func ServerUpdate(c echo.Context) error {
 			Proto:       v.PortType,
 			IP:          req.Node,
 			Port:        v.Port,
-			Idletimeout: time.Duration(v.QueueTimeout) * time.Millisecond,
+			Idletimeout: time.Duration(v.Timeout) * time.Millisecond,
 		}
 		sEndpoint := endpoint.String()
 		sql2 := "INSERT INTO t_service (app, server, division, node, service, endpoint, thread_num, protocol, max_conn, queue_cap, queue_timeout) VALUES (?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE endpoint = ?, thread_num = ?, protocol = ?, max_conn = ?, queue_cap = ?, queue_timeout = ?"
@@ -546,7 +548,7 @@ func ServerAdd(c echo.Context) error {
 			Proto:       v.PortType,
 			IP:          req.Node,
 			Port:        v.Port,
-			Idletimeout: time.Duration(v.QueueTimeout) * time.Millisecond,
+			Idletimeout: time.Duration(v.Timeout) * time.Millisecond,
 		}
 		str := "(?,?,?,?,?,?,?,?,?,?,?)"
 		values = append(values, str)
@@ -757,6 +759,7 @@ func PatchList(c echo.Context) error {
 		vParam = append(vParam, server)
 	}
 	sql += where
+    sql += " order by upload_time desc"
 	var total int
 	err := db.QueryRow("select count(id) from t_patch where 1=1"+where, vParam...).Scan(&total)
 	if err != nil {

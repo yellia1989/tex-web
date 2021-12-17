@@ -29,9 +29,9 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">设置状态</label>
+        <label class="layui-form-label">自动重启</label>
         <div class="layui-input-inline">
-          <select id="setting_stat">
+          <select id="auto_start">
             <option value="0">否</option>
             <option value="1">是</option>
           </select>
@@ -108,7 +108,7 @@
 
       let curTable = table.render({
         elem: "#tableId",
-        data: [{ port_type: 'tcp', protocol: 'mfw', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '3600000' }],
+        data: [{ port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' }],
         limit: 30,
         page: true,
         toolbar: "#toolbarTpl",
@@ -118,6 +118,7 @@
           { field: "port", title: "端口", edit: 'text', width: '8%', align: 'center' },
           { field: "port_type", title: "端口类型", edit: 'text', width: '8%', align: 'center' },
           { field: "protocol", title: "协议", edit: 'text', width: '8%', align: 'center' },
+          { field: "timeout", title: "连接超时", edit: 'text', width: '8%', align: 'center' },
           { field: "thread_num", title: "线程数", edit: 'text', width: '8%', align: 'center' },
           { field: "max_conn", title: "最大连接数", edit: 'text', width: '8%', align: 'center' },
           { field: "queue_cap", title: "队列最大长度", edit: 'text', width: '8%', align: 'center' },
@@ -131,6 +132,7 @@
         for (s of services) {
           s['service'] = s.obj.substring(s.obj.lastIndexOf('.') + 1, s.obj.length);
           s['port'] = parseInt(s.port, 10);
+          s['timeout'] = parseInt(s.timeout, 10);
           s['thread_num'] = parseInt(s.thread_num, 10);
           s['max_conn'] = parseInt(s.max_conn, 10);
           s['queue_cap'] = parseInt(s.queue_cap, 10);
@@ -141,7 +143,7 @@
           server: $('#server').val(),
           division: $('#division').val(),
           node: $('#node').val(),
-          setting_stat: parseInt($('#setting_stat').val()),
+          auto_start: parseInt($('#auto_start').val()),
           template_name: templateSelect.getValue('valueStr'),
           profile_conf_template: $('#profile_conf_template').val(),
           services: services,
@@ -160,7 +162,7 @@
         switch (obj.event) {
           case 'add-row': {
             let dataBak = table.cache.tableId;
-            dataBak.push({ port_type: 'tcp', protocol: 'mfw', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '3600000' });
+            dataBak.push({ port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' });
             curTable.reload({
               data: dataBak
             });

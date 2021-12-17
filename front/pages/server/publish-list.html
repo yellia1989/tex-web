@@ -44,10 +44,10 @@
           { field: "division", title: "分区", fixed: 'left' },
           { field: "node", title: "节点" },
           {
-            field: "setting_stat", title: "设置状态", align: "center", templet: function (d) {
-              switch (d.setting_stat) {
-                case 1: return "自动重启";
-                case 0: return "<font color='#FF5722'>不重启</font>";
+            field: "auto_start", title: "自动重启", align: "center", templet: function (d) {
+              switch (d.auto_start) {
+                case 1: return "是";
+                case 0: return "<font color='#FF5722'>否</font>";
               }
             }
           },
@@ -62,9 +62,9 @@
             }
           },
           { field: "pid", title: "进程ID" },
-          { field: "version", title: "版本" },
-          { field: "release_user", title: "发布人", align: "center" },
-          { field: "release_time", title: "发布时间", align: "center" },
+          { field: "publish_version", title: "版本" },
+          { field: "publish_username", title: "发布人", align: "center" },
+          { field: "publish_time", title: "发布时间", align: "center" },
         ]]
       });
 
