@@ -331,10 +331,6 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 show_step: {
                     name: '可显示档位',
                     type: 'text',
@@ -387,10 +383,6 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 help_id : {
                     name: '帮助提示',
@@ -486,10 +478,6 @@
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
@@ -542,10 +530,6 @@
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
@@ -582,10 +566,6 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 recommond: {
                     name: '焦点参数(秒)',
@@ -624,10 +604,6 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 recommond: {
                     name: '焦点参数(秒)',
@@ -737,10 +713,6 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 template: {
                     name: '福利类型',
                     type: 'select',
@@ -847,10 +819,6 @@
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
@@ -910,10 +878,6 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 is_new_service: {
                     name: '是否是新服活动',
@@ -1145,10 +1109,6 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 them : {
                     name: '在线奖励主题',
                     type: 'text',
@@ -1204,10 +1164,6 @@
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
@@ -1247,10 +1203,6 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 recommond: {
                     name: '焦点参数(秒)',
@@ -1307,10 +1259,6 @@
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 show_sort: {
                     name: '英雄显示顺序(公有参数里的整卡id)',
@@ -1399,10 +1347,6 @@
                     name: '热点英雄',
                     type: 'text'
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 block_color: {
                     name: '方块颜色',
                     type: 'text'
@@ -1474,10 +1418,6 @@
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
@@ -1512,10 +1452,6 @@
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
@@ -1542,10 +1478,6 @@
                 },
                 list_bg: {
                     name: '列表背景',
-                    type: 'text'
-                },
-                main_recommond: {
-                    name: '主城推送',
                     type: 'text'
                 },
                 view_sort: {
@@ -1647,10 +1579,6 @@
                     name: '焦点参数(秒)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 help_id : {
                     name: '帮助提示',
                     type: 'text',
@@ -1692,10 +1620,6 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 recommond: {
                     name: '焦点参数(秒)',
@@ -1748,10 +1672,6 @@
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
-                },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 },
                 recommond: {
                     name: '焦点参数(秒)',
@@ -1827,10 +1747,6 @@
                     name: '排序参数(01234，不能重复)',
                     type: 'text',
                 },
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
-                },
                 recommond: {
                     name: '焦点参数(秒)',
                     type: 'text',
@@ -1868,12 +1784,6 @@
                     name: '额外的抽奖次数的商品:商品id',
                     type: 'text',
                     parser: parseInt
-                }
-            },
-            client_param: {
-                main_recommond: {
-                    name: '主城推送',
-                    type: 'text'
                 }
             },
             server_param: {
@@ -2085,6 +1995,12 @@
         },
         'info.major': {
             name: '是否主推:开启游戏弹出活动',
+            type: 'select',
+            options: options.optYesNo,
+            parser: parseInt
+        },
+        'info.main_recommend': {
+            name: '是否主城展示活动',
             type: 'select',
             options: options.optYesNo,
             parser: parseInt
