@@ -88,7 +88,7 @@ func DbAdd(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-    _, err := db.Exec("INSERT INTO t_maplist(zoneids,dbhost,dbport,dbuser,dbpwd) VALUES(?,?,?,?,?)", zoneids,dbHost,dbPort,dbUser,dbPwd)
+    _, err := db.Exec("INSERT INTO t_dblist(zoneids,dbhost,dbport,dbuser,dbpwd) VALUES(?,?,?,?,?)", zoneids,dbHost,dbPort,dbUser,dbPwd)
 	if err != nil {
 		return err
 	}
