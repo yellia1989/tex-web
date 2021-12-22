@@ -24,6 +24,7 @@ import (
 	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+    frpc "github.com/yellia1989/tex-go/sdp/rpc"
 )
 
 type nodeData struct {
@@ -796,4 +797,35 @@ func PatchList(c echo.Context) error {
 	}
 
 	return ctx.SendArray(logs, total)
+}
+
+func RegistryIp() (map[uint32]string,error) {
+    comm := cfg.Comm
+
+    queryPrx := new(frpc.Query)
+    comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
+
+    var vObj []frpc.ObjEndpoint
+    ret, err := queryPrx.GetAllEndpoints(&vObj)
+    if ret != 0 || err != nil {
+        return nil, fmt.Errorf("ret: %d, err: %s", ret, err.Error())
+    }
+
+    m := make(map[uint32]string)
+    for _, o := range vObj {
+        if len(o.SDivision) == 0 {
+            continue
+        }
+        vzone := strings.Split(o.SDivision, ".")
+        if len(vzone) != 3 || vzone[1] != "zone" {
+            continue
+        }
+        vep := strings.Split(o.SEp, " ")
+        if len(vep) != 7 {
+            continue
+        }
+        m[common.Atou32(vzone[2])] = vep[2]
+    }
+
+    return m, nil
 }

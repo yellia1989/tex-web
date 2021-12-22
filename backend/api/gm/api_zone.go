@@ -163,32 +163,11 @@ func ZoneAdd(c echo.Context) error {
         zone.MVersion[v.SChannel] = ver
     }
 
-    sDivision := fmt.Sprintf(cfg.App+".zone.%d", zone.IZoneId)
-    sHandleConnEp := ctx.FormValue("sHandleConn")
-    sConnServiceObjEp := ctx.FormValue("sConnServiceObj")
-    sGameServiceObjEp := ctx.FormValue("sGameServiceObj")
-
-    if err := registryAdd(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp); err != nil {
-        return fmt.Errorf("增加ConnServer.HandleConn失败: %s", err.Error())
-    }
-    if err := registryAdd(cfg.App+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp); err != nil {
-        registryDel(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp)
-        return fmt.Errorf("增加ConnServer.ConnServiceObj失败: %s", err.Error())
-    }
-    if err := registryAdd(cfg.App+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp); err != nil {
-        registryDel(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp)
-        registryDel(cfg.App+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
-        return fmt.Errorf("增加GameServer.GameServiceObj失败: %s", err.Error())
-    }
-
     dirPrx := new(rpc.DirService)
     comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
     ret, err = dirPrx.CreateZone(*zone.Copy())
     if err := checkRet(ret, err); err != nil {
-        registryDel(cfg.App+".ConnServer.HandleConn", sDivision, sHandleConnEp)
-        registryDel(cfg.App+".ConnServer.ConnServiceObj", sDivision, sConnServiceObjEp)
-        registryDel(cfg.App+".GameServer.GameServiceObj", sDivision, sGameServiceObjEp)
-        return fmt.Errorf("增加新分区失败: %s", err.Error())
+        return err
     }
 
     return ctx.SendResponse("添加分区成功")

@@ -141,16 +141,6 @@
         "children": null
       },
       {
-        "id": 204,
-        "title": "Registry管理",
-        "href": "gm/registry.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
         "id": 205,
         "title": "邮件管理",
         "href": "gm/mail.html",
