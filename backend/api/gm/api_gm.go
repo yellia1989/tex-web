@@ -53,16 +53,8 @@ func GameCmd(c echo.Context) error {
     for _,zoneid := range zoneids {
         izoneid := common.Atou32(zoneid)
         gamePrx := new(rpc.GameService)
-        gfPrx := new(rpc.GFService)
-        mapPrx := new(rpc.MapService)
         if izoneid != 0 {
-            if !IsGame(izoneid) {
-                comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+zoneid, mapPrx)
-            } else {
-                comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
-            }
-        } else {
-            comm.StringToProxy(app+".GFServer.GFServiceObj", gfPrx)
+            comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
         }
 
         cmds := strings.Split(scmd, "\n")
@@ -76,13 +68,7 @@ func GameCmd(c echo.Context) error {
             buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
 
             if izoneid != 0 {
-                if IsGame(izoneid) {
-                    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
-                } else {
-                    ret, err = mapPrx.DoGmCmd(u.UserName, cmd, &result)
-                }
-            } else {
-                ret, err = gfPrx.DoGmCmd(u.UserName, cmd, &result)
+                ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
             }
             if ret != 0 || err != nil {
                 serr := ""
@@ -110,24 +96,15 @@ func Cmd(userName string, zoneid string, mapid string, cmd string, result *strin
     app := cfg.App
 
     gamePrx := new(rpc.GameService)
-    mapPrx := new(rpc.MapService)
 
-    if mapid == "0" {
-        comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
-    } else {
-        comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
-    }
+    comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
 
     cmd = strings.Trim(strings.ReplaceAll(cmd, "   ", ""), " ")
 
     var ret int32
     var err error
 
-    if mapid == "0" {
-        ret, err = gamePrx.DoGmCmd(userName, cmd, result)
-    } else {
-        ret, err = mapPrx.DoGmCmd(userName, cmd, result)
-    }
+    ret, err = gamePrx.DoGmCmd(userName, cmd, result)
     if ret != 0 || err != nil {
         serr := ""
         if err != nil {
@@ -254,67 +231,6 @@ func BanLogin(c echo.Context) error {
     err := cmd(ctx, zoneid, scmd, &result)
     if err !=  nil {
         return err
-    }
-
-    return ctx.SendResponse(result)
-}
-
-func RealMap(c echo.Context) error {
-    ctx := c.(*mid.Context)
-    mapid := ctx.FormValue("mapid")
-
-    if mapid == "" {
-        return ctx.SendError(-1, "参数非法")
-    }
-
-    comm := cfg.Comm
-    app := cfg.App
-
-    mapPrx := new(rpc.MapService)
-    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
-
-    cmd := "map_json"
-
-    var result string
-    u := ctx.GetUser()
-    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
-    if ret != 0 || err != nil {
-        serr := ""
-        if err != nil {
-            serr = err.Error()
-        }
-        return fmt.Errorf("ret:%d, err:%s", ret, serr)
-    }
-
-    return ctx.SendResponse(result)
-}
-
-func RealMapObj(c echo.Context) error {
-    ctx := c.(*mid.Context)
-    mapid := ctx.FormValue("mapid")
-    objid := ctx.FormValue("objid")
-
-    if objid == "" || mapid == "" {
-        return ctx.SendError(-1, "参数非法")
-    }
-
-    comm := cfg.Comm
-    app := cfg.App
-
-    mapPrx := new(rpc.MapService)
-    comm.StringToProxy(app+".MapServer.MapServiceObj%"+app+".map."+mapid, mapPrx)
-
-    cmd := "see_obj " + objid
-
-    var result string
-    u := ctx.GetUser()
-    ret, err := mapPrx.DoGmCmd(u.UserName, cmd, &result)
-    if ret != 0 || err != nil {
-        serr := ""
-        if err != nil {
-            serr = err.Error()
-        }
-        return fmt.Errorf("ret:%d, err:%s", ret, serr)
     }
 
     return ctx.SendResponse(result)

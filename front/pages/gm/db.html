@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>地图管理</title>
+  <title>数据库管理</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -23,9 +23,9 @@
       let okUtils = layui.okUtils;
       okLoading.close();
 
-      let mapTable = table.render({
+      let dbTable = table.render({
         elem: "#tableId",
-        url: '/api/gm/map/list',
+        url: '/api/gm/db/list',
         text: {
           none: '暂无相关数据',
         },
@@ -34,20 +34,14 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号", fixed: 'left' },
-          { field: "iMapId", title: "地图id", width: 90, fixed: 'left' },
+          { field: "id", title: "id", width: 90, fixed: 'left' },
           { field: "vZoneId", title: "分区列表" },
           { field: "dbHost", title: "数据库服务器" },
           { field: "dbPort", title: "数据库端口" },
           { field: "dbUser", title: "数据库用户名" },
           { field: "dbPwd", title: "数据库密码" },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
-        ]],
-        parseData: function (res) {
-          for (i = 0; res.data && i < res.data.length; ++i) {
-            res.data[i].id = res.data[i].iMapId;
-          }
-          return res;
-        }
+        ]]
       });
 
       table.on("toolbar(tableFilter)", function (obj) {
@@ -66,17 +60,17 @@
         switch (obj.event) {
           case "edit":
             editData = data;
-            edit(data.iMapId);
+            edit(data.id);
             break;
           case "del":
-            del(data.iMapId);
+            del(data.id);
             break;
         }
       });
 
       function add() {
-        okLayer.open("添加地图", "map-add.html", "90%", "90%", null, function () {
-          mapTable.reload();
+        okLayer.open("添加数据库", "db-add.html", "90%", "90%", null, function () {
+          dbTable.reload();
         })
       }
 
@@ -85,7 +79,7 @@
 				layer.close(index);
 				let idsStr = okUtils.tableBatchCheck(table);
 				if (idsStr) {
-					okUtils.ajax("/api/gm/map/del", "post", {idsStr: idsStr}, true).done(function (response) {
+					okUtils.ajax("/api/gm/db/del", "post", {idsStr: idsStr}, true).done(function (response) {
 						okUtils.tableSuccessMsg(response.data);
 					}).fail(function (error) {
 						console.log(error)
@@ -95,14 +89,14 @@
 		}
 
     function edit(id) {
-      okLayer.open("编辑地图", "map-edit.html", "90%", "90%", null, function () {
-        mapTable.reload();
+      okLayer.open("编辑数据库", "db-edit.html", "90%", "90%", null, function () {
+        dbTable.reload();
       })
     }
 
 		function del(id) {
 			okLayer.confirm("确定要删除吗？", function () {
-				okUtils.ajax("/api/gm/map/del", "post", {idsStr: id}, true).done(function (response) {
+				okUtils.ajax("/api/gm/db/del", "post", {idsStr: id}, true).done(function (response) {
 					okUtils.tableSuccessMsg(response.data);
 				}).fail(function (error) {
 					console.log(error)

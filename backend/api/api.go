@@ -94,10 +94,10 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/ban/speak", gm.BanSpeak)       // 禁言
     group.POST("/gm/ban/login", gm.BanLogin)       // 禁止登陆
 
-    group.GET("/gm/map/list", gm.MapList)  // 地图列表
-    group.POST("/gm/map/add", gm.MapAdd)   // 地图增加
-    group.POST("/gm/map/edit", gm.MapEdit) // 地图编辑
-    group.POST("/gm/map/del", gm.MapDel)   // 地图删除
+    group.GET("/gm/db/list", gm.DbList)  // 数据库列表
+    group.POST("/gm/db/add", gm.DbAdd)   // 数据库增加
+    group.POST("/gm/db/edit", gm.DbEdit) // 数据库编辑
+    group.POST("/gm/db/del", gm.DbDel)   // 数据库删除
 
     group.GET("/gm/push/list", gm.PushList)          // 推送任务列表
     group.POST("/gm/push/testsend", gm.PushTestSend) // 增加测试推送任务
@@ -112,17 +112,11 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/welfare/taskdel", gm.WelfareTaskDel)       // 删除福利任务
     group.GET("/gm/welfare/rolelist", gm.WelfareRoleList)      // 玩家福利
 
-    group.POST("/gm/import/load_role", gm.LoadRole) // 导入玩家数据
-    group.GET("/gm/import/dump_role", gm.DumpRole) // 导入玩家数据
-    group.GET("/gm/import/get_server_list", gm.GetServerList) // 获取所有地区的服务器信息
-    group.GET("/gm/import/get_zone_list", gm.GetZoneList) // 获取可选的服务器列表
-
     group.GET("/game/role/list", game.RoleList)     // 玩家列表
     group.GET("/game/coin/addlog", game.CoinAddLog) // 金币日志
     group.GET("/game/coin/sublog", game.CoinSubLog)
     group.GET("/game/diamond/addlog", game.DiamondAddLog) // 钻石日志
     group.GET("/game/diamond/sublog", game.DiamondSubLog)
-    group.GET("/game/hero/addlog", game.HeroAddLog) // 英雄日志
     group.GET("/game/item/addlog", game.ItemAddLog) // 道具日志
     group.GET("/game/item/sublog", game.ItemSubLog)
     group.GET("/game/mail/sendlog", game.MailSendLog) // 邮件日志
@@ -132,11 +126,7 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/real/online", game.RealOnline)
     group.GET("/game/real/newadd", game.RealNewadd)
     group.GET("/game/real/income", game.RealIncome)
-    group.GET("/game/real/stageverify", game.RealStageVerify)
-    group.GET("/game/real/fightverify", game.RealFightVerify)
     group.GET("/game/real/stat", stat.RealStat)
-    group.GET("/game/real/map", gm.RealMap)
-    group.POST("/game/real/mapobj", gm.RealMapObj)
     group.GET("/game/online/time", game.OnlineTime) // 在线时间记录
     group.GET("/game/role/detail", game.RoleDeatil) //获取特定玩家数据
     group.GET("/game/recharge/trace", game.RechargeTrace)
@@ -176,13 +166,6 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/res/add_res_action", gm.ResAppendAction)      // 增加获取途径项
     group.GET("/gm/res_num_err/err_info", gm.ResNumErrInfo)       // 资源数量获取异常异常信息
     group.GET("/gm/res_num_err/err_detail", gm.ResNumErrDetail)
-
-    group.GET("/game/fight-verify/err_info", game.FightErrInfo) // 战斗验证失败日志列表
-    group.POST("/game/fight-verify/export-report", game.FightExportReport) // 导出战斗日志
-    group.POST("/game/fight-verify/export-log", game.FightExportLog) // 导出战斗日志
-
-    group.GET("/public/gm/get_zone_list", gm.GetZoneList) // 获取当前环境的服务器列表
-    group.GET("/public/gm/dump_role", gm.DumpRole) // 复制玩家数据
 
     group.GET("/server/nodeList", server.NodeList) // 获取节点列表
     group.GET("/server/shellWs", server.ShellWs) // ws

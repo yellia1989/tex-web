@@ -1,9 +1,0 @@
-module rpc
-{
-
-interface MapService
-{
-	int doGmCmd(string sOperatorName, string sReqCmd, out string sResp);
-};
-
-}; 

@@ -74,16 +74,12 @@ func updateZoneList(bUpdate bool) ([]rpc.ZoneInfo) {
 func ZoneSimpleList(c echo.Context) error {
     ctx := c.(*mid.Context)
     game := ctx.QueryParam("game")
-    gf := ctx.QueryParam("gf")
     all := ctx.QueryParam("all")
-    mmap := ctx.QueryParam("map")
 
     bgame := game != ""
-    bgf := gf != ""
-    bmap := mmap != ""
     ball := all != ""
 
-    if game == "" && gf == "" && mmap == "" && all == "" {
+    if game == "" && all == "" {
         bgame = true
     }
 
@@ -102,22 +98,8 @@ func ZoneSimpleList(c echo.Context) error {
         zones = append(zones, zones2...)
     }
 
-    if bgf {
-        zones = append(zones, rpc.ZoneInfo{IZoneId: 0, SZoneName: "GFServer"})
-    }
-
     data := make(map[string][]rpc.ZoneInfo,0)
     data["game"] = zones
-
-    if bmap {
-        var zones3 []rpc.ZoneInfo
-        if ball {
-            zones3 = append(zones3, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
-        }
-        zones4 := MapSimpleList()
-        zones3 = append(zones3, zones4...)
-        data["map"] = zones3
-    }
 
     return ctx.SendResponse(data)
 }

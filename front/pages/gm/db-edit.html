@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>编辑地图</title>
+  <title>编辑数据库</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -12,9 +12,9 @@
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-form-item">
-        <label class="layui-form-label">地图id</label>
+        <label class="layui-form-label">id</label>
         <div class="layui-input-block">
-          <input type="text" name="iMapId" placeholder="请地图id(>1000)" class="layui-input layui-disabled" disabled lay-verify="required|integer" lay-verType="tips">
+          <input type="text" name="id" class="layui-input layui-disabled" disabled lay-verify="required|integer" lay-verType="tips">
         </div>
       </div>
 
@@ -69,7 +69,7 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      $("input[name=iMapId]").val(parent.editData.iMapId);
+      $("input[name=id]").val(parent.editData.id);
       $("input[name=dbHost]").val(parent.editData.dbHost);
       $("input[name=dbPort]").val(parent.editData.dbPort);
       $("input[name=dbUser]").val(parent.editData.dbUser);
@@ -98,7 +98,7 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
-        okUtils.ajax("/api/gm/map/edit", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/gm/db/edit", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });

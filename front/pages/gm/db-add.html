@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>新增地图</title>
+  <title>新增数据库</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
 </head>
@@ -11,27 +11,6 @@
 <body>
   <div class="ok-body">
     <form class="layui-form layui-form-pane ok-form">
-      <div class="layui-form-item">
-        <label class="layui-form-label">地图id</label>
-        <div class="layui-input-block">
-          <input type="text" name="iMapId" placeholder="地图id(>10000)" autocomplete="off" class="layui-input" lay-verify="required|integer|mapid" lay-verType="tips">
-        </div>
-      </div>
-
-	    <div class="layui-form-item">
-		    <label class="layui-form-label">内网ip</label>
-		    <div class="layui-input-inline">
-			    <input type="text" name="sInternalIp" class="layui-input" lay-verify="required" lay-verType="tips">
-		    </div>
-	    </div>
-
-	    <div class="layui-form-item">
-			  <label class="layui-form-label">MapServer</label>
-			  <div class="layui-input-block">
-				  <input type="text" name="endpoint" disabled class="layui-input" lay-verify="required" lay-verType="tips">
-			  </div>
-        </div>
-
       <div class="layui-form-item">
         <label class="layui-form-label">分区列表</label>
         <div class="layui-input-block">
@@ -103,23 +82,9 @@
         console.log(error);
       });
 
-      $("input[name='sInternalIp']").change(function () {
-        mapid = parseInt($("input[name='iMapId']").val());
-        v = $(this).val();
-        $("input[name='endpoint']").val("tcp -h "+v+" -p "+(7000+mapid%10000)+" -t 3600000");
-      });
-
-      form.verify({
-        mapid: function(value, item) {
-          if (value < 10001) {
-            return '地图id(>10000)'
-          }
-        }
-      });
-
       //监听提交
       form.on('submit(add)', function (data) {
-        okUtils.ajax("/api/gm/map/add", "post", data.field, true).done(function (response) {
+        okUtils.ajax("/api/gm/db/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });

@@ -201,16 +201,6 @@
         "children": null
       },
       {
-        "id": 210,
-        "title": "活动管理",
-        "href": "gm/activity.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
         "id": 212,
         "title": "屏蔽字测试",
         "href": "gm/dirty.html",
@@ -222,8 +212,8 @@
       },
       {
         "id": 213,
-        "title": "地图管理",
-        "href": "gm/map.html",
+        "title": "数据库管理",
+        "href": "gm/db.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
@@ -270,16 +260,6 @@
             "children": null
           }
         ]
-      },
-      {
-        "id": 216,
-        "title": "数据拷贝",
-        "href": "gm/copy.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
       }
     ]
   },
@@ -417,27 +397,6 @@
             "id": 80302,
             "title": "钻石消耗记录",
             "href": "game/diamond-sub.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "children": null
-          }
-        ]
-      },
-      {
-        "id": 804,
-        "title": "英雄记录",
-        "href": "",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": [
-          {
-            "id": 80401,
-            "title": "英雄获得记录",
-            "href": "game/hero-add.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
             "spread": false,
@@ -630,36 +589,6 @@
         "checked": false,
         "children": null
       },
-      {
-        "id": 904,
-        "title": "实时关卡验证",
-        "href": "game/real-stageverify.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 905,
-        "title": "实时战斗验证",
-        "href": "game/real-fightverify.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 906,
-        "title": "实时地图",
-        "href": "game/real-map.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      }
     ]
   },
   {
@@ -735,27 +664,6 @@
             "id": 100302,
             "title": "客户端报错处理",
             "href": "game/client-err-dispose.html",
-            "fontFamily": "ok-icon",
-            "icon": "\u0026#xe654;",
-            "spread": false,
-            "checked": false,
-            "children": null
-          }
-        ]
-      },
-      {
-        "id": 1004,
-        "title": "战斗验证失败报警",
-        "href": "",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": [
-          {
-            "id": 100401,
-            "title": "战斗验证失败日志",
-            "href": "game/fight-verify-err.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
             "spread": false,
