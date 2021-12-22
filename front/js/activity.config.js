@@ -1871,6 +1871,16 @@
                     type: 'text',
                     parser: parseInt
                 },
+                coeffproductid: {
+                    name: '折扣商品id',
+                    type: 'text',
+                    parser: parseInt
+                },
+                coeffday: {
+                    name: '折扣天数',
+                    type: 'text',
+                    parser: parseInt
+                },
                 condition: {
                     name: '进度类型',
                     type: 'select',
