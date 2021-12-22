@@ -487,14 +487,26 @@
     };
     // 5
     activityTypeDefine[5] = {
-        name: '首冲送英雄',
+        name: '首充送英雄',
         fieldOption: {
             comm_param: {
-                item: {
-                    name: '道具:id,num',
-                    type: 'midtext',
-                    printer: utils.printItemNumList,
-                    parser: utils.parseItemNumList
+                step: {
+                   name: '奖励',
+                   type: 'map',
+                   groupFieldOption: {
+                        _: {
+                            name: '可选奖励列表',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                       },
+                       reward: {
+                           name: '奖励:id,num',
+                           type: 'longtext',
+                           printer: utils.printItemNumList,
+                           parser: utils.parseItemNumList
+                       }
+                    }
                 }
             },
             client_param: {
@@ -745,17 +757,27 @@
                             isMapKey: true,
                             parser: parseInt
                          },
+                         freeheroSoulNum: {
+                           name: '免费英雄碎片奖励',
+                           type: 'text',
+                           parser: parseInt
+                         },
                          freereward: {
                            name: '免费奖励:id,num',
                            type: 'longtext',
                            printer: utils.printItemNumList,
-                           parser: utils.parseItemNumList
+                           parser: utils.parseItemNumList,
+                         },
+                         buyheroSoulNum: {
+                           name: '进阶英雄碎片奖励',
+                           type: 'text',
+                           parser: parseInt
                          },
                          buyreward: {
                            name: '进阶奖励:id,num',
                            type: 'longtext',
                            printer: utils.printItemNumList,
-                           parser: utils.parseItemNumList
+                           parser: utils.parseItemNumList,
                          }
                     }
                 },
@@ -763,6 +785,15 @@
                     name: '商品id',
                     type: 'text',
                     parser: parseInt
+                },
+                coeffproductid: {
+                    name: '折扣商品id(只对关卡基金生效)',
+                    type: 'text',
+                    parser: parseInt
+                },
+                hero: {
+                    name: '可选择的英雄:英雄单位表id(只对关卡基金生效)',
+                    type: 'text',
                 },
                 condition: {
                     name: '基金类型',
@@ -1033,21 +1064,11 @@
                     options: options.optYesNo,
                     parser: parseInt
                 },
-                rune_less_buyrunecost: {
-                    name: '当前拥有符文晶块小于上次购买符文所消耗的量',
-                    type: 'select',
-                    options: options.optYesNo,
-                    parser: parseInt
-                },
                 talentponit_less_talentlevelupcost: {
                     name: '当前拥有提纯试剂小于上次天赋升级所消耗的量',
                     type: 'select',
                     options: options.optYesNo,
                     parser: parseInt
-                },
-                rune_level: {
-                    name: '购买符文的等级(-区分)',
-                    type: 'midtext'
                 },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
@@ -1237,6 +1258,10 @@
                 },
                 recommond: {
                     name: '焦点参数(秒)',
+                    type: 'text',
+                },
+                show_sort: {
+                    name: '英雄显示顺序(公有参数里的整卡id)',
                     type: 'text',
                 }
             },
@@ -1487,7 +1512,7 @@
                     parser: parseInt
                 },
                 stage_range: {
-                    name: '挂机关卡范围(-区分)',
+                    name: '章节范围(-区分)',
                     type: 'midtext'
                 },
                 hero_equip: {
@@ -1801,7 +1826,7 @@
                             name: '额外奖励:id,num;id,num',
                             type: 'longtext',
                             printer: utils.printItemNumList,
-                            parser: utils.parseItemNumList
+                            parser: utils.parseItemNumList,
                         },
                         extrarewardtime: {
                             name: '额外奖励的时间(秒)',
@@ -1813,7 +1838,6 @@
             }
         }
     };
-
     activityTypeDefine[25] = {
         name: '通行证活动',
         fieldOption: {
@@ -1858,7 +1882,6 @@
             }
         }
     };
-
     // 当前活动类型
     var currentActivityType;
 
@@ -1966,6 +1989,12 @@
         },
         'info.major': {
             name: '是否主推:开启游戏弹出活动',
+            type: 'select',
+            options: options.optYesNo,
+            parser: parseInt
+        },
+        'info.main_recommend': {
+            name: '是否主城展示活动',
             type: 'select',
             options: options.optYesNo,
             parser: parseInt
