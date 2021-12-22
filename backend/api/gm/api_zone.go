@@ -32,17 +32,6 @@ func ZoneMap() map[uint32]rpc.ZoneInfo {
     return mzone
 }
 
-func IsGame(zoneid uint32) bool {
-    tmp := updateZoneList(false)
-
-    for _, v := range tmp {
-        if v.IZoneId == zoneid {
-            return true
-        }
-    }
-    return false
-}
-
 func updateZoneList(bUpdate bool) ([]rpc.ZoneInfo) {
     mu.Lock()
     if len(zones) == 0 {
