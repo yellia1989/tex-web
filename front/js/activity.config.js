@@ -1070,6 +1070,12 @@
                     options: options.optYesNo,
                     parser: parseInt
                 },
+                rune_less_upgraderunecost: {
+                    name: '当前拥有符文晶块小于上次符文升级所消耗的量',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
                     type: 'midtext',
