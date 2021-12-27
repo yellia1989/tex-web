@@ -52,29 +52,23 @@ func MailList(c echo.Context) error {
 func MailTestSend(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    sFrom := ctx.FormValue("sFrom")
     sTitle := ctx.FormValue("sTitle")
     sContent := ctx.FormValue("sContent")
     iCoin,_ := strconv.Atoi(ctx.FormValue("iCoin"))
     iDiamond,_ := strconv.Atoi(ctx.FormValue("iDiamond"))
-    iDelTimeAfterOpen,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterOpen"))
-    iDelTimeAfterRcvAttach,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterRcvAttach"))
     iZoneId,_ := strconv.Atoi(ctx.FormValue("iZoneId"))
     iRoleId, _ := strconv.ParseUint(ctx.FormValue("iRoleId"), 10, 64)
     itemstr := ctx.FormValue("items")
 
-    if sTitle == "" || sContent == "" || sFrom == "" {
+    if sTitle == "" || sContent == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
     m := rpc.NewMailDataInfo()
-    m.SFrom = sFrom
     m.STitle = sTitle
     m.SContent = sContent
     m.ICoin = uint32(iCoin)
     m.IDiamond = uint32(iDiamond)
-    m.IDelTimeAfterOpen = uint32(iDelTimeAfterOpen)
-    m.IDelTimeAfterRcvAttach = uint32(iDelTimeAfterRcvAttach)
     if itemstr != "" {
         item1 := strings.Split(itemstr, ";")
         for _,v := range item1 {
@@ -108,27 +102,21 @@ func MailTestSend(c echo.Context) error {
 func MailSend(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    sFrom := ctx.FormValue("sFrom")
     sTitle := ctx.FormValue("sTitle")
     sContent := ctx.FormValue("sContent")
     iCoin,_ := strconv.Atoi(ctx.FormValue("iCoin"))
     iDiamond,_ := strconv.Atoi(ctx.FormValue("iDiamond"))
-    iDelTimeAfterOpen,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterOpen"))
-    iDelTimeAfterRcvAttach,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterRcvAttach"))
     itemstr := ctx.FormValue("items")
 
-    if sTitle == "" || sContent == "" || sFrom == "" {
+    if sTitle == "" || sContent == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
     m := rpc.NewMailDataInfo()
-    m.SFrom = sFrom
     m.STitle = sTitle
     m.SContent = sContent
     m.ICoin = uint32(iCoin)
     m.IDiamond = uint32(iDiamond)
-    m.IDelTimeAfterOpen = uint32(iDelTimeAfterOpen)
-    m.IDelTimeAfterRcvAttach = uint32(iDelTimeAfterRcvAttach)
     if itemstr != "" {
         item1 := strings.Split(itemstr, ";")
         for _,v := range item1 {
@@ -255,22 +243,16 @@ func MailDel(c echo.Context) error {
 func MailSend2(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    sFrom := ctx.FormValue("sFrom")
     sTitle := ctx.FormValue("sTitle")
     sContent := ctx.FormValue("sContent")
-    iDelTimeAfterOpen,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterOpen"))
-    iDelTimeAfterRcvAttach,_ := strconv.Atoi(ctx.FormValue("iDelTimeAfterRcvAttach"))
 
-    if sTitle == "" || sContent == "" || sFrom == "" {
+    if sTitle == "" || sContent == "" {
         return ctx.SendError(-1, "参数非法")
     }
 
     m := rpc.NewMailDataInfo()
-    m.SFrom = sFrom
     m.STitle = sTitle
     m.SContent = sContent
-    m.IDelTimeAfterOpen = uint32(iDelTimeAfterOpen)
-    m.IDelTimeAfterRcvAttach = uint32(iDelTimeAfterRcvAttach)
 
     sLangContent := ctx.FormValue("sLangContent")
     if sLangContent != "" {

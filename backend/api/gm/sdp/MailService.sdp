@@ -17,7 +17,6 @@ struct MailLangContent
 struct MailDataInfo
 {
 	0	optional unsigned int		iMailId;
-	1	optional string				sFrom;
 	2	optional vector<unsigned long>		vToUser;
 	3	optional string				sTime;
 	4	optional string				sTitle;
@@ -28,12 +27,8 @@ struct MailDataInfo
 	10	optional vector<unsigned int>	vSendZoneIds;			// 发送区列表
 	11	optional unsigned int		iFlag;
 	12	optional vector<unsigned int>	vRcvZoneIds;			// 已接收区列表
-	14	optional unsigned int 		iArenaCoin;					
-	15	optional unsigned int 		iDelTimeAfterOpen;			// 阅读后删除时间 
 	16	optional string			 	sUserFileName;				// 玩家列表
-	17	optional unsigned int 		iKingCoin;
 	19	optional vector<string> 	vCustomItem;				// 多玩家发送时 各自的道具
-	20	optional unsigned int 		iDelTimeAfterRcvAttach;		// 领取附件后删除时间 
     21  optional map<string,MailLangContent> mLangContent;      // 多语言
 };
 

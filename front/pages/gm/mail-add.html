@@ -19,13 +19,6 @@
         <div class="layui-tab-content">
           <div class="layui-tab-item layui-show">
             <div class="layui-form-item">
-              <label class="layui-form-label">发件人</label>
-              <div class="layui-input-block">
-                <input type="text" id="zh-CNFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
-              </div>
-            </div>
-
-            <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
                 <input type="text" id="zh-CNTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
@@ -40,13 +33,6 @@
             </div>
           </div>
           <div class="layui-tab-item">
-            <div class="layui-form-item">
-              <label class="layui-form-label">发件人</label>
-              <div class="layui-input-block">
-                <input type="text" id="enFrom" placeholder="请输入发件人" autocomplete="off" class="layui-input">
-              </div>
-            </div>
-
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
@@ -138,40 +124,6 @@
 		      <div class="layui-input-inline">
 		      	<input type="text" name="iItemNum5" placeholder="请输入道具数量" autocomplete="off" class="layui-input" lay-verify="item" lay-verType="tips">
 		      </div>
-		    </div>
-		  </div>
-      <div class="layui-form-item">
-        <div class="layui-inline">
-		      <label class="layui-form-label">阅读后</label>
-		      <div class="layui-input-inline">
-            <select name="iDelTimeAfterOpen" lay-verify="required">
-              <option value="0">立即</option>
-              <option value="1">1天</option>
-              <option value="2">2天</option>
-              <option value="3">3天</option>
-              <option value="4">4天</option>
-              <option value="5" selected>5天</option>
-              <option value="6">6天</option>
-              <option value="7">7天</option>
-            </select>
-		      </div>
-          <div class="layui-form-mid layui-word-aux">删除</div>
-		    </div>
-        <div class="layui-inline">
-		      <label class="layui-form-label">领取附件后</label>
-		      <div class="layui-input-inline">
-            <select name="iDelTimeAfterRcvAttach" lay-verify="required">
-              <option value="0">立即</option>
-              <option value="1">1天</option>
-              <option value="2">2天</option>
-              <option value="3">3天</option>
-              <option value="4">4天</option>
-              <option value="5">5天</option>
-              <option value="6">6天</option>
-              <option value="7" selected>7天</option>
-            </select>
-		      </div>
-          <div class="layui-form-mid layui-word-aux">删除</div>
 		    </div>
 		  </div>
 
@@ -479,21 +431,18 @@
           itemstr += itemid5+","+$("input[name='iItemNum5']").val();
         }
 
-        let sFrom = $("#zh-CNFrom").val();
         let sTitle = $("#zh-CNTitle").val();
         let sContent = $("#zh-CNContent").val();
         let lang = {};
-        lang["en"] = {"sFrom": $("#enFrom").val(),"sTitle": $("#enTitle").val(),"sContent": $("#enContent").val()};
+        lang["en"] = {"sTitle": $("#enTitle").val(),"sContent": $("#enContent").val()};
 
         let sLangContent = okUtils.jsonToString(lang);
 
         let iCoin = $('input[name="iCoin"]').val();
         let iDiamond = $('input[name="iDiamond"]').val();
-        let iDelTimeAfterOpen = $('select[name="iDelTimeAfterOpen"]').val();
-        let iDelTimeAfterRcvAttach = $('select[name="iDelTimeAfterRcvAttach"]').val();
         let iZoneId = zoneSelect1.getValue('valueStr');
         let iRoleId = $('input[name="iRoleId"]').val();
-        let param = {sFrom: sFrom, sTitle: sTitle, sContent: sContent, sLangContent: sLangContent, iCoin: iCoin, iDiamond: iDiamond, iDelTimeAfterOpen: iDelTimeAfterOpen, iDelTimeAfterRcvAttach: iDelTimeAfterRcvAttach, iZoneId: iZoneId, iRoleId: iRoleId, items: itemstr};
+        let param = {sTitle: sTitle, sContent: sContent, sLangContent: sLangContent, iCoin: iCoin, iDiamond: iDiamond, iZoneId: iZoneId, iRoleId: iRoleId, items: itemstr};
 
         return {'p': param, 'lang': lang};
       }

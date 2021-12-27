@@ -290,25 +290,20 @@ func (st *MailLangContent) WriteStructFromTag(p *codec.Packer, tag uint32, requi
 }
 
 type MailDataInfo struct {
-	IMailId                uint32                     `json:"iMailId" form:"iMailId"`
-	SFrom                  string                     `json:"sFrom" form:"sFrom"`
-	VToUser                []uint64                   `json:"vToUser" form:"vToUser"`
-	STime                  string                     `json:"sTime" form:"sTime"`
-	STitle                 string                     `json:"sTitle" form:"sTitle"`
-	SContent               string                     `json:"sContent" form:"sContent"`
-	IDiamond               uint32                     `json:"iDiamond" form:"iDiamond"`
-	ICoin                  uint32                     `json:"iCoin" form:"iCoin"`
-	VItems                 []CmdIDNum                 `json:"vItems" form:"vItems"`
-	VSendZoneIds           []uint32                   `json:"vSendZoneIds" form:"vSendZoneIds"`
-	IFlag                  uint32                     `json:"iFlag" form:"iFlag"`
-	VRcvZoneIds            []uint32                   `json:"vRcvZoneIds" form:"vRcvZoneIds"`
-	IArenaCoin             uint32                     `json:"iArenaCoin" form:"iArenaCoin"`
-	IDelTimeAfterOpen      uint32                     `json:"iDelTimeAfterOpen" form:"iDelTimeAfterOpen"`
-	SUserFileName          string                     `json:"sUserFileName" form:"sUserFileName"`
-	IKingCoin              uint32                     `json:"iKingCoin" form:"iKingCoin"`
-	VCustomItem            []string                   `json:"vCustomItem" form:"vCustomItem"`
-	IDelTimeAfterRcvAttach uint32                     `json:"iDelTimeAfterRcvAttach" form:"iDelTimeAfterRcvAttach"`
-	MLangContent           map[string]MailLangContent `json:"mLangContent" form:"mLangContent"`
+	IMailId       uint32                     `json:"iMailId" form:"iMailId"`
+	VToUser       []uint64                   `json:"vToUser" form:"vToUser"`
+	STime         string                     `json:"sTime" form:"sTime"`
+	STitle        string                     `json:"sTitle" form:"sTitle"`
+	SContent      string                     `json:"sContent" form:"sContent"`
+	IDiamond      uint32                     `json:"iDiamond" form:"iDiamond"`
+	ICoin         uint32                     `json:"iCoin" form:"iCoin"`
+	VItems        []CmdIDNum                 `json:"vItems" form:"vItems"`
+	VSendZoneIds  []uint32                   `json:"vSendZoneIds" form:"vSendZoneIds"`
+	IFlag         uint32                     `json:"iFlag" form:"iFlag"`
+	VRcvZoneIds   []uint32                   `json:"vRcvZoneIds" form:"vRcvZoneIds"`
+	SUserFileName string                     `json:"sUserFileName" form:"sUserFileName"`
+	VCustomItem   []string                   `json:"vCustomItem" form:"vCustomItem"`
+	MLangContent  map[string]MailLangContent `json:"mLangContent" form:"mLangContent"`
 }
 
 func (st *MailDataInfo) resetDefault() {
@@ -316,7 +311,6 @@ func (st *MailDataInfo) resetDefault() {
 func (st *MailDataInfo) Copy() *MailDataInfo {
 	ret := NewMailDataInfo()
 	ret.IMailId = st.IMailId
-	ret.SFrom = st.SFrom
 	ret.VToUser = make([]uint64, len(st.VToUser))
 	for i, v := range st.VToUser {
 		ret.VToUser[i] = v
@@ -339,15 +333,11 @@ func (st *MailDataInfo) Copy() *MailDataInfo {
 	for i, v := range st.VRcvZoneIds {
 		ret.VRcvZoneIds[i] = v
 	}
-	ret.IArenaCoin = st.IArenaCoin
-	ret.IDelTimeAfterOpen = st.IDelTimeAfterOpen
 	ret.SUserFileName = st.SUserFileName
-	ret.IKingCoin = st.IKingCoin
 	ret.VCustomItem = make([]string, len(st.VCustomItem))
 	for i, v := range st.VCustomItem {
 		ret.VCustomItem[i] = v
 	}
-	ret.IDelTimeAfterRcvAttach = st.IDelTimeAfterRcvAttach
 	ret.MLangContent = make(map[string]MailLangContent)
 	for k, v := range st.MLangContent {
 		ret.MLangContent[k] = *(v.Copy())
@@ -361,7 +351,6 @@ func NewMailDataInfo() *MailDataInfo {
 }
 func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iMailId")+fmt.Sprintf("%v\n", st.IMailId))
-	util.Tab(buff, t+1, util.Fieldname("sFrom")+fmt.Sprintf("%v\n", st.SFrom))
 	util.Tab(buff, t+1, util.Fieldname("vToUser")+strconv.Itoa(len(st.VToUser)))
 	if len(st.VToUser) == 0 {
 		buff.WriteString(", []\n")
@@ -418,10 +407,7 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.VRcvZoneIds) != 0 {
 		util.Tab(buff, t+1, "]\n")
 	}
-	util.Tab(buff, t+1, util.Fieldname("iArenaCoin")+fmt.Sprintf("%v\n", st.IArenaCoin))
-	util.Tab(buff, t+1, util.Fieldname("iDelTimeAfterOpen")+fmt.Sprintf("%v\n", st.IDelTimeAfterOpen))
 	util.Tab(buff, t+1, util.Fieldname("sUserFileName")+fmt.Sprintf("%v\n", st.SUserFileName))
-	util.Tab(buff, t+1, util.Fieldname("iKingCoin")+fmt.Sprintf("%v\n", st.IKingCoin))
 	util.Tab(buff, t+1, util.Fieldname("vCustomItem")+strconv.Itoa(len(st.VCustomItem)))
 	if len(st.VCustomItem) == 0 {
 		buff.WriteString(", []\n")
@@ -434,7 +420,6 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.VCustomItem) != 0 {
 		util.Tab(buff, t+1, "]\n")
 	}
-	util.Tab(buff, t+1, util.Fieldname("iDelTimeAfterRcvAttach")+fmt.Sprintf("%v\n", st.IDelTimeAfterRcvAttach))
 	util.Tab(buff, t+1, util.Fieldname("mLangContent")+strconv.Itoa(len(st.MLangContent)))
 	if len(st.MLangContent) == 0 {
 		buff.WriteString(", {}\n")
@@ -460,10 +445,6 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var ty uint32
 	st.resetDefault()
 	err = up.ReadUint32(&st.IMailId, 0, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SFrom, 1, false)
 	if err != nil {
 		return err
 	}
@@ -579,19 +560,7 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 			}
 		}
 	}
-	err = up.ReadUint32(&st.IArenaCoin, 14, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.IDelTimeAfterOpen, 15, false)
-	if err != nil {
-		return err
-	}
 	err = up.ReadString(&st.SUserFileName, 16, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadUint32(&st.IKingCoin, 17, false)
 	if err != nil {
 		return err
 	}
@@ -616,10 +585,6 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 				return err
 			}
 		}
-	}
-	err = up.ReadUint32(&st.IDelTimeAfterRcvAttach, 20, false)
-	if err != nil {
-		return err
 	}
 
 	has, ty, err = up.SkipToTag(21, false)
@@ -689,12 +654,6 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 	var length uint32
 	if false || st.IMailId != 0 {
 		err = p.WriteUint32(0, st.IMailId)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SFrom != "" {
-		err = p.WriteString(1, st.SFrom)
 		if err != nil {
 			return err
 		}
@@ -813,26 +772,8 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 			}
 		}
 	}
-	if false || st.IArenaCoin != 0 {
-		err = p.WriteUint32(14, st.IArenaCoin)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IDelTimeAfterOpen != 0 {
-		err = p.WriteUint32(15, st.IDelTimeAfterOpen)
-		if err != nil {
-			return err
-		}
-	}
 	if false || st.SUserFileName != "" {
 		err = p.WriteString(16, st.SUserFileName)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IKingCoin != 0 {
-		err = p.WriteUint32(17, st.IKingCoin)
 		if err != nil {
 			return err
 		}
@@ -855,12 +796,6 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 					return err
 				}
 			}
-		}
-	}
-	if false || st.IDelTimeAfterRcvAttach != 0 {
-		err = p.WriteUint32(20, st.IDelTimeAfterRcvAttach)
-		if err != nil {
-			return err
 		}
 	}
 
