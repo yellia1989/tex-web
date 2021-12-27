@@ -206,7 +206,17 @@
               showIcon: false,
             }
           }
-        }
+        },
+        remoteSearch: true,
+        remoteMethod: function(val, cb, show){
+          okUtils.ajax("/api/gm/item/list", "get", {"key":val}, false).done(function (response) {
+            cb(response.data);
+          }).fail(function (error) {
+            console.log(error);
+            cb([]);
+          });
+        },
+        data: []
       });
       let iItemID2 = xmSelect.render({
         el: '#iItemID2',
@@ -223,7 +233,17 @@
               showIcon: false,
             }
           }
-        }
+        },
+        remoteSearch: true,
+        remoteMethod: function(val, cb, show){
+          okUtils.ajax("/api/gm/item/list", "get", {"key":val}, false).done(function (response) {
+            cb(response.data);
+          }).fail(function (error) {
+            console.log(error);
+            cb([]);
+          });
+        },
+        data: []
       });
       let iItemID3 = xmSelect.render({
         el: '#iItemID3',
@@ -240,7 +260,17 @@
               showIcon: false,
             }
           }
-        }
+        },
+        remoteSearch: true,
+        remoteMethod: function(val, cb, show){
+          okUtils.ajax("/api/gm/item/list", "get", {"key":val}, false).done(function (response) {
+            cb(response.data);
+          }).fail(function (error) {
+            console.log(error);
+            cb([]);
+          });
+        },
+        data: []
       });
       let iItemID4 = xmSelect.render({
         el: '#iItemID4',
@@ -257,7 +287,17 @@
               showIcon: false,
             }
           }
-        }
+        },
+        remoteSearch: true,
+        remoteMethod: function(val, cb, show){
+          okUtils.ajax("/api/gm/item/list", "get", {"key":val}, false).done(function (response) {
+            cb(response.data);
+          }).fail(function (error) {
+            console.log(error);
+            cb([]);
+          });
+        },
+        data: []
       });
       let iItemID5 = xmSelect.render({
         el: '#iItemID5',
@@ -274,17 +314,17 @@
               showIcon: false,
             }
           }
-        }
-      });
-
-      okUtils.ajax("/api/gm/item/list", "get", null, false).done(function (response) {
-        iItemID1.update({data: response.data});
-        iItemID2.update({data: response.data});
-        iItemID3.update({data: response.data});
-        iItemID4.update({data: response.data});
-        iItemID5.update({data: response.data});
-      }).fail(function (error) {
-        console.log(error);
+        },
+        remoteSearch: true,
+        remoteMethod: function(val, cb, show){
+          okUtils.ajax("/api/gm/item/list", "get", {"key":val}, false).done(function (response) {
+            cb(response.data);
+          }).fail(function (error) {
+            console.log(error);
+            cb([]);
+          });
+        },
+        data: []
       });
 
       let zoneSelect1 = xmSelect.render({

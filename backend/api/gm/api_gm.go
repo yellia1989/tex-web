@@ -172,8 +172,10 @@ type _item struct {
     ID uint32 `json:"value"`
     Name string `json:"name"`
 }
+
 func ItemList(c echo.Context) error {
     ctx := c.(*mid.Context)
+    key := ctx.QueryParam("key")
 
     zones := updateZoneList(false)
     if (len(zones) == 0) {
@@ -182,6 +184,9 @@ func ItemList(c echo.Context) error {
 
     var zoneid uint64 = uint64(zones[0].IZoneId)
     scmd := "item_list"
+    if key != "" {
+        scmd += " " + key
+    }
     var result string
     err := cmd(ctx, strconv.FormatUint(zoneid, 10), scmd, &result)
     if err !=  nil {
