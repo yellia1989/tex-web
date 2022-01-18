@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+    "time"
     "strings"
 	"strconv"
     "database/sql"
@@ -54,7 +55,7 @@ func RoleList(c echo.Context) error {
         return err
     }
 
-    sql := "SELECT uid,name,vip_level,this_login_time,reg_time FROM t_role"
+    sql := "SELECT actorid,actorname,vip_level,lastonlinetime2,createtime FROM actors"
     if name != "" {
         uid, err := strconv.Atoi(name)
         if err == nil && uid != 0 {
@@ -77,9 +78,11 @@ func RoleList(c echo.Context) error {
     roles := make([]role, 0)
     for rows.Next() {
         var r role
-        if err := rows.Scan(&r.Uid, &r.Name, &r.VipLevel, &r.LastLoginTime, &r.RegTime); err != nil {
+        var tmp int64
+        if err := rows.Scan(&r.Uid, &r.Name, &r.VipLevel, &tmp, &r.RegTime); err != nil {
             return err
         }
+        r.LastLoginTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(tmp,0))
         roles = append(roles, r)
     }
     if err := rows.Err(); err != nil {
