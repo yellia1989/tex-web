@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>邮件领取</title>
+  <title>邮件操作</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="/css/oksub.css">
   <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
@@ -105,9 +105,8 @@
       cols: [[
         {field: "id", title: "日志id"},
         {field: "mailid", title: "邮件id"},
-        {field: "time", title: "领取时间"},
-        {field: "itemid", title: "领取的道具"},
-        {field: "itemnum", title: "道具数量"},
+        {field: "time", title: "操作时间"},
+        {field: "opt", title: "操作类型"},
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
@@ -116,7 +115,7 @@
 
     form.on("submit(search)", function (data) {
       mailTable.reload({
-        url: "/api/game/mail/revlog",
+        url: "/api/game/mail/optlog",
         where: data.field,
         page: {
           curr: 1,
