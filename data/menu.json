@@ -366,7 +366,7 @@
       },
       {
         "id": 803,
-        "title": "钻石记录",
+        "title": "元宝记录",
         "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -375,7 +375,7 @@
         "children": [
           {
             "id": 80301,
-            "title": "钻石获得记录",
+            "title": "元宝获得记录",
             "href": "game/diamond-add.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -385,7 +385,7 @@
           },
           {
             "id": 80302,
-            "title": "钻石消耗记录",
+            "title": "元宝消耗记录",
             "href": "game/diamond-sub.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",

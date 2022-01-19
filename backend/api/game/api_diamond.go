@@ -36,8 +36,8 @@ func DiamondAddLog(c echo.Context) error {
     }
     defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM add_diamond"
-    sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sqlcount := "SELECT count(*) as total FROM add_yuanbao"
+    sqlcount += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
@@ -46,8 +46,8 @@ func DiamondAddLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,time,add_num,cur_num,operate as action FROM add_diamond"
-    sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql := "SELECT _rid as id,time,add_num,cur_num,action FROM add_yuanbao"
+    sql += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
@@ -94,8 +94,8 @@ func DiamondSubLog(c echo.Context) error {
     }
     defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM sub_diamond"
-    sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sqlcount := "SELECT count(*) as total FROM sub_yuanbao"
+    sqlcount += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
@@ -104,8 +104,8 @@ func DiamondSubLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,time,sub_num,cur_num,operate as action FROM sub_diamond"
-    sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql := "SELECT _rid as id,time,sub_num,cur_num,action FROM sub_yuanbao"
+    sql += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 

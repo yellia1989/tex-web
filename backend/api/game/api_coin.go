@@ -36,8 +36,8 @@ func CoinAddLog(c echo.Context) error {
     }
     defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM add_coin"
-    sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sqlcount := "SELECT count(*) as total FROM add_gold"
+    sqlcount += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
@@ -46,8 +46,8 @@ func CoinAddLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,time,add_num,cur_num,operate as action FROM add_coin"
-    sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql := "SELECT _rid as id,time,add_num,cur_num,action FROM add_gold"
+    sql += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc,_rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
@@ -94,8 +94,8 @@ func CoinSubLog(c echo.Context) error {
     }
     defer db.Close()
 
-    sqlcount := "SELECT count(*) as total FROM sub_coin"
-    sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sqlcount := "SELECT count(*) as total FROM sub_gold"
+    sqlcount += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
@@ -104,8 +104,8 @@ func CoinSubLog(c echo.Context) error {
 
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
-    sql := "SELECT _rid as id,time,sub_num,cur_num,operate as action FROM sub_coin"
-    sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql := "SELECT _rid as id,time,sub_num,cur_num,action FROM sub_gold"
+    sql += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
