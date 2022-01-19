@@ -31,8 +31,8 @@ func OnlineTime(c echo.Context) error {
     }
     defer db.Close()
 
-	sql := "SELECT roleid,sum(online_time) as online_time FROM logout "
-	sql += "WHERE time BETWEEN '"+startTime+"' AND '"+endTime+"' GROUP BY roleid ORDER BY sum(online_time)"
+	sql := "SELECT actorid,sum(online_time) as online_time FROM logout "
+	sql += "WHERE time BETWEEN '"+startTime+"' AND '"+endTime+"' GROUP BY actorid ORDER BY sum(online_time)"
 
 	log.Infof("sql: %s", sql)
 
