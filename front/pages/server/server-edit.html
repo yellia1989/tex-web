@@ -47,6 +47,20 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">是否是mfw服务</label>
+        <div class="layui-input-inline">
+          <select id="mfw_server">
+            <option value="0">否</option>
+            <option value="1">是</option>
+          </select>
+        </div>
+        <label class="layui-form-label">启动脚本</label>
+        <div class="layui-input-inline">
+          <input type="text" id="start_script" placeholder="启动脚本" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">自定义模板</label>
         <div class="layui-input-block">
           <textarea id="profile_conf_template" class="layui-textarea" rows="13"></textarea>
@@ -157,6 +171,8 @@
         $('#auto_start').val(data.auto_start);
         $('#node').val(data.node);
         $('#profile_conf_template').val(data.profile_conf_template);
+        $('#mfw_server').val(data.mfw_server);
+        $('#start_script').val(data.start_script);
         form.render();
       }).fail(function (error) {
         console.log(error);
@@ -182,6 +198,8 @@
           template_name: templateSelect.getValue('valueStr'),
           profile_conf_template: $('#profile_conf_template').val(),
           services: services,
+          mfw_server: parseInt($('#mfw_server').val()),
+          start_script: $('#start_script').val()
         }
         okUtils.ajax("/api/server/update", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
