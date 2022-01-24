@@ -51,6 +51,8 @@ type ServerData struct {
 	PublishTime         string `json:"publish_time"`
 	PromPort            int    `json:"prom_port"`
 	ManualStop    int     `json:"manual_stop"`
+    MfwServer   int `json:"mfw_server"`
+    StartScript string `json:"start_script"`
 }
 
 type ServiceData struct {
@@ -267,7 +269,7 @@ func ServerList(c echo.Context) error {
 
 	var vParam []interface{}
 
-	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port,manual_stop FROM t_server WHERE 1=1"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port,manual_stop,mfw_server,start_script FROM t_server WHERE 1=1"
 	where := ""
 	if app != "" {
 		where += " AND app = ?"
@@ -311,7 +313,7 @@ func ServerList(c echo.Context) error {
 	for rows.Next() {
 		var r ServerData
 		var profile, version, username, publishTime dsql.NullString
-		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.AutoStart, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort, &r.ManualStop); err != nil {
+		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.AutoStart, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort, &r.ManualStop, &r.MfwServer, &r.StartScript); err != nil {
 			return err
 		}
 		if profile.Valid {
@@ -418,7 +420,7 @@ func ServerDetail(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid FROM t_server"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, mfw_server, start_script FROM t_server"
 	where := " WHERE app = '" + app + "' AND server = '" + server + "' AND node = '" + node + "' AND division = '" + division + "'"
 	sql += where
 
@@ -430,7 +432,7 @@ func ServerDetail(c echo.Context) error {
 
 	row := db.QueryRow(sql)
 	var profile dsql.NullString
-	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.AutoStart, &data.CurStat, &profile, &data.TemplateName, &data.Pid)
+	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.AutoStart, &data.CurStat, &profile, &data.TemplateName, &data.Pid, &data.MfwServer, &data.StartScript)
 	if err != nil {
 		return err
 	}
@@ -484,10 +486,10 @@ func ServerUpdate(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "UPDATE t_server SET auto_start = ?, template_name = ?, profile_conf_template = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
+	sql := "UPDATE t_server SET auto_start = ?, template_name = ?, profile_conf_template = ?, mfw_server = ?, start_script = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.App, req.Server, req.Division, req.Node)
+	_, err = tx.Exec(sql, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.StartScript, req.App, req.Server, req.Division, req.Node)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
@@ -533,10 +535,10 @@ func ServerAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "INSERT INTO t_server (app, server, division, node, auto_start, template_name, profile_conf_template) VALUES (?,?,?,?,?,?,?)"
+	sql := "INSERT INTO t_server (app, server, division, node, auto_start, template_name, profile_conf_template, mfw_server, start_script) VALUES (?,?,?,?,?,?,?,?,?)"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.AutoStart, req.TemplateName, req.ProfileConfTemplate)
+	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.StartScript)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
