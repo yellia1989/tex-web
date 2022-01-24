@@ -47,15 +47,18 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否是mfw服务</label>
+        <label class="layui-form-label">是否mfw服务</label>
         <div class="layui-input-inline">
           <select id="mfw_server">
             <option value="0">否</option>
-            <option value="1">是</option>
+            <option value="1" selected="">是</option>
           </select>
         </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">启动脚本</label>
-        <div class="layui-input-inline">
+        <div class="layui-input-block">
           <input type="text" id="start_script" placeholder="启动脚本" class="layui-input">
         </div>
       </div>
