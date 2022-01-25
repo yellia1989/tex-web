@@ -210,7 +210,7 @@
           profile_conf_template: $('#profile_conf_template').val(),
           services: services,
           mfw_server: parseInt($('#mfw_server').val()),
-          start_script: $('#start_script').val()
+          start_script: $('#start_script').val(),
           monitor_script: $('#monitor_script').val()
         }
         okUtils.ajax("/api/server/update", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
