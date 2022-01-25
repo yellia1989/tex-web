@@ -536,7 +536,7 @@ func ServerAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "INSERT INTO t_server (app, server, division, node, auto_start, template_name, profile_conf_template, mfw_server, start_script, monitor_script) VALUES (?,?,?,?,?,?,?,?,?)"
+	sql := "INSERT INTO t_server (app, server, division, node, auto_start, template_name, profile_conf_template, mfw_server, start_script, monitor_script) VALUES (?,?,?,?,?,?,?,?,?,?)"
 	c.Logger().Debug(sql)
 
 	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.StartScript, req.MonitorScript)
