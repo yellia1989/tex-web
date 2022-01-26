@@ -71,6 +71,13 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">停止脚本</label>
+        <div class="layui-input-block">
+          <input type="text" id="stop_script" placeholder="停止脚本" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">自定义模板</label>
         <div class="layui-input-block">
           <textarea id="profile_conf_template" class="layui-textarea" rows="13"></textarea>
@@ -173,7 +180,8 @@
           services: services,
           mfw_server: parseInt($('#mfw_server').val()),
           start_script: $('#start_script').val(),
-          monitor_script: $('#monitor_script').val()
+          monitor_script: $('#monitor_script').val(),
+          stop_script: $('#stop_script').val()
         }
         okUtils.ajax("/api/server/add", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
