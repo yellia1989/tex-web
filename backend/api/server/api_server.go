@@ -489,10 +489,10 @@ func ServerUpdate(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "UPDATE t_server SET auto_start = ?, template_name = ?, profile_conf_template = ?, mfw_server = ?, start_script = ?, monitor_script = ?, stop_script = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
+	sql := "UPDATE t_server SET auto_start = ?, template_name = ?, profile_conf_template = ?, mfw_server = ?, prom_port = ?, start_script = ?, monitor_script = ?, stop_script = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.StartScript, req.MonitorScript, req.StopScript, req.App, req.Server, req.Division, req.Node)
+	_, err = tx.Exec(sql, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.PromPort, req.StartScript, req.MonitorScript, req.StopScript, req.App, req.Server, req.Division, req.Node)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
