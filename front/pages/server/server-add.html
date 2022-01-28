@@ -204,7 +204,7 @@
       });
 
       form.on('submit(allocPromPort)', function(){
-        okUtils.ajax("/app/server/allocpromport", "get", {node: $("#node").val()}, true).done(function(response) {
+        okUtils.ajax("/api/server/allocpromport", "get", {node: $("#node").val()}, true).done(function(response) {
           $("#allocPromPort").val(response.data);
         }).fail(function (error) {
           console.log(error);
