@@ -232,7 +232,7 @@
           start_script: $('#start_script').val(),
           monitor_script: $('#monitor_script').val(),
           stop_script: $('#stop_script').val(),
-          prom_port: $('#prom_port').val()
+          prom_port: parseInt($('#prom_port').val())
         }
         okUtils.ajax("/api/server/update", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
