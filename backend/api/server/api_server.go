@@ -55,6 +55,7 @@ type ServerData struct {
     StartScript string `json:"start_script"`
     MonitorScript string `json:"monitor_script"`
     StopScript string `json:"stop_script"`
+    StartTime   int `json:"start_time"`
 }
 
 type ServiceData struct {
@@ -271,7 +272,7 @@ func ServerList(c echo.Context) error {
 
 	var vParam []interface{}
 
-	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port,manual_stop,mfw_server,start_script,monitor_script,stop_script FROM t_server WHERE 1=1"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port,manual_stop,mfw_server,start_script,monitor_script,stop_script,start_time FROM t_server WHERE 1=1"
 	where := ""
 	if app != "" {
 		where += " AND app = ?"
@@ -315,7 +316,7 @@ func ServerList(c echo.Context) error {
 	for rows.Next() {
 		var r ServerData
 		var profile, version, username, publishTime dsql.NullString
-		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.AutoStart, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort, &r.ManualStop, &r.MfwServer, &r.StartScript, &r.MonitorScript, &r.StopScript); err != nil {
+		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.AutoStart, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort, &r.ManualStop, &r.MfwServer, &r.StartScript, &r.MonitorScript, &r.StopScript, &r.StartTime); err != nil {
 			return err
 		}
 		if profile.Valid {

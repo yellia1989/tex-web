@@ -84,6 +84,14 @@
               }
             }
           },
+          { field: "start_time", title: "运行时间", minWidth: '80', templet: function(d) {
+              if (d.start_time != 0) {
+                return okUtils.displayInterval(Date.now()/1000 - d.start_time);
+              } else {
+                return "-";
+              }
+            }
+          },
           { field: "pid", title: "进程ID", minWidth: '80' },
           { field: "prom_port", title: "监听端口", minWidth: '80' },
           {

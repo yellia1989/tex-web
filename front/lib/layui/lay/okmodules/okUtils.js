@@ -221,6 +221,24 @@ layui.define(["layer"], function (exprots) {
                 if (num2 == 0) return "0."+"0".repeat(width) + suffix;
                 return (num1/num2).toFixed(width) + suffix;
             }
+        },
+        displayInterval: function(interval) {
+            if (interval < 0) return "-";
+            let day = Math.floor(interval / 86400);
+            interval -= day*86400;
+
+            let hour = Math.floor(interval / 3600);
+            interval -= hour*3600;
+
+            let min = Math.floor(interval / 60);
+            interval -= min*60;
+
+            let result = '';
+            if (day > 0) result += day+'d';
+            if (hour > 0) result += hour+'h';
+            if (min > 0) result += min+'m';
+            if (interval > 0) result += interval+'s';
+            return result;
         }
     };
     exprots("okUtils", okUtils);
