@@ -78,6 +78,16 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">监控端口</label>
+        <div class="layui-input-inline">
+          <input type="text" id="prom_port" placeholder="监控端口" class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+          <button type="button" class="layui-btn" lay-submit lay-filter="allocPromPort">获取端口</button> 
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">自定义模板</label>
         <div class="layui-input-block">
           <textarea id="profile_conf_template" class="layui-textarea" rows="13"></textarea>
@@ -187,6 +197,15 @@
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
           });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      form.on('submit(allocPromPort)', function(){
+        okUtils.ajax("/app/server/allocpromport", "get", {node: $("#node").val()}, true).done(function(response) {
+          $("#allocPromPort").val(response.data);
         }).fail(function (error) {
           console.log(error);
         });
