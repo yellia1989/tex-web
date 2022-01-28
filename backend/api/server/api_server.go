@@ -423,7 +423,7 @@ func ServerDetail(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, mfw_server, start_script, monitor_script, stop_script FROM t_server"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, mfw_server, start_script, monitor_script, stop_script, prom_port FROM t_server"
 	where := " WHERE app = '" + app + "' AND server = '" + server + "' AND node = '" + node + "' AND division = '" + division + "'"
 	sql += where
 
@@ -435,7 +435,7 @@ func ServerDetail(c echo.Context) error {
 
 	row := db.QueryRow(sql)
 	var profile dsql.NullString
-	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.AutoStart, &data.CurStat, &profile, &data.TemplateName, &data.Pid, &data.MfwServer, &data.StartScript, &data.MonitorScript, &data.StopScript)
+	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.AutoStart, &data.CurStat, &profile, &data.TemplateName, &data.Pid, &data.MfwServer, &data.StartScript, &data.MonitorScript, &data.StopScript, &data.PromPort)
 	if err != nil {
 		return err
 	}
