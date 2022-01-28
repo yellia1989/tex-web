@@ -233,11 +233,13 @@ layui.define(["layer"], function (exprots) {
             let min = Math.floor(interval / 60);
             interval -= min*60;
 
+            let sec = Math.floor(interval);
+
             let result = '';
             if (day > 0) result += day+'d';
             if (hour > 0) result += hour+'h';
             if (min > 0) result += min+'m';
-            if (interval > 0) result += interval+'s';
+            if (sec > 0) result += sec+'s';
             return result;
         }
     };
