@@ -172,6 +172,7 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/server/update", server.ServerUpdate) // 更新服务
     group.POST("/server/add", server.ServerAdd) // 增加服务
     group.POST("/server/del", server.ServerDel) // 删除服务
+    group.GET("/server/allocpromport", server.AllocPromPort) // 获取监听端口
 
     group.GET("/server/template_list", server.TemplateList) // 获取模板列表
     group.GET("/server/template_detail", server.TemplateDatail) // 获取模板详情

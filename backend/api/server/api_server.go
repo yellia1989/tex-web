@@ -834,3 +834,42 @@ func RegistryIp() (map[uint32]string,error) {
 
     return m, nil
 }
+
+func AllocPromPort(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	node := ctx.QueryParam("node")
+
+    if node == "" {
+        return ctx.SendError(-1, "参数非法");
+    }
+
+	db := cfg.TexDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	rows, err := db.Query("select prom_port from t_server where node=?", node)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+    ports := make(map[int]bool)
+	for rows.Next() {
+        tmp := 0
+        if err := rows.Scan(&tmp); err != nil {
+            return err
+        }
+        ports[tmp] = true
+    }
+
+    // 15001 ~ 16000
+    prom_port := 15001
+    for prom_port < 16000 {
+        if ok,_ := ports[prom_port]; !ok {
+            break;
+        }
+        prom_port += 1;
+    }
+    return ctx.SendResponse(prom_port)
+}
