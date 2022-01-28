@@ -205,7 +205,7 @@
 
       form.on('submit(allocPromPort)', function(){
         okUtils.ajax("/api/server/allocpromport", "get", {node: $("#node").val()}, true).done(function(response) {
-          $("#allocPromPort").val(response.data);
+          $("#prom_port").val(response.data);
         }).fail(function (error) {
           console.log(error);
         });
