@@ -507,6 +507,11 @@
                            parser: utils.parseItemNumList
                        }
                     }
+                },
+                productid: {
+                    name: '商品id',
+                    type: 'text',
+                    parser: parseInt
                 }
             },
             client_param: {
