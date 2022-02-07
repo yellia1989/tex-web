@@ -47,12 +47,13 @@
     var taskNo;
     var editData;
     var editServer;
-    layui.use(["element", "table", "form", "layer", "okUtils", "okLayer",], function () {
+    layui.use(["dropdown", "element", "table", "form", "layer", "okUtils", "okLayer"], function () {
       let table = layui.table;
       let layer = layui.layer;
       let okUtils = layui.okUtils;
       let form = layui.form;
       let okLayer = layui.okLayer;
+      let dropdown = layui.dropdown;
       okLoading.close();
 
       let serverTable = table.render({
@@ -114,7 +115,7 @@
           { field: "publish_version", title: "版本", minWidth: '120'},
           { field: "publish_username", title: "发布人", align: "center",minWidth: '100'},
           { field: "publish_time", title: "发布时间", align: "center", minWidth: '160' },
-          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', minWidth: '240' }
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', minWidth: '280' }
         ]]
       });
 
@@ -140,7 +141,14 @@
         });
       }
 
+      function setLogLevel(data) {
+        editData = data;
+        okLayer.open("设置日志等级", "./setloglevel.html", "50%", "50%", null, function () {
+        });
+      }
+
       table.on("tool(tableFilter)", function (obj) {
+        let that = this;
         let data = obj.data;
         switch (obj.event) {
           case "edit":
@@ -150,8 +158,26 @@
             editServer = data;
             openPublish();
             break;
-          default:
+          case "stop":
+          case "start":
+          case "restart":
             serverOperator(data, obj.event);
+            break;
+          case "more":
+            //更多下拉菜单
+            dropdown.render({
+              elem: that
+              ,show: true //外部事件触发即显示
+              ,data: [{
+                title: '设置日志等级'
+                ,id: 'set_log_level'
+              }]
+              ,click: function(data2, othis){
+                setLogLevel(data);
+              }
+              ,align: 'right' //右对齐弹出（v2.6.8 新增）
+              ,style: 'box-shadow: 1px 1px 10px rgb(0 0 0 / 12%);' //设置额外样式
+            }); 
             break;
         }
       });
@@ -276,6 +302,7 @@
     <a href="javascript:" title="启动" lay-event="start">启动</a>
     <a href="javascript:" title="重启" lay-event="restart">重启</a>
     <a href="javascript:" title="发布" lay-event="publish">发布</a>
+    <a class="layui-btn layui-btn-xs" lay-event="more">更多 <i class="layui-icon layui-icon-down"></i></a>
   </script>
 
   <script type="text/html" id="toolbarTpl">
