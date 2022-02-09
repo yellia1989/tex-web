@@ -14,7 +14,6 @@ struct MailLangContent
     2   optional string sContent;
 };
 
-
 struct MailDataInfo
 {
 	0	optional unsigned int		iMailId;

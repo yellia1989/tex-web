@@ -16,21 +16,6 @@ function runcmd()
 	$REMOTE_CMD_EXP runcmd "$host" "$command"
 }
 
-function runcmdpem()
-{
-	if [[ $# -lt 3 ]]; then
-		echo "Usage: runcmdpem host command pem"
-		return
-	fi
-
-	local host="$1"
-	local command="$2"
-    local pem="$3"
-
-	echo ">>> begin do remote_cmd $host : $command, please wait"
-	$REMOTE_CMD_EXP runcmdpem "$host" "$command" "$pem"
-}
-
 function copyfile()
 {
 	if [[ $# -lt 2 ]]; then

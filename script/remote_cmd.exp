@@ -3,10 +3,7 @@
 proc usage {} {
 	puts "Usage: ";
   puts "   runcmd \[user@\]ip command";
-  puts "   runcmdroot \[user\]@ip command";
-  puts "   runinstall \[user\]@ip command"
   puts "   scp \[\[user@\]srcip:\]srcpath \[\[user@\]destip:\]destpath";
-  puts "   rsync from to";
   exit -1;
 }
 
@@ -28,22 +25,6 @@ if {$cmd == "runcmd"} {
 	}
 	expect eof
 	########## End runcmd ##########
-} elseif {$cmd == "runcmdpem"} {
-	########## Begin runcmd ##########
-  if {$argc < 4} usage;
-  
-	set host [lindex $argv 1]
-	set command [lindex $argv 2]
-	set pem [lindex $argv 3]
-	set timeout 86400
-	spawn -noecho /usr/bin/ssh -p $default_ssh_port -i $pem -o "StrictHostKeyChecking no" $host $command
-	
-	expect {
-		"Are you sure you want to continue connecting (yes/no)?" { send "yes\r"; exp_continue; }
-		eof { exit; }
-	}
-	expect eof
-	########## End runcmdpem ##########
 } elseif {$cmd == "scp"} {
 	########## Begin scp ##########
 	if {$argc < 3} usage;

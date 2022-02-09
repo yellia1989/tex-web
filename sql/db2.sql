@@ -29,6 +29,8 @@ CREATE TABLE `sys_user` (
   `role` int(11) unsigned NOT NULL,
   `need_login` int(10) NOT NULL DEFAULT '0',
   `allow_gm_cmd` text NOT NULL,
+  `terminal_user` varchar(255) DEFAULT NULL,
+  `terminal_key` text,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -39,7 +41,7 @@ CREATE TABLE `sys_user` (
 
 LOCK TABLES `sys_user` WRITE;
 /*!40000 ALTER TABLE `sys_user` DISABLE KEYS */;
-INSERT INTO `sys_user` VALUES (1001,'admin','$2a$10$qagHB4idcO.JXyapRGdm9eE4kqGcw/09V8ammDdElVDf555YzKCxe',1,0,'');
+INSERT INTO `sys_user` VALUES (1001,'admin','$2a$10$qagHB4idcO.JXyapRGdm9eE4kqGcw/09V8ammDdElVDf555YzKCxe',1,0,'',NULL,NULL);
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
 UNLOCK TABLES;
 

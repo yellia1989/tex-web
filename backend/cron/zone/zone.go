@@ -6,6 +6,7 @@ import (
     "context"
     dsql "database/sql"
     "github.com/bluele/gcache"
+    "github.com/yellia1989/tex-web/backend/api/server"
     "github.com/yellia1989/tex-web/backend/api/gm"
     "github.com/yellia1989/tex-web/backend/common"
     "github.com/yellia1989/tex-web/backend/cfg"
@@ -77,7 +78,7 @@ func Cron(now time.Time) {
     }
     mu.Unlock()
 
-    mzoneip, _ := gm.RegistryIp()
+    mzoneip, _ := server.RegistryIp()
     mzone := gm.ZoneMap()
     for zoneid, new := range mzone {
         ip, ok := mzoneip[zoneid]

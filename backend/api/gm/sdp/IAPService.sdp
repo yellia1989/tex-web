@@ -149,6 +149,32 @@ struct ABReceipt
     12  optional    unsigned int    iPaytype;
 };
 
+struct GameHubPurchase
+{
+    0   optional    string sPurchaseData;
+    1   optional    string sSignature;
+    2   optional    unsigned int    iConnId;
+    3   optional    string sChannel;
+
+    10  optional    string  sTraceProductId;
+    11  optional    string  sTraceFlowId;
+};
+
+struct GameHubReceipt
+{
+    0   optional    string sChannelId;
+    1   optional    string sChannelUid;
+    2   optional    string sOrderNo;
+    3   optional    string sCpOrderNo;
+    4   optional    string sZoneId;
+    5   optional    string sRoleId;
+    6   optional    string sGoodsId;
+    7   optional    float fAmount;
+    8   optional    unsigned int iPayTime;
+    9   optional    string sPassbackParams;
+    10  optional    unsigned int iIsTest;
+};
+
 struct IAPReceiptInAll
 {
 	0	optional	unsigned int		iReceiptType;

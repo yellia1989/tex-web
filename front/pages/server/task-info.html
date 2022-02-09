@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>任务详情</title>
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <script src="/lib/layui/layui.js"></script>
+  <link rel="stylesheet" href="/lib/layui/css/layui.css">
+</head>
+
+<body>
+  <div id="show"> </div>
+
+  <script>
+    layui.use(["okUtils", "okLayer", "util", "element"], function () {
+      let $ = layui.jquery;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let util = layui.util;
+      let element = layui.element;
+      okLoading.close();
+
+      function createElement(name, value, param) {
+        return '<div class="layui-colla-item"> <h2 class="layui-colla-title">' + name + '</h2> <div class="layui-colla-content ' + param + '">' + value + '</div></div>';
+      }
+      function createHead() {
+        return '<div class="layui-collapse">';
+      }
+      function createTail() {
+        return '</div>';
+      }
+      function formatDate(time) {
+        let d = new Date(time * 1000);
+        return '' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+      }
+      function errText(v) {
+        return '<span style="color: #FF5722; font-weight: bold">' + v + '</span>';
+      }
+      function updateShow(data) {
+        let d = $("#show");
+        let val = '<div class="layui-collapse" lay-filter="show-menu">';
+        val += createElement("状态", data["iStatus"], "layui-show");
+        val += createElement("创建时间", formatDate(data["iCreateTime"]), "layui-show");
+
+        // 多个子任务
+        let vSubTask = data["vItem"];
+        let vFailTask = [];
+        let vOtherTask = [];
+        let succNum = 0;
+        for (let i = 0; i < vSubTask.length; i++) {
+          let v = vSubTask[i];
+          if (v["iStatus"] > 2) {
+            vFailTask.push(i);
+          } else {
+            vOtherTask.push(i);
+          }
+          if (v["iStatus"] == 2) {
+            ++succNum;
+          }
+        }
+        val += createElement("失败/成功/总数", "" + errText(vFailTask.length) + '/' + succNum + '/' + vSubTask.length, "layui-show");
+
+        let quest = createHead();
+        let num = 1;
+        for (let i = 0; i < vFailTask.length; ++i, ++num) {
+          let v = vSubTask[vFailTask[i]];
+          let subTask = createHead();
+          subTask += createElement("状态", v["iStatus"], "layui-show");
+          subTask += createElement("结果", v["sResult"], "layui-show");
+          subTask += createTail();
+
+          quest += createElement(errText('失败的子任务' + num), subTask, "layui-show");
+        }
+        for (let i = 0; i < vOtherTask.length; ++i, ++num) {
+          let v = vSubTask[vOtherTask[i]];
+          let subTask = createHead();
+          subTask += createElement("状态", v["iStatus"]);
+          subTask += createElement("开始时间", formatDate(v["iStartTime"]));
+          if (v["iEndTime"] > v["iStartTime"]) {
+            subTask += createElement("耗时", (v["iEndTime"] - v["iStartTime"]) + 's');
+          }
+          subTask += createElement("百分比", v["iPercent"]);
+          subTask += createTail();
+
+          quest += createElement('子任务' + num, subTask);
+        }
+        quest += createTail();
+        if (vFailTask.length != 0) {
+          val += createElement('所有子任务', quest, "layui-show");
+        } else {
+          val += createElement('所有子任务', quest);
+        }
+
+        val += createTail();
+
+        d.html(val);
+        element.render('collapse', 'show-menu');
+      }
+      function code() {
+        if (parent.taskNo == "") {
+          okLayer.redCrossMsg("任务id为空");
+          return;
+        }
+        okUtils.ajax("/api/server/getTask", "get", { taskNo: parent.taskNo }, false).done(function (response) {
+          updateShow(response.data)
+          if (response.data["iStatus"] < 2) {
+            setTimeout(code, 1000);
+          }
+        }).fail(function (error) {
+          okLayer.redCrossMsg(error.msg);
+        });
+      };
+      code();
+
+    });
+  </script>
+
+</body>
+
+</html>
