@@ -253,14 +253,6 @@ func ActivityImport(c echo.Context) error {
         return ctx.SendError(-1, "导入活动为空")
     }
 
-    sql := "insert into t_activity(activity_id,activity_type,apply_zone,apply_map,slg,configure_data,configure_desc) values"
-    for k, v := range acts {
-        if k != 0 {
-            sql += ","
-        }
-        sql += fmt.Sprintf("(%d,%d,'%s','%s', %s, '%s','%s')", v.Id, v.Type, apply_zone, apply_map, slg, v.Data, v.Desc)
-    }
-
 	db := cfg.GameGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
@@ -277,10 +269,17 @@ func ActivityImport(c echo.Context) error {
 		return err
 	}
 
-	_, err = tx.Exec(sql)
-	if err != nil {
-		return err
-	}
+    stmt, err := tx.Prepare("insert into t_activity(activity_id,activity_type,apply_zone,apply_map,slg,configure_data,configure_desc) VALUES(?, ?, ?, ?, ?, ?, ?)")
+    if err != nil {
+        return err
+    }
+    defer stmt.Close()
+
+    for _, v := range acts {
+        if _, err := stmt.Exec(v.Id, v.Type, apply_zone, apply_map, slg, v.Data, v.Desc); err != nil {
+            return err
+        }
+    }
 
 	if err := tx.Commit(); err != nil {
 		return err
