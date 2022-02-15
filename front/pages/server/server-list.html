@@ -147,6 +147,14 @@
         });
       }
 
+      function copyData(data) {
+        editData = data;
+        editData.copy = true;
+        okLayer.open("增加服务", "./server-add.html", "90%", "90%", null, function () {
+          serverTable.reload();
+        });
+      }
+
       table.on("tool(tableFilter)", function (obj) {
         let that = this;
         let data = obj.data;
@@ -167,17 +175,26 @@
             //更多下拉菜单
             dropdown.render({
               elem: that
-              ,show: true //外部事件触发即显示
-              ,data: [{
+              , show: true //外部事件触发即显示
+              , data: [{
                 title: '设置日志等级'
-                ,id: 'set_log_level'
+                , id: 'set_log_level'
+              },
+              {
+                title: '复制'
+                , id: 'copy'
               }]
-              ,click: function(data2, othis){
-                setLogLevel(data);
+              , click: function (data2, othis) {
+                console.log(data2);
+                if (data2.id == 'copy') {
+                  copy(data);
+                } else if (data2.id == 'set_log_level') {
+                  setLogLevel(data);
+                }
               }
               ,align: 'right' //右对齐弹出（v2.6.8 新增）
               ,style: 'box-shadow: 1px 1px 10px rgb(0 0 0 / 12%);' //设置额外样式
-            }); 
+            });
             break;
         }
       });
