@@ -762,21 +762,11 @@
                             isMapKey: true,
                             parser: parseInt
                          },
-                         freeheroSoulNum: {
-                           name: '免费英雄碎片奖励',
-                           type: 'text',
-                           parser: parseInt
-                         },
                          freereward: {
                            name: '免费奖励:id,num',
                            type: 'longtext',
                            printer: utils.printItemNumList,
                            parser: utils.parseItemNumList,
-                         },
-                         buyheroSoulNum: {
-                           name: '进阶英雄碎片奖励',
-                           type: 'text',
-                           parser: parseInt
                          },
                          buyreward: {
                            name: '进阶奖励:id,num',
@@ -795,10 +785,6 @@
                     name: '折扣商品id(只对关卡基金生效)',
                     type: 'text',
                     parser: parseInt
-                },
-                hero: {
-                    name: '可选择的英雄:英雄单位表id(只对关卡基金生效)',
-                    type: 'text',
                 },
                 condition: {
                     name: '基金类型',
@@ -822,6 +808,10 @@
                 },
                 view_sort: {
                     name: '排序参数(01234，不能重复)',
+                    type: 'text',
+                },
+                hero_id: {
+                    name: '展示英雄id',
                     type: 'text',
                 },
                 recommond: {
@@ -906,7 +896,7 @@
                         '5': '登录触发',
                         '6': '技能升级',
                         '7': '英雄升级',
-                        '8': '购买符文',
+                        '8': '获得符文',
                         '9': '英雄历练升级或更新怪校验',
                         '10': '主线任务进度变化',
                         '11': '商店购买',
