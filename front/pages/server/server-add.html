@@ -172,9 +172,6 @@
 
       if ('copy' in parentData && parentData.copy == true) {
         templateSelect.setValue([parentData.template_name]);
-        $('#app').val(parentData.app);
-        $('#server').val(parentData.server);
-        $('#division').val(parentData.division);
         let req = {
           app: parentData.app,
           server: parentData.server,
@@ -184,8 +181,6 @@
         okUtils.ajax("/api/server/detail", "get", req, false).done(function (response) {
           let data = response.data;
           let services = [];
-          console.log(data.services);
-          console.log(parseData.services);
           for (let v of data.services) {
             let s = v
             s['obj'] = data.app + '.' + data.server + '.' + v.service;
@@ -195,8 +190,11 @@
           curTable.reload({
             data: services,
           });
-          $('#auto_start').val(data.auto_start);
+          $('#app').val(data.app);
+          $('#server').val(data.server);
+          $('#division').val(data.division);
           $('#node').val(data.node);
+          $('#auto_start').val(data.auto_start);
           $('#profile_conf_template').val(data.profile_conf_template);
           $('#mfw_server').val(data.mfw_server);
           $('#start_script').val(data.start_script);
