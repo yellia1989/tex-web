@@ -83,7 +83,7 @@
           <input type="text" id="prom_port" placeholder="监控端口" class="layui-input">
         </div>
         <div class="layui-input-inline">
-          <button type="button" class="layui-btn" lay-submit lay-filter="allocPromPort">获取端口</button> 
+          <button type="button" class="layui-btn" lay-submit lay-filter="allocPromPort">获取端口</button>
         </div>
       </div>
 
@@ -117,6 +117,8 @@
       let table = layui.table;
       let layer = layui.layer;
       let $ = layui.jquery;
+
+      const parentData = parent.editData;
 
       let templateSelect = xmSelect.render({
         el: '#templateSelect',
@@ -167,6 +169,42 @@
           { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
         ]]
       });
+
+      if ('copy' in parentData && parentData.copy == true) {
+        let req = {
+          app: parentData.app,
+          server: parentData.server,
+          division: parentData.division,
+          node: parentData.node
+        };
+        okUtils.ajax("/api/server/detail", "get", req, false).done(function (response) {
+          let data = response.data;
+          let services = [];
+          for (let v of data.services) {
+            let s = v
+            s['obj'] = data.app + '.' + data.server + '.' + v.service;
+            services.push(s);
+          }
+
+          curTable.reload({
+            data: services,
+          });
+          $('#app').val(data.app);
+          $('#server').val(data.server);
+          $('#division').val(data.division);
+          $('#node').val(data.node);
+          $('#auto_start').val(data.auto_start);
+          $('#profile_conf_template').val(data.profile_conf_template);
+          $('#mfw_server').val(data.mfw_server);
+          $('#start_script').val(data.start_script);
+          $('#monitor_script').val(data.monitor_script);
+          $('#stop_script').val(data.stop_script);
+          templateSelect.setValue([parentData.template_name]);
+          form.render();
+        }).fail(function (error) {
+          console.log(error);
+        });
+      }
 
       form.on('submit(add)', function (data) {
         let services = table.cache.tableId;
