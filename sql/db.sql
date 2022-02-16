@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.17, for linux-glibc2.5 (x86_64)
 --
--- Host: 172.19.248.171    Database: db_stat
+-- Host: 10.52.61.16    Database: db_stat
 -- ------------------------------------------------------
 -- Server version	5.6.17
 
@@ -340,8 +340,8 @@ DROP TABLE IF EXISTS `user_action`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_action` (
-  `action_name` varchar(255) NOT NULL DEFAULT '',
-  `action` varchar(255) NOT NULL DEFAULT ''
+  `action_name` varchar(80) NOT NULL DEFAULT '',
+  `action` varchar(80) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -401,7 +401,7 @@ DROP TABLE IF EXISTS `zone`;
 CREATE TABLE `zone` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `zoneid` int(11) NOT NULL COMMENT '分区id',
-  `zonename` varchar(255) NOT NULL COMMENT '分区名字',
+  `zonename` varchar(50) NOT NULL COMMENT '分区名字',
   `openday_fk` int(10) unsigned NOT NULL COMMENT '开服日期',
   `logdbhost` varchar(15) NOT NULL DEFAULT '' COMMENT '日志数据库地址',
   PRIMARY KEY (`id`) USING BTREE
@@ -417,4 +417,4 @@ CREATE TABLE `zone` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-07-26 11:08:17
+-- Dump completed on 2022-02-14  7:57:45
