@@ -171,7 +171,6 @@
       });
 
       if ('copy' in parentData && parentData.copy == true) {
-        templateSelect.setValue([parentData.template_name]);
         let req = {
           app: parentData.app,
           server: parentData.server,
@@ -200,7 +199,7 @@
           $('#start_script').val(data.start_script);
           $('#monitor_script').val(data.monitor_script);
           $('#stop_script').val(data.stop_script);
-          $('#prom_port').val(data.prom_port);
+          templateSelect.setValue([parentData.template_name]);
           form.render();
         }).fail(function (error) {
           console.log(error);
