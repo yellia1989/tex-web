@@ -185,9 +185,8 @@
                 , id: 'copy'
               }]
               , click: function (data2, othis) {
-                console.log(data2);
                 if (data2.id == 'copy') {
-                  copy(data);
+                  copyData(data);
                 } else if (data2.id == 'set_log_level') {
                   setLogLevel(data);
                 }

@@ -170,7 +170,7 @@
         ]]
       });
 
-      if ('copy' in parentData.copy && parentData.copy == true) {
+      if ('copy' in parentData && parentData.copy == true) {
         templateSelect.setValue([parentData.template_name]);
         $('#app').val(parentData.app);
         $('#server').val(parentData.server);
@@ -184,6 +184,8 @@
         okUtils.ajax("/api/server/detail", "get", req, false).done(function (response) {
           let data = response.data;
           let services = [];
+          console.log(data.services);
+          console.log(parseData.services);
           for (let v of data.services) {
             let s = v
             s['obj'] = data.app + '.' + data.server + '.' + v.service;
