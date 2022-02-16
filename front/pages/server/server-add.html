@@ -255,7 +255,13 @@
         switch (obj.event) {
           case 'add-row': {
             let dataBak = table.cache.tableId;
-            dataBak.push({ port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' });
+            let sObj = '';
+            let app = $('#app').val();
+            let server = $('#server').val();
+            if (app != "" && server != "") {
+              sObj = app + '.' + server + '.';
+            }
+            dataBak.push({ obj: sObj, port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' });
             curTable.reload({
               data: dataBak
             });
