@@ -1637,6 +1637,63 @@
         }
     };
 
+    activityTypeDefine[24] = {
+        name: '通行证活动',
+        fieldOption: {
+            comm_param: {
+                step: {
+                    name: '通行证奖励',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: '档位',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        freereward: {
+                            name: '免费奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        },
+                        buyreward: {
+                            name: '进阶奖励:id,num',
+                            type: 'longtext',
+                            printer: utils.printItemNumList,
+                            parser: utils.parseItemNumList
+                        }
+                    }
+                },
+                productid: {
+                    name: '商品id',
+                    type: 'text',
+                    parser: parseInt
+                },
+                coeffproductid: {
+                    name: '折扣商品id',
+                    type: 'text',
+                    parser: parseInt
+                },
+                coeffday: {
+                    name: '折扣天数',
+                    type: 'text',
+                    parser: parseInt
+                },
+                condition: {
+                    name: '进度类型',
+                    type: 'select',
+                    options: {
+                        '1': '圣山积分',
+                        '2': '主线关卡',
+                        '3': '迷宫关卡',
+                    },
+                    parser: parseInt
+                }
+            }
+        }
+    };
+
     // 当前活动类型
     var currentActivityType;
 
