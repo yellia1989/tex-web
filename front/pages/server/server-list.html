@@ -147,6 +147,12 @@
         });
       }
 
+      function closeHeartbeat(data) {
+        editData = data;
+        okLayer.open("关闭心跳检测", "./closeHeartbeat.html", "50%", "50%", null, function () {
+        });
+      }
+
       function copyData(data) {
         editData = data;
         editData.copy = true;
@@ -154,6 +160,11 @@
           serverTable.reload();
         });
       }
+
+      //触发行双击事件
+      table.on('rowDouble(tableFilter)', function(obj){
+          edit(obj.data);
+      });
 
       table.on("tool(tableFilter)", function (obj) {
         let that = this;
@@ -181,6 +192,10 @@
                 , id: 'set_log_level'
               },
               {
+		            title: '关闭心跳检测'
+                , id: 'close_heartbeat'
+              },
+              {
                 title: '复制'
                 , id: 'copy'
               }]
@@ -189,6 +204,8 @@
                   copyData(data);
                 } else if (data2.id == 'set_log_level') {
                   setLogLevel(data);
+                } else if (data2.id == 'close_heartbeat') {
+                  closeHeartbeat(data);
                 }
               }
               ,align: 'right' //右对齐弹出（v2.6.8 新增）
