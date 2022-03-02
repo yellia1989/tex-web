@@ -20,6 +20,7 @@ type errSimpleInfo struct {
     ClientVersion string `json:"client_version"`
     ErrMessageMd5 string `json:"err_info_md5"`
     Status        uint32 `json:"status"`
+    ErrId         uint32 `json:"err_id"`
 }
 
 type errSimpleInfoBy []errSimpleInfo
@@ -82,6 +83,7 @@ func ErrInfo(c echo.Context) error {
     ctx := c.(*mid.Context)
     startTime := ctx.QueryParam("startTime")
     endTime := ctx.QueryParam("endTime")
+    clientVersion := ctx.QueryParam("client_version")
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
@@ -91,9 +93,28 @@ func ErrInfo(c echo.Context) error {
 
     db := cfg.LogDb
 
-    sql := "SELECT timeymd, client_version, stack, stackmd5, count(*) as count  FROM client_error "
-    sql += "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
+    sql := "SELECT _rid, timeymd, client_version, stack, stackmd5, count(*) as count  FROM client_error "
+    where := "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
+    if clientVersion != "" {
+        where += " AND client_version IN ('" + clientVersion + "')"
+    }
+    sql += where 
     sql += "GROUP BY client_version, stackmd5"
+
+    var total int
+    row2, err2 := db.Query("SELECT count(*) as total FROM ("+sql+") a")
+    if err2 != nil {
+        return err2
+    }
+    for row2.Next() {
+        if err := row2.Scan(&total); err != nil {
+            return err
+        }
+    }
+
+    limitstart := strconv.Itoa((page-1)*limit)
+    limitrow := strconv.Itoa(limit)
+    sql += " LIMIT "+limitstart+","+limitrow
 
     log.Infof("sql: %s", sql)
 
@@ -106,7 +127,7 @@ func ErrInfo(c echo.Context) error {
     slSimpleErrInfo := make([]errSimpleInfo, 0)
     for rows.Next() {
         var r errSimpleInfo
-        if err := rows.Scan(&r.ErrTime, &r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5, &r.ErrTimes); err != nil {
+        if err := rows.Scan(&r.ErrId, &r.ErrTime, &r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5, &r.ErrTimes); err != nil {
             return err
         }
 
@@ -156,7 +177,7 @@ func ErrInfo(c echo.Context) error {
 
     vSimpleErrInfo := common.GetPage(slSimpleErrInfo, page, limit)
 
-    return ctx.SendArray(vSimpleErrInfo, len(slSimpleErrInfo))
+    return ctx.SendArray(vSimpleErrInfo, total)
 }
 
 func ErrDetail(c echo.Context) error {
@@ -300,4 +321,117 @@ func AddDisposeNote(c echo.Context) error {
     defer rows.Close()
 
     return ctx.SendResponse("添加备注成功")
+}
+
+func DelClientErr(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    ids := ctx.FormValue("idsStr")
+
+    db := cfg.LogDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"log_global")
+	if err != nil {
+		return err
+	}
+
+    sql := "SELECT client_version, stackmd5 FROM client_error "
+    where := "WHERE _rid IN ("+ids+")"
+    sql += where
+    sql += "GROUP BY client_version, stackmd5"
+    rows, err := tx.Query(sql)
+
+    clientVersions := make([]string, 0)
+    stackmd5s := make([]string, 0)
+    for rows.Next() {
+       var clientVersion string
+       var stackmd5 string
+       if err := rows.Scan(&clientVersion, &stackmd5); err != nil {
+           return err
+       }
+       clientVersions = append(clientVersions, clientVersion)
+       stackmd5s = append(stackmd5s, stackmd5)
+    }
+
+    var sClientVersion string
+    var sStackmd5 string
+    for k, v := range clientVersions {
+        sClientVersion = sClientVersion + "'" + v + "'"
+        if k != (len(clientVersions) - 1) {
+            sClientVersion += ", "
+        }
+    }
+
+    for k, v := range stackmd5s {
+        sStackmd5 = sStackmd5 + "'" + v + "'"
+        if k != (len(stackmd5s) - 1) {
+            sStackmd5 += ", "
+        }
+    }
+
+	_, err = tx.Exec("Delete FROM client_error WHERE client_version IN ("+sClientVersion+")" + " AND stackmd5 IN (" + sStackmd5 + ")" )
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+    return ctx.SendResponse("删除错误成功")
+    
+}
+
+func Clientlist(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    page, _ := strconv.Atoi(ctx.QueryParam("page"))
+    limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+    startTime := ctx.QueryParam("startTime")
+    endTime := ctx.QueryParam("endTime")
+    db := cfg.LogDb
+
+    sql := "SELECT _rid, timeymd, client_version, stack, stackmd5, count(*) as count  FROM client_error "
+    where := "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
+    sql += where
+    sql += "GROUP BY client_version"
+
+    log.Infof("sql: %s", sql)
+
+    rows, err := db.Query(sql)
+    if err != nil {
+        return err
+    }
+    defer rows.Close()
+
+    slSimpleErrInfo := make([]errSimpleInfo, 0)
+    for rows.Next() {
+        var r errSimpleInfo
+        if err := rows.Scan(&r.ErrId, &r.ErrTime, &r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5, &r.ErrTimes); err != nil {
+            return err
+        }
+
+        decodeBytes, _ := base64.StdEncoding.DecodeString(r.ErrMessage)
+        r.ErrMessage = string(decodeBytes)
+        r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
+
+        slSimpleErrInfo = append(slSimpleErrInfo, r)
+    }
+
+    if err := rows.Err(); err != nil {
+        return err
+    }
+
+
+    sort.Sort(errSimpleInfoBy(slSimpleErrInfo))
+
+    vSimpleErrInfo := common.GetPage(slSimpleErrInfo, page, limit)
+
+    return ctx.SendArray(vSimpleErrInfo, len(slSimpleErrInfo))
 }
