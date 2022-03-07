@@ -76,6 +76,9 @@ type disposeInfoBy []disposeInfo
 func (a disposeInfoBy) Len() int      { return len(a) }
 func (a disposeInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a disposeInfoBy) Less(i, j int) bool {
+    if a[i].Status !=  a[j].Status {
+        return a[i].Status < a[j].Status
+    } 
     return a[i].ClientVersion > a[j].ClientVersion
 }
 
@@ -98,7 +101,7 @@ func ErrInfo(c echo.Context) error {
     if clientVersion != "" {
         where += " AND client_version IN ('" + clientVersion + "')"
     }
-    sql += where 
+    sql += where
     sql += "GROUP BY client_version, stackmd5"
 
     var total int
@@ -160,24 +163,39 @@ func ErrInfo(c echo.Context) error {
         slDisposeInfo = append(slDisposeInfo, r)
     }
 
-    for k, errInfo := range slSimpleErrInfo {
+    k := 0
+    vErrId := make([]uint32, 0)
+    for _, errInfo := range slSimpleErrInfo {
         bFind := false
         for _, disInfo := range slDisposeInfo {
             if errInfo.ErrMessageMd5 == disInfo.ErrMessageMd5 && errInfo.ClientVersion == disInfo.ClientVersion {
-                slSimpleErrInfo[k].Status = disInfo.Status
-                bFind = true
+                vErrId = append(vErrId, errInfo.ErrId)
+                total--
+                bFind = true               
             }
         }
         if !bFind {
-            slSimpleErrInfo[k].Status = 1
+            slSimpleErrInfo[k] = errInfo
+            k++
         }
+    }
+    slSimpleErrInfo = slSimpleErrInfo[:k]
+
+    sErrId := ""
+    for k, v := range vErrId {
+        sErrId = sErrId + "'" + strconv.Itoa(int(v)) + "'"
+        if k != (len(vErrId) - 1) {
+            sErrId += ", "
+        }
+    }
+
+    if  sErrId != "" {
+        delClientError(sErrId)
     }
 
     sort.Sort(errSimpleInfoBy(slSimpleErrInfo))
 
-    vSimpleErrInfo := common.GetPage(slSimpleErrInfo, page, limit)
-
-    return ctx.SendArray(vSimpleErrInfo, total)
+    return ctx.SendArray(slSimpleErrInfo, total)
 }
 
 func ErrDetail(c echo.Context) error {
@@ -196,6 +214,21 @@ func ErrDetail(c echo.Context) error {
     sql += "WHERE stackmd5 = '" + sErrInfoMd5 + "'"
     sql += "AND client_version = '" + sClientVersion + "'"
 
+    var total int
+    row2, err2 := db.Query("SELECT count(*) as total FROM ("+sql+") a")
+    if err2 != nil {
+        return err2
+    }
+    for row2.Next() {
+        if err := row2.Scan(&total); err != nil {
+            return err
+        }
+    }
+
+    limitstart := strconv.Itoa((page-1)*limit)
+    limitrow := strconv.Itoa(limit)
+    sql += " LIMIT "+limitstart+","+limitrow
+
     log.Infof("sql: %s", sql)
 
     rows, err := db.Query(sql)
@@ -205,7 +238,6 @@ func ErrDetail(c echo.Context) error {
     defer rows.Close()
 
     slErrInfo := make([]errInfo, 0)
-
     for rows.Next() {
         var r errInfo
         if err := rows.Scan(&r.ErrTime, &r.ZoneId, &r.RoleId); err != nil {
@@ -220,9 +252,8 @@ func ErrDetail(c echo.Context) error {
     }
 
     sort.Sort(errInfoBy(slErrInfo))
-    vErrInfo := common.GetPage(slErrInfo, page, limit)
 
-    return ctx.SendArray(vErrInfo, len(slErrInfo))
+    return ctx.SendArray(slErrInfo, total)
 }
 
 func ErrDispose(c echo.Context) error {
@@ -270,8 +301,26 @@ func DisposeList(c echo.Context) error {
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
+    
+
     db := cfg.StatDb
+
+    
     sql := "SELECT client_version, stack, stackmd5, status, note FROM client_dispose "
+    var total int
+    row2, err2 := db.Query("SELECT count(*) as total FROM ("+sql+") a")
+    if err2 != nil {
+        return err2
+    }
+    for row2.Next() {
+        if err := row2.Scan(&total); err != nil {
+            return err
+        }
+    }
+
+    limitstart := strconv.Itoa((page-1)*limit)
+    limitrow := strconv.Itoa(limit)
+    sql += " LIMIT "+limitstart+","+limitrow
 
     log.Infof("sql: %s", sql)
 
@@ -282,7 +331,6 @@ func DisposeList(c echo.Context) error {
     defer rows.Close()
 
     slDisposeInfo := make([]disposeInfo, 0)
-
     for rows.Next() {
         var r disposeInfo
         if err := rows.Scan(&r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5, &r.Status, &r.Note); err != nil {
@@ -297,9 +345,8 @@ func DisposeList(c echo.Context) error {
     }
 
     sort.Sort(disposeInfoBy(slDisposeInfo))
-    vDisposeInfo := common.GetPage(slDisposeInfo, page, limit)
 
-    return ctx.SendArray(vDisposeInfo, len(slDisposeInfo))
+    return ctx.SendArray(slDisposeInfo, total)
 }
 
 func AddDisposeNote(c echo.Context) error {
@@ -323,30 +370,31 @@ func AddDisposeNote(c echo.Context) error {
     return ctx.SendResponse("添加备注成功")
 }
 
-func DelClientErr(c echo.Context) error {
-    ctx := c.(*mid.Context)
-    ids := ctx.FormValue("idsStr")
-
+func delClientError(sDelId string) int {   
     db := cfg.LogDb
 	if db == nil {
-		return ctx.SendError(-1, "连接数据库失败")
+		return -1
 	}
 	tx, err := db.Begin()
 	if err != nil {
-		return err
+		return -1
 	}
 	defer tx.Rollback()
 
 	_, err = tx.Exec("USE "+cfg.GameDbPrefix+"log_global")
 	if err != nil {
-		return err
+		return -1
 	}
 
     sql := "SELECT client_version, stackmd5 FROM client_error "
-    where := "WHERE _rid IN ("+ids+")"
+    where := "WHERE _rid IN ("+sDelId+")"
     sql += where
     sql += "GROUP BY client_version, stackmd5"
     rows, err := tx.Query(sql)
+    if err != nil {
+        log.Infof("查询语句: %s, 错误原因: %s", sql, err)
+        return -1
+    }
 
     clientVersions := make([]string, 0)
     stackmd5s := make([]string, 0)
@@ -354,7 +402,7 @@ func DelClientErr(c echo.Context) error {
        var clientVersion string
        var stackmd5 string
        if err := rows.Scan(&clientVersion, &stackmd5); err != nil {
-           return err
+           return -1
        }
        clientVersions = append(clientVersions, clientVersion)
        stackmd5s = append(stackmd5s, stackmd5)
@@ -378,12 +426,24 @@ func DelClientErr(c echo.Context) error {
 
 	_, err = tx.Exec("Delete FROM client_error WHERE client_version IN ("+sClientVersion+")" + " AND stackmd5 IN (" + sStackmd5 + ")" )
 	if err != nil {
-		return err
+		return -1
 	}
 
 	if err := tx.Commit(); err != nil {
-		return err
+		return -1
 	}
+
+    return 0
+}
+
+func DelClientErr(c echo.Context) error {
+    ctx := c.(*mid.Context)
+    ids := ctx.FormValue("idsStr")
+
+   iRet := delClientError(ids)
+   if iRet != 0 {
+       return ctx.SendError(iRet, "删除错误失败")
+   }
 
     return ctx.SendResponse("删除错误成功")
     
