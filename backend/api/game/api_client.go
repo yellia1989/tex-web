@@ -477,10 +477,6 @@ func ClientVersionlist(c echo.Context) error {
             return err
         }
 
-        decodeBytes, _ := base64.StdEncoding.DecodeString(r.ErrMessage)
-        r.ErrMessage = string(decodeBytes)
-        r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
-
         slSimpleErrInfo = append(slSimpleErrInfo, r)
     }
 
