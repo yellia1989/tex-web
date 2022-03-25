@@ -84,9 +84,10 @@
         }
       });
 
-      okUtils.ajax("/api/game/client_err/clientlist", "get", { page: 1, limit: 9999, startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss') }, false).done(function (response) {
+      okUtils.ajax("/api/game/client_err/clientVersionlist", "get", { page: 1, limit: 9999, startTime: lastweek.tz().format('YYYY-MM-DD HH:mm:ss'), endTime: now.tz().format('YYYY-MM-DD HH:mm:ss') }, false).done(function (response) {
         clientVerisonSelect.update({
           data: response.data,
+          initValue: [1],
         });
       }).fail(function (error) {
         console.log(error);
@@ -210,9 +211,10 @@
         });
         let sStartTime = data.field.startTime;
         let sEndTime = data.field.endTime;
-        okUtils.ajax("/api/game/client_err/clientlist", "get", { page: 1, limit: 9999, startTime: sStartTime, endTime: sEndTime }, false).done(function (response) {
+        okUtils.ajax("/api/game/client_err/clientVersionlist", "get", { page: 1, limit: 9999, startTime: sStartTime, endTime: sEndTime }, false).done(function (response) {
           clientVerisonSelect.update({
             data: response.data,
+            initValue: [1],            
           });
         }).fail(function (error) {
           console.log(error);

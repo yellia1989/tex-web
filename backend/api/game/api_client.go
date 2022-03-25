@@ -102,7 +102,7 @@ func ErrInfo(c echo.Context) error {
         where += " AND client_version IN ('" + clientVersion + "')"
     }
     sql += where
-    sql += "GROUP BY client_version, stackmd5"
+    sql += " GROUP BY client_version, stackmd5"
 
     var total int
     row2, err2 := db.Query("SELECT count(*) as total FROM ("+sql+") a")
@@ -449,7 +449,7 @@ func DelClientErr(c echo.Context) error {
     
 }
 
-func Clientlist(c echo.Context) error {
+func ClientVersionlist(c echo.Context) error {
     ctx := c.(*mid.Context)
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
@@ -457,7 +457,7 @@ func Clientlist(c echo.Context) error {
     endTime := ctx.QueryParam("endTime")
     db := cfg.LogDb
 
-    sql := "SELECT _rid, timeymd, client_version, stack, stackmd5, count(*) as count  FROM client_error "
+    sql := "SELECT client_version FROM client_error "
     where := "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
     sql += where
     sql += "GROUP BY client_version"
@@ -473,7 +473,7 @@ func Clientlist(c echo.Context) error {
     slSimpleErrInfo := make([]errSimpleInfo, 0)
     for rows.Next() {
         var r errSimpleInfo
-        if err := rows.Scan(&r.ErrId, &r.ErrTime, &r.ClientVersion, &r.ErrMessage, &r.ErrMessageMd5, &r.ErrTimes); err != nil {
+        if err := rows.Scan(&r.ClientVersion); err != nil {
             return err
         }
 
