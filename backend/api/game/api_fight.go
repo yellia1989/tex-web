@@ -210,6 +210,8 @@ func FightExportLog(c echo.Context) error {
         sql = fmt.Sprintf("SELECT log,client_version FROM chapter_verify_error WHERE report_id = '%s' and is_server = %d",reportid,isServer)
     }
 
+    log.Infof("sql: %s, fightType : %d", sql, fightType)
+
     rows, err := db.Query(sql)
     if err != nil {
         return err
@@ -237,16 +239,11 @@ func FightExportLog(c echo.Context) error {
 }
 
 func IsChapterFight(iFighType int) bool {
+    log.Infof("chapter fightType : %d", iFighType)
     switch(iFighType) {
-        case 12:
-        case 18:
-        case 20:
-        case 22:
-        case 24:
-            return true;
+        case 12, 18, 20, 22, 24:
+            return true
         default:
-            return false;
+            return false
     }
-
-    return false;
 }
