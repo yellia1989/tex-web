@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>编辑模板</title>
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">模板名</label>
+        <div class="layui-input-block">
+          <input type="text" id="name" class="layui-input" readonly="true" disabled="true">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">父模板</label>
+        <div class="layui-input-inline" style="width:250px">
+          <div id="parentSelect"></div>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">内容</label>
+        <div class="layui-input-block">
+          <textarea id="content" placeholder="请输入内容" class="layui-textarea" rows="20"></textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="update">更新</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'element', 'okUtils', 'okLayer'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      const data = parent.editData;
+
+      let parentSelect = xmSelect.render({
+        el: '#parentSelect',
+        name: 'parentName',
+        filterable: true,
+        tips: '',
+        radio: true,
+        model: {
+          label: {
+            type: 'text',
+          }
+        },
+        autoRow: true,
+        toolbar: {
+          show: true,
+          list: ["CLEAR"]
+        }
+      });
+      okUtils.ajax("/api/server/template_allname", "get", null, false).done(function (response) {
+        let keys = [];
+        for (let v of response.data) {
+          if (v == data.name) continue;
+          keys.push({ name: v, value: v });
+        }
+        parentSelect.update({
+          data: keys
+        });
+        parentSelect.setValue([data.parent]);
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      $('#name').val(data.name);
+      $('#content').val(data.content);
+      if (data.name == "default") {
+        parentSelect.update({ disabled: true });
+      }
+
+      form.on('submit(update)', function (data) {
+        let req = {
+          'name': $('#name').val(),
+          'parent': parentSelect.getValue('valueStr'),
+          'content': $('#content').val(),
+        }
+        okUtils.ajax("/api/server/template_update", "post", req, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+
+</body>
+
+</html>

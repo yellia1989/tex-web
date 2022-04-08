@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>红缎</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <link href="/css/xterm.min.css" rel="stylesheet" type="text/css"/>
+  <link href="/css/fullscreen.min.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <div id="status" style="color: #ff0000;"></div>
+    <div id="terminal"></div>
+  </div>
+
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script src="/js/xterm.min.js"></script>
+  <script src="/js/fullscreen.min.js"></script>
+  <script>
+    var containerWidth = window.screen.height;
+    var cols = Math.floor((containerWidth - 30) / 9);
+    var rows = Math.floor(window.innerHeight/17)+1; 
+    var wsUri = 'ws://'+ window.location.host + '/api/server/shellWs?node=' + parent.editServer.node + '&cols=' + cols + '&rows=' + rows;
+
+    function init() {
+      shellWebSocket();
+    }
+
+    function shellWebSocket() {
+      websocket = new WebSocket(wsUri);
+      terminal = document.getElementById('#terminal');
+      term = new Terminal({cursorBlink: true, rows: rows, cols: cols});
+      term.on('data', function(data) {
+        websocket.send(data);
+      });
+      websocket.onopen = function(evt) {
+        term.open(terminal, true);
+        term.toggleFullscreen(true);
+      };
+      websocket.onclose = function(evt) {
+        websocket.send("font end")
+        term.destroy();
+      };
+      websocket.onmessage = function(evt) {
+        term.write(evt.data);
+      };
+      websocket.onerror = function(evt) {
+        console.log(evt);
+      };
+    }
+
+    window.addEventListener("load", init, false);
+
+    layui.use(["element", "table", "form", "layer", "okUtils"], function () {
+      okLoading.close();
+    });
+
+  </script>
+
+</body>
+
+</html>
