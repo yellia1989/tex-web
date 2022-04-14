@@ -101,8 +101,8 @@
         <label class="layui-form-label">类型</label>
         <div class="layui-input-block">
           <select name="iType">
-            <option value="0" selected>默认</option>
-            <option value="1">爱贝勇士</option>
+            <option value="1" selected>正常公告</option>
+            <option value="2">更新公告</option>
           </select>
         </div>
       </div>
@@ -153,6 +153,7 @@
       $("#zh-CNTitle").val(parent.editdata.sTitle);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
+      $("select[name='iType']").val(parent.editdata.iType);
 
       zhCNeditor.txt.html(parent.editdata.sHtmlContent);
       let mLangContent = parent.editdata.mLangContent;
