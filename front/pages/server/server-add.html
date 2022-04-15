@@ -170,7 +170,7 @@
         ]]
       });
 
-      if ('copy' in parentData && parentData.copy == true) {
+      if (parentData && parentData.copy == true) {
         let req = {
           app: parentData.app,
           server: parentData.server,
