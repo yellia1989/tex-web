@@ -43,7 +43,14 @@
           { field: "sEndTime", title: "结束时间", align: "center" },
           {
             field: "iType", title: "类型", align: "center", templet: function (d) {
-              return d.iType == 1 ? '爱贝勇士' : '默认';
+              var ret = ""
+              switch (d.iType) {
+                case 1: ret = '正常公告'; break;
+                case 2: ret = '更新公告'; break;
+                default:
+                  ret = '未知类型';
+              }
+              return ret;
             }
           },
           {
