@@ -71,8 +71,6 @@
         },
         tips: '请选择一个客户端版本',
         layVerType: 'tips',
-        radio: true,
-        clickClose: true,
         model: {
           label: {
             type: 'block',
@@ -211,10 +209,11 @@
         });
         let sStartTime = data.field.startTime;
         let sEndTime = data.field.endTime;
+        let vClinetVerison = data.field.client_version.split(",")
         okUtils.ajax("/api/game/client_err/clientVersionlist", "get", { page: 1, limit: 9999, startTime: sStartTime, endTime: sEndTime }, false).done(function (response) {
           clientVerisonSelect.update({
             data: response.data,
-            initValue: [1],            
+            initValue: vClinetVerison,            
           });
         }).fail(function (error) {
           console.log(error);
