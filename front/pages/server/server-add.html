@@ -42,7 +42,7 @@
         </div>
         <label class="layui-form-label">节点</label>
         <div class="layui-input-inline">
-          <input type="text" id="node" placeholder="node" class="layui-input">
+          <input type="text" id="node" placeholder="请输入部署ip" class="layui-input" lay-verify="required|ip" lay-verType="tips">
         </div>
       </div>
 
@@ -170,7 +170,7 @@
         ]]
       });
 
-      if ('copy' in parentData && parentData.copy == true) {
+      if (parentData && parentData.copy == true) {
         let req = {
           app: parentData.app,
           server: parentData.server,
@@ -205,6 +205,13 @@
           console.log(error);
         });
       }
+
+      form.verify({
+        ip: [
+            /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
+            "请输入合法的ip地址"
+        ]
+      });
 
       form.on('submit(add)', function (data) {
         let services = table.cache.tableId;
