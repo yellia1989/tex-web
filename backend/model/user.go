@@ -4,6 +4,7 @@ import (
     "fmt"
     "github.com/labstack/echo/v4"
     "github.com/yellia1989/tex-web/backend/cfg"
+    "github.com/yellia1989/tex-go/tools/log"
     "golang.org/x/crypto/bcrypt"
     "database/sql"
     "net/http"
@@ -136,6 +137,7 @@ func GetUserByUserName(username string) *User {
     var terminalUser sql.NullString
     var terminalKey sql.NullString 
     if err:=db.QueryRow("select id,username,password,role,need_login,allow_gm_cmd,terminal_user,terminal_key from sys_user where username = ?",username).Scan(&user.Id,&user.UserName,&user.Password,&user.Role,&user.NeedReLogin,&user.AllowGmCmd,&terminalUser,&terminalKey);err!=nil{
+        log.Errorf("select user from db err: %s", err.Error())
         return nil
     }
     if terminalUser.Valid {
