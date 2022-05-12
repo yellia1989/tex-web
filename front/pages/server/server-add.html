@@ -42,7 +42,7 @@
         </div>
         <label class="layui-form-label">节点</label>
         <div class="layui-input-inline">
-          <input type="text" id="node" placeholder="node" class="layui-input">
+          <input type="text" id="node" placeholder="请输入部署ip" class="layui-input" lay-verify="required|ip" lay-verType="tips">
         </div>
       </div>
 
@@ -83,7 +83,7 @@
           <input type="text" id="prom_port" placeholder="监控端口" class="layui-input">
         </div>
         <div class="layui-input-inline">
-          <button type="button" class="layui-btn" lay-submit lay-filter="allocPromPort">获取端口</button> 
+          <button type="button" class="layui-btn" lay-submit lay-filter="allocPromPort">获取端口</button>
         </div>
       </div>
 
@@ -118,6 +118,8 @@
       let layer = layui.layer;
       let $ = layui.jquery;
 
+      const parentData = parent.editData;
+
       let templateSelect = xmSelect.render({
         el: '#templateSelect',
         name: 'templateName',
@@ -149,7 +151,7 @@
 
       let curTable = table.render({
         elem: "#tableId",
-        data: [{ port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' }],
+        data: [],
         limit: 30,
         page: true,
         toolbar: "#toolbarTpl",
@@ -166,6 +168,49 @@
           { field: "queue_timeout", title: "队列超时时间(ms)", edit: 'text', align: 'center' },
           { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
         ]]
+      });
+
+      if (parentData && parentData.copy == true) {
+        let req = {
+          app: parentData.app,
+          server: parentData.server,
+          division: parentData.division,
+          node: parentData.node
+        };
+        okUtils.ajax("/api/server/detail", "get", req, false).done(function (response) {
+          let data = response.data;
+          let services = [];
+          for (let v of data.services) {
+            let s = v
+            s['obj'] = data.app + '.' + data.server + '.' + v.service;
+            services.push(s);
+          }
+
+          curTable.reload({
+            data: services,
+          });
+          $('#app').val(data.app);
+          $('#server').val(data.server);
+          $('#division').val(data.division);
+          $('#node').val(data.node);
+          $('#auto_start').val(data.auto_start);
+          $('#profile_conf_template').val(data.profile_conf_template);
+          $('#mfw_server').val(data.mfw_server);
+          $('#start_script').val(data.start_script);
+          $('#monitor_script').val(data.monitor_script);
+          $('#stop_script').val(data.stop_script);
+          templateSelect.setValue([parentData.template_name]);
+          form.render();
+        }).fail(function (error) {
+          console.log(error);
+        });
+      }
+
+      form.verify({
+        ip: [
+            /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
+            "请输入合法的ip地址"
+        ]
       });
 
       form.on('submit(add)', function (data) {
@@ -217,7 +262,13 @@
         switch (obj.event) {
           case 'add-row': {
             let dataBak = table.cache.tableId;
-            dataBak.push({ port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' });
+            let sObj = '';
+            let app = $('#app').val();
+            let server = $('#server').val();
+            if (app != "" && server != "") {
+              sObj = app + '.' + server + '.';
+            }
+            dataBak.push({ obj: sObj, port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' });
             curTable.reload({
               data: dataBak
             });
