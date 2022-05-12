@@ -7,7 +7,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/sessions v1.2.1
-	github.com/gorilla/websocket v1.4.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/labstack/gommon v0.3.1
@@ -27,5 +27,5 @@ require (
 	golang.org/x/sys v0.0.0-20211103235746-7861aae1554b // indirect
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
+	golang.org/x/time v0.0.0-20220411224347-583f2d630306 // indirect
 )
