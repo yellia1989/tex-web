@@ -21,18 +21,88 @@ type errSimpleInfo struct {
     ErrMessageMd5 string `json:"err_info_md5"`
     Status        uint32 `json:"status"`
     ErrId         uint32 `json:"err_id"`
+    LastSlectClinetVersion []string `json:"last_select_client_version"`
 }
 
 type errSimpleInfoBy []errSimpleInfo
+
+func compareClientVerison(sClientL string, sCLientR string) int {
+    vL := strings.Split(sClientL, ".")
+    vR := strings.Split(sCLientR, ".")
+    if (len(vL) != 5 || len(vR) != 5) {
+        return 0;
+    }
+
+    vIntL := make([]int, 0)
+    vIntR := make([]int, 0)
+
+    for _, v := range vL {
+        iRet, _ := strconv.Atoi(v)
+        vIntL = append(vIntL, iRet)
+    }
+
+    for _, v := range vR {
+        iRet, _ := strconv.Atoi(v)
+        vIntR = append(vIntR, iRet)
+    }
+
+    // 先按后两位资源版本号
+    if (vIntL[3] < vIntR[3]) {
+        return -1
+    }
+
+    if (vIntL[3] > vIntR[3]) {
+        return 1
+    }
+
+    if (vIntL[4] < vIntR[4]) {
+        return -1
+    }
+
+    if (vIntL[4] > vIntR[4]) {
+        return 1
+    }
+
+    // 再按前三位客户端版本号
+    if (vIntL[0] < vIntR[0]) {
+        return -1
+    }
+
+    if (vIntL[0] > vIntR[0]) {
+        return 1
+    }
+
+    if (vIntL[1] < vIntR[1]) {
+        return -1
+    }
+
+    if (vIntL[1] > vIntR[1]) {
+        return 1
+    }
+
+    if (vIntL[2] < vIntR[2]) {
+        return -1
+    }
+
+    if (vIntL[2] > vIntR[2]) {
+        return 1
+    }
+
+    return 0
+}
 
 func (a errSimpleInfoBy) Len() int      { return len(a) }
 func (a errSimpleInfoBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a errSimpleInfoBy) Less(i, j int) bool {
     TmpTimeI := common.ParseTimeInLocal("2006-01-02", a[i].ErrTime)
     TmpTimeJ := common.ParseTimeInLocal("2006-01-02", a[j].ErrTime)
-
-    if a[i].ClientVersion != a[j].ClientVersion {
-        return a[i].ClientVersion > a[j].ClientVersion
+    topClient := compareClientVerison(a[i].ClientVersion, a[j].ClientVersion)
+    if topClient != 0 {
+        if (topClient == -1) {
+            return false
+        } else {
+            return true
+        }
     }
 
     if !TmpTimeI.Equal(TmpTimeJ) {
@@ -82,11 +152,35 @@ func (a disposeInfoBy) Less(i, j int) bool {
     return a[i].ClientVersion > a[j].ClientVersion
 }
 
+func splitClientVersion(client_version string) string{
+
+    if client_version == "" {
+        return client_version
+    }
+
+    vclientVersion := strings.Split(client_version, ",")
+    log.Infof("client_lenth: %d, client_version", len(vclientVersion))
+    if len(vclientVersion) == 1 {
+        sRet := "'" + vclientVersion[0] + "'"
+        return sRet
+    }
+    log.Infof("zhangli")
+    sRet := "'"
+    for k, v := range vclientVersion {
+        sRet += (v + "'")
+        if ((len(vclientVersion) - 1) != k) {
+            sRet += ",'"
+        }
+    }
+
+    return sRet
+}
+
 func ErrInfo(c echo.Context) error {
     ctx := c.(*mid.Context)
     startTime := ctx.QueryParam("startTime")
     endTime := ctx.QueryParam("endTime")
-    clientVersion := ctx.QueryParam("client_version")
+    sClientVersion := ctx.QueryParam("client_version")
     page, _ := strconv.Atoi(ctx.QueryParam("page"))
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
@@ -94,15 +188,19 @@ func ErrInfo(c echo.Context) error {
         return ctx.SendError(-1, "参数非法")
     }
 
+    clientVersion := splitClientVersion(sClientVersion);
+
     db := cfg.LogDb
 
     sql := "SELECT _rid, timeymd, client_version, stack, stackmd5, count(*) as count  FROM client_error "
     where := "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
     if clientVersion != "" {
-        where += " AND client_version IN ('" + clientVersion + "')"
+        where += " AND client_version IN (" + clientVersion + ")"
     }
     sql += where
     sql += " GROUP BY client_version, stackmd5"
+
+    log.Infof("sql: %s", sql)
 
     var total int
     row2, err2 := db.Query("SELECT count(*) as total FROM ("+sql+") a")
@@ -114,10 +212,6 @@ func ErrInfo(c echo.Context) error {
             return err
         }
     }
-
-    limitstart := strconv.Itoa((page-1)*limit)
-    limitrow := strconv.Itoa(limit)
-    sql += " LIMIT "+limitstart+","+limitrow
 
     log.Infof("sql: %s", sql)
 
@@ -137,6 +231,7 @@ func ErrInfo(c echo.Context) error {
         decodeBytes, _ := base64.StdEncoding.DecodeString(r.ErrMessage)
         r.ErrMessage = string(decodeBytes)
         r.ErrMessage = strings.Replace(r.ErrMessage, "\n", "<br>", -1)
+        r.LastSlectClinetVersion = strings.Split(sClientVersion, ",")
 
         slSimpleErrInfo = append(slSimpleErrInfo, r)
     }
@@ -194,8 +289,9 @@ func ErrInfo(c echo.Context) error {
     }
 
     sort.Sort(errSimpleInfoBy(slSimpleErrInfo))
+    vSimpleErrInfo := common.GetPage(slSimpleErrInfo, page, limit)
 
-    return ctx.SendArray(slSimpleErrInfo, total)
+    return ctx.SendArray(vSimpleErrInfo, len(slSimpleErrInfo))
 }
 
 func ErrDetail(c echo.Context) error {
