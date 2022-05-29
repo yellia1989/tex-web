@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>服务管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(["element", "table", "form", "layer", "okUtils"], function () {
+      let table = layui.table;
+      let layer = layui.layer;
+      let okUtils = layui.okUtils;
+      let form = layui.form;
+      okLoading.close();
+
+      let editServer = parent.editServer
+
+      let patchTable = table.render({
+        elem: "#tableId",
+        url: "/api/server/patchList",
+        where: {"server":editServer.server},
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        defaultToolbar: ['filter'],
+        cols: [[
+          { field: "id", title: "ID", fixed: 'left' },
+          { field: "file", title: "文件名", fixed: 'left' },
+          { field: "version", title: "版本号", fixed: 'left' },
+          { field: "md5", title: "md5" },
+          { field: "upload_time", title: "上传时间" },
+          { field: "default", title: "默认发布", templet: function(d) {
+            return d.default == 1 ? "<font color='#5FB878'>当前发布</font>" : "";
+          }},
+          { field: "remark", title: "备注"},
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right', width: 200 }
+        ]]
+      });
+
+      function update() {
+        patchTable.reload();
+        setTimeout(patchTable.reload(), 2000);
+      }
+
+      function downloadPatch(id){
+        window.open("/api/server/downloadPatch?id=" + id)
+      }
+
+      function deletePatch(id){
+        okUtils.ajax("/api/server/deletePatch", "get", { "id": id}, true).done(function (res) {
+          layer.msg(res.data);
+          update()
+        }).fail(function (error) {
+          layer.msg(res.msg);
+        });
+      }
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "download":
+            downloadPatch(data.id)
+            break;
+          case "delete":
+            deletePatch(data.id)
+            break;
+          default:
+            break;
+        }
+      });
+
+    });
+  </script>
+
+  <script type="text/html" id="operationTpl">
+    <a href="javascript:" title="下载" lay-event="download">下载</a>
+    <a href="javascript:" title="删除" lay-event="delete">删除</a>
+  </script>
+
+</body>
+
+</html>

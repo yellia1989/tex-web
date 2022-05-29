@@ -141,16 +141,6 @@
         "children": null
       },
       {
-        "id": 204,
-        "title": "Registry管理",
-        "href": "gm/registry.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
         "id": 205,
         "title": "邮件管理",
         "href": "gm/mail.html",
@@ -763,6 +753,47 @@
             "children": null
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "运维管理",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "\u0026#xe654;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 1101,
+        "title": "服务管理",
+        "href": "server/server-list.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 1102,
+        "title": "模板管理",
+        "href": "server/template.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 1103,
+        "title": "节点管理",
+        "href": "server/node-list.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
       }
     ]
   }

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>增加服务</title>
+  <link rel="stylesheet" href="/css/oksub.css">
+  <link rel="stylesheet" href="/lib/layui/css/layui.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">应用</label>
+        <div class="layui-input-inline">
+          <input type="text" id="app" placeholder="app" class="layui-input">
+        </div>
+        <label class="layui-form-label">服务</label>
+        <div class="layui-input-inline">
+          <input type="text" id="server" placeholder="server" class="layui-input">
+        </div>
+        <label class="layui-form-label">分区</label>
+        <div class="layui-input-inline">
+          <input type="text" id="division" placeholder="division" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">自动重启</label>
+        <div class="layui-input-inline">
+          <select id="auto_start">
+            <option value="0">否</option>
+            <option value="1">是</option>
+          </select>
+        </div>
+        <label class="layui-form-label">选择模板</label>
+        <div class="layui-input-inline">
+          <div id="templateSelect"></div>
+        </div>
+        <label class="layui-form-label">节点</label>
+        <div class="layui-input-inline">
+          <input type="text" id="node" placeholder="请输入部署ip" class="layui-input" lay-verify="required|ip" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">是否mfw服务</label>
+        <div class="layui-input-inline">
+          <select id="mfw_server">
+            <option value="0">否</option>
+            <option value="1" selected="">是</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">启动脚本</label>
+        <div class="layui-input-block">
+          <input type="text" id="start_script" placeholder="启动脚本" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">监控脚本</label>
+        <div class="layui-input-block">
+          <input type="text" id="monitor_script" placeholder="监控脚本" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">停止脚本</label>
+        <div class="layui-input-block">
+          <input type="text" id="stop_script" placeholder="停止脚本" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">监控端口</label>
+        <div class="layui-input-inline">
+          <input type="text" id="prom_port" placeholder="监控端口" class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+          <button type="button" class="layui-btn" lay-submit lay-filter="allocPromPort">获取端口</button>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">自定义模板</label>
+        <div class="layui-input-block">
+          <textarea id="profile_conf_template" class="layui-textarea" rows="13"></textarea>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <table id="tableId" lay-filter="tableFilter"></table>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="add">增加</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script>
+    layui.use(['form', 'element', 'okUtils', 'okLayer', 'table', 'layer'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let table = layui.table;
+      let layer = layui.layer;
+      let $ = layui.jquery;
+
+      const parentData = parent.editData;
+
+      let templateSelect = xmSelect.render({
+        el: '#templateSelect',
+        name: 'templateName',
+        filterable: true,
+        radio: true,
+        model: {
+          label: {
+            type: 'text',
+          }
+        },
+        autoRow: true,
+        toolbar: {
+          show: true,
+          list: ["CLEAR"]
+        },
+      });
+      okUtils.ajax("/api/server/template_allname", "get", null, false).done(function (response) {
+        let data = [];
+        for (let v of response.data) {
+          data.push({ name: v, value: v });
+        }
+        templateSelect.update({
+          data: data,
+          initValue: ['default']
+        });
+      }).fail(function (error) {
+        console.log(error);
+      });
+
+      let curTable = table.render({
+        elem: "#tableId",
+        data: [],
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        defaultToolbar: ['filter'],
+        cols: [[
+          { field: "obj", title: "obj", fixed: 'left', edit: 'text', width: '30%', align: 'center' },
+          { field: "port", title: "端口", edit: 'text', width: '8%', align: 'center' },
+          { field: "port_type", title: "端口类型", edit: 'text', width: '8%', align: 'center' },
+          { field: "protocol", title: "协议", edit: 'text', width: '8%', align: 'center' },
+          { field: "timeout", title: "连接超时", edit: 'text', width: '8%', align: 'center' },
+          { field: "thread_num", title: "线程数", edit: 'text', width: '8%', align: 'center' },
+          { field: "max_conn", title: "最大连接数", edit: 'text', width: '8%', align: 'center' },
+          { field: "queue_cap", title: "队列最大长度", edit: 'text', width: '8%', align: 'center' },
+          { field: "queue_timeout", title: "队列超时时间(ms)", edit: 'text', align: 'center' },
+          { title: "操作", align: "center", templet: "#operationTpl", fixed: 'right' }
+        ]]
+      });
+
+      if (parentData && parentData.copy == true) {
+        let req = {
+          app: parentData.app,
+          server: parentData.server,
+          division: parentData.division,
+          node: parentData.node
+        };
+        okUtils.ajax("/api/server/detail", "get", req, false).done(function (response) {
+          let data = response.data;
+          let services = [];
+          for (let v of data.services) {
+            let s = v
+            s['obj'] = data.app + '.' + data.server + '.' + v.service;
+            services.push(s);
+          }
+
+          curTable.reload({
+            data: services,
+          });
+          $('#app').val(data.app);
+          $('#server').val(data.server);
+          $('#division').val(data.division);
+          $('#node').val(data.node);
+          $('#auto_start').val(data.auto_start);
+          $('#profile_conf_template').val(data.profile_conf_template);
+          $('#mfw_server').val(data.mfw_server);
+          $('#start_script').val(data.start_script);
+          $('#monitor_script').val(data.monitor_script);
+          $('#stop_script').val(data.stop_script);
+          templateSelect.setValue([parentData.template_name]);
+          form.render();
+        }).fail(function (error) {
+          console.log(error);
+        });
+      }
+
+      form.verify({
+        ip: [
+            /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
+            "请输入合法的ip地址"
+        ]
+      });
+
+      form.on('submit(add)', function (data) {
+        let services = table.cache.tableId;
+        for (s of services) {
+          s['service'] = s.obj.substring(s.obj.lastIndexOf('.') + 1, s.obj.length);
+          s['port'] = parseInt(s.port, 10);
+          s['timeout'] = parseInt(s.timeout, 10);
+          s['thread_num'] = parseInt(s.thread_num, 10);
+          s['max_conn'] = parseInt(s.max_conn, 10);
+          s['queue_cap'] = parseInt(s.queue_cap, 10);
+          s['queue_timeout'] = parseInt(s.queue_timeout, 10);
+        }
+        let req = {
+          app: $('#app').val(),
+          server: $('#server').val(),
+          division: $('#division').val(),
+          node: $('#node').val(),
+          auto_start: parseInt($('#auto_start').val()),
+          template_name: templateSelect.getValue('valueStr'),
+          profile_conf_template: $('#profile_conf_template').val(),
+          services: services,
+          mfw_server: parseInt($('#mfw_server').val()),
+          start_script: $('#start_script').val(),
+          monitor_script: $('#monitor_script').val(),
+          stop_script: $('#stop_script').val(),
+          prom_port: parseInt($('#prom_port').val())
+        }
+        okUtils.ajax("/api/server/add", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      form.on('submit(allocPromPort)', function(){
+        okUtils.ajax("/api/server/allocpromport", "get", {node: $("#node").val()}, true).done(function(response) {
+          $("#prom_port").val(response.data);
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case 'add-row': {
+            let dataBak = table.cache.tableId;
+            let sObj = '';
+            let app = $('#app').val();
+            let server = $('#server').val();
+            if (app != "" && server != "") {
+              sObj = app + '.' + server + '.';
+            }
+            dataBak.push({ obj: sObj, port_type: 'tcp', protocol: 'mfw', timeout: '3600000', thread_num: '1', max_conn: '10240', queue_cap: '10240', queue_timeout: '5000' });
+            curTable.reload({
+              data: dataBak
+            });
+          } break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "del-row": {
+            layer.confirm('真的删除行吗', function (index) {
+              obj.del();
+              layer.close(index);
+            });
+          } break;
+        }
+      });
+
+    });
+  </script>
+
+  <script type="text/html" id="operationTpl">
+    <a href="javascript:" title="编辑" lay-event="del-row">删除</a>
+  </script>
+
+  <script type="text/html" id="toolbarTpl">
+    <div class="layui-btn-container">
+      <div class="layui-inline" lay-event="add-row"><i class="layui-icon layui-icon-add-1"></i></div>
+    </div>
+  </script>
+
+</body>
+
+</html>

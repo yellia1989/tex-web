@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设置日志等级</title>
+  <link rel="stylesheet" href="/css/oksub.css">
+  <link rel="stylesheet" href="/lib/layui/css/layui.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form" lay-filter="form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">应用</label>
+        <div class="layui-input-inline">
+          <input type="text" name="app" disabled="true" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">服务</label>
+        <div class="layui-input-inline">
+          <input type="text" name="server" disabled="true" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">分区</label>
+        <div class="layui-input-inline">
+          <input type="text" name="division" disabled="true" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">节点</label>
+        <div class="layui-input-inline">
+          <input type="text" name="node" disabled="true" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">应用日志等级</label>
+        <div class="layui-input-inline">
+          <select name="logLevel" lay-verify="">
+            <option value="">请选择</option>
+            <option value="debug">DEBUG</option>
+            <option value="info">INFO</option>
+            <option value="error">ERROR</option>
+            <option value="none">NONE</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">框架日志等级</label>
+        <div class="layui-input-inline">
+          <select name="frameworkLogLevel" lay-verify="">
+            <option value="">请选择</option>
+            <option value="debug">DEBUG</option>
+            <option value="info">INFO</option>
+            <option value="error">ERROR</option>
+            <option value="none">NONE</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="update">设置</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    var taskNo;
+    layui.use(['form', 'element', 'okUtils', 'okLayer', 'layer'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let layer = layui.layer;
+      let $ = layui.jquery;
+
+      const parentData = parent.editData;
+
+      form.val('form', {
+        "app": parentData.app,
+        "server": parentData.server,
+        "division": parentData.division,
+        "node": parentData.node,
+      });
+
+      form.on('submit(update)', function (data) {
+        let vItem = [{ "sApp": data.field.app, "sServer": data.field.server, "sDivision": data.field.division, "sNodeName": data.field.node, "sCommand": "notify", "mParam": {"loglevel": data.field.logLevel, "framework-loglevel": data.field.frameworkLogLevel, "cmd": "set_log_level"} }]
+        let req = {
+          "vItem": JSON.stringify(vItem),
+        }
+        okUtils.ajax("/api/server/operator", "post", req, true).done(function (response) {
+          taskNo = response.data;
+          let param = {
+            type: 2,
+            title: "任务详情",
+            content: "./task-info.html",
+            area: ['80%', "80%"],
+          }
+          layer.open(param);
+        }).fail(function (error) {
+          console.log(error.msg);
+        });
+
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>

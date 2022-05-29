@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>服务管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form" style="margin: 30px">
+      <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+          <input type="text" name="sMark" id="sMark" placeholder="请输入备注" value="" autocomplete="off" class="layui-input" lay-verify="string" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">版本号</label>
+        <div class="layui-input-block">
+          <input type="text" name="sVersion" id="sVersion" placeholder="请输入版本号" value="" autocomplete="off" class="layui-input" lay-verify="string|required" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item" style="margin-top: 30px">
+        <div class="layui-progress" lay-showPercent="true" lay-filter="filepro">
+          <div class="layui-progress-bar" lay-percent="0%"></div>
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="filePathDiv" style="display: none">
+        <div id="filePath"></div>
+      </div>
+
+      <div class="layui-form-item" style="margin-top: 30px">
+        <div class="layui-inline" style="width: 50%">
+          <button type="button" class="layui-btn" id="file">
+            <i class="layui-icon">&#xe67c;</i>选择文件
+          </button>
+        </div>
+        <div class="layui-inline" >
+          <button type="button" class="layui-btn" lay-filter="submit" lay-submit id="submit">提交</button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+
+  <script>
+    layui.use(["element", "table", "form", "layer", "okUtils","upload","element"], function () {
+      let form = layui.form;
+      let layer = layui.layer;
+      let okUtils = layui.okUtils;
+      let $ = layui.jquery;
+      let upload = layui.upload;
+      let element = layui.element;
+      okLoading.close();
+
+      let editServer = parent.editServer;
+
+      let bUpload = false;
+
+      let uploadFile = upload.render({
+        elem: '#file',
+        url: '/api/server/uploadPatch',
+        data: {"server":editServer.server,
+               "remark": function () {return $("#sMark").val()},
+               "version": function () {return $("#sVersion").val()},},
+        accept: 'file',
+        exts: 'tar.gz',
+        auto: false,
+        choose: function(obj){
+          obj.preview(function(index, file, result){
+            $("#filePathDiv").css("display","block");
+            $("#filePath").text(file.name)
+          })
+          bUpload = true;
+        },
+        progress: function(n, elem){
+          let percent = n + '%';
+          element.progress('filepro', percent);
+        },
+        done: function(res, index, upload) {
+          if (res.code != 0) {
+            layer.msg(res.msg);
+            element.progress('filepro', "0%");
+            return;
+          }
+          layer.msg(res.data);
+        },
+        error: function(index, upload) {
+          layer.msg("上传失败");
+          element.progress('filepro', "0%");
+        }
+      });
+
+      form.on('submit(submit)', function (data) {
+        if(!bUpload) {
+          layer.msg("请选择文件");
+          return
+        }
+
+        uploadFile.upload()
+      });
+
+    });
+
+  </script>
+
+
+</body>
+
+</html>

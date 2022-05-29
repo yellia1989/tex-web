@@ -1,11 +1,12 @@
 package api
 
 import (
-    "github.com/labstack/echo/v4"
-    "github.com/yellia1989/tex-web/backend/api/game"
-    "github.com/yellia1989/tex-web/backend/api/gm"
-    "github.com/yellia1989/tex-web/backend/api/stat"
-    "github.com/yellia1989/tex-web/backend/api/sys"
+	"github.com/labstack/echo/v4"
+	"github.com/yellia1989/tex-web/backend/api/game"
+	"github.com/yellia1989/tex-web/backend/api/gm"
+	"github.com/yellia1989/tex-web/backend/api/server"
+	"github.com/yellia1989/tex-web/backend/api/stat"
+	"github.com/yellia1989/tex-web/backend/api/sys"
 )
 
 func RegisterHandler(group *echo.Group) {
@@ -41,10 +42,6 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/channel/add", gm.ChannelAdd)       // 增加新渠道
     group.POST("/gm/channel/del", gm.ChannelDel)       // 删除渠道
     group.POST("/gm/channel/update", gm.ChannelUpdate) // 更新渠道
-
-    group.GET("/gm/registry/list", gm.RegistryList) // 获取registry列表
-    group.POST("/gm/registry/add", gm.RegistryAdd)  // 增加registry
-    group.POST("/gm/registry/del", gm.RegistryDel)  // 删除registry
 
     group.GET("/gm/mail/list", gm.MailList)          // 获取邮件列表
     group.POST("/gm/mail/testsend", gm.MailTestSend) // 发送测试邮件
@@ -185,4 +182,28 @@ func RegisterHandler(group *echo.Group) {
 
     group.GET("/public/gm/get_zone_list", gm.GetZoneList) // 获取当前环境的服务器列表
     group.GET("/public/gm/dump_role", gm.DumpRole) // 复制玩家数据
+
+    group.GET("/server/nodeList", server.NodeList) // 获取节点列表
+    group.GET("/server/shellWs", server.ShellWs) // ws
+
+    group.GET("/server/list", server.ServerList) // 获取服务器列表
+    group.POST("/server/operator", server.ServerOperator) // 操作服务器
+    group.GET("/server/getTask", server.GetTask) // 获取执行信息
+    group.GET("/server/detail", server.ServerDetail) // 获取服务详情
+    group.POST("/server/update", server.ServerUpdate) // 更新服务
+    group.POST("/server/add", server.ServerAdd) // 增加服务
+    group.POST("/server/del", server.ServerDel) // 删除服务
+    group.GET("/server/allocpromport", server.AllocPromPort) // 获取监听端口
+
+    group.GET("/server/template_list", server.TemplateList) // 获取模板列表
+    group.GET("/server/template_detail", server.TemplateDatail) // 获取模板详情
+    group.POST("/server/template_update", server.TemplateUpdate) // 编辑模板
+    group.POST("/server/template_del", server.TemplateDel) // 删除模板
+    group.POST("/server/template_add", server.TemplateAdd) // 增加模板
+    group.GET("/server/template_allname", server.TemplateAllName) // 获取所有模板名称
+
+    group.POST("/server/uploadPatch", server.UploadPatch) // 上传发布包
+    group.GET("/server/downloadPatch", server.DownloadPatch) // 下载发布包
+    group.GET("/server/deletePatch", server.DeletePatch) // 删除发布包
+    group.GET("/server/patchList", server.PatchList) // 发布包列表
 }
