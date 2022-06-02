@@ -7,7 +7,6 @@ import (
     "strings"
 
     "github.com/labstack/echo/v4"
-    "github.com/yellia1989/tex-go/tools/log"
     "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/common"
     mid "github.com/yellia1989/tex-web/backend/middleware"
@@ -159,12 +158,10 @@ func splitClientVersion(client_version string) string{
     }
 
     vclientVersion := strings.Split(client_version, ",")
-    log.Infof("client_lenth: %d, client_version", len(vclientVersion))
     if len(vclientVersion) == 1 {
         sRet := "'" + vclientVersion[0] + "'"
         return sRet
     }
-    log.Infof("zhangli")
     sRet := "'"
     for k, v := range vclientVersion {
         sRet += (v + "'")
@@ -489,7 +486,6 @@ func delClientError(sDelId string) int {
     sql += "GROUP BY client_version, stackmd5"
     rows, err := tx.Query(sql)
     if err != nil {
-        log.Infof("查询语句: %s, 错误原因: %s", sql, err)
         return -1
     }
 
