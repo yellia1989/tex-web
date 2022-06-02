@@ -199,6 +199,7 @@ func ErrInfo(c echo.Context) error {
     }
     sql += where
     sql += " GROUP BY client_version, stackmd5"
+    sql += " ORDER BY v5 desc, v4 desc, v3 desc, v2 desc, v1 desc, time desc"
 
     log.Infof("sql: %s", sql)
 
@@ -212,6 +213,10 @@ func ErrInfo(c echo.Context) error {
             return err
         }
     }
+
+    limitstart := strconv.Itoa((page-1)*limit)
+    limitrow := strconv.Itoa(limit)
+    sql += " LIMIT "+limitstart+","+limitrow
 
     log.Infof("sql: %s", sql)
 
@@ -288,10 +293,7 @@ func ErrInfo(c echo.Context) error {
         delClientError(sErrId)
     }
 
-    sort.Sort(errSimpleInfoBy(slSimpleErrInfo))
-    vSimpleErrInfo := common.GetPage(slSimpleErrInfo, page, limit)
-
-    return ctx.SendArray(vSimpleErrInfo, len(slSimpleErrInfo))
+    return ctx.SendArray(slSimpleErrInfo, total)
 }
 
 func ErrDetail(c echo.Context) error {
@@ -309,6 +311,7 @@ func ErrDetail(c echo.Context) error {
     sql := "SELECT time, zoneid, roleid FROM client_error "
     sql += "WHERE stackmd5 = '" + sErrInfoMd5 + "'"
     sql += "AND client_version = '" + sClientVersion + "'"
+    sql += " ORDER BY time desc, zoneid"
 
     var total int
     row2, err2 := db.Query("SELECT count(*) as total FROM ("+sql+") a")
@@ -346,8 +349,6 @@ func ErrDetail(c echo.Context) error {
     if err := rows.Err(); err != nil {
         return err
     }
-
-    sort.Sort(errInfoBy(slErrInfo))
 
     return ctx.SendArray(slErrInfo, total)
 }
@@ -556,7 +557,8 @@ func ClientVersionlist(c echo.Context) error {
     sql := "SELECT client_version FROM client_error "
     where := "WHERE time BETWEEN '" + startTime + "' AND '" + endTime + "'"
     sql += where
-    sql += "GROUP BY client_version"
+    sql += " GROUP BY client_version"
+    sql += " ORDER BY v5 desc, v4 desc, v3 desc, v2 desc, v1 desc, time desc"
 
     log.Infof("sql: %s", sql)
 
