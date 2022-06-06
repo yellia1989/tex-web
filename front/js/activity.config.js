@@ -928,6 +928,24 @@
                     name: '购买符文的等级(-区分)',
                     type: 'midtext'
                 },
+                gem_less_refreshcardcost : {
+                    name : '当前拥有源质琉璃小于上次历练升级或更换怪所消耗的量',
+                    type : 'select',
+                    options : options.optYesNo,
+                    parser : parseInt
+                },
+                talentponit_less_talentlevelupcost : {
+                    name : '当前拥有提纯试剂小于上次天赋升级所消耗的量',
+                    type : 'select',
+                    options : options.optYesNo,
+                    parser : parseInt
+                },
+                rune_less_upgraderunecost : {
+                    name : '当前拥有符文晶块小于上次符文升级所消耗的量',
+                    type : 'select',
+                    options : options.optYesNo,
+                    parser : parseInt
+                },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
                     type: 'select',
