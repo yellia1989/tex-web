@@ -143,6 +143,8 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/game/client_err/dispose_info", game.DisposeList)         // 获取处理情况列表
     group.POST("/game/client_err/add_dispose_note", game.AddDisposeNote) // 增加错误处理备注
     group.POST("/game/client_err/dispose_finish", game.FinishDispose)    // 错误处理完成
+    group.POST("/game/client_err/clent_err_del", game.DelClientErr)      // 删除错误
+    group.GET("/game/client_err/clientVersionlist", game.ClientVersionlist)  // 删除错误
 
     group.GET("/game/chat/getnewest", game.ChatGetNewest)
     group.GET("/game/chat/gethistory", game.ChatGetHistory)

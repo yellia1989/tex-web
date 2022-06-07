@@ -81,7 +81,10 @@
               case 8: ret = '联盟远征'; break;
               case 9: ret = '矩阵迷宫'; break;
               case 10: ret = '镜像试练'; break;
-              case 11: ret =  '迷宫关卡挑战'; break;
+              case 11: ret = '迷宫关卡挑战'; break;
+              case 12: ret = '迷宫挑站'; break;
+              case 13: ret = '赏金迷宫挑站'; break;
+              case 14: ret = '赏金迷宫关卡挑站'; break;
               default:
                 ret = d.fight_type;
             }
@@ -92,8 +95,7 @@
             let ret = ''
             switch(d.maze_type) {
               case 1: ret = '简单迷宫'; break;
-              case 2: ret = '困难迷宫'; break;
-              case 3: ret = '深渊迷宫'; break;
+              case 2: ret = '赏金迷宫'; break;
               default:
                 ret = d.maze_type;
             }
@@ -128,7 +130,7 @@
 
     function downloadReport() {
       let cmd = ''
-      if (fightType != 11 && fightType != 12) {
+      if (fightType != 12 && fightType != 13) {
         cmd = "dump_cmd_fightreport_http" + " " + reportId;
       } else {
         cmd = "dump_cmd_chapterreport_http" + " " + reportId;
