@@ -764,16 +764,14 @@
                         '1': '王者竞技场失败',
                         '2': '巅峰竞技场失败',
                         '3': '天赋等级提升',
-                        '4': '钻石免费抽',
                         '5': '登录触发',
                         '6': '技能升级',
                         '7': '英雄升级',
-                        '8': '购买符文',
+                        '8': '获得符文',
                         '9': '英雄历练升级',
                         '10': '主线任务进度变化',
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
-                        '13': '天赋技能解锁',
                         '14': '钻石变更时',
                     },
                     parser: parseInt
@@ -927,6 +925,24 @@
                 rune_level: {
                     name: '购买符文的等级(-区分)',
                     type: 'midtext'
+                },
+                gem_less_refreshcardcost : {
+                    name : '当前拥有源质琉璃小于上次历练升级或更换怪所消耗的量',
+                    type : 'select',
+                    options : options.optYesNo,
+                    parser : parseInt
+                },
+                talentponit_less_talentlevelupcost : {
+                    name : '当前拥有提纯试剂小于上次天赋升级所消耗的量',
+                    type : 'select',
+                    options : options.optYesNo,
+                    parser : parseInt
+                },
+                rune_less_upgraderunecost : {
+                    name : '当前拥有符文晶块小于上次符文升级所消耗的量',
+                    type : 'select',
+                    options : options.optYesNo,
+                    parser : parseInt
                 },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
