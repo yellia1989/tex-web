@@ -488,7 +488,7 @@
     };
     // 5
     activityTypeDefine[5] = {
-        name: '首冲送英雄',
+        name: '首充送英雄',
         fieldOption: {
             comm_param: {
                 item: {
@@ -496,6 +496,11 @@
                     type: 'midtext',
                     printer: utils.printItemNumList,
                     parser: utils.parseItemNumList
+                },
+                productid: {
+                    name: '商品id',
+                    type: 'text',
+                    parser: parseInt
                 }
             },
             client_param: {
