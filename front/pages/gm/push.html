@@ -67,8 +67,11 @@
             }
             return ret;
           }},
-          { field: "payload", title: "payload", templet: function(d) {
-            return d.stPayload.sUPushPayload;
+          { field: "and_payload", title: "Google", templet: function(d) {
+            return d.stPayload.sGooglePayload;
+          }},
+          { field: "ios_payload", title: "Apple", templet: function(d) {
+            return d.stPayload.sApplePayload;
           }},
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' },
         ]],

@@ -57,7 +57,8 @@ func PushTestSend(c echo.Context) error {
 
     sTaskName := ctx.FormValue("sTaskName")
     roleid, _ := strconv.Atoi(ctx.FormValue("iRoleId"))
-    spayload := ctx.FormValue("payload")
+    iosPayload := ctx.FormValue("ios_payload")
+    andPayload := ctx.FormValue("and_payload")
 
     comm := cfg.Comm
 
@@ -71,7 +72,8 @@ func PushTestSend(c echo.Context) error {
     var target rpc.PushTargetAccountInfo
     target.IAccountId = uint64(roleid)
     vTarget = append(vTarget, target)
-    payload.SUPushPayload = spayload
+    payload.SApplePayload = iosPayload
+    payload.SGooglePayload = andPayload
 
 	ret, err := pushPrx.AddPushTask(vTarget, sTaskName, payload, &taskid)
 	if err := checkRet(ret, err); err != nil {
@@ -85,8 +87,9 @@ func PushSend(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
     sTaskName := ctx.FormValue("sTaskName")
-    spayload := ctx.FormValue("payload")
     filename := ctx.FormValue("filepath")
+    iosPayload := ctx.FormValue("ios_payload")
+    andPayload := ctx.FormValue("and_payload")
 
     var vTarget []rpc.PushTargetAccountInfo
     content, err := util.LoadFromFile(filename)
@@ -102,7 +105,8 @@ func PushSend(c echo.Context) error {
     }
 
     var payload rpc.PushPayloadInfo
-    payload.SUPushPayload = spayload
+    payload.SApplePayload = iosPayload
+    payload.SGooglePayload = andPayload
 
     comm := cfg.Comm
 
