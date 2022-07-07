@@ -159,7 +159,7 @@
       //监听提交
       var pushparam;
       form.on('submit(test)', function (data) {
-        let param = {sTaskName: data.field.sTaskName, iRoleId: data.field.iRoleId, ios_payload: okUtils.stringToJson($("textarea[name=sIOS]").val()), and_payload: okUtils.stringToJson($("textarea[name=sAndroid]").val())};
+        let param = {sTaskName: data.field.sTaskName, iRoleId: data.field.iRoleId, ios_payload: $("textarea[name=sIOS]").val(), and_payload: $("textarea[name=sAndroid]").val()};
         okUtils.ajax("/api/gm/push/testsend", "post", param, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             $("#test").attr("class", "layui-btn layui-btn-disabled");
