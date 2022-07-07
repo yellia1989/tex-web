@@ -1908,7 +1908,7 @@
                             isMapKey: true,
                             parser: parseInt
                         },
-                            foods : {
+                            goods : {
                             name: '包含商品',
                             type: 'text'
                         },
@@ -1924,7 +1924,7 @@
                         }
                     }
                 },
-                foods: {
+                goods: {
                     name: '商品',
                     type: 'map',
                     groupFieldOption: {
