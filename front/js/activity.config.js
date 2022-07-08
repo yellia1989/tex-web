@@ -1950,6 +1950,24 @@
                         }
                     }
                 }
+            },
+            client_param: {
+                goods: {
+                    name: '商品',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: 'ID',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        mark : {
+                            name: '角标',
+                            type: 'text',
+                        }
+                    }
+                }
             }
         }
     };
