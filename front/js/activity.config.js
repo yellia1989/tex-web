@@ -1952,6 +1952,22 @@
                 }
             },
             client_param: {
+                steps: {
+                    name: '阶段',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: '阶段',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        name : {
+                            name: '名字',
+                            type: 'text'
+                        }
+                    }
+                },
                 goods: {
                     name: '商品',
                     type: 'map',
