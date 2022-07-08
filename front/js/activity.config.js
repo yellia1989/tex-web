@@ -1981,6 +1981,10 @@
                         mark : {
                             name: '角标',
                             type: 'text',
+                        },
+                        icon : {
+                            name: '图标',
+                            type: 'text',
                         }
                     }
                 }
