@@ -959,6 +959,12 @@
                         '4': '加速成长礼包',
                     },
                     parser: parseInt
+                },
+                is_lifelong_card: {
+                    name: '是否有终身卡',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
                 }
             }
         }
