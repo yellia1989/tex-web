@@ -1721,6 +1721,104 @@
         }
     };
 
+    activityTypeDefine[25] = {
+        name: '阶段礼包',
+        fieldOption: {
+            comm_param: {
+                steps: {
+                    name: '阶段',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: '阶段',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        goods : {
+                            name: '包含商品',
+                            type: 'text'
+                        },
+                        iNeedLevel: {
+                            name: '所需玩家等级',
+                            type: 'text',
+                            parser: parseInt
+                        },
+                        bFree: {
+                            name: '免费阶段',
+                            type: 'text',
+                            parser: parseInt
+                        }
+                    }
+                },
+                goods: {
+                    name: '商品',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: 'ID',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        item : {
+                            name: '道具',
+                            type: 'text',
+                        },
+                        iProductId: {
+                            name: '商品ID',
+                            type: 'text',
+                            parser: parseInt
+                        },
+                        iDiamond: {
+                            name: '钻石',
+                            type: 'text',
+                            parser: parseInt
+                        }
+                    }
+                }
+            },
+            client_param: {
+                steps: {
+                    name: '阶段',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: '阶段',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        name : {
+                            name: '名字',
+                            type: 'text'
+                        }
+                    }
+                },
+                goods: {
+                    name: '商品',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: 'ID',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        mark : {
+                            name: '角标',
+                            type: 'text',
+                        },
+                        icon : {
+                            name: '图标',
+                            type: 'text',
+                        }
+                    }
+                }
+            }
+        }
+    };
+
     // 当前活动类型
     var currentActivityType;
 
