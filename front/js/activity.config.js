@@ -975,7 +975,7 @@
                     parser: parseInt
                 },
                 hero_fragment_param: {
-                    name: '英雄碎片道具id;距离升星差距碎片(-区分)',
+                    name: '英雄碎片道具id:距离升星差距碎片(-区分)',
                     type: 'midtext'
                 }
             }
