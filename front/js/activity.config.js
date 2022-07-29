@@ -780,6 +780,7 @@
                         '14': '钻石变更时',
                         '15': '获得3星(SSR)英雄',
                         '16': '一键装备',
+                        '17': '英雄碎片道具变更',
                     },
                     parser: parseInt
                 },
@@ -894,6 +895,11 @@
                     type: 'midtext',
                     parser: parseInt,
                 },
+                super_month_card_expire: {
+                    name: '超级月卡过期天数',
+                    type: 'midtext',
+                    parser: parseInt,
+                },
                 stage_range: {
                     name: '挂机关卡范围(-区分)',
                     type: 'midtext',
@@ -967,6 +973,10 @@
                     type: 'select',
                     options: options.optYesNo,
                     parser: parseInt
+                },
+                hero_fragment_param: {
+                    name: '英雄碎片道具id:距离升星差距碎片(-区分)',
+                    type: 'midtext'
                 }
             }
         }
