@@ -38,6 +38,7 @@ func ChannelAdd(c echo.Context) error {
     sAddress := ctx.FormValue("sAddress")
     sRes := ctx.FormValue("sRes")
     sShopVer := ctx.FormValue("sShopVer")
+    sFastFollow := ctx.FormValue("sFastFollow")
     if sChannel == "" || sAddress == "" || sRes == "" || sShopVer == "" {
         return ctx.SendError(-1, "参数非法")
     }
@@ -47,7 +48,7 @@ func ChannelAdd(c echo.Context) error {
     loginPrx := new(rpc.LoginService)
     comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
-    ret, err := loginPrx.AddNewChannel(sChannel, sAddress, sRes, sShopVer)
+    ret, err := loginPrx.AddNewChannel(sChannel, sAddress, sRes, sShopVer, sFastFollow)
     if err := checkRet(ret, err); err != nil {
         return err
     }
@@ -85,6 +86,7 @@ func ChannelUpdate(c echo.Context) error {
     sAddress := ctx.FormValue("sAddress")
     sRes := ctx.FormValue("sRes")
     sShopVer := ctx.FormValue("sShopVer")
+    sFastFollow := ctx.FormValue("sFastFollow")
     if sChannel == "" || sAddress == "" || sRes == "" || sShopVer == "" {
         return ctx.SendError(-1, "参数非法")
     }
@@ -94,7 +96,7 @@ func ChannelUpdate(c echo.Context) error {
     loginPrx := new(rpc.LoginService)
     comm.StringToProxy(cfg.App+".LoginServer.LoginServiceObj", loginPrx)
 
-    ret, err := loginPrx.ModifyChannel(sChannel, sAddress, sRes, sShopVer)
+    ret, err := loginPrx.ModifyChannel(sChannel, sAddress, sRes, sShopVer, sFastFollow)
     if err := checkRet(ret, err); err != nil {
         return err
     }
