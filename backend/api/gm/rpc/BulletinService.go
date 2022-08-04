@@ -193,6 +193,7 @@ type BulletinDataInfo struct {
 	SPopWindowEndTime string                         `json:"sPopWindowEndTime" form:"sPopWindowEndTime"`
 	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
 	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
+	SDefaultLang      string                         `json:"sDefaultLang" form:"sDefaultLang"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -214,6 +215,7 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	for k, v := range st.MLangContent {
 		ret.MLangContent[k] = *(v.Copy())
 	}
+	ret.SDefaultLang = st.SDefaultLang
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -250,6 +252,7 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.MLangContent) != 0 {
 		util.Tab(buff, t+1, "}\n")
 	}
+	util.Tab(buff, t+1, util.Fieldname("sDefaultLang")+fmt.Sprintf("%v\n", st.SDefaultLang))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -329,6 +332,10 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 			}
 			st.MLangContent[k] = v
 		}
+	}
+	err = up.ReadString(&st.SDefaultLang, 13, false)
+	if err != nil {
+		return err
 	}
 
 	_ = length
@@ -455,6 +462,12 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 			if err != nil {
 				return err
 			}
+		}
+	}
+	if false || st.SDefaultLang != "" {
+		err = p.WriteString(13, st.SDefaultLang)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -1217,6 +1230,56 @@ func (s *BulletinService) GetLatestBulletin(vInfo *[]BulletinDataInfo, bDisplay 
 	_ = length
 	return ret, nil
 }
+func (s *BulletinService) GetLatestUpdateBulletin(vInfo *[]BulletinDataInfo, bDisplay bool) (int32, error) {
+	p := codec.NewPacker()
+	var ret int32
+	var err error
+	var has bool
+	var ty uint32
+	var length uint32
+	if true || bDisplay != false {
+		err = p.WriteBool(2, bDisplay)
+		if err != nil {
+			return ret, err
+		}
+	}
+	var rsp *protocol.ResponsePacket
+	err = s.proxy.Invoke("getLatestUpdateBulletin", p.ToBytes(), &rsp)
+	if err != nil {
+		return ret, err
+	}
+	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
+	err = up.ReadInt32(&ret, 0, true)
+	if err != nil {
+		return ret, err
+	}
+
+	has, ty, err = up.SkipToTag(1, true)
+	if err != nil {
+		return ret, err
+	}
+	if has {
+		if ty != codec.SdpType_Vector {
+			return ret, fmt.Errorf("tag:%d got wrong type %d", 1, ty)
+		}
+
+		_, length, err = up.ReadNumber32()
+		if err != nil {
+			return ret, err
+		}
+		(*vInfo) = make([]BulletinDataInfo, length, length)
+		for i := uint32(0); i < length; i++ {
+			err = (*vInfo)[i].ReadStructFromTag(up, 0, true)
+			if err != nil {
+				return ret, err
+			}
+		}
+	}
+	_ = has
+	_ = ty
+	_ = length
+	return ret, nil
+}
 func (s *BulletinService) GetNotice(iZoneId uint32, iLastNoticeId uint32, vInfo *[]NoticeDataInfo, vDel *[]uint32) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
@@ -1307,6 +1370,7 @@ type _BulletinServiceImpl interface {
 	GetAllNotice(ctx context.Context, vInfo *[]NoticeDataInfo) (int32, error)
 	DelNotice(ctx context.Context, iNoticeId uint32) (int32, error)
 	GetLatestBulletin(ctx context.Context, vInfo *[]BulletinDataInfo, bDisplay bool) (int32, error)
+	GetLatestUpdateBulletin(ctx context.Context, vInfo *[]BulletinDataInfo, bDisplay bool) (int32, error)
 	GetNotice(ctx context.Context, iZoneId uint32, iLastNoticeId uint32, vInfo *[]NoticeDataInfo, vDel *[]uint32) (int32, error)
 }
 
@@ -1627,6 +1691,52 @@ func _BulletinServiceGetLatestBulletinImpl(ctx context.Context, serviceImpl inte
 	_ = has
 	return nil
 }
+func _BulletinServiceGetLatestUpdateBulletinImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+	var err error
+	var length uint32
+	var ty uint32
+	var has bool
+	impl := serviceImpl.(_BulletinServiceImpl)
+	var p2 bool
+	err = up.ReadBool(&p2, 2, true)
+	if err != nil {
+		return err
+	}
+	var p1 []BulletinDataInfo
+	var ret int32
+	ret, err = impl.GetLatestUpdateBulletin(ctx, &p1, p2)
+	if err != nil {
+		return err
+	}
+	if true || ret != 0 {
+		err = p.WriteInt32(0, ret)
+		if err != nil {
+			return err
+		}
+	}
+
+	length = uint32(len(p1))
+	if true || length != 0 {
+		err = p.WriteHeader(1, codec.SdpType_Vector)
+		if err != nil {
+			return err
+		}
+		err = p.WriteNumber32(length)
+		if err != nil {
+			return err
+		}
+		for _, v := range p1 {
+			err = v.WriteStructFromTag(p, 0, true)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	_ = length
+	_ = ty
+	_ = has
+	return nil
+}
 func _BulletinServiceGetNoticeImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length uint32
@@ -1767,6 +1877,12 @@ func (s *BulletinService) Dispatch(ctx context.Context, serviceImpl interface{},
 		texret = protocol.SDPSERVERSUCCESS
 	case "getLatestBulletin":
 		err = _BulletinServiceGetLatestBulletinImpl(ctx, serviceImpl, up, p)
+		if err != nil {
+			break
+		}
+		texret = protocol.SDPSERVERSUCCESS
+	case "getLatestUpdateBulletin":
+		err = _BulletinServiceGetLatestUpdateBulletinImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

@@ -29,6 +29,7 @@ struct BulletinDataInfo
     10 optional string          sPopWindowEndTime; // 弹窗显示结束时间
     11 optional string          sHtmlContent;  //html内容
     12 optional map<string,LangContentDataInfo> mLangContent;
+    13 optional string sDefaultLang; // 默认公告语言
 };
 
 struct NoticeDataInfo
@@ -64,6 +65,7 @@ interface BulletinService
 
     // 客户端调用
     int getLatestBulletin(out vector<BulletinDataInfo> vInfo, bool bDisplay);
+    int getLatestUpdateBulletin(out vector<BulletinDataInfo> vInfo, bool bDisplay);
     int getNotice(unsigned int iZoneId, unsigned int iLastNoticeId, out vector<NoticeDataInfo> vInfo, out vector<unsigned int> vDel);
 };
 
