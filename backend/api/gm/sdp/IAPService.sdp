@@ -51,7 +51,7 @@ struct IAPTmpOrder
 struct ApplePurchase
 {
 	0	optional	string				sReceiptData;
-	
+
 	10	optional string					sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
 	11	optional string					sTraceFlowId;
 };
@@ -75,7 +75,7 @@ struct GooglePurchase
 	0	optional	int					iResponseCode;
 	1	optional	string				sPurchaseData;
 	2	optional	string				sSignature;
-	
+
 	10	optional string					sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
 	11	optional string					sTraceFlowId;
 };
@@ -98,7 +98,7 @@ struct FyPurchase
 	2	optional	string				sSignature;
     3   optional    unsigned int        iConnId;
     4   optional    string              sChannel;
-	
+
 	10	optional string					sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
 	11	optional string					sTraceFlowId;
 };
@@ -149,32 +149,6 @@ struct ABReceipt
     12  optional    unsigned int    iPaytype;
 };
 
-struct GameHubPurchase
-{
-    0   optional    string sPurchaseData;
-    1   optional    string sSignature;
-    2   optional    unsigned int    iConnId;
-    3   optional    string sChannel;
-
-    10  optional    string  sTraceProductId;
-    11  optional    string  sTraceFlowId;
-};
-
-struct GameHubReceipt
-{
-    0   optional    string sChannelId;
-    1   optional    string sChannelUid;
-    2   optional    string sOrderNo;
-    3   optional    string sCpOrderNo;
-    4   optional    string sZoneId;
-    5   optional    string sRoleId;
-    6   optional    string sGoodsId;
-    7   optional    float fAmount;
-    8   optional    unsigned int iPayTime;
-    9   optional    string sPassbackParams;
-    10  optional    unsigned int iIsTest;
-};
-
 struct IAPReceiptInAll
 {
 	0	optional	unsigned int		iReceiptType;
@@ -201,7 +175,7 @@ interface IAPService
 	int deliverAppleReceipt(unsigned long iRoleId, unsigned int iZoneId, ApplePurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
 	int getAppleReceiptStatus(ApplePurchase stPurchase, out AppleReceipt stReceipt, out IAPStatus stStatus);
 	int getTransactionStatus(string sTransactionId, out AppleReceipt stReceipt, out IAPStatus stStatus);
-	
+
 	int verifyGoogleReceipt(GooglePurchase stPurchase, out GoogleReceipt stReceipt, out string sErrorInfo);
 	int deliverGoogleReceipt(unsigned long iRoleId, unsigned int iZoneId, GooglePurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
 	int getGoogleReceiptStatus(string sOrderId, out GoogleReceipt stReceipt, out IAPStatus stStatus);
