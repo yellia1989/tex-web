@@ -17,7 +17,8 @@
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-tab layui-tab-brief">
         <ul class="layui-tab-title">
-          <li class="layui-this">简体中文(默认)</li>
+          <li class="layui-this">日语</li>
+          <li>简体中文</li>
           <li>英语</li>
         </ul>
         <div class="layui-tab-content">
@@ -25,8 +26,23 @@
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
-                <input type="text" id="zh-CNTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
-                  lay-verify="required" lay-verType="tips">
+                <input type="text" id="jaTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="ja"></div>
+                <textarea id="jaHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
               </div>
             </div>
 
@@ -81,19 +97,13 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否弹窗显示</label>
+        <label class="layui-form-label">默认语言</label>
         <div class="layui-input-block">
-          <select name="iPopWindow" lay-filter="type">
-            <option value="0">否</option>
-            <option value="1">是</option>
+          <select name="sDefaultLang">
+            <option value="ja" selected>日语</option>
+            <option value="en">英语</option>
+            <option value="zh-CN">中文</option>
           </select>
-        </div>
-      </div>
-
-      <div class="layui-form-item" id="popWindowEndTime">
-        <label class="layui-form-label">弹窗显示时间</label>
-        <div class="layui-input-block">
-          <input type="text" name="sPopWindowEndTime" id="iPopWindowEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
         </div>
       </div>
 
@@ -110,6 +120,13 @@
   <script>
     zhCNeditor = getDefaultEditor('#zh-CN');
     ENeditor = getDefaultEditor('#en');
+    jaeditor = getDefaultEditor('#ja');
+
+    function getLangEditor(lang) {
+        if (lang == "en") return ENeditor;
+        else if (lang == "ja") return jaeditor;
+        else return zhCNeditor;
+    }
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
       let form = layui.form;
@@ -120,13 +137,6 @@
 
       laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
       laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
-      if (parent.editdata.iPopWindow == 1) {
-        laydate.render({elem: "#iPopWindowEndTime", type: "datetime", value: parent.editdata.sPopWindowEndTime});
-      } else {
-        $('#popWindowEndTime').addClass('layui-hide');
-        $('input[name=sPopWindowEndTime]').val("");
-        $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-      }
 
       zhCNeditor.config.onchange = function (newHtml) {
         let jsonData = zhCNeditor.txt.getJSON();
@@ -140,32 +150,32 @@
         $(ENeditor.toolbarSelector+"Html").val(ouputStr);
       }
 
-      $("#zh-CNTitle").val(parent.editdata.sTitle);
-      $("select[name='iDisplay']").val(parent.editdata.iDisplay);
-      $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
+      jaeditor.config.onchange = function (newHtml) {
+        let jsonData = jaeditor.txt.getJSON();
+        let ouputStr = ExecuteJsonData(jsonData);
+        $(jaeditor.toolbarSelector+"Html").val(ouputStr);
+      }
 
-      zhCNeditor.txt.html(parent.editdata.sHtmlContent);
-      let mLangContent = parent.editdata.mLangContent;
-      if (mLangContent != null) {
-        if (mLangContent["en"] != null) {
-          $("#enTitle").val(parent.editdata.mLangContent["en"]["sTitle"]);
-          ENeditor.txt.html(parent.editdata.mLangContent["en"]["sHtmlContent"]);
+      $("select[name='iDisplay']").val(parent.editdata.iDisplay);
+      $("select[name='sDefaultLang']").val(parent.editdata.sDefaultLang);
+
+      let langs = ["en", "zh-CN", "ja"];
+      for (let i = 0; i < langs.length; ++i) {
+        let lang = langs[i];
+        let obj = getLangEditor(lang);
+        if (lang == parent.editdata.sDefaultLang) {
+          $("#"+lang+"Title").val(parent.editdata.sTitle);
+          obj.txt.html(parent.editdata.sHtmlContent);
+        } else {
+          let mLangContent = parent.editdata.mLangContent;
+          if (mLangContent != null && mLangContent[lang]) {
+            $("#"+lang+"Title").val(parent.editdata.mLangContent[lang]["sTitle"]);
+            obj.txt.html(parent.editdata.mLangContent[lang]["sHtmlContent"]);
+          }
         }
       }
 
       form.render();
-
-      form.on('select(type)', function(data){
-        if (data.value == 0) {
-          $('#popWindowEndTime').addClass('layui-hide');
-          $('input[name=sPopWindowEndTime]').val("");
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-        } else {
-          $('#popWindowEndTime').removeClass('layui-hide');
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "required|datetime");
-          laydate.render({elem: "#iPopWindowEndTime", type: "datetime"});
-        }
-      });
 
       //监听提交
       form.on('submit(add)', function (data) {
@@ -176,21 +186,29 @@
           return false;
         }
 
-        data.field.sTitle = $('#zh-CNTitle').val();
-        data.field.sContent = $('#zh-CNHtml').val();
-        data.field.sHtmlContent = zhCNeditor.txt.html();
+        let mlang = {};
+        for (let i=0; i < langs.length; ++i) {
+          let lang = langs[i];
+          let title = $('#'+lang+'Title').val();
+          let content = $('#'+lang+'Html').val();
+          let htmlContent = getLangEditor(lang).txt.html();
+          if (lang == data.field.sDefaultLang) {
+            data.field.sTitle = title;
+            data.field.sContent = content;
+            data.field.sHtmlContent = htmlContent;
+          } else {
+            mlang[lang] = {"sTitle": title, "sContent": content, "sHtmlContent": htmlContent};
+          }
+        }
 
         if (data.field.sTitle == "" || data.field.sContent == "" || data.field.sHtmlContent == "") {
           okLayer.redCrossMsg('默认语言的配置不能为空', function () {});
           return false;
         }
 
-        let lang = {};
-        lang["en"] = {"sTitle": $('#enTitle').val(), "sContent": $('#enHtml').val(), "sHtmlContent": ENeditor.txt.html()};
-
-        if (!checkLang(lang)) {
+        if (!checkLang(mlang)) {
           okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
-            data.field.sLangContent = okUtils.jsonToString(lang);
+            data.field.sLangContent = okUtils.jsonToString(mlang);
             okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
               okLayer.greenTickMsg(response.data, function () {
                 parent.layer.close(parent.layer.getFrameIndex(window.name));
@@ -204,7 +222,7 @@
           return false;
         }
 
-        data.field.sLangContent = okUtils.jsonToString(lang);
+        data.field.sLangContent = okUtils.jsonToString(mlang);
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

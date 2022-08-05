@@ -193,6 +193,7 @@ type BulletinDataInfo struct {
 	SPopWindowEndTime string                         `json:"sPopWindowEndTime" form:"sPopWindowEndTime"`
 	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
 	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
+	SDefaultLang      string                         `json:"sDefaultLang" form:"sDefaultLang"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -214,6 +215,7 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	for k, v := range st.MLangContent {
 		ret.MLangContent[k] = *(v.Copy())
 	}
+	ret.SDefaultLang = st.SDefaultLang
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -250,6 +252,7 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.MLangContent) != 0 {
 		util.Tab(buff, t+1, "}\n")
 	}
+	util.Tab(buff, t+1, util.Fieldname("sDefaultLang")+fmt.Sprintf("%v\n", st.SDefaultLang))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -329,6 +332,10 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 			}
 			st.MLangContent[k] = v
 		}
+	}
+	err = up.ReadString(&st.SDefaultLang, 13, false)
+	if err != nil {
+		return err
 	}
 
 	_ = length
@@ -455,6 +462,12 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 			if err != nil {
 				return err
 			}
+		}
+	}
+	if false || st.SDefaultLang != "" {
+		err = p.WriteString(13, st.SDefaultLang)
+		if err != nil {
+			return err
 		}
 	}
 
