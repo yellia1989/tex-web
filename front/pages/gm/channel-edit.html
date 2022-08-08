@@ -40,6 +40,13 @@
 		    </div>
 		  </div>
 
+     <div class="layui-form-item">
+        <label class="layui-form-label">商店包下载资源</label>
+        <div class="layui-input-block">
+          <input type="text" name="sFastFollow" placeholder="请输入商店包下载资源" autocomplete="off" class="layui-input" lay-verType="tips">
+        </div>
+      </div>
+
       <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">更新</button>
@@ -59,6 +66,7 @@
       $("input[name='sAddress']").val(parent.editdata.sAddress);
       $("input[name='sRes']").val(parent.editdata.sRes);
       $("input[name='sShopVer']").val(parent.editdata.sShopVer);
+      $("input[name='sFastFollow']").val(parent.editdata.sFastFollow);
 
       //监听提交
       form.on('submit(add)', function (data) {
