@@ -1674,6 +1674,11 @@
                             name: '解锁主线关卡id',
                             type: 'text',
                             parser: parseInt,
+                        },
+                        totalMoney: {
+                            name: '累计充值金额(分)',
+                            type: 'text',
+                            parser: parseInt,
                         }
                     }
                 }
