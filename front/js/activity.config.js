@@ -1669,6 +1669,11 @@
                             name: '额外奖励的时间(秒)',
                             type: 'text',
                             parser: parseInt,
+                        },
+                        stageid: {
+                            name: '解锁主线关卡id',
+                            type: 'text',
+                            parser: parseInt,
                         }
                     }
                 }
