@@ -270,6 +270,16 @@
         "spread": false,
         "checked": false,
         "children": null
+      },
+      {
+        "id": 217,
+        "title": "全局配置",
+        "href": "gm/global-config.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
       }
     ]
   },
@@ -767,6 +777,16 @@
     "children": [
       {
         "id": 1101,
+        "title": "服务管理",
+        "href": "server/server-list.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 11012,
         "title": "服务管理",
         "href": "server/server-list.html",
         "fontFamily": "ok-icon",

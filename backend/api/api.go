@@ -175,6 +175,9 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/res/add_res_action", gm.ResAppendAction)      // 增加获取途径项
     group.GET("/gm/res_num_err/err_info", gm.ResNumErrInfo)       // 资源数量获取异常异常信息
     group.GET("/gm/res_num_err/err_detail", gm.ResNumErrDetail)
+    group.GET("/gm/global_config/list", gm.GlobalConfigList)
+    group.GET("/gm/global_config/add", gm.GlobalConfigAdd)
+    group.GET("/gm/global_config/del", gm.GlobalConfigDel)
 
     group.GET("/game/fight-verify/err_info", game.FightErrInfo) // 战斗验证失败日志列表
     group.POST("/game/fight-verify/export-report", game.FightExportReport) // 导出战斗日志
