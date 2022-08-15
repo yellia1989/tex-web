@@ -50,6 +50,7 @@ function getDefaultEditor(id){
         'undo',
         'redo',
         'fontSize',
+        'bold',
         'foreColor',
         'myColorKey',
     ]
@@ -104,6 +105,10 @@ function searchData(jsonData,outputObject) {
                         }
                     }
                     break;
+                case "b":
+                    outputObject.result += "[b]";
+                    tagStack[top++] = "[/b]";
+                    break;
                 case "font":
                     for(let i in jsonData.attrs){
                         if(jsonData.attrs[i].name==="color"){
@@ -130,7 +135,6 @@ function searchData(jsonData,outputObject) {
                 }else {
                     outputObject.result+=endTag;
                 }
-
             }else {
                 outputObject.result+=endTag;
             }

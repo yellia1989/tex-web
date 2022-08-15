@@ -193,6 +193,9 @@ type BulletinDataInfo struct {
 	SPopWindowEndTime string                         `json:"sPopWindowEndTime" form:"sPopWindowEndTime"`
 	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
 	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
+	ITopDisplay       uint32                         `json:"iTopDisplay" form:"iTopDisplay"`
+	IShowPriority     uint32                         `json:"iShowPriority" form:"iShowPriority"`
+	SShowPicture      string                         `json:"sShowPicture" form:"sShowPicture"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -214,6 +217,9 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	for k, v := range st.MLangContent {
 		ret.MLangContent[k] = *(v.Copy())
 	}
+	ret.ITopDisplay = st.ITopDisplay
+	ret.IShowPriority = st.IShowPriority
+	ret.SShowPicture = st.SShowPicture
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -250,6 +256,9 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.MLangContent) != 0 {
 		util.Tab(buff, t+1, "}\n")
 	}
+	util.Tab(buff, t+1, util.Fieldname("iTopDisplay")+fmt.Sprintf("%v\n", st.ITopDisplay))
+	util.Tab(buff, t+1, util.Fieldname("iShowPriority")+fmt.Sprintf("%v\n", st.IShowPriority))
+	util.Tab(buff, t+1, util.Fieldname("sShowPicture")+fmt.Sprintf("%v\n", st.SShowPicture))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -329,6 +338,18 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 			}
 			st.MLangContent[k] = v
 		}
+	}
+	err = up.ReadUint32(&st.ITopDisplay, 13, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IShowPriority, 14, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SShowPicture, 15, false)
+	if err != nil {
+		return err
 	}
 
 	_ = length
@@ -455,6 +476,24 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 			if err != nil {
 				return err
 			}
+		}
+	}
+	if false || st.ITopDisplay != 0 {
+		err = p.WriteUint32(13, st.ITopDisplay)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IShowPriority != 0 {
+		err = p.WriteUint32(14, st.IShowPriority)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SShowPicture != "" {
+		err = p.WriteString(15, st.SShowPicture)
+		if err != nil {
+			return err
 		}
 	}
 
