@@ -97,24 +97,24 @@
         </div>
       </div>
 
-      <div class="layui-form-item" id="iTopDisplay">
+      <div class="layui-form-item">
         <label class="layui-form-label">是否置顶显示</label>
         <div class="layui-input-block">
           <select name="iTopDisplay">
             <option value="0">否</option>
-            <option value="1" selected>是</option>
+            <option value="1">是</option>
           </select>
         </div>
       </div>
 
-      <div class="layui-form-item" id="iShowPriority">
+      <div class="layui-form-item">
         <label class="layui-form-label">展示优先级</label>
         <div class="layui-input-block">
           <input type="text" name="iShowPriority" id="iShowPriority" autocomplete="off" class="layui-input" lay-verType="tips">
         </div>
       </div>
 
-      <div class="layui-form-item" id="sShowPicture">
+      <div class="layui-form-item">
         <label class="layui-form-label">展示图</label>
         <div class="layui-input-block">
           <input type="text" name="sShowPicture" id="sShowPicture" autocomplete="off" class="layui-input" lay-verType="tips">
@@ -167,9 +167,9 @@
       $("#zh-CNTitle").val(parent.editdata.sTitle);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
-      $("select[name='iTopDisplay']").val(parent.editdata.iTopDisplay);
-      $("select[name='iShowPriority']").val(parent.editdata.iShowPriority);
-      $("select[name='sShowPicture']").val(parent.editdata.sShowPicture);
+      $('#iTopDisplay').val(parent.editdata.iTopDisplay);
+      $('#iShowPriority').val(parent.editdata.iShowPriority);
+      $('#sShowPicture').val(parent.editdata.sShowPicture);
 
       zhCNeditor.txt.html(parent.editdata.sHtmlContent);
       let mLangContent = parent.editdata.mLangContent;

@@ -73,7 +73,7 @@
           }
           if (keys) {
             okUtils.ajax("/api/gm/global_config/del", "post", { keys: keys }, true).done(function (response) {
-              okUtils.tableSuccessMsg(response.msg);
+              okUtils.tableSuccessMsg(response.data);
             }).fail(function (error) {
               console.log(error)
             });
