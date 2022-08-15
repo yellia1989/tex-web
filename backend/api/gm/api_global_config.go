@@ -146,3 +146,43 @@ func GlobalConfigDel(c echo.Context) error {
 
 	return ctx.SendResponse("删除配置成功")
 }
+
+func GlobalConfigUpdate(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	stConfig := globalConfig{}
+	stConfig.SKey = ctx.FormValue("sKey")
+	stConfig.SValue = ctx.FormValue("sValue")
+
+	if stConfig.SKey == "" || stConfig.SValue == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
+
+	db := cfg.GameGlobalDb
+	if db == nil {
+		return ctx.SendError(-1, "连接数据库失败")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("USE " + cfg.GameDbPrefix + "db_zone_global")
+	if err != nil {
+		return err
+	}
+
+	sql :="UPDATE t_config SET value = ? WHERE skey = ?"
+	c.Logger().Debug(sql)
+	_, err = tx.Exec(sql, stConfig.SKey, stConfig.SValue)
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return ctx.SendResponse("更新配置成功")
+}

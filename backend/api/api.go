@@ -178,6 +178,7 @@ func RegisterHandler(group *echo.Group) {
     group.GET("/gm/global_config/list", gm.GlobalConfigList)
     group.POST("/gm/global_config/add", gm.GlobalConfigAdd)
     group.POST("/gm/global_config/del", gm.GlobalConfigDel)
+    group.POST("/gm/global_config/update", gm.GlobalConfigUpdate)
 
     group.GET("/game/fight-verify/err_info", game.FightErrInfo) // 战斗验证失败日志列表
     group.POST("/game/fight-verify/export-report", game.FightExportReport) // 导出战斗日志
