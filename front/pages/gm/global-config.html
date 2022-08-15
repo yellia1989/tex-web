@@ -55,7 +55,7 @@
 
       table.on('rowDouble(tableFilter)', function(obj){
         editConfig = obj.data;
-        okLayer.open("添加", "global-config-edit.html", "90%", "90%", null, function () {
+        okLayer.open("编辑", "global-config-edit.html", "90%", "90%", null, function () {
           curTable.reload();
         });
       });
@@ -63,9 +63,16 @@
       function batchDel() {
         okLayer.confirm("确定要批量删除吗？", function (index) {
           layer.close(index);
-          let idsStr = okUtils.tableBatchCheck(table);
-          if (idsStr) {
-            okUtils.ajax("/api/gm/global_config/del", "post", { idsStr: idsStr }, true).done(function (response) {
+          let checkStatus = table.checkStatus("tableId");
+          let keys = "";
+          for (let i = 0; i < checkStatus.data.length; i++) {
+              keys += checkStatus.data[i].sKey;
+              if (i != checkStatus.data.length-1) {
+                keys += ",";
+              }
+          }
+          if (keys) {
+            okUtils.ajax("/api/gm/global_config/del", "post", { keys: keys }, true).done(function (response) {
               okUtils.tableSuccessMsg(response.msg);
             }).fail(function (error) {
               console.log(error)

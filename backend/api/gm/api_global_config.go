@@ -116,7 +116,7 @@ func GlobalConfigDel(c echo.Context) error {
 
 	keys := ctx.FormValue("keys")
 	if keys == "" {
-		return ctx.SendError(-1, "连接数据库失败")
+		return ctx.SendError(-1, "参数非法")
 	}
 
 	db := cfg.GameGlobalDb
@@ -175,7 +175,7 @@ func GlobalConfigUpdate(c echo.Context) error {
 
 	sql :="UPDATE t_config SET value = ? WHERE skey = ?"
 	c.Logger().Debug(sql)
-	_, err = tx.Exec(sql, stConfig.SKey, stConfig.SValue)
+	_, err = tx.Exec(sql, stConfig.SValue, stConfig.SKey)
 	if err != nil {
 		return err
 	}
