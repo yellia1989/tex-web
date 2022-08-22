@@ -105,10 +105,6 @@ function searchData(jsonData,outputObject) {
                         }
                     }
                     break;
-                case "b":
-                    outputObject.result += "[b]";
-                    tagStack[top++] = "[/b]";
-                    break;
                 case "font":
                     for(let i in jsonData.attrs){
                         if(jsonData.attrs[i].name==="color"){
