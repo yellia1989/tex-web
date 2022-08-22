@@ -14,6 +14,12 @@
 
 <body>
   <div class="ok-body">
+    <style>
+      .layui-form-label {
+        width: 300px;
+      }
+    </style>
+
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-tab layui-tab-brief">
         <ul class="layui-tab-title">
@@ -87,13 +93,6 @@
         </div>
       </div>
 
-      <div class="layui-form-item" id="popWindowEndTime">
-        <label class="layui-form-label">弹窗显示时间</label>
-        <div class="layui-input-block">
-          <input type="text" name="sPopWindowEndTime" id="iPopWindowEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
-        </div>
-      </div>
-
       <div class="layui-form-item">
         <label class="layui-form-label">是否置顶显示</label>
         <div class="layui-input-block">
@@ -134,13 +133,6 @@
 
       laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
       laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
-      if (parent.editdata.iPopWindow != 0) {
-        laydate.render({elem: "#iPopWindowEndTime", type: "datetime", value: parent.editdata.sPopWindowEndTime});
-      } else {
-        $('#popWindowEndTime').addClass('layui-hide');
-        $('input[name=sPopWindowEndTime]').val("");
-        $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-      }
 
       zhCNeditor.config.onchange = function (newHtml) {
         let jsonData = zhCNeditor.txt.getJSON();
@@ -170,18 +162,6 @@
       }
 
       form.render();
-
-      form.on('select(type)', function(data){
-        if (data.value == 0) {
-          $('#popWindowEndTime').addClass('layui-hide');
-          $('input[name=sPopWindowEndTime]').val("");
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-        } else {
-          $('#popWindowEndTime').removeClass('layui-hide');
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "required|datetime");
-          laydate.render({elem: "#iPopWindowEndTime", type: "datetime"});
-        }
-      });
 
       //监听提交
       form.on('submit(add)', function (data) {

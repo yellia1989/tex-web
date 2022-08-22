@@ -191,7 +191,6 @@ type BulletinDataInfo struct {
 	IDisplay          uint32                         `json:"iDisplay" form:"iDisplay"`
 	IType             uint32                         `json:"iType" form:"iType"`
 	IPopWindow        uint32                         `json:"iPopWindow" form:"iPopWindow"`
-	SPopWindowEndTime string                         `json:"sPopWindowEndTime" form:"sPopWindowEndTime"`
 	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
 	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
 	ITopDisplay       uint32                         `json:"iTopDisplay" form:"iTopDisplay"`
@@ -211,7 +210,6 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	ret.IDisplay = st.IDisplay
 	ret.IType = st.IType
 	ret.IPopWindow = st.IPopWindow
-	ret.SPopWindowEndTime = st.SPopWindowEndTime
 	ret.SHtmlContent = st.SHtmlContent
 	ret.MLangContent = make(map[string]LangContentDataInfo)
 	for k, v := range st.MLangContent {
@@ -236,7 +234,6 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iDisplay")+fmt.Sprintf("%v\n", st.IDisplay))
 	util.Tab(buff, t+1, util.Fieldname("iType")+fmt.Sprintf("%v\n", st.IType))
 	util.Tab(buff, t+1, util.Fieldname("iPopWindow")+fmt.Sprintf("%v\n", st.IPopWindow))
-	util.Tab(buff, t+1, util.Fieldname("sPopWindowEndTime")+fmt.Sprintf("%v\n", st.SPopWindowEndTime))
 	util.Tab(buff, t+1, util.Fieldname("sHtmlContent")+fmt.Sprintf("%v\n", st.SHtmlContent))
 	util.Tab(buff, t+1, util.Fieldname("mLangContent")+strconv.Itoa(len(st.MLangContent)))
 	if len(st.MLangContent) == 0 {
@@ -297,10 +294,6 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.IPopWindow, 9, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SPopWindowEndTime, 10, false)
 	if err != nil {
 		return err
 	}
@@ -432,12 +425,6 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.IPopWindow != 0 {
 		err = p.WriteUint32(9, st.IPopWindow)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SPopWindowEndTime != "" {
-		err = p.WriteString(10, st.SPopWindowEndTime)
 		if err != nil {
 			return err
 		}

@@ -15,6 +15,12 @@
 
 <body>
   <div class="ok-body">
+    <style>
+      .layui-form-label {
+        width: 300px;
+      }
+    </style>
+
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-tab layui-tab-brief">
         <ul class="layui-tab-title">
@@ -88,13 +94,6 @@
         </div>
       </div>
 
-      <div class="layui-form-item" id="popWindowEndTime">
-        <label class="layui-form-label">弹窗显示时间</label>
-        <div class="layui-input-block">
-          <input type="text" name="sPopWindowEndTime" id="iPopWindowEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
-        </div>
-      </div>
-
       <div class="layui-form-item" id="iTopDisplay">
         <label class="layui-form-label">是否置顶显示</label>
         <div class="layui-input-block">
@@ -156,29 +155,10 @@
         $(ENeditor.toolbarSelector+"Html").val(ouputStr);
       }
 
-      form.on('select(type)', function(data){
-        if(data.value==0){
-          $('input[name=sPopWindowEndTime]').val("");
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-        } else {
-          $('#popWindowEndTime').removeClass('layui-hide');
-        }
-      });
-
       //监听提交
       form.on('submit(add)', function (data) {
         if (data.field.sBeginTime >= data.field.sEndTime) {
           okLayer.redCrossMsg('开始时间不能大于结束时间', function () {});
-          return false;
-        }
-
-        if (data.field.iPopWindow == 1 && data.field.sBeginTime >= data.field.sPopWindowEndTime) {
-          okLayer.redCrossMsg('开始时间不能大于弹窗显示结束时间', function () {});
-          return false;
-        }
-
-        if (data.field.sPopWindowEndTime > data.field.sEndTime) {
-          okLayer.redCrossMsg('弹窗显示结束时间不能大于结束时间', function () {});
           return false;
         }
 
