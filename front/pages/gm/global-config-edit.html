@@ -27,6 +27,13 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+          <input type="text" required id="sComment" name="sComment" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="update">更新</button>
         </div>
@@ -44,6 +51,7 @@
 
       $('#sKey').val(parent.editConfig.sKey);
       $('#sValue').val(parent.editConfig.sValue);
+      $('#sComment').val(parent.editConfig.sComment);
 
       //监听提交
       form.on('submit(update)', function (data) {

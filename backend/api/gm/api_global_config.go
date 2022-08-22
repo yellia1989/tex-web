@@ -11,6 +11,7 @@ import (
 type globalConfig struct {
 	SKey   string `json:"sKey"`
 	SValue string `json:"sValue"`
+	SComment string `json:"sComment"`
 }
 
 func GlobalConfigList(c echo.Context) error {
@@ -34,7 +35,7 @@ func GlobalConfigList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT skey,value FROM t_config"
+	sql := "SELECT * FROM t_config"
 	var total int
 	err = tx.QueryRow("SELECT count(*) as total FROM (" + sql + ") a").Scan(&total)
 	if err != nil {
@@ -56,7 +57,7 @@ func GlobalConfigList(c echo.Context) error {
 	vRet := make([]globalConfig, 0)
 	for rows.Next() {
 		var r globalConfig
-		if err := rows.Scan(&r.SKey, &r.SValue); err != nil {
+		if err := rows.Scan(&r.SKey, &r.SValue, &r.SComment); err != nil {
 			return err
 		}
 		vRet = append(vRet, r)
@@ -78,6 +79,7 @@ func GlobalConfigAdd(c echo.Context) error {
 	stConfig := globalConfig{}
 	stConfig.SKey = ctx.FormValue("sKey")
 	stConfig.SValue = ctx.FormValue("sValue")
+	stConfig.SComment = ctx.FormValue("sComment")
 
 	if stConfig.SKey == "" || stConfig.SValue == "" {
 		return ctx.SendError(-1, "参数非法")
@@ -99,7 +101,7 @@ func GlobalConfigAdd(c echo.Context) error {
 		return err
 	}
 
-	_, err = tx.Exec("INSERT INTO t_config(skey,value) VALUES(?,?)", stConfig.SKey, stConfig.SValue)
+	_, err = tx.Exec("INSERT INTO t_config(skey,value,comment) VALUES(?,?,?)", stConfig.SKey, stConfig.SValue, stConfig.SComment)
 	if err != nil {
 		return err
 	}
@@ -152,6 +154,7 @@ func GlobalConfigUpdate(c echo.Context) error {
 	stConfig := globalConfig{}
 	stConfig.SKey = ctx.FormValue("sKey")
 	stConfig.SValue = ctx.FormValue("sValue")
+	stConfig.SComment = ctx.FormValue("sComment")
 
 	if stConfig.SKey == "" || stConfig.SValue == "" {
 		return ctx.SendError(-1, "参数非法")
@@ -173,9 +176,9 @@ func GlobalConfigUpdate(c echo.Context) error {
 		return err
 	}
 
-	sql :="UPDATE t_config SET value = ? WHERE skey = ?"
+	sql :="UPDATE t_config SET value = ?, comment = ? WHERE skey = ?"
 	c.Logger().Debug(sql)
-	_, err = tx.Exec(sql, stConfig.SValue, stConfig.SKey)
+	_, err = tx.Exec(sql, stConfig.SValue, stConfig.SComment, stConfig.SKey)
 	if err != nil {
 		return err
 	}
