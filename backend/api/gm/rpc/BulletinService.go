@@ -6,14 +6,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/yellia1989/tex-go/sdp/protocol"
 	"github.com/yellia1989/tex-go/service/model"
 	"github.com/yellia1989/tex-go/tools/log"
 	"github.com/yellia1989/tex-go/tools/net"
 	"github.com/yellia1989/tex-go/tools/sdp/codec"
 	"github.com/yellia1989/tex-go/tools/sdp/util"
-	"strconv"
-	"time"
 )
 
 type BulletinFlag int32
@@ -195,7 +196,6 @@ type BulletinDataInfo struct {
 	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
 	ITopDisplay       uint32                         `json:"iTopDisplay" form:"iTopDisplay"`
 	IShowPriority     uint32                         `json:"iShowPriority" form:"iShowPriority"`
-	SShowPicture      string                         `json:"sShowPicture" form:"sShowPicture"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -219,7 +219,6 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	}
 	ret.ITopDisplay = st.ITopDisplay
 	ret.IShowPriority = st.IShowPriority
-	ret.SShowPicture = st.SShowPicture
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -258,7 +257,6 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	}
 	util.Tab(buff, t+1, util.Fieldname("iTopDisplay")+fmt.Sprintf("%v\n", st.ITopDisplay))
 	util.Tab(buff, t+1, util.Fieldname("iShowPriority")+fmt.Sprintf("%v\n", st.IShowPriority))
-	util.Tab(buff, t+1, util.Fieldname("sShowPicture")+fmt.Sprintf("%v\n", st.SShowPicture))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -344,10 +342,6 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.IShowPriority, 14, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SShowPicture, 15, false)
 	if err != nil {
 		return err
 	}
@@ -486,12 +480,6 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.IShowPriority != 0 {
 		err = p.WriteUint32(14, st.IShowPriority)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SShowPicture != "" {
-		err = p.WriteString(15, st.SShowPicture)
 		if err != nil {
 			return err
 		}

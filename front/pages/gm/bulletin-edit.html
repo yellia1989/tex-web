@@ -81,12 +81,9 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否弹窗显示</label>
+        <label class="layui-form-label">弹窗显示次数</label>
         <div class="layui-input-block">
-          <select name="iPopWindow" lay-filter="type">
-            <option value="0">否</option>
-            <option value="1">是</option>
-          </select>
+          <input type="text" name="iPopWindow" id="iPopWindow" autocomplete="off" class="layui-input" lay-verType="tips">
         </div>
       </div>
 
@@ -115,13 +112,6 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">展示图</label>
-        <div class="layui-input-block">
-          <input type="text" name="sShowPicture" id="sShowPicture" autocomplete="off" class="layui-input" lay-verType="tips">
-        </div>
-      </div>
-
-      <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">更新</button>
         </div>
@@ -144,7 +134,7 @@
 
       laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
       laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
-      if (parent.editdata.iPopWindow == 1) {
+      if (parent.editdata.iPopWindow != 0) {
         laydate.render({elem: "#iPopWindowEndTime", type: "datetime", value: parent.editdata.sPopWindowEndTime});
       } else {
         $('#popWindowEndTime').addClass('layui-hide');
@@ -169,7 +159,6 @@
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
       $('#iTopDisplay').val(parent.editdata.iTopDisplay);
       $('#iShowPriority').val(parent.editdata.iShowPriority);
-      $('#sShowPicture').val(parent.editdata.sShowPicture);
 
       zhCNeditor.txt.html(parent.editdata.sHtmlContent);
       let mLangContent = parent.editdata.mLangContent;
