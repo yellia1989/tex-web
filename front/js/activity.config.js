@@ -1903,7 +1903,6 @@
             }
         }
     };
-
     activityTypeDefine[26] = {
         name: '阶段礼包',
         fieldOption: {
@@ -2001,6 +2000,10 @@
             }
         }
     };
+    activityTypeDefine[27] = {
+        name: '限时集结',
+    };
+
 
     // 当前活动类型
     var currentActivityType;
