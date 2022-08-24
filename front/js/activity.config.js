@@ -1833,6 +1833,16 @@
                             name: '额外奖励的时间(秒)',
                             type: 'text',
                             parser: parseInt,
+                        },
+                        chapterid: {
+                            name: '解锁主线章节id',
+                            type: 'text',
+                            parser: parseInt,
+                        },
+                        totalMoney: {
+                            name: '累计充值金额(分)',
+                            type: 'text',
+                            parser: parseInt,
                         }
                     }
                 }
@@ -1893,7 +1903,6 @@
             }
         }
     };
-
     activityTypeDefine[26] = {
         name: '阶段礼包',
         fieldOption: {
@@ -1991,6 +2000,10 @@
             }
         }
     };
+    activityTypeDefine[27] = {
+        name: '限时集结',
+    };
+
 
     // 当前活动类型
     var currentActivityType;
