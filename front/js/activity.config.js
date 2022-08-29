@@ -1841,6 +1841,10 @@
         }
     };
 
+    activityTypeDefine[26] = {
+        name: '限时集结',
+    };
+
     // 当前活动类型
     var currentActivityType;
 
