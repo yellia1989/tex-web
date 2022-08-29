@@ -904,6 +904,10 @@
                         '13': '天赋技能解锁',
                         '14': '充值犹豫时',
                         '15': '钻石变更时'
+                        '16': '历练刷新',
+                        '17': '英雄碎片道具变更',
+                        '18': '指定英雄升阶',
+                        '19': '个性化活动领奖',
                     },
                     parser: parseInt
                 },
@@ -1073,6 +1077,20 @@
                 },
                 growth_gift_step: {
                     name: '成长礼包活动阶段',
+                    type: 'midtext',
+                    parser: parseInt
+                },
+                hero_fragment_param: {
+                    name: '英雄碎片道具id:距离升星差距碎片(-区分):最低星级',
+                    type: 'midtext'
+                },
+                hero_step_upgrade: {
+                    name: '英雄升阶的英雄id',
+                    type: 'midtext',
+                    parser: parseInt
+                },
+                reward_trigger_activity_id: {
+                    name: '领奖后触发的活动id',
                     type: 'midtext',
                     parser: parseInt
                 }
