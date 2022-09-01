@@ -25,8 +25,8 @@ struct BulletinDataInfo
     6 optional string sEndTime;
     7 optional unsigned int iDisplay; // 是否显示
     8 optional unsigned int iType;
-    9 optional unsigned int iPopWindow;   // 弹窗显示次数
-    11 optional string sHtmlContent;      // html内容
+    9 optional unsigned int iPopWindow; // 弹窗显示次数
+    11 optional string sHtmlContent;    // html内容
 
     12 optional map<string, LangContentDataInfo> mLangContent; // 多语言内容
 

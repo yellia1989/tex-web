@@ -6,15 +6,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"strconv"
-	"time"
-
 	"github.com/yellia1989/tex-go/sdp/protocol"
 	"github.com/yellia1989/tex-go/service/model"
 	"github.com/yellia1989/tex-go/tools/log"
 	"github.com/yellia1989/tex-go/tools/net"
 	"github.com/yellia1989/tex-go/tools/sdp/codec"
 	"github.com/yellia1989/tex-go/tools/sdp/util"
+	"strconv"
+	"time"
 )
 
 type BulletinFlag int32
@@ -182,19 +181,19 @@ func (st *LangContentDataInfo) WriteStructFromTag(p *codec.Packer, tag uint32, r
 }
 
 type BulletinDataInfo struct {
-	IBulletinId       uint32                         `json:"iBulletinId" form:"iBulletinId"`
-	STitle            string                         `json:"sTitle" form:"sTitle"`
-	SContent          string                         `json:"sContent" form:"sContent"`
-	IFlag             uint32                         `json:"iFlag" form:"iFlag"`
-	SBeginTime        string                         `json:"sBeginTime" form:"sBeginTime"`
-	SEndTime          string                         `json:"sEndTime" form:"sEndTime"`
-	IDisplay          uint32                         `json:"iDisplay" form:"iDisplay"`
-	IType             uint32                         `json:"iType" form:"iType"`
-	IPopWindow        uint32                         `json:"iPopWindow" form:"iPopWindow"`
-	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
-	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
-	ITopDisplay       uint32                         `json:"iTopDisplay" form:"iTopDisplay"`
-	IShowPriority     uint32                         `json:"iShowPriority" form:"iShowPriority"`
+	IBulletinId   uint32                         `json:"iBulletinId" form:"iBulletinId"`
+	STitle        string                         `json:"sTitle" form:"sTitle"`
+	SContent      string                         `json:"sContent" form:"sContent"`
+	IFlag         uint32                         `json:"iFlag" form:"iFlag"`
+	SBeginTime    string                         `json:"sBeginTime" form:"sBeginTime"`
+	SEndTime      string                         `json:"sEndTime" form:"sEndTime"`
+	IDisplay      uint32                         `json:"iDisplay" form:"iDisplay"`
+	IType         uint32                         `json:"iType" form:"iType"`
+	IPopWindow    uint32                         `json:"iPopWindow" form:"iPopWindow"`
+	SHtmlContent  string                         `json:"sHtmlContent" form:"sHtmlContent"`
+	MLangContent  map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
+	ITopDisplay   uint32                         `json:"iTopDisplay" form:"iTopDisplay"`
+	IShowPriority uint32                         `json:"iShowPriority" form:"iShowPriority"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
