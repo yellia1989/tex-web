@@ -1853,8 +1853,8 @@
                             type: 'text',
                             parser: parseInt,
                         },
-                        chapterid: {
-                            name: '解锁主线章节id',
+                        playerLevel: {
+                            name: '解锁玩家等级',
                             type: 'text',
                             parser: parseInt,
                         },
