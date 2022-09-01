@@ -834,6 +834,44 @@
                     printer: utils.printItemNumList,
                     parser: utils.parseItemNumList
                 },
+                products: {
+                    name: '商品(3选1使用)',
+                    type: 'map',
+                    vertical: true,
+                    groupFieldOption: {
+                        _: {
+                            name: '阶段',
+                            type: 'text',
+                            parser: parseInt,
+                            isMapKey: true
+                        },
+                        reward: {
+                            name: '奖励:id,num,tag',
+                            type: 'text',
+                        },
+                        rate_tag: {
+                            name: '折扣',
+                            type: 'text',
+                        },
+                        recommend: {
+                            name: '推荐',
+                            type: 'text',
+                        },
+                        productid: {
+                            name: '商品id列表(,区分)',
+                            type: 'text',
+                        }
+                    }
+                },
+                type: {
+                    name: '子类型',
+                    type: 'select',
+                    options: {
+                        '0': '普通类型',
+                        '1': '3选1',
+                    },
+                    parser: parseInt
+                },
                 buy_times: {
                     name: '最大购买次数',
                     type: 'text',
@@ -903,7 +941,10 @@
                         '12': '蓝钻商城购买',
                         '13': '天赋技能解锁',
                         '14': '充值犹豫时',
-                        '15': '钻石变更时'
+                        '15': '钻石变更时',
+                        '21': '通关精英关卡时',
+                        '22': '开启宠物蛋时',
+                        '21': '获得英雄时'
                     },
                     parser: parseInt
                 },
@@ -1069,6 +1110,11 @@
                     name: '当前拥有符文晶块小于上次符文升级所消耗的量',
                     type: 'select',
                     options: options.optYesNo,
+                    parser: parseInt
+                },
+                hero: {
+                    name: '英雄ID',
+                    type: 'text',
                     parser: parseInt
                 },
                 growth_gift_step: {

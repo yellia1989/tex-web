@@ -50,6 +50,7 @@ function getDefaultEditor(id){
         'undo',
         'redo',
         'fontSize',
+        'bold',
         'foreColor',
         'myColorKey',
     ]
@@ -130,7 +131,6 @@ function searchData(jsonData,outputObject) {
                 }else {
                     outputObject.result+=endTag;
                 }
-
             }else {
                 outputObject.result+=endTag;
             }

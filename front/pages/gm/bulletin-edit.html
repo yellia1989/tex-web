@@ -81,19 +81,26 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否弹窗显示</label>
+        <label class="layui-form-label">弹窗显示次数</label>
         <div class="layui-input-block">
-          <select name="iPopWindow" lay-filter="type">
+          <input type="text" name="iPopWindow" id="iPopWindow" autocomplete="off" class="layui-input" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">是否置顶显示</label>
+        <div class="layui-input-block">
+          <select name="iTopDisplay">
             <option value="0">否</option>
             <option value="1">是</option>
           </select>
         </div>
       </div>
 
-      <div class="layui-form-item" id="popWindowEndTime">
-        <label class="layui-form-label">弹窗显示时间</label>
+      <div class="layui-form-item">
+        <label class="layui-form-label">展示优先级</label>
         <div class="layui-input-block">
-          <input type="text" name="sPopWindowEndTime" id="iPopWindowEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="iShowPriority" id="iShowPriority" autocomplete="off" class="layui-input" lay-verType="tips">
         </div>
       </div>
 
@@ -120,13 +127,6 @@
 
       laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
       laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
-      if (parent.editdata.iPopWindow == 1) {
-        laydate.render({elem: "#iPopWindowEndTime", type: "datetime", value: parent.editdata.sPopWindowEndTime});
-      } else {
-        $('#popWindowEndTime').addClass('layui-hide');
-        $('input[name=sPopWindowEndTime]').val("");
-        $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-      }
 
       zhCNeditor.config.onchange = function (newHtml) {
         let jsonData = zhCNeditor.txt.getJSON();
@@ -143,6 +143,8 @@
       $("#zh-CNTitle").val(parent.editdata.sTitle);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
+      $('#iTopDisplay').val(parent.editdata.iTopDisplay);
+      $('#iShowPriority').val(parent.editdata.iShowPriority);
 
       zhCNeditor.txt.html(parent.editdata.sHtmlContent);
       let mLangContent = parent.editdata.mLangContent;
@@ -154,18 +156,6 @@
       }
 
       form.render();
-
-      form.on('select(type)', function(data){
-        if (data.value == 0) {
-          $('#popWindowEndTime').addClass('layui-hide');
-          $('input[name=sPopWindowEndTime]').val("");
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-        } else {
-          $('#popWindowEndTime').removeClass('layui-hide');
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "required|datetime");
-          laydate.render({elem: "#iPopWindowEndTime", type: "datetime"});
-        }
-      });
 
       //监听提交
       form.on('submit(add)', function (data) {

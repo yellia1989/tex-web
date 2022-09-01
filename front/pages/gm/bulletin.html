@@ -51,12 +51,13 @@
               return d.iDisplay == 1 ? '是' : '否';
             }
           },
+          { field: "iPopWindow", title: "弹窗显示次数", align: "center" },
           {
-            field: "iPopWindow", title: "是否弹窗显示", align: "center", templet: function (d) {
-              return d.iPopWindow == 1 ? '是' : '否';
+            field: "iTopDisplay", title: "是否置顶显示", align: "center", templet: function (d) {
+              return d.iTopDisplay == 1 ? '是' : '否';
             }
           },
-          { field: "sPopWindowEndTime", title: "结束时间", align: "center" },
+          { field: "iShowPriority", title: "展示优先级(1-10 >)", align: "center" },
           {
             field: "iFlag", title: "状态", align: "center", templet: function (d) {
               var ret = '';

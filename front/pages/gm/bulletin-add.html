@@ -15,6 +15,12 @@
 
 <body>
   <div class="ok-body">
+    <style>
+      .layui-form-label {
+        width: 300px;
+      }
+    </style>
+
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-tab layui-tab-brief">
         <ul class="layui-tab-title">
@@ -82,19 +88,26 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否弹窗显示</label>
+        <label class="layui-form-label">弹窗显示次数</label>
         <div class="layui-input-block">
-          <select name="iPopWindow" lay-filter="type">
-            <option value="0">否</option>
-            <option value="1" selected>是</option>
+          <input type="text" name="iPopWindow" id="iPopWindow" autocomplete="off" class="layui-input" lay-verType="tips">
+        </div>
+      </div>
+
+      <div class="layui-form-item" id="iTopDisplay">
+        <label class="layui-form-label">是否置顶显示</label>
+        <div class="layui-input-block">
+          <select name="iTopDisplay">
+            <option value="0" selected>否</option>
+            <option value="1">是</option>
           </select>
         </div>
       </div>
 
-      <div class="layui-form-item" id="popWindowEndTime">
-        <label class="layui-form-label">弹窗显示时间</label>
+      <div class="layui-form-item" id="iShowPriority">
+        <label class="layui-form-label">展示优先级</label>
         <div class="layui-input-block">
-          <input type="text" name="sPopWindowEndTime" id="iPopWindowEndTime" autocomplete="off" class="layui-input" lay-verify="required|datetime" lay-verType="tips">
+          <input type="text" name="iShowPriority" id="iShowPriority" autocomplete="off" class="layui-input" lay-verType="tips">
         </div>
       </div>
 
@@ -142,29 +155,10 @@
         $(ENeditor.toolbarSelector+"Html").val(ouputStr);
       }
 
-      form.on('select(type)', function(data){
-        if(data.value==0){
-          $('input[name=sPopWindowEndTime]').val("");
-          $('input[name=sPopWindowEndTime]').attr("lay-verify", "");
-        } else {
-          $('#popWindowEndTime').removeClass('layui-hide');
-        }
-      });
-
       //监听提交
       form.on('submit(add)', function (data) {
         if (data.field.sBeginTime >= data.field.sEndTime) {
           okLayer.redCrossMsg('开始时间不能大于结束时间', function () {});
-          return false;
-        }
-
-        if (data.field.iPopWindow == 1 && data.field.sBeginTime >= data.field.sPopWindowEndTime) {
-          okLayer.redCrossMsg('开始时间不能大于弹窗显示结束时间', function () {});
-          return false;
-        }
-
-        if (data.field.sPopWindowEndTime > data.field.sEndTime) {
-          okLayer.redCrossMsg('弹窗显示结束时间不能大于结束时间', function () {});
           return false;
         }
 
