@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>编辑</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">主键</label>
+        <div class="layui-input-block">
+          <input type="text" required disabled="true" id="sKey" name="sKey" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">内容</label>
+        <div class="layui-input-block">
+          <input type="text" required id="sValue" name="sValue" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+          <input type="text" required id="sComment" name="sComment" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="update">更新</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    layui.use(['form', 'okLayer', 'okUtils'], function () {
+      let form = layui.form;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      $('#sKey').val(parent.editConfig.sKey);
+      $('#sValue').val(parent.editConfig.sValue);
+      $('#sComment').val(parent.editConfig.sComment);
+
+      //监听提交
+      form.on('submit(update)', function (data) {
+        okUtils.ajax("/api/gm/global_config/update", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>
