@@ -710,32 +710,28 @@ func (st *ApplePurchase) WriteStructFromTag(p *codec.Packer, tag uint32, require
 }
 
 type AppleReceipt struct {
-	IQuantity          uint32 `json:"iQuantity" form:"iQuantity"`
-	SProductId         string `json:"sProductId" form:"sProductId"`
-	STransactionId     string `json:"sTransactionId" form:"sTransactionId"`
-	IPurchaseDate      uint32 `json:"iPurchaseDate" form:"iPurchaseDate"`
-	SBId               string `json:"sBId" form:"sBId"`
-	SBVrs              string `json:"sBVrs" form:"sBVrs"`
-	SOriTransactionId  string `json:"sOriTransactionId" form:"sOriTransactionId"`
-	IOriPurchaseDate   uint32 `json:"iOriPurchaseDate" form:"iOriPurchaseDate"`
-	SAppItemId         string `json:"sAppItemId" form:"sAppItemId"`
-	SVersionExternalId string `json:"sVersionExternalId" form:"sVersionExternalId"`
+	SReceiptJson   string `json:"sReceiptJson" form:"sReceiptJson"`
+	SEnvironment   string `json:"sEnvironment" form:"sEnvironment"`
+	IStatus        uint32 `json:"iStatus" form:"iStatus"`
+	SBundleId      string `json:"sBundleId" form:"sBundleId"`
+	SProductId     string `json:"sProductId" form:"sProductId"`
+	IPurchaseDate  uint32 `json:"iPurchaseDate" form:"iPurchaseDate"`
+	IQuantity      uint32 `json:"iQuantity" form:"iQuantity"`
+	STransactionId string `json:"sTransactionId" form:"sTransactionId"`
 }
 
 func (st *AppleReceipt) resetDefault() {
 }
 func (st *AppleReceipt) Copy() *AppleReceipt {
 	ret := NewAppleReceipt()
-	ret.IQuantity = st.IQuantity
+	ret.SReceiptJson = st.SReceiptJson
+	ret.SEnvironment = st.SEnvironment
+	ret.IStatus = st.IStatus
+	ret.SBundleId = st.SBundleId
 	ret.SProductId = st.SProductId
-	ret.STransactionId = st.STransactionId
 	ret.IPurchaseDate = st.IPurchaseDate
-	ret.SBId = st.SBId
-	ret.SBVrs = st.SBVrs
-	ret.SOriTransactionId = st.SOriTransactionId
-	ret.IOriPurchaseDate = st.IOriPurchaseDate
-	ret.SAppItemId = st.SAppItemId
-	ret.SVersionExternalId = st.SVersionExternalId
+	ret.IQuantity = st.IQuantity
+	ret.STransactionId = st.STransactionId
 	return ret
 }
 func NewAppleReceipt() *AppleReceipt {
@@ -744,16 +740,14 @@ func NewAppleReceipt() *AppleReceipt {
 	return ret
 }
 func (st *AppleReceipt) Visit(buff *bytes.Buffer, t int) {
-	util.Tab(buff, t+1, util.Fieldname("iQuantity")+fmt.Sprintf("%v\n", st.IQuantity))
+	util.Tab(buff, t+1, util.Fieldname("sReceiptJson")+fmt.Sprintf("%v\n", st.SReceiptJson))
+	util.Tab(buff, t+1, util.Fieldname("sEnvironment")+fmt.Sprintf("%v\n", st.SEnvironment))
+	util.Tab(buff, t+1, util.Fieldname("iStatus")+fmt.Sprintf("%v\n", st.IStatus))
+	util.Tab(buff, t+1, util.Fieldname("sBundleId")+fmt.Sprintf("%v\n", st.SBundleId))
 	util.Tab(buff, t+1, util.Fieldname("sProductId")+fmt.Sprintf("%v\n", st.SProductId))
-	util.Tab(buff, t+1, util.Fieldname("sTransactionId")+fmt.Sprintf("%v\n", st.STransactionId))
 	util.Tab(buff, t+1, util.Fieldname("iPurchaseDate")+fmt.Sprintf("%v\n", st.IPurchaseDate))
-	util.Tab(buff, t+1, util.Fieldname("sBId")+fmt.Sprintf("%v\n", st.SBId))
-	util.Tab(buff, t+1, util.Fieldname("sBVrs")+fmt.Sprintf("%v\n", st.SBVrs))
-	util.Tab(buff, t+1, util.Fieldname("sOriTransactionId")+fmt.Sprintf("%v\n", st.SOriTransactionId))
-	util.Tab(buff, t+1, util.Fieldname("iOriPurchaseDate")+fmt.Sprintf("%v\n", st.IOriPurchaseDate))
-	util.Tab(buff, t+1, util.Fieldname("sAppItemId")+fmt.Sprintf("%v\n", st.SAppItemId))
-	util.Tab(buff, t+1, util.Fieldname("sVersionExternalId")+fmt.Sprintf("%v\n", st.SVersionExternalId))
+	util.Tab(buff, t+1, util.Fieldname("iQuantity")+fmt.Sprintf("%v\n", st.IQuantity))
+	util.Tab(buff, t+1, util.Fieldname("sTransactionId")+fmt.Sprintf("%v\n", st.STransactionId))
 }
 func (st *AppleReceipt) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -761,43 +755,35 @@ func (st *AppleReceipt) ReadStruct(up *codec.UnPacker) error {
 	var has bool
 	var ty uint32
 	st.resetDefault()
-	err = up.ReadUint32(&st.IQuantity, 0, false)
+	err = up.ReadString(&st.SReceiptJson, 0, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SProductId, 1, false)
+	err = up.ReadString(&st.SEnvironment, 1, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.STransactionId, 2, false)
+	err = up.ReadUint32(&st.IStatus, 2, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.IPurchaseDate, 3, false)
+	err = up.ReadString(&st.SBundleId, 3, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SBId, 4, false)
+	err = up.ReadString(&st.SProductId, 4, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SBVrs, 5, false)
+	err = up.ReadUint32(&st.IPurchaseDate, 5, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SOriTransactionId, 6, false)
+	err = up.ReadUint32(&st.IQuantity, 6, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.IOriPurchaseDate, 7, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SAppItemId, 8, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SVersionExternalId, 9, false)
+	err = up.ReadString(&st.STransactionId, 7, false)
 	if err != nil {
 		return err
 	}
@@ -838,62 +824,50 @@ func (st *AppleReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, requir
 func (st *AppleReceipt) WriteStruct(p *codec.Packer) error {
 	var err error
 	var length uint32
-	if false || st.IQuantity != 0 {
-		err = p.WriteUint32(0, st.IQuantity)
+	if false || st.SReceiptJson != "" {
+		err = p.WriteString(0, st.SReceiptJson)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SEnvironment != "" {
+		err = p.WriteString(1, st.SEnvironment)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IStatus != 0 {
+		err = p.WriteUint32(2, st.IStatus)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SBundleId != "" {
+		err = p.WriteString(3, st.SBundleId)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.SProductId != "" {
-		err = p.WriteString(1, st.SProductId)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.STransactionId != "" {
-		err = p.WriteString(2, st.STransactionId)
+		err = p.WriteString(4, st.SProductId)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.IPurchaseDate != 0 {
-		err = p.WriteUint32(3, st.IPurchaseDate)
+		err = p.WriteUint32(5, st.IPurchaseDate)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.SBId != "" {
-		err = p.WriteString(4, st.SBId)
+	if false || st.IQuantity != 0 {
+		err = p.WriteUint32(6, st.IQuantity)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.SBVrs != "" {
-		err = p.WriteString(5, st.SBVrs)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SOriTransactionId != "" {
-		err = p.WriteString(6, st.SOriTransactionId)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IOriPurchaseDate != 0 {
-		err = p.WriteUint32(7, st.IOriPurchaseDate)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SAppItemId != "" {
-		err = p.WriteString(8, st.SAppItemId)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SVersionExternalId != "" {
-		err = p.WriteString(9, st.SVersionExternalId)
+	if false || st.STransactionId != "" {
+		err = p.WriteString(7, st.STransactionId)
 		if err != nil {
 			return err
 		}
@@ -944,9 +918,8 @@ func (st *AppleReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, require 
 }
 
 type GooglePurchase struct {
-	IResponseCode   int32  `json:"iResponseCode" form:"iResponseCode"`
-	SPurchaseData   string `json:"sPurchaseData" form:"sPurchaseData"`
-	SSignature      string `json:"sSignature" form:"sSignature"`
+	SPurchaseToken  string `json:"sPurchaseToken" form:"sPurchaseToken"`
+	SProductId      string `json:"sProductId" form:"sProductId"`
 	STraceProductId string `json:"sTraceProductId" form:"sTraceProductId"`
 	STraceFlowId    string `json:"sTraceFlowId" form:"sTraceFlowId"`
 }
@@ -955,9 +928,8 @@ func (st *GooglePurchase) resetDefault() {
 }
 func (st *GooglePurchase) Copy() *GooglePurchase {
 	ret := NewGooglePurchase()
-	ret.IResponseCode = st.IResponseCode
-	ret.SPurchaseData = st.SPurchaseData
-	ret.SSignature = st.SSignature
+	ret.SPurchaseToken = st.SPurchaseToken
+	ret.SProductId = st.SProductId
 	ret.STraceProductId = st.STraceProductId
 	ret.STraceFlowId = st.STraceFlowId
 	return ret
@@ -968,9 +940,8 @@ func NewGooglePurchase() *GooglePurchase {
 	return ret
 }
 func (st *GooglePurchase) Visit(buff *bytes.Buffer, t int) {
-	util.Tab(buff, t+1, util.Fieldname("iResponseCode")+fmt.Sprintf("%v\n", st.IResponseCode))
-	util.Tab(buff, t+1, util.Fieldname("sPurchaseData")+fmt.Sprintf("%v\n", st.SPurchaseData))
-	util.Tab(buff, t+1, util.Fieldname("sSignature")+fmt.Sprintf("%v\n", st.SSignature))
+	util.Tab(buff, t+1, util.Fieldname("sPurchaseToken")+fmt.Sprintf("%v\n", st.SPurchaseToken))
+	util.Tab(buff, t+1, util.Fieldname("sProductId")+fmt.Sprintf("%v\n", st.SProductId))
 	util.Tab(buff, t+1, util.Fieldname("sTraceProductId")+fmt.Sprintf("%v\n", st.STraceProductId))
 	util.Tab(buff, t+1, util.Fieldname("sTraceFlowId")+fmt.Sprintf("%v\n", st.STraceFlowId))
 }
@@ -980,15 +951,11 @@ func (st *GooglePurchase) ReadStruct(up *codec.UnPacker) error {
 	var has bool
 	var ty uint32
 	st.resetDefault()
-	err = up.ReadInt32(&st.IResponseCode, 0, false)
+	err = up.ReadString(&st.SPurchaseToken, 1, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SPurchaseData, 1, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.SSignature, 2, false)
+	err = up.ReadString(&st.SProductId, 2, false)
 	if err != nil {
 		return err
 	}
@@ -1037,20 +1004,14 @@ func (st *GooglePurchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, requ
 func (st *GooglePurchase) WriteStruct(p *codec.Packer) error {
 	var err error
 	var length uint32
-	if false || st.IResponseCode != 0 {
-		err = p.WriteInt32(0, st.IResponseCode)
+	if false || st.SPurchaseToken != "" {
+		err = p.WriteString(1, st.SPurchaseToken)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.SPurchaseData != "" {
-		err = p.WriteString(1, st.SPurchaseData)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SSignature != "" {
-		err = p.WriteString(2, st.SSignature)
+	if false || st.SProductId != "" {
+		err = p.WriteString(2, st.SProductId)
 		if err != nil {
 			return err
 		}
@@ -1113,28 +1074,40 @@ func (st *GooglePurchase) WriteStructFromTag(p *codec.Packer, tag uint32, requir
 }
 
 type GoogleReceipt struct {
-	SOrderId          string `json:"sOrderId" form:"sOrderId"`
-	SProductId        string `json:"sProductId" form:"sProductId"`
-	SPackageName      string `json:"sPackageName" form:"sPackageName"`
-	IPurchaseTime     uint32 `json:"iPurchaseTime" form:"iPurchaseTime"`
-	IPurchaseState    uint32 `json:"iPurchaseState" form:"iPurchaseState"`
-	SDeveloperPayload string `json:"sDeveloperPayload" form:"sDeveloperPayload"`
-	SPurchaseToken    string `json:"sPurchaseToken" form:"sPurchaseToken"`
-	BAutoRenewing     bool   `json:"bAutoRenewing" form:"bAutoRenewing"`
+	SKind                        string `json:"sKind" form:"sKind"`
+	SPurchaseTimeMillis          string `json:"sPurchaseTimeMillis" form:"sPurchaseTimeMillis"`
+	IPurchaseState               uint32 `json:"iPurchaseState" form:"iPurchaseState"`
+	IConsumptionState            uint32 `json:"iConsumptionState" form:"iConsumptionState"`
+	SDeveloperPayload            string `json:"sDeveloperPayload" form:"sDeveloperPayload"`
+	SOrderId                     string `json:"sOrderId" form:"sOrderId"`
+	IPurchaseType                uint32 `json:"iPurchaseType" form:"iPurchaseType"`
+	IAcknowledgementState        uint32 `json:"iAcknowledgementState" form:"iAcknowledgementState"`
+	SPurchaseToken               string `json:"sPurchaseToken" form:"sPurchaseToken"`
+	SProductId                   string `json:"sProductId" form:"sProductId"`
+	IQuantity                    uint32 `json:"iQuantity" form:"iQuantity"`
+	SObfuscatedExternalAccountId string `json:"sObfuscatedExternalAccountId" form:"sObfuscatedExternalAccountId"`
+	SObfuscatedExternalProfileId string `json:"sObfuscatedExternalProfileId" form:"sObfuscatedExternalProfileId"`
+	SRegionCode                  string `json:"sRegionCode" form:"sRegionCode"`
 }
 
 func (st *GoogleReceipt) resetDefault() {
 }
 func (st *GoogleReceipt) Copy() *GoogleReceipt {
 	ret := NewGoogleReceipt()
-	ret.SOrderId = st.SOrderId
-	ret.SProductId = st.SProductId
-	ret.SPackageName = st.SPackageName
-	ret.IPurchaseTime = st.IPurchaseTime
+	ret.SKind = st.SKind
+	ret.SPurchaseTimeMillis = st.SPurchaseTimeMillis
 	ret.IPurchaseState = st.IPurchaseState
+	ret.IConsumptionState = st.IConsumptionState
 	ret.SDeveloperPayload = st.SDeveloperPayload
+	ret.SOrderId = st.SOrderId
+	ret.IPurchaseType = st.IPurchaseType
+	ret.IAcknowledgementState = st.IAcknowledgementState
 	ret.SPurchaseToken = st.SPurchaseToken
-	ret.BAutoRenewing = st.BAutoRenewing
+	ret.SProductId = st.SProductId
+	ret.IQuantity = st.IQuantity
+	ret.SObfuscatedExternalAccountId = st.SObfuscatedExternalAccountId
+	ret.SObfuscatedExternalProfileId = st.SObfuscatedExternalProfileId
+	ret.SRegionCode = st.SRegionCode
 	return ret
 }
 func NewGoogleReceipt() *GoogleReceipt {
@@ -1143,14 +1116,20 @@ func NewGoogleReceipt() *GoogleReceipt {
 	return ret
 }
 func (st *GoogleReceipt) Visit(buff *bytes.Buffer, t int) {
-	util.Tab(buff, t+1, util.Fieldname("sOrderId")+fmt.Sprintf("%v\n", st.SOrderId))
-	util.Tab(buff, t+1, util.Fieldname("sProductId")+fmt.Sprintf("%v\n", st.SProductId))
-	util.Tab(buff, t+1, util.Fieldname("sPackageName")+fmt.Sprintf("%v\n", st.SPackageName))
-	util.Tab(buff, t+1, util.Fieldname("iPurchaseTime")+fmt.Sprintf("%v\n", st.IPurchaseTime))
+	util.Tab(buff, t+1, util.Fieldname("sKind")+fmt.Sprintf("%v\n", st.SKind))
+	util.Tab(buff, t+1, util.Fieldname("sPurchaseTimeMillis")+fmt.Sprintf("%v\n", st.SPurchaseTimeMillis))
 	util.Tab(buff, t+1, util.Fieldname("iPurchaseState")+fmt.Sprintf("%v\n", st.IPurchaseState))
+	util.Tab(buff, t+1, util.Fieldname("iConsumptionState")+fmt.Sprintf("%v\n", st.IConsumptionState))
 	util.Tab(buff, t+1, util.Fieldname("sDeveloperPayload")+fmt.Sprintf("%v\n", st.SDeveloperPayload))
+	util.Tab(buff, t+1, util.Fieldname("sOrderId")+fmt.Sprintf("%v\n", st.SOrderId))
+	util.Tab(buff, t+1, util.Fieldname("iPurchaseType")+fmt.Sprintf("%v\n", st.IPurchaseType))
+	util.Tab(buff, t+1, util.Fieldname("iAcknowledgementState")+fmt.Sprintf("%v\n", st.IAcknowledgementState))
 	util.Tab(buff, t+1, util.Fieldname("sPurchaseToken")+fmt.Sprintf("%v\n", st.SPurchaseToken))
-	util.Tab(buff, t+1, util.Fieldname("bAutoRenewing")+fmt.Sprintf("%v\n", st.BAutoRenewing))
+	util.Tab(buff, t+1, util.Fieldname("sProductId")+fmt.Sprintf("%v\n", st.SProductId))
+	util.Tab(buff, t+1, util.Fieldname("iQuantity")+fmt.Sprintf("%v\n", st.IQuantity))
+	util.Tab(buff, t+1, util.Fieldname("sObfuscatedExternalAccountId")+fmt.Sprintf("%v\n", st.SObfuscatedExternalAccountId))
+	util.Tab(buff, t+1, util.Fieldname("sObfuscatedExternalProfileId")+fmt.Sprintf("%v\n", st.SObfuscatedExternalProfileId))
+	util.Tab(buff, t+1, util.Fieldname("sRegionCode")+fmt.Sprintf("%v\n", st.SRegionCode))
 }
 func (st *GoogleReceipt) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -1158,35 +1137,59 @@ func (st *GoogleReceipt) ReadStruct(up *codec.UnPacker) error {
 	var has bool
 	var ty uint32
 	st.resetDefault()
-	err = up.ReadString(&st.SOrderId, 0, false)
+	err = up.ReadString(&st.SKind, 0, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SProductId, 1, false)
+	err = up.ReadString(&st.SPurchaseTimeMillis, 1, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SPackageName, 2, false)
+	err = up.ReadUint32(&st.IPurchaseState, 2, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.IPurchaseTime, 3, false)
+	err = up.ReadUint32(&st.IConsumptionState, 3, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.IPurchaseState, 4, false)
+	err = up.ReadString(&st.SDeveloperPayload, 4, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SDeveloperPayload, 5, false)
+	err = up.ReadString(&st.SOrderId, 5, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SPurchaseToken, 6, false)
+	err = up.ReadUint32(&st.IPurchaseType, 6, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadBool(&st.BAutoRenewing, 7, false)
+	err = up.ReadUint32(&st.IAcknowledgementState, 7, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SPurchaseToken, 8, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SProductId, 9, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IQuantity, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SObfuscatedExternalAccountId, 11, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SObfuscatedExternalProfileId, 12, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SRegionCode, 13, false)
 	if err != nil {
 		return err
 	}
@@ -1227,50 +1230,86 @@ func (st *GoogleReceipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, requi
 func (st *GoogleReceipt) WriteStruct(p *codec.Packer) error {
 	var err error
 	var length uint32
-	if false || st.SOrderId != "" {
-		err = p.WriteString(0, st.SOrderId)
+	if false || st.SKind != "" {
+		err = p.WriteString(0, st.SKind)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.SProductId != "" {
-		err = p.WriteString(1, st.SProductId)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.SPackageName != "" {
-		err = p.WriteString(2, st.SPackageName)
-		if err != nil {
-			return err
-		}
-	}
-	if false || st.IPurchaseTime != 0 {
-		err = p.WriteUint32(3, st.IPurchaseTime)
+	if false || st.SPurchaseTimeMillis != "" {
+		err = p.WriteString(1, st.SPurchaseTimeMillis)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.IPurchaseState != 0 {
-		err = p.WriteUint32(4, st.IPurchaseState)
+		err = p.WriteUint32(2, st.IPurchaseState)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IConsumptionState != 0 {
+		err = p.WriteUint32(3, st.IConsumptionState)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.SDeveloperPayload != "" {
-		err = p.WriteString(5, st.SDeveloperPayload)
+		err = p.WriteString(4, st.SDeveloperPayload)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SOrderId != "" {
+		err = p.WriteString(5, st.SOrderId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IPurchaseType != 0 {
+		err = p.WriteUint32(6, st.IPurchaseType)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IAcknowledgementState != 0 {
+		err = p.WriteUint32(7, st.IAcknowledgementState)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.SPurchaseToken != "" {
-		err = p.WriteString(6, st.SPurchaseToken)
+		err = p.WriteString(8, st.SPurchaseToken)
 		if err != nil {
 			return err
 		}
 	}
-	if false || st.BAutoRenewing != false {
-		err = p.WriteBool(7, st.BAutoRenewing)
+	if false || st.SProductId != "" {
+		err = p.WriteString(9, st.SProductId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IQuantity != 0 {
+		err = p.WriteUint32(10, st.IQuantity)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SObfuscatedExternalAccountId != "" {
+		err = p.WriteString(11, st.SObfuscatedExternalAccountId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SObfuscatedExternalProfileId != "" {
+		err = p.WriteString(12, st.SObfuscatedExternalProfileId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SRegionCode != "" {
+		err = p.WriteString(13, st.SRegionCode)
 		if err != nil {
 			return err
 		}
