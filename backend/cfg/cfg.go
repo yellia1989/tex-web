@@ -35,6 +35,7 @@ var Logo string
 
 // 时区
 var TimeZone *time.Location
+var ZoneOffset int
 
 // 日志数据库
 var LogDb *sql.DB
@@ -110,6 +111,7 @@ func ParseCfg(file string) (err error) {
     if err != nil {
         panic("invalid timezone")
     }
+    ZoneOffset = cfg.GetInt("zoneoffset", 8)
 
     logdb := cfg.GetCfg("logdb", "")
     if len(logdb) == 0 {

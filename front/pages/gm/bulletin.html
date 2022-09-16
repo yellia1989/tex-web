@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="../../css/oksub.css">
   <link rel="stylesheet" href="/css/editorMenu.css">
-  <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
 </head>
 
 <body>
@@ -15,14 +15,20 @@
     <table id="tableId" lay-filter="tableFilter"></table>
   </div>
   <!--js逻辑-->
-  <script src="../../lib/layui/layui.js"></script>
+  <script src="/lib/layui/layui.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
+  <script src="/js/common.js"></script>
   <script>
     var editdata;
-    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+    layui.use(["element", "table", "okLayer", "okUtils", "okCookie"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
       let okUtils = layui.okUtils;
+      let $ = layui.jquery;
       okLoading.close();
+
+      dayjs.extend(window.dayjs_plugin_utc);
 
       let bulletinTable = table.render({
         elem: "#tableId",
@@ -39,8 +45,14 @@
           { field: "sTitle", title: "标题", align: "center" },
           { field: "sContent", title: "内容" },
           { field: "sHtmlContent", title: "html内容" },
-          { field: "sBeginTime", title: "开始时间", align: "center" },
-          { field: "sEndTime", title: "结束时间", align: "center" },
+          { field: "iBeginTime", title: "开始时间", align: "center", templet: function (d) {
+              return formatTime(d.iBeginTime, $.cookie("zoneoffset"));
+            }
+          },
+          { field: "iEndTime", title: "结束时间", align: "center", templet: function (d) {
+              return formatTime(d.iEndTime, $.cookie("zoneoffset"));
+            }
+          },
           {
             field: "iType", title: "类型", align: "center", templet: function (d) {
               return d.iType == 1 ? '爱贝勇士' : '默认';
