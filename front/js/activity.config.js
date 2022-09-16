@@ -2068,6 +2068,42 @@
     activityTypeDefine[27] = {
         name: '限时集结',
     };
+    activityTypeDefine[28] = {
+        name: '社区活动',
+        fieldOption: {
+            comm_param: {
+                reward: {
+                    name: '奖励(id,num;id,num)',
+                    type: 'longtext',
+                    printer: utils.printItemNumList,
+                    parser: utils.parseItemNumList
+                },
+                sub_type: {
+                    name: '子类型',
+                    type: 'select',
+                    options: {
+                        '0': '社区入口',
+                        '1': '社区活动',
+                    },
+                    parser: parseInt
+                }
+            },
+            client_param: {
+                banner: {
+                    name: '图片地址链接',
+                    type: 'text'
+                },
+                link: {
+                    name: '跳转链接',
+                    type: 'text'
+                },
+                red_point: {
+                    name: '是否需要小红点',
+                    type: 'text'
+                }
+            }
+        }
+    };
 
 
     // 当前活动类型
