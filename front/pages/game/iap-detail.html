@@ -90,7 +90,7 @@
 
       okUtils.ajax("/api/game/recharge/receipt", "get", {flowid: parent.flowid}, false).done(function (response) {
         let status = response.data.stStatus;
-        let receipt = response.data.stGameHubReceipt;
+        let receipt = response.data.stGoogleReceipt;
 
         $("select[name=iReceiptStatus]").val(status.iReceiptStatus);
         $("input[name=iReceiptType]").val(response.data.iReceiptType);

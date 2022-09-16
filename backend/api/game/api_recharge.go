@@ -91,7 +91,7 @@ func RechargeTrace(c echo.Context) error {
         flowids2 = strconv.AppendUint(flowids2, v, 10)
     }
 
-    sql = "SELECT flowid,time,status FROM iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY time"
+    sql = "SELECT flowid,opt_time,concat(action,':',status) as status FROM iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY opt_time"
 
     rows2, err := db.Query(sql)
     if err != nil {
