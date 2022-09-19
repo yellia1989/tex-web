@@ -26,6 +26,9 @@
   </div>
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
+  <script src="/js/common.js"></script>
   <script>
     versionMap = {};
     versionMap.colours = ['layui-btn-normal', 'layui-btn-warm', 'layui-btn-danger', ''];
@@ -52,11 +55,14 @@
 
     var zonedata;
     var zoneids;
-    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+    layui.use(["element", "table", "okLayer", "okUtils", "okCookie"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
       let okUtils = layui.okUtils;
+      let $ = layui.jquery;
       okLoading.close();
+
+      dayjs.extend(window.dayjs_plugin_utc);
 
       let dirTable = table.render({
         elem: "#tableId",
@@ -105,7 +111,10 @@
               return ret;
             }
           },
-          { field: "sPublishTime", title: "开区时间", width: 170 },
+          { field: "iPublishTime", title: "开区时间", width: 170, templet: function (d) {
+              return formatTime(d.iPublishTime, $.cookie("zoneoffset"));
+            }
+          },
           { field: "iMaxNum", title: "最大创角", width: 90 },
           { field: "iCurNum", title: "当前创角", width: 90 },
           { field: "iMaxOnline", title: "最大在线", width: 90 },
