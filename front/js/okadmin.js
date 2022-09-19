@@ -166,4 +166,5 @@ layui.use(["element", "okUtils", "okTab", "okLayer", "okContextMenu", "okHoliday
    */
   $("#uname").html($.cookie("username"));
   $("#logo").html($.cookie("logo"));
+  $("#zoneoffset").html("当前时区偏移量:"+$.cookie("zoneoffset"));
 });
