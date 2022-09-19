@@ -81,14 +81,14 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">弹窗显示次数</label>
+        <label class="layui-form-label">弹窗次数</label>
         <div class="layui-input-block">
           <input type="text" name="iPopWindow" id="iPopWindow" autocomplete="off" class="layui-input" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">是否置顶显示</label>
+        <label class="layui-form-label">置顶显示</label>
         <div class="layui-input-block">
           <select name="iTopDisplay">
             <option value="0">否</option>
@@ -113,20 +113,22 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
   <script src="/js/common.js"></script>
   <script>
     zhCNeditor = getDefaultEditor('#zh-CN');
     ENeditor = getDefaultEditor('#en');
 
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element', 'okCookie'], function () {
       let form = layui.form;
       let laydate = layui.laydate;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
-      laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
+      laydate.render({elem: "#iBeginTime", type: "datetime", value: formatTime(parent.editdata.iBeginTime, $.cookie('zoneoffset'))});
+      laydate.render({elem: "#iEndTime", type: "datetime", value: formatTime(parent.editdata.iEndTime, $.cookie('zoneoffset'))});
 
       zhCNeditor.config.onchange = function (newHtml) {
         let jsonData = zhCNeditor.txt.getJSON();
@@ -143,7 +145,7 @@
       $("#zh-CNTitle").val(parent.editdata.sTitle);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
-      $('#iTopDisplay').val(parent.editdata.iTopDisplay);
+      $("select[name='iTopDisplay']").val(parent.editdata.iTopDisplay);
       $('#iShowPriority').val(parent.editdata.iShowPriority);
 
       zhCNeditor.txt.html(parent.editdata.sHtmlContent);
@@ -169,6 +171,8 @@
         data.field.sTitle = $('#zh-CNTitle').val();
         data.field.sContent = $('#zh-CNHtml').val();
         data.field.sHtmlContent = zhCNeditor.txt.html();
+        data.field.iBeginTime = parseTime(data.field.sBeginTime, $.cookie('zoneoffset'));
+        data.field.iEndTime = parseTime(data.field.sEndTime, $.cookie('zoneoffset'));
 
         if (data.field.sTitle == "" || data.field.sContent == "" || data.field.sHtmlContent == "") {
           okLayer.redCrossMsg('默认语言的配置不能为空', function () {});

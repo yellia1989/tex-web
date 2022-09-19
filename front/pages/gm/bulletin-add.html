@@ -49,7 +49,7 @@
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
-                <input type="text" id="enTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"">
+                <input type="text" id="enTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
               </div>
             </div>
             <div class="layui-form-item">
@@ -88,14 +88,14 @@
       </div>
 
       <div class="layui-form-item">
-        <label class="layui-form-label">弹窗显示次数</label>
+        <label class="layui-form-label">弹窗次数</label>
         <div class="layui-input-block">
           <input type="text" name="iPopWindow" id="iPopWindow" autocomplete="off" class="layui-input" lay-verType="tips">
         </div>
       </div>
 
       <div class="layui-form-item" id="iTopDisplay">
-        <label class="layui-form-label">是否置顶显示</label>
+        <label class="layui-form-label">置顶显示</label>
         <div class="layui-input-block">
           <select name="iTopDisplay">
             <option value="0" selected>否</option>
@@ -127,7 +127,7 @@
     zhCNeditor = getDefaultEditor('#zh-CN');
     ENeditor = getDefaultEditor('#en');
 
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element', 'okCookie'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
@@ -166,8 +166,8 @@
         data.field.sTitle = $('#zh-CNTitle').val();
         data.field.sContent = $('#zh-CNHtml').val();
         data.field.sHtmlContent = zhCNeditor.txt.html();
-        data.field.iBeginTime = parseTime(data.field.sBeginTime);
-        data.field.iEndTime = parseTime(data.field.sEndTime);
+        data.field.iBeginTime = parseTime(data.field.sBeginTime, $.cookie('zoneoffset'));
+        data.field.iEndTime = parseTime(data.field.sEndTime, $.cookie('zoneoffset'));
 
         if (data.field.sTitle == "" || data.field.sContent == "" || data.field.sHtmlContent == "") {
           okLayer.redCrossMsg('默认语言的配置不能为空', function () {});
