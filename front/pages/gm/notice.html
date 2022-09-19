@@ -16,13 +16,19 @@
   </div>
   <!--js逻辑-->
   <script src="/lib/layui/layui.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
+  <script src="/js/common.js"></script>
   <script>
     var editNotice;
-    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+    layui.use(["element", "table", "okLayer", "okUtils", "okCookie"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
       let okUtils = layui.okUtils;
+      let $ = layui.jquery;
       okLoading.close();
+
+      dayjs.extend(window.dayjs_plugin_utc);
 
       let noticeTable = table.render({
         elem: "#tableId",
@@ -52,8 +58,14 @@
           },
           { field: "sContent", title: "内容", templet: function(d) { return d.iType != 2 ? d.sContent : '-';} },
           { field: "sHtmlContent", title: "html内容", templet: function(d) { return d.iType != 2 ? d.sHtmlContent : '-';} },
-          { field: "sBeginTime", title: "开始时间", align: "center", width: 180 },
-          { field: "sEndTime", title: "结束时间", align: "center", width: 180 },
+          { field: "iBeginTime", title: "开始时间", align: "center", width: 180, templet: function (d) {
+              return formatTime(d.iBeginTime, $.cookie("zoneoffset"));
+            }
+          },
+          { field: "iEndTime", title: "结束时间", align: "center", width: 180, templet: function (d) {
+              return formatTime(d.iEndTime, $.cookie("zoneoffset"));
+            }
+          },
           {
             field: "iDisplayType", title: "显示位置", width: 90, align: "center", templet: function (d) {
               var ret = '';

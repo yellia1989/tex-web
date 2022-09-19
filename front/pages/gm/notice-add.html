@@ -126,19 +126,23 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
   <script src="/js/common.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
   <script>
     zhCNeditor = getDefaultEditor('#zh-CN');
     ENeditor = getDefaultEditor('#en');
 
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element', 'okCookie'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
       let xmSelect = layui.xmSelect;
       let $ = layui.jquery;
+
+      dayjs.extend(window.dayjs_plugin_utc);
 
       laydate.render({
         elem: "#iBeginTime",
@@ -241,6 +245,9 @@
           okLayer.redCrossMsg('开始时间不能大于结束时间', function () {});
           return false;
         }
+
+        data.field.iBeginTime = parseTime(data.field.sBeginTime, $.cookie("zoneoffset"));
+        data.field.iEndTime = parseTime(data.field.sEndTime, $.cookie("zoneoffset"));
 
         if (data.field.iType != 2) {
           data.field.sContent = ExecuteJsonData(zhCNeditor.txt.getJSON());
