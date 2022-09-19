@@ -6,7 +6,6 @@ import (
 	"time"
 	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-web/backend/cfg"
-	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
@@ -39,7 +38,7 @@ func WhiteList(c echo.Context) error {
 		return err
 	}
 
-	rows, err := tx.Query("SELECT account_id FROM t_whitelist WHERE del_time is NULL")
+	rows, err := tx.Query("SELECT account_id FROM t_whitelist WHERE del_time_unixtime = 0")
 	if err != nil {
 		return err
 	}
@@ -138,7 +137,7 @@ func WhiteDel(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "DELETE FROM t_whitelist WHERE del_time is NULL AND account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE del_time_unixtime = 0 AND account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
@@ -171,7 +170,7 @@ func WhiteReplace(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("DELETE FROM t_whitelist WHERE del_time is NULL")
+	_, err = tx.Exec("DELETE FROM t_whitelist WHERE del_time_unixtime = 0")
 	if err != nil {
 		return err
 	}
@@ -212,7 +211,7 @@ func TmpWhiteList(c echo.Context) error {
 		return err
 	}
 
-	rows, err := tx.Query("SELECT account_id,del_time FROM t_whitelist WHERE del_time is not NULL")
+	rows, err := tx.Query("SELECT account_id,del_time_unixtime FROM t_whitelist WHERE del_time_unxitime != 0")
 	if err != nil {
 		return err
 	}
@@ -221,13 +220,13 @@ func TmpWhiteList(c echo.Context) error {
 	var vStr []string
 	for rows.Next() {
 		var id string
-		var delst string
-		err = rows.Scan(&id,&delst)
+		var delt_unixtime int64
+		err = rows.Scan(&id,&delt_unixtime)
 		if err != nil {
 			return err
 		}
 
-		delt := common.ParseTimeInLocal("2006-01-02 15:04:05", delst)
+		delt := time.Unix(delt_unixtime, 0)
 		now := time.Now()
 		if now.After(delt) {
 			continue
@@ -278,11 +277,10 @@ func WhiteAddTmp(c echo.Context) error {
 	}
 	now := time.Now();
 	delt := now.Add(time.Duration(8) * time.Hour)
-	delst := delt.Format("2006-01-02 15:04:05")
 
-	sql := "INSERT IGNORE t_whitelist(account_id,del_time) VALUES(?,?);"
+	sql := "INSERT IGNORE t_whitelist(account_id,del_time_unixtime) VALUES(?,?);"
 	for _, sId := range vStr {
-		_, err = tx.Exec(sql,sId,delst)
+		_, err = tx.Exec(sql,sId,delt.Unix())
 		if err != nil {
 			return err
 		}
@@ -324,7 +322,7 @@ func WhiteDelTmp(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "DELETE FROM t_whitelist WHERE del_time is not NULL AND account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE del_time_unxitime != 0 AND account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
