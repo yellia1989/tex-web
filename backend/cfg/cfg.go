@@ -111,7 +111,8 @@ func ParseCfg(file string) (err error) {
     if err != nil {
         panic("invalid timezone")
     }
-    ZoneOffset = cfg.GetInt("zoneoffset", 8)
+    _, defaultZoneOffset := time.Now().Zone()
+    ZoneOffset = cfg.GetInt("zoneoffset", defaultZoneOffset/3600)
 
     logdb := cfg.GetCfg("logdb", "")
     if len(logdb) == 0 {
