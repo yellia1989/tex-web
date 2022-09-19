@@ -51,6 +51,7 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/mail/send2", gm.MailSend2)       // 发送邮件
 
     group.GET("/gm/item/list", gm.ItemList) // 获取道具列表
+    group.GET("/gm/action/list", gm.GameActionList) // 获取action列表
 
     group.GET("/gm/bulletin/list", gm.BulletinList)      // 获取公告列表
     group.POST("/gm/bulletin/add", gm.BulletinAdd)       // 增加公告

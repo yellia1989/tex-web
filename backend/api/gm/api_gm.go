@@ -14,6 +14,13 @@ import (
     "github.com/yellia1989/tex-web/backend/common"
 )
 
+type gameAction struct {
+    ID uint32 `json:"value"`
+    Desc string `json:"desc"`
+}
+
+var gameActions []gameAction
+
 func checkRet(ret int32, err error) error {
     if ret != 0 || err != nil {
         serr := ""
@@ -217,6 +224,30 @@ func ItemList(c echo.Context) error {
     }
 
     return ctx.SendResponse(items)
+}
+
+func GameActionList(c echo.Context) error {
+    ctx := c.(*mid.Context)
+
+    zones := updateZoneList(false)
+    if (len(zones) == 0) {
+        return ctx.SendError(-1, "分区列表为空")
+    }
+
+    var zoneid uint64 = uint64(zones[0].IZoneId)
+    scmd := "action_list"
+    var result string
+    err := cmd(ctx, strconv.FormatUint(zoneid, 10), scmd, &result)
+    if err !=  nil {
+        return err
+    }
+
+    actions := make([]gameAction,0)
+    if err := json.Unmarshal([]byte(result), &actions); err != nil {
+        return err
+    }
+
+    return ctx.SendResponse(actions)
 }
 
 func BanSpeak(c echo.Context) error {
