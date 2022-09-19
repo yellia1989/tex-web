@@ -211,7 +211,7 @@ func TmpWhiteList(c echo.Context) error {
 		return err
 	}
 
-	rows, err := tx.Query("SELECT account_id,del_time_unixtime FROM t_whitelist WHERE del_time_unxitime != 0")
+	rows, err := tx.Query("SELECT account_id,del_time_unixtime FROM t_whitelist WHERE del_time_unixtime != 0")
 	if err != nil {
 		return err
 	}
@@ -322,7 +322,7 @@ func WhiteDelTmp(c echo.Context) error {
 	if len(input) == 0 {
 		return ctx.SendError(-1,"用户ID格式不正确")
 	}
-	sql := "DELETE FROM t_whitelist WHERE del_time_unxitime != 0 AND account_id IN(" + input + ");"
+	sql := "DELETE FROM t_whitelist WHERE del_time_unixtime != 0 AND account_id IN(" + input + ");"
 	_, err = tx.Exec(sql)
 	if err != nil {
 		return err
