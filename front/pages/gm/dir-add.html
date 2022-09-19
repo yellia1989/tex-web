@@ -103,14 +103,19 @@
 	</form>
 </div>
 <script src="/lib/layui/layui.js"></script>
+<script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+<script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
+<script src="/js/common.js"></script>
 <script>
     // https://www.layui.com/doc/modules/form.html
-    layui.use(['form', 'laydate', 'okUtils', 'okLayer'], function(){
+    layui.use(['form', 'laydate', 'okUtils', 'okLayer', 'okCookie'], function(){
       let form = layui.form;
 	    let laydate = layui.laydate;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
+
+      dayjs.extend(window.dayjs_plugin_utc);
 
       laydate.render({elem: "#iPublishTime", type: "datetime"});
       $("input[name='sExternalIp']").change(function () {
@@ -149,6 +154,7 @@
 
       //监听提交
       form.on('submit(add)', function(data){
+        data.field.iPublishTime = parseTime(data.field.sPublishTime, $.cookie('zoneoffset'));
         okUtils.ajax("/api/gm/zone/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
 			  		parent.layer.close(parent.layer.getFrameIndex(window.name));
