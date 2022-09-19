@@ -293,7 +293,6 @@ type MailDataInfo struct {
 	IMailId                uint32                     `json:"iMailId" form:"iMailId"`
 	SFrom                  string                     `json:"sFrom" form:"sFrom"`
 	VToUser                []uint64                   `json:"vToUser" form:"vToUser"`
-	STime                  string                     `json:"sTime" form:"sTime"`
 	STitle                 string                     `json:"sTitle" form:"sTitle"`
 	SContent               string                     `json:"sContent" form:"sContent"`
 	IDiamond               uint32                     `json:"iDiamond" form:"iDiamond"`
@@ -309,6 +308,7 @@ type MailDataInfo struct {
 	VCustomItem            []string                   `json:"vCustomItem" form:"vCustomItem"`
 	IDelTimeAfterRcvAttach uint32                     `json:"iDelTimeAfterRcvAttach" form:"iDelTimeAfterRcvAttach"`
 	MLangContent           map[string]MailLangContent `json:"mLangContent" form:"mLangContent"`
+	ITime                  uint32                     `json:"iTime" form:"iTime"`
 }
 
 func (st *MailDataInfo) resetDefault() {
@@ -321,7 +321,6 @@ func (st *MailDataInfo) Copy() *MailDataInfo {
 	for i, v := range st.VToUser {
 		ret.VToUser[i] = v
 	}
-	ret.STime = st.STime
 	ret.STitle = st.STitle
 	ret.SContent = st.SContent
 	ret.IDiamond = st.IDiamond
@@ -352,6 +351,7 @@ func (st *MailDataInfo) Copy() *MailDataInfo {
 	for k, v := range st.MLangContent {
 		ret.MLangContent[k] = *(v.Copy())
 	}
+	ret.ITime = st.ITime
 	return ret
 }
 func NewMailDataInfo() *MailDataInfo {
@@ -374,7 +374,6 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.VToUser) != 0 {
 		util.Tab(buff, t+1, "]\n")
 	}
-	util.Tab(buff, t+1, util.Fieldname("sTime")+fmt.Sprintf("%v\n", st.STime))
 	util.Tab(buff, t+1, util.Fieldname("sTitle")+fmt.Sprintf("%v\n", st.STitle))
 	util.Tab(buff, t+1, util.Fieldname("sContent")+fmt.Sprintf("%v\n", st.SContent))
 	util.Tab(buff, t+1, util.Fieldname("iDiamond")+fmt.Sprintf("%v\n", st.IDiamond))
@@ -452,6 +451,7 @@ func (st *MailDataInfo) Visit(buff *bytes.Buffer, t int) {
 	if len(st.MLangContent) != 0 {
 		util.Tab(buff, t+1, "}\n")
 	}
+	util.Tab(buff, t+1, util.Fieldname("iTime")+fmt.Sprintf("%v\n", st.ITime))
 }
 func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -489,11 +489,7 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 			}
 		}
 	}
-	err = up.ReadString(&st.STime, 3, false)
-	if err != nil {
-		return err
-	}
-	err = up.ReadString(&st.STitle, 4, false)
+	err = up.ReadString(&st.STitle, 3, false)
 	if err != nil {
 		return err
 	}
@@ -650,6 +646,10 @@ func (st *MailDataInfo) ReadStruct(up *codec.UnPacker) error {
 			st.MLangContent[k] = v
 		}
 	}
+	err = up.ReadUint32(&st.ITime, 22, false)
+	if err != nil {
+		return err
+	}
 
 	_ = length
 	_ = has
@@ -719,14 +719,8 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 			}
 		}
 	}
-	if false || st.STime != "" {
-		err = p.WriteString(3, st.STime)
-		if err != nil {
-			return err
-		}
-	}
 	if false || st.STitle != "" {
-		err = p.WriteString(4, st.STitle)
+		err = p.WriteString(3, st.STitle)
 		if err != nil {
 			return err
 		}
@@ -885,6 +879,12 @@ func (st *MailDataInfo) WriteStruct(p *codec.Packer) error {
 			if err != nil {
 				return err
 			}
+		}
+	}
+	if false || st.ITime != 0 {
+		err = p.WriteUint32(22, st.ITime)
+		if err != nil {
+			return err
 		}
 	}
 
