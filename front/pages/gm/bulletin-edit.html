@@ -127,8 +127,10 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
-      laydate.render({elem: "#iBeginTime", type: "datetime", value: formatTime(parent.editdata.iBeginTime, $.cookie('zoneoffset'))});
-      laydate.render({elem: "#iEndTime", type: "datetime", value: formatTime(parent.editdata.iEndTime, $.cookie('zoneoffset'))});
+      dayjs.extend(window.dayjs_plugin_utc);
+
+      laydate.render({elem: "#iBeginTime", type: "datetime", value: formatTime(parent.editdata.iBeginTime, $.cookie('zoneoffset'), 'YYYY-MM-DD HH:mm:ss')});
+      laydate.render({elem: "#iEndTime", type: "datetime", value: formatTime(parent.editdata.iEndTime, $.cookie('zoneoffset'), 'YYYY-MM-DD HH:mm:ss')});
 
       zhCNeditor.config.onchange = function (newHtml) {
         let jsonData = zhCNeditor.txt.getJSON();
