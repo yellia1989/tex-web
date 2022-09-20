@@ -40,7 +40,7 @@ func MapSimpleList() []rpc.ZoneInfo {
         return l
 	}
 
-	sql := "SELECT mapid FROM t_maplist ORDER BY mapid desc"
+	sql := "SELECT mapid FROM t_maplist ORDER BY mapid"
 	rows, err := tx.Query(sql)
 	if err != nil {
         return l
