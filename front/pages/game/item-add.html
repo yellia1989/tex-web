@@ -97,8 +97,8 @@
     });
 
     okUtils.ajax("/api/gm/action/list", "get", null, false).done(function (response) {
-      for (let i = 0; i < response.data.len();++i) {
-        actions[response.data[i].ID] = response.data[i].Desc;
+      for (let i = 0; i < response.data.length;++i) {
+        actions[response.data[i].value] = response.data[i].desc;
       }
     }).fail(function (error) {
       console.log(error);

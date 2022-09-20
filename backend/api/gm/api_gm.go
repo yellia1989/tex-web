@@ -15,7 +15,7 @@ import (
 )
 
 type gameAction struct {
-    ID uint32 `json:"value"`
+    ID string `json:"value"`
     Desc string `json:"desc"`
 }
 
@@ -230,7 +230,7 @@ func GameActionList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
     zones := updateZoneList(false)
-    if (len(zones) == 0) {
+    if len(zones) == 0 {
         return ctx.SendError(-1, "分区列表为空")
     }
 
@@ -247,7 +247,25 @@ func GameActionList(c echo.Context) error {
         return err
     }
 
-    return ctx.SendResponse(actions)
+    maps := MapSimpleList()
+    if len(maps) == 0 {
+        return ctx.SendError(-1, "分区地图列表为空")
+    }
+
+    var mapid uint64 = uint64(maps[0].IZoneId)
+    err = cmd(ctx, strconv.FormatUint(mapid, 10), scmd, &result)
+    if err !=  nil {
+        return err
+    }
+
+    mapActions := make([]gameAction,0)
+    if err := json.Unmarshal([]byte(result), &mapActions); err != nil {
+        return err
+    }
+
+    gameActions = append(actions,mapActions...)
+
+    return ctx.SendResponse(gameActions)
 }
 
 func BanSpeak(c echo.Context) error {
