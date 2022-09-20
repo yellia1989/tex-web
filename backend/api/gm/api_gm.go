@@ -12,6 +12,7 @@ import (
     "github.com/yellia1989/tex-web/backend/api/sys"
     "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/common"
+    "sync"
     "time"
 )
 
@@ -22,6 +23,7 @@ type gameAction struct {
 
 var gameActions []gameAction
 var iGameActionUpdateTime int64 = 0
+var mu sync.Mutex
 
 func checkRet(ret int32, err error) error {
     if ret != 0 || err != nil {
@@ -238,6 +240,8 @@ func GameActionList(c echo.Context) error {
 
     now := time.Now().Unix()
 
+    mu.Lock()
+
     if  iGameActionUpdateTime == 0 || now > iGameActionUpdateTime + 3600 {
         iGameActionUpdateTime = now
         zones := updateZoneList(false)
@@ -276,6 +280,8 @@ func GameActionList(c echo.Context) error {
 
         gameActions = append(actions,mapActions...)
     }
+
+    mu.Unlock()
 
     return ctx.SendResponse(gameActions)
 }
