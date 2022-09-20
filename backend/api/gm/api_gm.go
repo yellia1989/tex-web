@@ -12,6 +12,7 @@ import (
     "github.com/yellia1989/tex-web/backend/api/sys"
     "github.com/yellia1989/tex-web/backend/cfg"
     "github.com/yellia1989/tex-web/backend/common"
+    "time"
 )
 
 type gameAction struct {
@@ -20,6 +21,7 @@ type gameAction struct {
 }
 
 var gameActions []gameAction
+var iGameActionUpdateTime int64 = 0
 
 func checkRet(ret int32, err error) error {
     if ret != 0 || err != nil {
@@ -110,6 +112,11 @@ func GameCmd(c echo.Context) error {
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     u := ctx.GetUser()
     return Cmd(u.UserName, zoneid, "0", cmd, result)
+}
+
+func cmdMap(ctx *mid.Context, mapid string, cmd string, result *string) error {
+    u := ctx.GetUser()
+    return Cmd(u.UserName, "0", mapid , cmd, result)
 }
 
 func Cmd(userName string, zoneid string, mapid string, cmd string, result *string) error {
@@ -229,41 +236,46 @@ func ItemList(c echo.Context) error {
 func GameActionList(c echo.Context) error {
     ctx := c.(*mid.Context)
 
-    zones := updateZoneList(false)
-    if len(zones) == 0 {
-        return ctx.SendError(-1, "分区列表为空")
-    }
+    now := time.Now().Unix()
 
-    var zoneid uint64 = uint64(zones[0].IZoneId)
-    scmd := "action_list"
-    var result string
-    err := cmd(ctx, strconv.FormatUint(zoneid, 10), scmd, &result)
-    if err !=  nil {
-        return err
-    }
+    if  iGameActionUpdateTime == 0 || now > iGameActionUpdateTime + 3600 {
+        iGameActionUpdateTime = now
+        zones := updateZoneList(false)
+        if len(zones) == 0 {
+            return ctx.SendError(-1, "分区列表为空")
+        }
 
-    actions := make([]gameAction,0)
-    if err := json.Unmarshal([]byte(result), &actions); err != nil {
-        return err
-    }
+        var zoneid uint64 = uint64(zones[0].IZoneId)
+        scmd := "action_list"
+        var result string
+        err := cmd(ctx, strconv.FormatUint(zoneid, 10), scmd, &result)
+        if err !=  nil {
+            return err
+        }
 
-    maps := MapSimpleList()
-    if len(maps) == 0 {
-        return ctx.SendError(-1, "分区地图列表为空")
-    }
+        actions := make([]gameAction,0)
+        if err := json.Unmarshal([]byte(result), &actions); err != nil {
+            return err
+        }
 
-    var mapid uint64 = uint64(maps[0].IZoneId)
-    err = cmd(ctx, strconv.FormatUint(mapid, 10), scmd, &result)
-    if err !=  nil {
-        return err
-    }
+        maps := MapSimpleList()
+        if len(maps) == 0 {
+            return ctx.SendError(-1, "分区地图列表为空")
+        }
 
-    mapActions := make([]gameAction,0)
-    if err := json.Unmarshal([]byte(result), &mapActions); err != nil {
-        return err
-    }
+        var mapid uint64 = uint64(maps[0].IZoneId)
+        err = cmdMap(ctx, strconv.FormatUint(mapid, 10), scmd, &result)
+        if err !=  nil {
+            return err
+        }
 
-    gameActions = append(actions,mapActions...)
+        mapActions := make([]gameAction,0)
+        if err := json.Unmarshal([]byte(result), &mapActions); err != nil {
+            return err
+        }
+
+        gameActions = append(actions,mapActions...)
+    }
 
     return ctx.SendResponse(gameActions)
 }
