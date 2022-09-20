@@ -241,6 +241,7 @@ func GameActionList(c echo.Context) error {
     now := time.Now().Unix()
 
     muAction.Lock()
+    defer  muAction.Unlock()
 
     if  iGameActionUpdateTime == 0 || now > iGameActionUpdateTime + 3600 {
         iGameActionUpdateTime = now
@@ -280,8 +281,6 @@ func GameActionList(c echo.Context) error {
 
         gameActions = append(actions,mapActions...)
     }
-
-    muAction.Unlock()
 
     return ctx.SendResponse(gameActions)
 }
