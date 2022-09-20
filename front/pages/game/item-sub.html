@@ -43,6 +43,9 @@
 <script>
   var zoneid;
   var roleid;
+
+  actions = {};
+
   layui.use(["table", "okUtils", "form", "okLayer", "laydate", "okCookie"], function () {
     let table = layui.table;
     let okUtils = layui.okUtils;
@@ -93,6 +96,14 @@
       console.log(error);
     });
 
+    okUtils.ajax("/api/gm/action/list", "get", null, false).done(function (response) {
+      for (let i = 0; i < response.data.length;++i) {
+        actions[response.data[i].value] = response.data[i].desc;
+      }
+    }).fail(function (error) {
+      console.log(error);
+    });
+
     let itemTable = table.render({
       elem: "#tableId",
       data:[],
@@ -108,7 +119,14 @@
         {field: "baseId", title: "道具id"},
         {field: "add_num", title: "减少数量"},
         {field: "cur_num", title: "当前数量"},
-        {field: "action", title: "来源"},
+        {field: "action", title: "来源" , templet: function (d) {
+            if (actions[d.action] === undefined){
+              return d.action;
+            } else {
+              return  actions[d.action];
+            }
+          }
+        },
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],
