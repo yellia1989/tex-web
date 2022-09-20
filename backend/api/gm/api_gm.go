@@ -23,7 +23,7 @@ type gameAction struct {
 
 var gameActions []gameAction
 var iGameActionUpdateTime int64 = 0
-var mu sync.Mutex
+var muAction sync.Mutex
 
 func checkRet(ret int32, err error) error {
     if ret != 0 || err != nil {
@@ -240,7 +240,7 @@ func GameActionList(c echo.Context) error {
 
     now := time.Now().Unix()
 
-    mu.Lock()
+    muAction.Lock()
 
     if  iGameActionUpdateTime == 0 || now > iGameActionUpdateTime + 3600 {
         iGameActionUpdateTime = now
@@ -281,7 +281,7 @@ func GameActionList(c echo.Context) error {
         gameActions = append(actions,mapActions...)
     }
 
-    mu.Unlock()
+    muAction.Unlock()
 
     return ctx.SendResponse(gameActions)
 }
