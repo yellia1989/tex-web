@@ -488,7 +488,7 @@
     };
     // 5
     activityTypeDefine[5] = {
-        name: '首冲送英雄',
+        name: '首充送英雄',
         fieldOption: {
             comm_param: {
                 item: {
@@ -496,6 +496,11 @@
                     type: 'midtext',
                     printer: utils.printItemNumList,
                     parser: utils.parseItemNumList
+                },
+                productid: {
+                    name: '商品id',
+                    type: 'text',
+                    parser: parseInt
                 }
             },
             client_param: {
@@ -773,6 +778,9 @@
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
                         '14': '钻石变更时',
+                        '15': '获得3星(SSR)英雄',
+                        '16': '一键装备',
+                        '17': '英雄碎片道具变更',
                     },
                     parser: parseInt
                 },
@@ -887,6 +895,11 @@
                     type: 'midtext',
                     parser: parseInt,
                 },
+                super_month_card_expire: {
+                    name: '超级月卡过期天数',
+                    type: 'midtext',
+                    parser: parseInt,
+                },
                 stage_range: {
                     name: '挂机关卡范围(-区分)',
                     type: 'midtext',
@@ -954,6 +967,16 @@
                         '4': '加速成长礼包',
                     },
                     parser: parseInt
+                },
+                is_lifelong_card: {
+                    name: '是否有终身卡',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                hero_fragment_param: {
+                    name: '英雄碎片道具id:距离升星差距碎片(-区分)',
+                    type: 'midtext'
                 }
             }
         }
@@ -1646,6 +1669,16 @@
                             name: '额外奖励的时间(秒)',
                             type: 'text',
                             parser: parseInt,
+                        },
+                        stageid: {
+                            name: '解锁主线关卡id',
+                            type: 'text',
+                            parser: parseInt,
+                        },
+                        totalMoney: {
+                            name: '累计充值金额(分)',
+                            type: 'text',
+                            parser: parseInt,
                         }
                     }
                 }
@@ -1708,6 +1741,108 @@
                 }
             }
         }
+    };
+
+    activityTypeDefine[25] = {
+        name: '阶段礼包',
+        fieldOption: {
+            comm_param: {
+                steps: {
+                    name: '阶段',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: '阶段',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        goods : {
+                            name: '包含商品',
+                            type: 'text'
+                        },
+                        iNeedLevel: {
+                            name: '所需玩家等级',
+                            type: 'text',
+                            parser: parseInt
+                        },
+                        bFree: {
+                            name: '免费阶段',
+                            type: 'text',
+                            parser: parseInt
+                        }
+                    }
+                },
+                goods: {
+                    name: '商品',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: 'ID',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        item : {
+                            name: '道具',
+                            type: 'text',
+                        },
+                        iProductId: {
+                            name: '商品ID',
+                            type: 'text',
+                            parser: parseInt
+                        },
+                        iDiamond: {
+                            name: '钻石',
+                            type: 'text',
+                            parser: parseInt
+                        }
+                    }
+                }
+            },
+            client_param: {
+                steps: {
+                    name: '阶段',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: '阶段',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        name : {
+                            name: '名字',
+                            type: 'text'
+                        }
+                    }
+                },
+                goods: {
+                    name: '商品',
+                    type: 'map',
+                    groupFieldOption: {
+                        _: {
+                            name: 'ID',
+                            type: 'text',
+                            isMapKey: true,
+                            parser: parseInt
+                        },
+                        mark : {
+                            name: '角标',
+                            type: 'text',
+                        },
+                        icon : {
+                            name: '图标',
+                            type: 'text',
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    activityTypeDefine[26] = {
+        name: '限时集结',
     };
 
     // 当前活动类型

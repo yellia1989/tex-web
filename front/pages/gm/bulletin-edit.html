@@ -17,7 +17,7 @@
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-tab layui-tab-brief">
         <ul class="layui-tab-title">
-          <li class="layui-this">简体中文(默认)</li>
+          <li class="layui-this">简体中文</li>
           <li>英语</li>
         </ul>
         <div class="layui-tab-content">
@@ -25,8 +25,7 @@
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
-                <input type="text" id="zh-CNTitle" placeholder="请输入标题" autocomplete="off" class="layui-input"
-                  lay-verify="required" lay-verType="tips">
+                <input type="text" id="zh-CNTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
               </div>
             </div>
 
@@ -108,6 +107,16 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">默认语言</label>
+        <div class="layui-input-block">
+          <select name="sDefaultLang">
+            <option value="en" selected>英语</option>
+            <option value="zh-CN">中文</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <div class="layui-input-block">
           <button class="layui-btn" lay-submit lay-filter="add">更新</button>
         </div>
@@ -120,6 +129,11 @@
   <script>
     zhCNeditor = getDefaultEditor('#zh-CN');
     ENeditor = getDefaultEditor('#en');
+
+    function getLangEditor(lang) {
+        if (lang == "en") return ENeditor;
+        else return zhCNeditor;
+    }
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
       let form = layui.form;
@@ -150,17 +164,24 @@
         $(ENeditor.toolbarSelector+"Html").val(ouputStr);
       }
 
-      $("#zh-CNTitle").val(parent.editdata.sTitle);
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='iPopWindow']").val(parent.editdata.iPopWindow);
       $("select[name='iType']").val(parent.editdata.iType);
+      $("select[name='sDefaultLang']").val(parent.editdata.sDefaultLang);
 
-      zhCNeditor.txt.html(parent.editdata.sHtmlContent);
-      let mLangContent = parent.editdata.mLangContent;
-      if (mLangContent != null) {
-        if (mLangContent["en"] != null) {
-          $("#enTitle").val(parent.editdata.mLangContent["en"]["sTitle"]);
-          ENeditor.txt.html(parent.editdata.mLangContent["en"]["sHtmlContent"]);
+      let langs = ["en", "zh-CN"];
+      for (let i = 0; i < langs.length; ++i) {
+        let lang = langs[i];
+        let obj = getLangEditor(lang);
+        if (lang == parent.editdata.sDefaultLang) {
+          $("#"+lang+"Title").val(parent.editdata.sTitle);
+          obj.txt.html(parent.editdata.sHtmlContent);
+        } else {
+          let mLangContent = parent.editdata.mLangContent;
+          if (mLangContent != null && mLangContent[lang]) {
+            $("#"+lang+"Title").val(parent.editdata.mLangContent[lang]["sTitle"]);
+            obj.txt.html(parent.editdata.mLangContent[lang]["sHtmlContent"]);
+          }
         }
       }
 
@@ -187,21 +208,29 @@
           return false;
         }
 
-        data.field.sTitle = $('#zh-CNTitle').val();
-        data.field.sContent = $('#zh-CNHtml').val();
-        data.field.sHtmlContent = zhCNeditor.txt.html();
+        let mlang = {};
+        for (let i=0; i < langs.length; ++i) {
+          let lang = langs[i];
+          let title = $('#'+lang+'Title').val();
+          let content = $('#'+lang+'Html').val();
+          let htmlContent = getLangEditor(lang).txt.html();
+          if (lang == data.field.sDefaultLang) {
+            data.field.sTitle = title;
+            data.field.sContent = content;
+            data.field.sHtmlContent = htmlContent;
+          } else {
+            mlang[lang] = {"sTitle": title, "sContent": content, "sHtmlContent": htmlContent};
+          }
+        }
 
         if (data.field.sTitle == "" || data.field.sContent == "" || data.field.sHtmlContent == "") {
           okLayer.redCrossMsg('默认语言的配置不能为空', function () {});
           return false;
         }
 
-        let lang = {};
-        lang["en"] = {"sTitle": $('#enTitle').val(), "sContent": $('#enHtml').val(), "sHtmlContent": ENeditor.txt.html()};
-
-        if (!checkLang(lang)) {
+        if (!checkLang(mlang)) {
           okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
-            data.field.sLangContent = okUtils.jsonToString(lang);
+            data.field.sLangContent = okUtils.jsonToString(mlang);
             okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
               okLayer.greenTickMsg(response.data, function () {
                 parent.layer.close(parent.layer.getFrameIndex(window.name));
@@ -215,7 +244,7 @@
           return false;
         }
 
-        data.field.sLangContent = okUtils.jsonToString(lang);
+        data.field.sLangContent = okUtils.jsonToString(mlang);
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
