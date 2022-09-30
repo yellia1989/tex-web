@@ -96,14 +96,20 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
+  <script src="/js/common.js"></script>
+
   <script>
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'okCookie'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
       let $ = layui.jquery;
       let xmSelect = layui.xmSelect;
+
+      dayjs.extend(window.dayjs_plugin_utc);
 
       let zoneSelect = xmSelect.render({
         el: '#zoneSelect',
@@ -210,6 +216,8 @@
       //监听提交
       form.on('submit(add)', function (data) {
         data.field.iCommon = 0;
+        data.field.iBeginTime = parseTime(data.field.sBeginTime, $.cookie('zoneoffset'));
+        data.field.iEndTime = parseTime(data.field.sEndTime, $.cookie('zoneoffset'));
         if (data.field.iType == 1 || data.field.iType == 2) {
           data.field.iCommon = 1;
         } else if (data.field.iType == 3) {

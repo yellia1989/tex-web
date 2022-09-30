@@ -53,8 +53,8 @@ func NoticeAdd(c echo.Context) error {
 		return err
 	}
 
-	sBeginTime := ctx.FormValue("sBeginTime")
-	sEndTime := ctx.FormValue("sEndTime")
+	sBeginTime := ctx.FormValue("iBeginTime")
+	sEndTime := ctx.FormValue("iEndTime")
 
     szoneid := ctx.FormValue("zoneid")
     if szoneid != "" {

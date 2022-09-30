@@ -56,8 +56,8 @@ func BulletinAdd(c echo.Context) error {
     sTitle := ctx.FormValue("sTitle")
     sContent := ctx.FormValue("sContent")
     sHtmlContent := ctx.FormValue("sHtmlContent")
-    sBeginTime := ctx.FormValue("sBeginTime")
-    sEndTime := ctx.FormValue("sEndTime")
+    sBeginTime := ctx.FormValue("iBeginTime")
+    sEndTime := ctx.FormValue("iEndTime")
 
     if sTitle == "" || sContent == "" || sHtmlContent == "" || sBeginTime == "" || sEndTime == "" {
         return ctx.SendError(-1, "参数非法")
@@ -117,8 +117,8 @@ func BulletinUpdate(c echo.Context) error {
     sTitle := ctx.FormValue("sTitle")
     sContent := ctx.FormValue("sContent")
     sHtmlContent := ctx.FormValue("sHtmlContent")
-    sBeginTime := ctx.FormValue("sBeginTime")
-    sEndTime := ctx.FormValue("sEndTime")
+    sBeginTime := ctx.FormValue("iBeginTime")
+    sEndTime := ctx.FormValue("iEndTime")
 
     if sTitle == "" || sContent == "" || sHtmlContent == "" || sBeginTime == "" || sEndTime == "" {
         return ctx.SendError(-1, "参数非法")

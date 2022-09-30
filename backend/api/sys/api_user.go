@@ -48,9 +48,11 @@ func UserLogin(c echo.Context) error {
     cname := http.Cookie{Name: "username", Value: u.UserName, Expires: time.Now().Add(expire), Path: "/"}
     logo := http.Cookie{Name: "logo", Value: cfg.Logo, Expires: time.Now().Add(expire), Path: "/"}
     timezone := http.Cookie{Name: "timezone", Value: cfg.TimeZone.String(), Expires: time.Now().Add(expire), Path: "/"}
+    zoneoffset := http.Cookie{Name: "zoneoffset", Value: strconv.Itoa(cfg.ZoneOffset), Expires: time.Now().Add(expire), Path: "/"}
     ctx.SetCookie(&cname)
     ctx.SetCookie(&logo)
     ctx.SetCookie(&timezone)
+    ctx.SetCookie(&zoneoffset)
 
     return ctx.SendResponse("ok")
 }

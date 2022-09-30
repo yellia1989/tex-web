@@ -2,7 +2,6 @@ package gm
 
 import (
     "fmt"
-    "time"
     "sync"
     "strings"
     "strconv"
@@ -16,11 +15,6 @@ import (
 // 缓存分区列表
 var zones []rpc.ZoneInfo
 var mu sync.Mutex
-
-type _zoneInfo struct {
-    rpc.ZoneInfo
-    SPublishTime string `json:"sPublishTime"`
-}
 
 func ZoneMap() map[uint32]rpc.ZoneInfo {
     mzone := make(map[uint32]rpc.ZoneInfo)
@@ -128,7 +122,7 @@ func ZoneList(c echo.Context) error {
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 
     tmp := updateZoneList(true)
-    zones2 := make([]_zoneInfo, len(tmp))
+    zones2 := make([]rpc.ZoneInfo, len(tmp))
     for k,v := range tmp {
         zones2[k].IZoneId = v.IZoneId
         zones2[k].SZoneName = v.SZoneName
@@ -138,7 +132,7 @@ func ZoneList(c echo.Context) error {
         zones2[k].IIsManual = v.IIsManual
         zones2[k].IManualZoneStatus = v.IManualZoneStatus
         zones2[k].IMaxNum = v.IMaxNum
-        zones2[k].SPublishTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(int64(v.IPublishTime), 0))
+        zones2[k].IPublishTime = v.IPublishTime
         zones2[k].IIsKick = v.IIsKick
         zones2[k].MVersion = v.MVersion
         zones2[k].IMaxOnline = v.IMaxOnline
@@ -161,11 +155,9 @@ func ZoneAdd(c echo.Context) error {
         return err
     }
 
-    sPublishTime := c.FormValue("sPublishTime")
-    if sPublishTime == "" {
+    if zone.IPublishTime == 0 {
         return ctx.SendError(-1, "开服时间不能为空")
     }
-    zone.IPublishTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sPublishTime).Unix())
 
     comm := cfg.Comm
 
@@ -233,11 +225,9 @@ func ZoneUpdate(c echo.Context) error {
         return err
     }
 
-    sPublishTime := c.FormValue("sPublishTime")
-    if sPublishTime == "" {
+    if zone.IPublishTime == 0 {
         return ctx.SendError(-1, "开服时间不能为空")
     }
-    zone.IPublishTime = uint32(common.ParseTimeInLocal("2006-01-02 15:04:05", sPublishTime).Unix())
 
     comm := cfg.Comm
 

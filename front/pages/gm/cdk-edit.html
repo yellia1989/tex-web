@@ -77,14 +77,20 @@
   </div>
   <script src="/lib/layui/layui.js"></script>
   <script type="text/javascript" src="/lib/xm-select/xm-select.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
+  <script src="/js/common.js"></script>
+
   <script>
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'okCookie'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
       let laydate = layui.laydate;
       let $ = layui.jquery;
       let xmSelect = layui.xmSelect;
+
+      dayjs.extend(window.dayjs_plugin_utc);
 
       let zoneSelect = xmSelect.render({
         el: '#zoneSelect',
@@ -146,8 +152,8 @@
         console.log(error);
       });
 
-      laydate.render({ elem: "#iBeginTime", type: "datetime", value: parent.editCDK.sBeginTime });
-      laydate.render({ elem: "#iEndTime", type: "datetime", value: parent.editCDK.sEndTime });
+      laydate.render({ elem: "#iBeginTime", type: "datetime", value: formatTime(parent.editCDK.iBeginTime, $.cookie('zoneoffset'), 'YYYY-MM-DD HH:mm:ss')});
+      laydate.render({ elem: "#iEndTime", type: "datetime", value: formatTime(parent.editCDK.iEndTime, $.cookie('zoneoffset'), 'YYYY-MM-DD HH:mm:ss')});
 
       $("input[name='sCDKeyName']").val(parent.editCDK.sCDKeyName);
       $("input[name='iCDKeyNum']").val(parent.editCDK.iCDKeyNum);
@@ -159,6 +165,8 @@
       //监听提交
       form.on('submit(add)', function (data) {
         data.field.ICDKeyId = parent.editCDK.id;
+        data.field.iBeginTime = parseTime(data.field.sBeginTime, $.cookie('zoneoffset'));
+        data.field.iEndTime = parseTime(data.field.sEndTime, $.cookie('zoneoffset'));
         if (data.field.sZoneLimit == '99999') {
           data.field.sZoneLimit = '';
         }

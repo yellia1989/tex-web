@@ -21,8 +21,6 @@ struct BulletinDataInfo
     1 optional string sTitle;
     2 optional string sContent;
     3 optional unsigned int iFlag; // 状态
-    5 optional string sBeginTime;
-    6 optional string sEndTime;
     7 optional unsigned int iDisplay; // 是否显示
     8 optional unsigned int iType;
     9 optional unsigned int iPopWindow; // 弹窗显示次数
@@ -32,6 +30,9 @@ struct BulletinDataInfo
 
     13 optional unsigned int iTopDisplay;   // 是否置顶显示
     14 optional unsigned int iShowPriority; // 展示优先级
+
+    15 optional unsigned int    iBeginTime;
+    16 optional unsigned int    iEndTime;
 };
 
 struct NoticeDataInfo
@@ -39,8 +40,6 @@ struct NoticeDataInfo
     0 optional unsigned int     iNoticeId;
     1 optional unsigned int     iType;
     2 optional string           sContent;
-    3 optional string           sBeginTime;
-    4 optional string           sEndTime;
     5 optional unsigned int     iDisplayInterval;
     6 optional unsigned int     iDisplayType;
     7 optional unsigned int     iDisplayNum;
@@ -49,6 +48,8 @@ struct NoticeDataInfo
     10 optional unsigned int    iMaintenanceTime;
     11 optional string          sHtmlContent;  //html内容
     12 optional map<string,LangContentDataInfo> mLangContent;
+    13 optional unsigned int    iBeginTime;
+    14 optional unsigned int    iEndTime;
 };
 
 interface BulletinService

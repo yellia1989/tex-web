@@ -120,12 +120,14 @@
     </form>
   </div>
   <script src="/lib/layui/layui.js"></script>
+  <script src="/lib/dayjs@1.11.1/dayjs.min.js"></script>
+  <script src="/lib/dayjs@1.11.1/plugin/utc.js"></script>
   <script src="/js/common.js"></script>
   <script>
     zhCNeditor = getDefaultEditor('#zh-CN');
     ENeditor = getDefaultEditor('#en');
 
-    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
+    layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element', 'okCookie'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
       let okLayer = layui.okLayer;
@@ -133,14 +135,13 @@
       let $ = layui.jquery;
       let element = layui.element;
 
+      dayjs.extend(window.dayjs_plugin_utc);
+
       laydate.render({
         elem: "#iBeginTime", type: "datetime"
       });
       laydate.render({
         elem: "#iEndTime", type: "datetime"
-      });
-      laydate.render({
-        elem:"#iPopWindowEndTime", type:"datetime"
       });
 
       zhCNeditor.config.onchange = function (newHtml) {
@@ -165,6 +166,8 @@
         data.field.sTitle = $('#zh-CNTitle').val();
         data.field.sContent = $('#zh-CNHtml').val();
         data.field.sHtmlContent = zhCNeditor.txt.html();
+        data.field.iBeginTime = parseTime(data.field.sBeginTime, $.cookie('zoneoffset'));
+        data.field.iEndTime = parseTime(data.field.sEndTime, $.cookie('zoneoffset'));
 
         if (data.field.sTitle == "" || data.field.sContent == "" || data.field.sHtmlContent == "") {
           okLayer.redCrossMsg('默认语言的配置不能为空', function () {});
