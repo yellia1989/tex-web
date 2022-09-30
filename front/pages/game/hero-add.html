@@ -43,6 +43,8 @@
 <script>
   var zoneid;
   var roleid;
+  actions = {};
+
   layui.use(["table", "okUtils", "form", "okLayer", "laydate", "okCookie"], function () {
     let table = layui.table;
     let okUtils = layui.okUtils;
@@ -85,6 +87,14 @@
       }
     });
 
+    okUtils.ajax("/api/gm/action/list", "get", null, false).done(function (response) {
+      for (let i = 0; i < response.data.length;++i) {
+        actions[response.data[i].value] = response.data[i].desc;
+      }
+    }).fail(function (error) {
+      console.log(error);
+    });
+
     okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
       zoneSelect.update({
         data: response.data["game"],
@@ -109,7 +119,14 @@
         {field: "star", title: "星级"},
         {field: "step", title: "阶级"},
         {field: "quality", title: "品质"},
-        {field: "action", title: "来源"},
+        {field: "action", title: "来源" , templet: function (d) {
+            if (actions[d.action] === undefined){
+              return d.action;
+            } else {
+              return  actions[d.action];
+            }
+          }
+        },
       ]],
       toolbar: true,
       defaultToolbar: ['filter', 'print', 'exports'],

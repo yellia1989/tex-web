@@ -64,32 +64,20 @@ func OnlineTime(c echo.Context) error {
     }
 
 	// 初始化一套时间轴
-	time := []uint32{300, 600, 1800, 3600, 7200, 3600 * 4, 3600 * 8, 3600 * 12, 3600 * 24, 3600*24 + 1}
+	time := []uint32{300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000, 3300, 3600, 3900, 4200, 4500, 4800, 5100, 5400, 5700, 6000, 6300, 6600, 6900, 7200, 3600 * 4, 3600 * 8, 3600 * 12, 3600 * 24, 3600*24 + 1}
 	num := make([]uint32, len(time))
 	// 统计数据
 	for _, t := range mRole {
-		switch {
-		case t <= 300:
-			num[0]++
-		case t <= 600:
-			num[1]++
-		case t <= 1800:
-			num[2]++
-		case t <= 3600:
-			num[3]++
-		case t <= 7200:
-			num[4]++
-		case t <= 3600*4:
-			num[5]++
-		case t <= 3600*8:
-			num[6]++
-		case t <= 3600*12:
-			num[7]++
-		case t <= 3600*24:
-			num[8]++
-		default:
-			num[9]++
-		}
+        i := 0
+        for ; i < len(time); i += 1 {
+            if t <= time[i] {
+                break
+            }
+        }
+        if i == len(time) {
+            i = len(time) - 1
+        }
+        num[i] += 1;
 	}
 
 	for k, t := range time {
@@ -99,12 +87,50 @@ func OnlineTime(c echo.Context) error {
 			r.TotalTime = "0-5分钟"
 		case t == 600:
 			r.TotalTime = "5-10分钟"
+		case t == 900:
+			r.TotalTime = "10-15分钟"
+		case t == 1200:
+			r.TotalTime = "15-20分钟"
+		case t == 1500:
+			r.TotalTime = "20-25分钟"
 		case t == 1800:
-			r.TotalTime = "10-30分钟"
+			r.TotalTime = "25-30分钟"
+		case t == 2100:
+			r.TotalTime = "30-35分钟"
+		case t == 2400:
+			r.TotalTime = "35-40分钟"
+		case t == 2700:
+			r.TotalTime = "40-45分钟"
+		case t == 3000:
+			r.TotalTime = "45-50分钟"
+		case t == 3300:
+			r.TotalTime = "50-55分钟"
 		case t == 3600:
-			r.TotalTime = "30-60分钟"
+			r.TotalTime = "55-60分钟"
+		case t == 3900:
+			r.TotalTime = "60-65分钟"
+		case t == 4200:
+			r.TotalTime = "65-70分钟"
+		case t == 4500:
+			r.TotalTime = "70-75分钟"
+		case t == 4800:
+			r.TotalTime = "75-80分钟"
+		case t == 5100:
+			r.TotalTime = "80-85分钟"
+		case t == 5400:
+			r.TotalTime = "85-90分钟"
+		case t == 5700:
+			r.TotalTime = "90-95分钟"
+		case t == 6000:
+			r.TotalTime = "95-100分钟"
+		case t == 6300:
+			r.TotalTime = "100-105分钟"
+		case t == 6600:
+			r.TotalTime = "105-110分钟"
+		case t == 6900:
+			r.TotalTime = "110-115分钟"
 		case t == 7200:
-			r.TotalTime = "60-120分钟"
+			r.TotalTime = "115-120分钟"
 		case t == 3600*4:
 			r.TotalTime = "2-4小时"
 		case t == 3600*8:

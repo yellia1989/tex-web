@@ -55,6 +55,8 @@ type ServerData struct {
     StartScript string `json:"start_script"`
     MonitorScript string `json:"monitor_script"`
     StopScript string `json:"stop_script"`
+    BackupScript string `json:"backup_script"`
+    RestoreScript string `json:"restore_script"`
     StartTime   int `json:"start_time"`
 }
 
@@ -272,7 +274,7 @@ func ServerList(c echo.Context) error {
 
 	var vParam []interface{}
 
-	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port,manual_stop,mfw_server,start_script,monitor_script,stop_script,start_time FROM t_server WHERE 1=1"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, publish_version, publish_username, publish_time, prom_port,manual_stop,mfw_server,start_script,monitor_script,stop_script,start_time,backup_script,restore_script FROM t_server WHERE 1=1"
 	where := ""
 	if app != "" {
 		where += " AND app = ?"
@@ -316,7 +318,7 @@ func ServerList(c echo.Context) error {
 	for rows.Next() {
 		var r ServerData
 		var profile, version, username, publishTime dsql.NullString
-		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.AutoStart, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort, &r.ManualStop, &r.MfwServer, &r.StartScript, &r.MonitorScript, &r.StopScript, &r.StartTime); err != nil {
+		if err := rows.Scan(&r.App, &r.Server, &r.Division, &r.Node, &r.AutoStart, &r.CurStat, &profile, &r.TemplateName, &r.Pid, &version, &username, &publishTime, &r.PromPort, &r.ManualStop, &r.MfwServer, &r.StartScript, &r.MonitorScript, &r.StopScript, &r.StartTime, &r.BackupScript, &r.RestoreScript); err != nil {
 			return err
 		}
 		if profile.Valid {
@@ -423,7 +425,7 @@ func ServerDetail(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, mfw_server, start_script, monitor_script, stop_script, prom_port FROM t_server"
+	sql := "SELECT app, server, division, node, auto_start, cur_stat, profile_conf_template, template_name, pid, mfw_server, start_script, monitor_script, stop_script, prom_port, backup_script, restore_script FROM t_server"
 	where := " WHERE app = '" + app + "' AND server = '" + server + "' AND node = '" + node + "' AND division = '" + division + "'"
 	sql += where
 
@@ -435,7 +437,7 @@ func ServerDetail(c echo.Context) error {
 
 	row := db.QueryRow(sql)
 	var profile dsql.NullString
-	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.AutoStart, &data.CurStat, &profile, &data.TemplateName, &data.Pid, &data.MfwServer, &data.StartScript, &data.MonitorScript, &data.StopScript, &data.PromPort)
+	err := row.Scan(&data.App, &data.Server, &data.Division, &data.Node, &data.AutoStart, &data.CurStat, &profile, &data.TemplateName, &data.Pid, &data.MfwServer, &data.StartScript, &data.MonitorScript, &data.StopScript, &data.PromPort, &data.BackupScript, &data.RestoreScript)
 	if err != nil {
 		return err
 	}
@@ -489,10 +491,10 @@ func ServerUpdate(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "UPDATE t_server SET auto_start = ?, template_name = ?, profile_conf_template = ?, mfw_server = ?, prom_port = ?, start_script = ?, monitor_script = ?, stop_script = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
+	sql := "UPDATE t_server SET auto_start = ?, template_name = ?, profile_conf_template = ?, mfw_server = ?, prom_port = ?, start_script = ?, monitor_script = ?, stop_script = ? , backup_script = ?, restore_script = ? WHERE app = ? AND server = ? AND division = ? AND node = ?"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.PromPort, req.StartScript, req.MonitorScript, req.StopScript, req.App, req.Server, req.Division, req.Node)
+	_, err = tx.Exec(sql, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.PromPort, req.StartScript, req.MonitorScript, req.StopScript, req.BackupScript, req.RestoreScript, req.App, req.Server, req.Division, req.Node)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
@@ -538,10 +540,10 @@ func ServerAdd(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	sql := "INSERT INTO t_server (app, server, division, node, auto_start, template_name, profile_conf_template, mfw_server, start_script, monitor_script, stop_script, prom_port) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
+	sql := "INSERT INTO t_server (app, server, division, node, auto_start, template_name, profile_conf_template, mfw_server, start_script, monitor_script, stop_script, prom_port, backup_script, restore_script) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 	c.Logger().Debug(sql)
 
-	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.StartScript, req.MonitorScript, req.StopScript, req.PromPort)
+	_, err = tx.Exec(sql, req.App, req.Server, req.Division, req.Node, req.AutoStart, req.TemplateName, req.ProfileConfTemplate, req.MfwServer, req.StartScript, req.MonitorScript, req.StopScript, req.PromPort, req.BackupScript, req.RestoreScript)
 	if err != nil {
 		return ctx.SendError(-1, err.Error())
 	}
