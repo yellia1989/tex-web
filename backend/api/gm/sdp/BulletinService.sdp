@@ -21,6 +21,8 @@ struct BulletinDataInfo
     1 optional string sTitle;
     2 optional string sContent;
     3 optional unsigned int iFlag; // 状态
+    5 optional string sBeginTime;
+    6 optional string sEndTime;
     7 optional unsigned int iDisplay; // 是否显示
     8 optional unsigned int iType;
     9 optional unsigned int iPopWindow; // 弹窗显示次数
@@ -40,6 +42,8 @@ struct NoticeDataInfo
     0 optional unsigned int     iNoticeId;
     1 optional unsigned int     iType;
     2 optional string           sContent;
+    3 optional string sBeginTime;
+    4 optional string sEndTime;
     5 optional unsigned int     iDisplayInterval;
     6 optional unsigned int     iDisplayType;
     7 optional unsigned int     iDisplayNum;

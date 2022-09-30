@@ -185,6 +185,8 @@ type BulletinDataInfo struct {
 	STitle        string                         `json:"sTitle" form:"sTitle"`
 	SContent      string                         `json:"sContent" form:"sContent"`
 	IFlag         uint32                         `json:"iFlag" form:"iFlag"`
+	SBeginTime    string                         `json:"sBeginTime" form:"sBeginTime"`
+	SEndTime      string                         `json:"sEndTime" form:"sEndTime"`
 	IDisplay      uint32                         `json:"iDisplay" form:"iDisplay"`
 	IType         uint32                         `json:"iType" form:"iType"`
 	IPopWindow    uint32                         `json:"iPopWindow" form:"iPopWindow"`
@@ -204,6 +206,8 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 	ret.STitle = st.STitle
 	ret.SContent = st.SContent
 	ret.IFlag = st.IFlag
+	ret.SBeginTime = st.SBeginTime
+	ret.SEndTime = st.SEndTime
 	ret.IDisplay = st.IDisplay
 	ret.IType = st.IType
 	ret.IPopWindow = st.IPopWindow
@@ -228,6 +232,8 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("sTitle")+fmt.Sprintf("%v\n", st.STitle))
 	util.Tab(buff, t+1, util.Fieldname("sContent")+fmt.Sprintf("%v\n", st.SContent))
 	util.Tab(buff, t+1, util.Fieldname("iFlag")+fmt.Sprintf("%v\n", st.IFlag))
+	util.Tab(buff, t+1, util.Fieldname("sBeginTime")+fmt.Sprintf("%v\n", st.SBeginTime))
+	util.Tab(buff, t+1, util.Fieldname("sEndTime")+fmt.Sprintf("%v\n", st.SEndTime))
 	util.Tab(buff, t+1, util.Fieldname("iDisplay")+fmt.Sprintf("%v\n", st.IDisplay))
 	util.Tab(buff, t+1, util.Fieldname("iType")+fmt.Sprintf("%v\n", st.IType))
 	util.Tab(buff, t+1, util.Fieldname("iPopWindow")+fmt.Sprintf("%v\n", st.IPopWindow))
@@ -273,6 +279,14 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.IFlag, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SBeginTime, 5, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SEndTime, 6, false)
 	if err != nil {
 		return err
 	}
@@ -398,6 +412,18 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 			return err
 		}
 	}
+	if false || st.SBeginTime != "" {
+		err = p.WriteString(5, st.SBeginTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SEndTime != "" {
+		err = p.WriteString(6, st.SEndTime)
+		if err != nil {
+			return err
+		}
+	}
 	if false || st.IDisplay != 0 {
 		err = p.WriteUint32(7, st.IDisplay)
 		if err != nil {
@@ -519,6 +545,8 @@ type NoticeDataInfo struct {
 	INoticeId        uint32                         `json:"iNoticeId" form:"iNoticeId"`
 	IType            uint32                         `json:"iType" form:"iType"`
 	SContent         string                         `json:"sContent" form:"sContent"`
+	SBeginTime       string                         `json:"sBeginTime" form:"sBeginTime"`
+	SEndTime         string                         `json:"sEndTime" form:"sEndTime"`
 	IDisplayInterval uint32                         `json:"iDisplayInterval" form:"iDisplayInterval"`
 	IDisplayType     uint32                         `json:"iDisplayType" form:"iDisplayType"`
 	IDisplayNum      uint32                         `json:"iDisplayNum" form:"iDisplayNum"`
@@ -538,6 +566,8 @@ func (st *NoticeDataInfo) Copy() *NoticeDataInfo {
 	ret.INoticeId = st.INoticeId
 	ret.IType = st.IType
 	ret.SContent = st.SContent
+	ret.SBeginTime = st.SBeginTime
+	ret.SEndTime = st.SEndTime
 	ret.IDisplayInterval = st.IDisplayInterval
 	ret.IDisplayType = st.IDisplayType
 	ret.IDisplayNum = st.IDisplayNum
@@ -565,6 +595,8 @@ func (st *NoticeDataInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iNoticeId")+fmt.Sprintf("%v\n", st.INoticeId))
 	util.Tab(buff, t+1, util.Fieldname("iType")+fmt.Sprintf("%v\n", st.IType))
 	util.Tab(buff, t+1, util.Fieldname("sContent")+fmt.Sprintf("%v\n", st.SContent))
+	util.Tab(buff, t+1, util.Fieldname("sBeginTime")+fmt.Sprintf("%v\n", st.SBeginTime))
+	util.Tab(buff, t+1, util.Fieldname("sEndTime")+fmt.Sprintf("%v\n", st.SEndTime))
 	util.Tab(buff, t+1, util.Fieldname("iDisplayInterval")+fmt.Sprintf("%v\n", st.IDisplayInterval))
 	util.Tab(buff, t+1, util.Fieldname("iDisplayType")+fmt.Sprintf("%v\n", st.IDisplayType))
 	util.Tab(buff, t+1, util.Fieldname("iDisplayNum")+fmt.Sprintf("%v\n", st.IDisplayNum))
@@ -618,6 +650,14 @@ func (st *NoticeDataInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadString(&st.SContent, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SBeginTime, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SEndTime, 4, false)
 	if err != nil {
 		return err
 	}
@@ -755,6 +795,18 @@ func (st *NoticeDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.SContent != "" {
 		err = p.WriteString(2, st.SContent)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SBeginTime != "" {
+		err = p.WriteString(3, st.SBeginTime)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SEndTime != "" {
+		err = p.WriteString(4, st.SEndTime)
 		if err != nil {
 			return err
 		}
