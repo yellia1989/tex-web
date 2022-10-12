@@ -19,6 +19,7 @@
     var config_data;
     var json_data;
     var locked;
+
     layui.use(['form', 'okUtils', 'okLayer', 'laydate'], function () {
       let form = layui.form;
       let okUtils = layui.okUtils;
@@ -97,6 +98,7 @@
         form.render();
       }
       jsonEditor.prototype.createFormItem = function(fieldKey, fieldDesc, fieldValue) {
+
         if (fieldDesc.printer) {
           fieldValue = fieldDesc.printer(fieldValue);
         }
@@ -170,6 +172,7 @@
           cb.prop('checked', true);
         }
       }
+
       jsonEditor.prototype.createGroupInputRow = function(fieldDesc, dataKey, dataVal) {
         let self = this;
         let isMap = fieldDesc.type == 'map' ? true : false;
@@ -478,11 +481,13 @@
       }
       jsonEditor.prototype.getValue = function() {
         let json = {};
+
         for (fieldKey in this.fieldOption) {
           let fieldDesc = this.fieldOption[fieldKey];
           let cb = $('#cb-'+fieldKey.replace('.', '-'))
           if (!cb.is(":checked")) continue;
-          let input = $('#'+fieldKey.replace('.', '-'))
+          let inputName = fieldKey.replace('.', '-')
+          let input = $("input[name='" + inputName + "']").last()
           let fieldValue = '';
 
           let isMap = fieldDesc.type == 'map';
@@ -494,7 +499,9 @@
               return undefined;
             }
           } else {
+
             let group = input.next().next();
+
             let self = this;
             fieldValue = isMap ? {} : [];
             let failed = false;
@@ -502,6 +509,7 @@
               if (failed) return;
 
               let ctlGroupRow = $(this);
+
               let mapKey, valEntry;
               $.each(fieldDesc.groupFieldOption, function (grpFieldKey, grpFieldDesc) {
                 if (failed) return;
