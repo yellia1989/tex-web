@@ -639,7 +639,6 @@
 
       form.on('submit(save)', function(data){
         let fields = editor.getValue();
-        console.log(fields)
         if (fields != undefined) {
        	  parent.layui.$(parent.json_data).val(okUtils.jsonToString(fields));
         }
