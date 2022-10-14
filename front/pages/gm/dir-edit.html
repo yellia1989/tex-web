@@ -164,6 +164,8 @@
 
       //监听提交
       form.on('submit(add)', function (data) {
+        data.field["version"] = parent.dirVersion
+
         okUtils.ajax("/api/gm/zone/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));

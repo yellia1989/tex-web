@@ -2,6 +2,7 @@ package gm
 
 import (
     "fmt"
+    "net/http"
     "time"
     "sync"
     "strings"
@@ -16,6 +17,8 @@ import (
 // 缓存分区列表
 var zones []rpc.ZoneInfo
 var mu sync.Mutex
+
+var dirVersion int = 0
 
 type _zoneInfo struct {
     rpc.ZoneInfo
@@ -150,7 +153,12 @@ func ZoneList(c echo.Context) error {
 
     vPage := common.GetPage(zones2, page, limit)
 
-    return ctx.SendArray(vPage, len(zones2))
+    return ctx.JSON(http.StatusOK, map[string]interface{}{
+        "code": 0,
+        "data": vPage,
+        "count": len(zones2),
+        "version" : dirVersion,
+    })
 }
 
 func ZoneAdd(c echo.Context) error {
@@ -228,6 +236,11 @@ func ZoneDel(c echo.Context) error {
 func ZoneUpdate(c echo.Context) error {
     ctx := c.(*mid.Context)
 
+    version,_ := strconv.Atoi(c.FormValue("version"))
+    if version != dirVersion{
+        return ctx.SendError(-1, "分区信息已变更")
+    }
+
     zone := rpc.NewZoneInfo()
     if err := ctx.Bind(zone); err != nil {
         return err
@@ -271,11 +284,18 @@ func ZoneUpdate(c echo.Context) error {
         return err
     }
 
+    dirVersion++
+
     return ctx.SendResponse("修改分区成功")
 }
 
 func ZoneUpdateVersion(c echo.Context) error {
     ctx := c.(*mid.Context)
+
+    version,_ := strconv.Atoi(c.FormValue("version"))
+    if version != dirVersion{
+        return ctx.SendError(-1, "分区信息已变更")
+    }
 
     ids := strings.Split(ctx.FormValue("idsStr"), ",")
     if len(ids) == 0 {
@@ -307,6 +327,10 @@ func ZoneUpdateVersion(c echo.Context) error {
         MVersion[v.SChannel] = ver
     }
 
+    iZoneFlag , _ := strconv.ParseUint(ctx.FormValue("iZoneFlag"),10,32)
+    iIsManual , _ := strconv.ParseUint(ctx.FormValue("iIsManual"),10,32)
+    iManualZoneStatus , _ := strconv.ParseUint(ctx.FormValue("iManualZoneStatus"),10,32)
+
     dirPrx := new(rpc.DirService)
     comm.StringToProxy(cfg.App+".DirServer.DirServiceObj", dirPrx)
 
@@ -318,12 +342,18 @@ func ZoneUpdateVersion(c echo.Context) error {
             return err
         }
         zone.MVersion = MVersion
+        tempZone := *zone.Copy()
+        tempZone.IZoneFlag = uint32(iZoneFlag)
+        tempZone.IIsManual = uint32(iIsManual)
+        tempZone.IManualZoneStatus = uint32(iManualZoneStatus)
 
-        ret, err = dirPrx.ModifyZone(*zone.Copy(), rpc.ZoneModifyInfo{})
+        ret, err = dirPrx.ModifyZone(tempZone, rpc.ZoneModifyInfo{})
         if err := checkRet(ret, err); err != nil {
             return err
         }
     }
+
+    dirVersion++
 
     return ctx.SendResponse("批量修改分区成功")
 }
