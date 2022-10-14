@@ -168,7 +168,9 @@
       //监听提交
       form.on('submit(add)', function (data) {
         let param = data.field;
-        param["idsStr"] = zoneSelect.getValue('valueStr'),
+        param["idsStr"] = zoneSelect.getValue('valueStr')
+        param["version"] = parent.dirVersion
+
         okUtils.ajax("/api/gm/zone/version", "post", param, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
