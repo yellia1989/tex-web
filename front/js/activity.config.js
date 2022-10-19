@@ -281,6 +281,120 @@
                     name: '关闭协议(,分隔)',
                     type: 'longtext'
                 },
+                close_herowish: {
+                    name: '关闭招募',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_chat: {
+                    name: '关闭聊天',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_dreamtrial: {
+                    name: '关闭梦境试炼',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_herotrial: {
+                    name: '关闭元素秘境',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_hunter: {
+                    name: '关闭赏金猎场',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_arena: {
+                    name: '关闭王者竞技场',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_king: {
+                    name: '关闭黎明竞技场',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_advmap: {
+                    name: '关闭圣山之巅',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_rank: {
+                    name: '关闭排行榜',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_auction: {
+                    name: '关闭拍卖',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_talent: {
+                    name: '关闭天赋',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_zoon: {
+                    name: '关闭宠物',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_alliancegod: {
+                    name: '关闭联盟神像',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_alliancetransport: {
+                    name: '关闭联盟运输',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_alliancesharezoon: {
+                    name: '关闭共享兽栏',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_alliancesharehero: {
+                    name: '关闭共享英雄',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_allianceexpe: {
+                    name: '关闭联盟boss',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_alliancefire: {
+                    name: '关闭联盟篝火',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
+                close_allianceintrusion: {
+                    name: '关闭联盟入侵',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt,
+                },
             }
 		}
     };

@@ -52,6 +52,8 @@
 
     var zonedata;
     var zoneids;
+    var dirVersion;
+
     layui.use(["element", "table", "okLayer", "okUtils"], function () {
       let table = layui.table;
       let okLayer = layui.okLayer;
@@ -140,6 +142,8 @@
           for (i = 0; i < res.data.length; ++i) {
             res.data[i].id = res.data[i].iZoneId;
           }
+
+          dirVersion = res.version
           return res;
         }
       });
