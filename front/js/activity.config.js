@@ -615,7 +615,7 @@
                             parser: parseInt
                        },
                        needLevel: {
-                           name: '所需玩家等级',
+                           name: '通关主线章节',
                            type: 'text',
                            parser: parseInt
                        },
