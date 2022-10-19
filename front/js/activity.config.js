@@ -614,6 +614,11 @@
                             isMapKey: true,
                             parser: parseInt
                        },
+                       needLevel: {
+                           name: '所需玩家等级',
+                           type: 'text',
+                           parser: parseInt
+                       },
                        reward: {
                            name: '奖励:id,num',
                            type: 'longtext',
