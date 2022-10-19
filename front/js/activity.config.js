@@ -614,7 +614,7 @@
                             isMapKey: true,
                             parser: parseInt
                        },
-                       needLevel: {
+                       passChapterId: {
                            name: '通关主线章节',
                            type: 'text',
                            parser: parseInt
