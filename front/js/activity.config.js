@@ -614,6 +614,11 @@
                             isMapKey: true,
                             parser: parseInt
                        },
+                       passChapterId: {
+                           name: '通关主线章节',
+                           type: 'text',
+                           parser: parseInt
+                       },
                        reward: {
                            name: '奖励:id,num',
                            type: 'longtext',
