@@ -16,13 +16,11 @@ import (
 )
 
 type role struct {
-    Uid uint32  `json:"id"`
+    AccountName string `json:"id"`
     Name string `json:"name"`
     VipLevel uint32 `json:"vip_level"`
     LastLoginTime string `json:"last_login_time"`
     RegTime string `json:"reg_time"`
-    AccountId uint32    `json:"account_id"`
-    AccountName string `json:"account_name"`
 }
 
 func RoleList(c echo.Context) error {
@@ -57,11 +55,11 @@ func RoleList(c echo.Context) error {
         return err
     }
 
-    sql := "SELECT actorid,actorname,vip_level,lastonlinetime2,createtime,accountid,accountname FROM actors"
+    sql := "SELECT accountname,actorname,vip_level,lastonlinetime2,createtime FROM actors"
     if name != "" {
-        actorid, err := strconv.Atoi(name)
-        if err == nil && actorid != 0 {
-            sql += " WHERE actorid = " + strconv.Itoa(actorid)
+        accountname, err := strconv.Atoi(name)
+        if err == nil && accountname != 0 {
+            sql += " WHERE accountname = '" + name + "'"
         } else {
             sql += " WHERE actorname like '%" + name + "%'"
         }
@@ -81,7 +79,7 @@ func RoleList(c echo.Context) error {
     for rows.Next() {
         var r role
         var tmp int64
-        if err := rows.Scan(&r.Uid, &r.Name, &r.VipLevel, &tmp, &r.RegTime, &r.AccountId, &r.AccountName); err != nil {
+        if err := rows.Scan(&r.AccountName, &r.Name, &r.VipLevel, &tmp, &r.RegTime); err != nil {
             return err
         }
         r.LastLoginTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(tmp,0))
