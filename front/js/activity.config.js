@@ -614,6 +614,11 @@
                             isMapKey: true,
                             parser: parseInt
                        },
+                       passChapterId: {
+                           name: '通关主线章节',
+                           type: 'text',
+                           parser: parseInt
+                       },
                        reward: {
                            name: '奖励:id,num',
                            type: 'longtext',
@@ -1049,7 +1054,7 @@
                         '6': '技能升级',
                         '7': '英雄升级',
                         '8': '获得符文',
-                        '9': '英雄历练升级或更新怪校验',
+                        '9': '英雄历练升级或更新怪物',
                         '10': '主线任务进度变化',
                         '11': '商店购买',
                         '12': '蓝钻商城购买',
@@ -1063,8 +1068,17 @@
                         '20': '获得新SSR英雄',
                         '21': '通关精英关卡时',
                         '22': '开启宠物蛋时',
-                        '23': '获得英雄时'
+                        '23': '获得英雄时',
+                        '24': '购买体力',
+                        '25': '装备符文',
+                        '26': '十连抽'
                     },
+                    parser: parseInt
+                },
+                force_open: {
+                    name: '强制开启',
+                    type: 'select',
+                    options: options.optYesNo,
                     parser: parseInt
                 },
                 trigger_interval: {
@@ -1254,6 +1268,36 @@
                     name: '领奖后触发的活动id',
                     type: 'midtext',
                     parser: parseInt
+                },
+                buy_wand_step: {
+                    name: '购买第n次体力(购买次数)',
+                    type: 'midtext',
+                    parser: parseInt
+                },
+                unlock_day_from_reg: {
+                    name: '注册多久后可以触发(天)',
+                    type: 'midtext',
+                    parser: parseInt
+                },
+                hero_equip_rune_num: {
+                    name: '英雄同时装备符文数量',
+                    type: 'midtext',
+                    parser: parseInt
+                },
+                not_recharge: {
+                    name: '未付费',
+                    type: 'select',
+                    options: options.optYesNo,
+                    parser: parseInt
+                },
+                buy_other_activity: {
+                    name: '购买其他活动后解锁该活动',
+                    type: 'midtext',
+                    parser: parseInt
+                },
+                lock_other_activity: {
+                    name: '触发后上锁其他活动(,区分)',
+                    type: 'midtext'
                 }
             }
         }
@@ -2137,6 +2181,11 @@
                             parser: parseInt
                         }
                     }
+                },
+                unloackChapterPoint: {
+                    name: '解锁的通关节点',
+                    type: 'text',
+                    parser: parseInt
                 }
             },
             client_param: {
