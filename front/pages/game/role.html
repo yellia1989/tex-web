@@ -105,7 +105,7 @@
     });
 
     table.on("tool(tableFilter)", function (obj) {
-      roleid = obj.data.account_name;
+      roleid = obj.data.id;
       zoneid = zoneSelect.getValue('valueStr');
       switch (obj.event) {
         case "recharge":

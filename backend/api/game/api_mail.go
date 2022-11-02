@@ -45,7 +45,7 @@ func MailSendLog(c echo.Context) error {
     defer db.Close()
 
     sqlcount := "SELECT count(*) as total FROM recv_mail"
-    sqlcount += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
@@ -55,7 +55,7 @@ func MailSendLog(c echo.Context) error {
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
     sql := "SELECT _rid as id,mail_uid,time,mail_title,mail_content,mail_items FROM recv_mail"
-    sql += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
@@ -103,7 +103,7 @@ func MailOptLog(c echo.Context) error {
     defer db.Close()
 
     sqlcount := "SELECT count(*) as total FROM opt_mail"
-    sqlcount += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     var total int
     err = db.QueryRow(sqlcount).Scan(&total)
     if err != nil {
@@ -113,7 +113,7 @@ func MailOptLog(c echo.Context) error {
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
     sql := "SELECT _rid as id,mail_uid,time,action FROM opt_mail"
-    sql += " WHERE actorid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
     sql += " ORDER BY time desc, _rid desc"
     sql += " LIMIT "+limitstart+","+limitrow
 
