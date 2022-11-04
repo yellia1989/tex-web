@@ -1051,6 +1051,15 @@
                         '1' : '是',
                     },
                     parser: parseInt,
+                },
+                private_debris: {
+                    name: '是否是碎片',
+                    type: 'select',
+                    options: {
+                        '0' : '否',
+                        '1' : '是',
+                    },
+                    parser: parseInt,
                 }
             },
             server_param: {
