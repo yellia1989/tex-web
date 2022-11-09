@@ -55,11 +55,11 @@ func RoleList(c echo.Context) error {
         return err
     }
 
-    sql := "SELECT accountname,actorname,vip_level,lastonlinetime2,createtime FROM actors"
+    sql := "SELECT accountid,actorname,vip_level,lastonlinetime2,createtime FROM actors"
     if name != "" {
-        accountname, err := strconv.Atoi(name)
-        if err == nil && accountname != 0 {
-            sql += " WHERE accountname = '" + name + "'"
+        accountid, err := strconv.Atoi(name)
+        if err == nil && accountid != 0 {
+            sql += " WHERE accountid = " + name
         } else {
             sql += " WHERE actorname like '%" + name + "%'"
         }
