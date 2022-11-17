@@ -1,0 +1,31 @@
+{
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "git.ignoreLimitWarning": true,
+    "editor.detectIndentation": true, // 该项为true时 会根据打开文件自动检测tabSize和insertSpaces
+    "editor.formatOnPaste": true, // 粘贴后自动格式化
+    "editor.formatOnType": true, // 输入后自动格式化
+    "editor.renderWhitespace": "all", // 显示tab和space
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": true,
+        "strings": true
+    }, // 解决代码片段里不能提示补全
+    "editor.bracketPairColorization.enabled": true, // 彩色括号
+    "editor.matchBrackets": "always", // 显示括号匹配
+    "editor.autoClosingBrackets": "always", // 自动添加括号
+    "files.eol": "\n", // 换行符
+    "files.encoding": "utf8",
+    "files.insertFinalNewline": true, // 文件尾插入空行
+    "files.trimTrailingWhitespace": true, // 去除行尾多余空格
+    "editor.formatOnSaveMode": "modifications", // 只格式化修改的行
+
+    "javascript.suggestionActions.enabled": true,
+    "javascript.referencesCodeLens.enabled": true,
+
+    "cSpell.words": [
+        "laydate",
+        "layui"
+    ],
+    "go.inferGopath": false
+}
