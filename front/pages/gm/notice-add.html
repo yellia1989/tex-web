@@ -341,7 +341,7 @@
 
           data.field.sLangContent = okUtils.jsonToString(mLang);
 
-          if (!checkLang(lang)) {
+          if (!checkLang(mLang)) {
             okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function (index) {
               okUtils.ajax("/api/gm/notice/add", "post", data.field, true).done(function (response) {
                 okLayer.greenTickMsg(response.data, function () {

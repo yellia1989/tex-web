@@ -641,7 +641,7 @@
         let iRoleId = $('input[name="iRoleId"]').val();
         let param = { sTitle: defTitle, sContent: defContent, sLangContent: sLangContent, iCoin: iCoin, iDiamond: iDiamond, iZoneId: iZoneId, iRoleId: iRoleId, items: itemstr };
 
-        return { 'p': param };
+        return { 'p': param, 'lang': mLang };
       }
 
       function cmpParam(old, n) {
