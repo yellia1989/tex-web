@@ -13,22 +13,45 @@
     <form class="layui-form layui-form-pane ok-form">
       <div class="layui-tab layui-tab-brief">
         <ul class="layui-tab-title">
-          <li class="layui-this">简体中文(默认)</li>
+          <li class="layui-this">日语</li>
+          <li>中文</li>
           <li>英语</li>
+          <li>繁中</li>
+          <li>韩语</li>
+          <li>西班牙语</li>
+          <li>意大利语</li>
+          <li>法语</li>
+          <li>德语</li>
         </ul>
-        <div class="layui-tab-content">
+        <div class="layui-tab-content" id="lang_content">
           <div class="layui-tab-item layui-show">
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
-                <input type="text" id="zh-CNTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+                <input type="text" id="jaTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
               </div>
             </div>
 
             <div class="layui-form-item">
               <label class="layui-form-label">内容</label>
               <div class="layui-input-block">
-                <textarea id="zh-CNContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea" lay-verify="required" lay-verType="tips"></textarea>
+                <textarea id="jaContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-CNTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="zh-CNContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
               </div>
             </div>
           </div>
@@ -47,6 +70,120 @@
               </div>
             </div>
           </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-TWTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="zh-TWContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="koTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="koContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="esTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="esContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="itTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="itContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="frTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="frContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="deTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <textarea id="deContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">默认语言</label>
+        <div class="layui-input-block">
+          <select id="sDefaultLang" name="sDefaultLang">
+            <option value="ja" selected>日语</option>
+            <option value="en">英语</option>
+            <option value="zh-TW">繁中</option>
+            <option value="ko">韩语</option>
+            <option value="es">西班牙语</option>
+            <option value="it">意大利语</option>
+            <option value="fr">法语</option>
+            <option value="de">德语</option>
+            <option value="zh-CN">中文</option>
+          </select>
         </div>
       </div>
       <fieldset class="layui-elem-field">
@@ -58,7 +195,8 @@
                 <div id="zoneSelect1"></div>
               </div>
               <div class="layui-input-inline">
-                <input type="text" name="iRoleId" placeholder="请输入玩家id" autocomplete="off" class="layui-input" lay-verify="number|required" lay-verType="tips">
+                <input type="text" name="iRoleId" placeholder="请输入玩家id" autocomplete="off" class="layui-input"
+                  lay-verify="number|required" lay-verType="tips">
               </div>
               <div class="layui-input-inline">
                 <button class="layui-btn" lay-submit lay-filter="test" id="test">测试发送</button>
@@ -72,7 +210,7 @@
         <div class="layui-field-box">
           <div class="layui-field-box">
             <div class="layui-form-item">
-		          <label>每行格式(空格隔开): 分区ID 玩家ID 道具(id,num;id,num不要有空格)(小于60k的txt文件)</label>
+              <label>每行格式(空格隔开): 分区ID 玩家ID 道具(id,num;id,num不要有空格)(小于60k的txt文件)</label>
               <button type="button" class="layui-btn layui-btn-disabled" disabled id="file">
                 <i class="layui-icon">&#xe67c;</i>上传文件
               </button>
@@ -81,7 +219,7 @@
               <div class="layui-progress" lay-showPercent="true" lay-filter="filepro">
                 <div class="layui-progress-bar" lay-percent="0%"></div>
               </div>
-	    	      <input type="text" name="filepath" class="layui-hide">
+              <input type="text" name="filepath" class="layui-hide">
             </div>
           </div>
           <div class="layui-form-item">
@@ -133,7 +271,7 @@
       }).fail(function (error) {
         console.log(error);
       });
-      
+
       let uploadFile = upload.render({
         elem: '#file',
         url: '/api/gm/mail/upload',
@@ -142,11 +280,11 @@
         exts: 'txt',
         field: 'mailids',
         size: 60,
-        progress: function(n, elem){
+        progress: function (n, elem) {
           let percent = n + '%';
           element.progress('filepro', percent);
         },
-        done: function(res, index, upload) {
+        done: function (res, index, upload) {
           if (res.code != 0) {
             okLayer.redCryMsg(res.msg);
             element.progress('filepro', "0%");
@@ -154,25 +292,36 @@
           }
           $("input[name=filepath]").val(res.data);
         },
-        error: function(index, upload) {
+        error: function (index, upload) {
           okLayer.redCryMsg("上传失败");
           element.progress('filepro', "0%");
         }
       });
 
       function getParam() {
-        let sTitle = $("#zh-CNTitle").val();
-        let sContent = $("#zh-CNContent").val();
-        let lang = {};
-        lang["en"] = {"sTitle": $("#enTitle").val(),"sContent": $("#enContent").val()};
+        let mLang = {};
+        let defTitle = '';
+        let defContent = '';
+        let langs = ["en", "zh-CN", "ja", "zh-TW", "ko", "es", "it", "fr", "de"];
+        for (let i = 0; i < langs.length; ++i) {
+          let lang = langs[i];
+          let title = $('#' + lang + 'Title').val();
+          let content = $('#' + lang + 'Content').val();
+          if (lang == $('#sDefaultLang').val()) {
+            defTitle = title;
+            defContent = content;
+          } else {
+            mLang[lang] = { "sTitle": title, "sContent": content };
+          }
+        }
 
-        let sLangContent = okUtils.jsonToString(lang);
+        let sLangContent = okUtils.jsonToString(mLang);
 
         let iZoneId = zoneSelect1.getValue('valueStr');
         let iRoleId = $('input[name="iRoleId"]').val();
-        let param = {sTitle: sTitle, sContent: sContent, sLangContent: sLangContent, iZoneId: iZoneId, iRoleId: iRoleId};
+        let param = { sTitle: defTitle, sContent: defContent, sLangContent: sLangContent, iZoneId: iZoneId, iRoleId: iRoleId };
 
-        return {'p': param, 'lang': lang};
+        return { 'p': param, 'lang': mLang };
       }
 
       function cmpParam(old, n) {
@@ -189,14 +338,18 @@
       var mailparam;
       form.on('submit(test)', function (data) {
         let param = getParam();
+        if (param.p.sContent == '' || param.p.sTitle == '') {
+          okLayer.redCrossMsg('默认语言没有填写', function () { });
+          return false;
+        }
         if (!checkLang(param.lang)) {
-          okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
+          okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function (index) {
             okUtils.ajax("/api/gm/mail/testsend", "post", param.p, true).done(function (response) {
               okLayer.greenTickMsg(response.data, function () {
                 $("#send").attr("class", "layui-btn");
-                $("#send").attr("disabled",false);
+                $("#send").attr("disabled", false);
                 $("#file").attr("class", "layui-btn");
-                $("#file").attr("disabled",false);
+                $("#file").attr("disabled", false);
                 zoneSelect1.update({
                   disabled: true,
                 });
@@ -213,9 +366,9 @@
         okUtils.ajax("/api/gm/mail/testsend", "post", param.p, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             $("#send").attr("class", "layui-btn");
-            $("#send").attr("disabled",false);
+            $("#send").attr("disabled", false);
             $("#file").attr("class", "layui-btn");
-            $("#file").attr("disabled",false);
+            $("#file").attr("disabled", false);
             zoneSelect1.update({
               disabled: true,
             });
