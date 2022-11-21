@@ -108,14 +108,14 @@
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
-                <input type="text" id="esTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
+                <input type="text" id="es-ESTitle" placeholder="请输入邮件标题" autocomplete="off" class="layui-input">
               </div>
             </div>
 
             <div class="layui-form-item">
               <label class="layui-form-label">内容</label>
               <div class="layui-input-block">
-                <textarea id="esContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
+                <textarea id="es-ESContent" placeholder="请输入邮件内容" autocomplete="off" class="layui-textarea"></textarea>
               </div>
             </div>
           </div>
@@ -179,7 +179,7 @@
             <option value="en">英语</option>
             <option value="zh-TW">繁中</option>
             <option value="ko">韩语</option>
-            <option value="es">西班牙语</option>
+            <option value="es-ES">西班牙语</option>
             <option value="it">意大利语</option>
             <option value="fr">法语</option>
             <option value="de">德语</option>
@@ -620,7 +620,7 @@
         let mLang = {};
         let defTitle = '';
         let defContent = '';
-        let langs = ["en", "zh-CN", "ja", "zh-TW", "ko", "es", "it", "fr", "de"];
+        let langs = ["en", "zh-CN", "ja", "zh-TW", "ko", "es-ES", "it", "fr", "de"];
         for (let i = 0; i < langs.length; ++i) {
           let lang = langs[i];
           let title = $('#' + lang + 'Title').val();
