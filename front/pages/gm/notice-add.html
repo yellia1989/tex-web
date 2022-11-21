@@ -91,7 +91,7 @@
               </div>
 
               <div class="layui-tab-item">
-                <div id="es"></div>
+                <div id="es-ES"></div>
               </div>
 
               <div class="layui-tab-item">
@@ -119,7 +119,7 @@
             <option value="en">英语</option>
             <option value="zh-TW">繁中</option>
             <option value="ko">韩语</option>
-            <option value="es">西班牙语</option>
+            <option value="es-ES">西班牙语</option>
             <option value="it">意大利语</option>
             <option value="fr">法语</option>
             <option value="de">德语</option>
@@ -194,7 +194,7 @@
     jaEditor = getDefaultEditor('#ja');
     zh_TWEditor = getDefaultEditor('#zh-TW');
     koEditor = getDefaultEditor('#ko');
-    esEditor = getDefaultEditor('#es');
+    es_ESEditor = getDefaultEditor('#es-ES');
     itEditor = getDefaultEditor('#it');
     frEditor = getDefaultEditor('#fr');
     deEditor = getDefaultEditor('#de');
@@ -204,7 +204,7 @@
       else if (lang == "ja") return jaEditor;
       else if (lang == "zh-TW") return zh_TWEditor;
       else if (lang == "ko") return koEditor;
-      else if (lang == "es") return esEditor;
+      else if (lang == "es-ES") return es_ESEditor;
       else if (lang == "it") return itEditor;
       else if (lang == "fr") return frEditor;
       else if (lang == "de") return deEditor;
@@ -323,7 +323,7 @@
 
         if (data.field.iType != 2) {
           let mLang = {};
-          let langs = ["en", "zh-CN", "ja", "zh-TW", "ko", "es", "it", "fr", "de"];
+          let langs = ["en", "zh-CN", "ja", "zh-TW", "ko", "es-ES", "it", "fr", "de"];
           for (let i = 0; i < langs.length; ++i) {
             let lang = langs[i];
             let editor = getLangEditor(lang);
