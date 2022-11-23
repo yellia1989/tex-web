@@ -9,8 +9,28 @@
     "checked": false,
     "children": [
       {
+        "id": 105,
+        "title": "付费总数据",
+        "href": "stat/recharge.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe7d1;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 106,
+        "title": "付费跟踪",
+        "href": "stat/recharge-track.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe7d1;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
         "id": 101,
-        "title": "注册",
+        "title": "注册数据",
         "href": "stat/newadd.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe736;",
@@ -20,7 +40,7 @@
       },
       {
         "id": 102,
-        "title": "新增留存",
+        "title": "新增留存数据",
         "href": "stat/remain.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe736;",
@@ -40,30 +60,10 @@
       },
       {
         "id": 104,
-        "title": "流失",
+        "title": "玩家流失数据",
         "href": "stat/loss.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe736;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 105,
-        "title": "充值总况",
-        "href": "stat/recharge.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe7d1;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 106,
-        "title": "充值跟踪",
-        "href": "stat/recharge-track.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe7d1;",
         "spread": false,
         "checked": false,
         "children": null
@@ -81,7 +81,7 @@
     "children": [
       {
         "id": 201,
-        "title": "GM",
+        "title": "GM管理",
         "href": "",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -90,7 +90,7 @@
         "children": [
           {
             "id": 20101,
-            "title": "GM1",
+            "title": "GM命令1",
             "href": "gm/gm.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -100,7 +100,7 @@
           },
           {
             "id": 20102,
-            "title": "GM2",
+            "title": "GM命令2",
             "href": "gm/gm.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -110,7 +110,7 @@
           },
           {
             "id": 20103,
-            "title": "GM3",
+            "title": "GM命令3",
             "href": "gm/gm.html",
             "fontFamily": "ok-icon",
             "icon": "\u0026#xe654;",
@@ -122,12 +122,22 @@
       },
       {
         "id": 202,
-        "title": "分区管理",
+        "title": "区服管理",
         "href": "gm/dir.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
         "checked": true,
+        "children": null
+      },
+      {
+        "id": 206,
+        "title": "公告管理",
+        "href": "gm/bulletin.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": false,
         "children": null
       },
       {
@@ -151,16 +161,6 @@
         "children": null
       },
       {
-        "id": 206,
-        "title": "公告管理",
-        "href": "gm/bulletin.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe654;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
         "id": 207,
         "title": "跑马灯",
         "href": "gm/notice.html",
@@ -171,9 +171,9 @@
         "children": null
       },
       {
-        "id": 208,
-        "title": "白名单",
-        "href": "gm/whitelist.html",
+        "id": 209,
+        "title": "CDK管理",
+        "href": "gm/cdk.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
@@ -181,9 +181,9 @@
         "children": null
       },
       {
-        "id": 209,
-        "title": "CDK管理",
-        "href": "gm/cdk.html",
+        "id": 208,
+        "title": "白名单管理",
+        "href": "gm/whitelist.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
         "spread": false,
@@ -490,7 +490,7 @@
     "children": [
       {
         "id": 901,
-        "title": "实时在线",
+        "title": "在线人数",
         "href": "game/real-online.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -500,7 +500,7 @@
       },
       {
         "id": 902,
-        "title": "实时新增",
+        "title": "新增用户",
         "href": "game/real-newadd.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",
@@ -510,7 +510,7 @@
       },
       {
         "id": 903,
-        "title": "实时充值",
+        "title": "充值金额",
         "href": "game/real-income.html",
         "fontFamily": "ok-icon",
         "icon": "\u0026#xe654;",

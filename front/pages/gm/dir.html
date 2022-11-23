@@ -69,11 +69,11 @@
         toolbar: "#toolbarTpl",
         cols: [[
           { type: "checkbox", title: "序号"},
-          { field: "iZoneId", title: "分区ID", width: 70},
-          { field: "sZoneName", title: "分区名字", width: 90 },
+          { field: "iZoneId", title: "区服ID", width: 70},
+          { field: "sZoneName", title: "分区名称", width: 90 },
           { field: "sConnServer", title: "ConnServer", width: 120 },
           {
-            field: "iZoneFlag", title: "分区标识", width: 90, templet: function (d) {
+            field: "iZoneFlag", title: "分区标题", width: 90, templet: function (d) {
               let ret = '';
               switch (d.iZoneFlag) {
                 case 1: ret = '正常'; break;
