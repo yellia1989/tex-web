@@ -1,81 +1,10 @@
 [
   {
-    "id": 1,
-    "title": "每日数据",
-    "href": "",
-    "fontFamily": "ok-icon",
-    "icon": "\u0026#xe722;",
-    "spread": false,
-    "checked": false,
-    "children": [
-      {
-        "id": 105,
-        "title": "付费总数据",
-        "href": "stat/recharge.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe7d1;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 106,
-        "title": "付费跟踪",
-        "href": "stat/recharge-track.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe7d1;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 101,
-        "title": "注册数据",
-        "href": "stat/newadd.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe736;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 102,
-        "title": "新增留存数据",
-        "href": "stat/remain.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe736;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 103,
-        "title": "新增留存(全服去重)",
-        "href": "stat/remain2.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe736;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      },
-      {
-        "id": 104,
-        "title": "玩家流失数据",
-        "href": "stat/loss.html",
-        "fontFamily": "ok-icon",
-        "icon": "\u0026#xe736;",
-        "spread": false,
-        "checked": false,
-        "children": null
-      }
-    ]
-  },
-  {
     "id": 2,
     "title": "GM工具",
     "href": "",
     "fontFamily": "ok-icon",
-    "icon": "\u0026#xe654;",
+    "icon": "\u0026#xe66f;",
     "spread": false,
     "checked": false,
     "children": [
@@ -254,6 +183,77 @@
     ]
   },
   {
+    "id": 1,
+    "title": "运营数据",
+    "href": "",
+    "fontFamily": "ok-icon",
+    "icon": "\u0026#xe722;",
+    "spread": false,
+    "checked": false,
+    "children": [
+      {
+        "id": 105,
+        "title": "付费总数据",
+        "href": "stat/recharge.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe7d1;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 106,
+        "title": "付费跟踪",
+        "href": "stat/recharge-track.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe7d1;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 101,
+        "title": "注册数据",
+        "href": "stat/newadd.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 102,
+        "title": "新增留存数据",
+        "href": "stat/remain.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 103,
+        "title": "新增留存(全服去重)",
+        "href": "stat/remain2.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      },
+      {
+        "id": 104,
+        "title": "玩家流失数据",
+        "href": "stat/loss.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe736;",
+        "spread": false,
+        "checked": false,
+        "children": null
+      }
+    ]
+  },
+  {
     "id": 7,
     "title": "系统管理",
     "href": "",
@@ -316,7 +316,7 @@
   },
   {
     "id": 8,
-    "title": "游戏数据查询",
+    "title": "游戏记录查询",
     "href": "",
     "fontFamily": "ok-icon",
     "icon": "\u0026#xe7c5;",
@@ -481,10 +481,10 @@
   },
   {
     "id": 9,
-    "title": "实时数据",
+    "title": "数据统计",
     "href": "",
     "fontFamily": "ok-icon",
-    "icon": "\u0026#xe660;",
+    "icon": "\u0026#xe649;",
     "spread": false,
     "checked": false,
     "children": [

@@ -1,12 +1,13 @@
 package stat
 
 import (
-    "sort"
-    "time"
-    "github.com/labstack/echo/v4"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
-    "github.com/yellia1989/tex-go/tools/util"
+	"sort"
+	"time"
+
+	"github.com/labstack/echo/v4"
+	"github.com/yellia1989/tex-go/tools/util"
+	"github.com/yellia1989/tex-web/backend/common"
+	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
 type recharge struct {
@@ -37,7 +38,7 @@ func RechargeList(c echo.Context) error {
     startDate := getDateByString(startTime)
     endDate := getDateByString(endTime)
     if startDate == nil || endDate == nil {
-        return ctx.SendError(-1, "请指定日期范围")
+        return ctx.SendError(-1, "请选择想要查找的服务器并选择日期范围")
     }
 
     if len(vzoneid) == 0 {
@@ -55,7 +56,7 @@ func RechargeList(c echo.Context) error {
     if err != nil {
         return err
     }
-    
+
     vzoneid2 := make([]int,0)
     m := make(map[dateZoneKey]*rechargeVal)
     for k,active := range dateZoneActives {
@@ -143,7 +144,7 @@ func RechargeTrack(c echo.Context) error {
     startDate := getDateByString(startTime)
     endDate := getDateByString(endTime)
     if startDate == nil || endDate == nil {
-        return ctx.SendError(-1, "请指定日期范围")
+        return ctx.SendError(-1, "请选择想要查找的服务器并选择日期范围")
     }
 
     if len(vzoneid) == 0 {
