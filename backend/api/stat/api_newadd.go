@@ -1,9 +1,9 @@
 package stat
 
 import (
-    "github.com/labstack/echo/v4"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-web/backend/common"
+	"github.com/labstack/echo/v4"
+	"github.com/yellia1989/tex-web/backend/common"
+	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
 type newadd struct {
@@ -24,7 +24,7 @@ func NewaddList(c echo.Context) error {
     startDate := getDateByString(startTime)
     endDate := getDateByString(endTime)
     if startDate == nil || endDate == nil {
-        return ctx.SendError(-1, "请指定日期范围")
+        return ctx.SendError(-1, "请选择想要查找的服务器并选择日期范围")
     }
 
     // 获取账号总数量

@@ -12,27 +12,27 @@
   <div class="ok-body">
     <form class="layui-form" action="">
       <div class="layui-form-item">
-        <div class="layui-input-block" style="color:#a29bfe">
+        <div class="layui-input-block"></div>
           <br>
-          <label>当前白名单列表</label>
+          <label><b style="font-size: 22px; color:#000000">当前白名单列表</b></label>
           <br>
           <br>
-          <div name="list" style="width:50%; word-wrap:break-word"></div>
+          <div name="list" style="width:50%; word-wrap:break-word; color:#002bff"></div>
         </div>
       </div>
       <br>
 
       <div class="layui-form-item">
         <div class="layui-input-block" style="width:40%">
-          <textarea name="input" required lay-verify="required" class="layui-textarea"></textarea>
+          <textarea name="input" required lay-verify="required" class="layui-textarea" placeholder="请输入用户ID"></textarea>
         </div>
       </div>
 
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="add">增加到白名单</button>
-          <button class="layui-btn" lay-submit lay-filter="del">从白名单删除</button>
-          <button class="layui-btn" lay-submit lay-filter="replace">覆盖白名单</button>
+          <button class="layui-btn layui-btn-warm" lay-submit lay-filter="add">增加到白名单</button>
+          <button class="layui-btn layui-btn-warm" lay-submit lay-filter="del">从白名单删除</button>
+          <button class="layui-btn layui-btn-warm" lay-submit lay-filter="replace">覆盖白名单</button>
         </div>
       </div>
 
@@ -42,26 +42,26 @@
     <div class="ok-body">
       <form class="layui-form" action="">
         <div class="layui-form-item">
-          <div class="layui-input-block" style="color:#a29bfe">
+          <div class="layui-input-block">
             <br>
-            <label>临时白名单列表</label>
+            <label><b style="font-size: 22px; color:#000000">临时白名单列表</b></label>
             <br>
             <br>
             <div name="tmplist" style="width:50%; word-wrap:break-word"></div>
           </div>
         </div>
         <br>
-  
+
         <div class="layui-form-item">
           <div class="layui-input-block" style="width:40%">
             <textarea name="input" required lay-verify="required" class="layui-textarea"></textarea>
           </div>
         </div>
-  
+
         <div class="layui-form-item">
           <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="addtmp">增加到临时白名单</button>
-            <button class="layui-btn" lay-submit lay-filter="deltmp">从临时白名单删除</button>
+            <button class="layui-btn layui-btn-warm" lay-submit lay-filter="addtmp">增加到临时白名单</button>
+            <button class="layui-btn layui-btn-warm" lay-submit lay-filter="deltmp">从临时白名单删除</button>
           </div>
         </div>
 

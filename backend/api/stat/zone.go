@@ -1,17 +1,18 @@
 package stat
 
 import (
-    "fmt"
-    "time"
-    "sync"
-    "github.com/yellia1989/tex-web/backend/common"
-    "github.com/yellia1989/tex-web/backend/cfg"
+	"fmt"
+	"sync"
+	"time"
+
+	"github.com/yellia1989/tex-web/backend/cfg"
+	"github.com/yellia1989/tex-web/backend/common"
 )
 
 type zone struct {
     ID  uint32      `json:"zoneid_fk"`
     Zoneid uint32   `json:"zoneid"`     // 分区id
-    Name string     `json:"zonename"`   // 分区名字
+    Name string     `json:"zonename"`   // 区服名称
     OpenDay uint16  `json:"openday"`    // 开服累计天数
     openTime time.Time                  // 开服日期
     openTimeID uint32                   // 开服日期id
@@ -49,7 +50,7 @@ func refreshZone() {
         }
         z.openTime = common.ParseTimeInLocal("2006-01-02", openDay)
         z.openTimeID = getDateByTime(z.openTime).ID
-        
+
         if nowDate.ID >= z.openTimeID {
             z.OpenDay = uint16(nowDate.ID - z.openTimeID + 1)
         }
