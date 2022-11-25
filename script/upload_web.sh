@@ -35,4 +35,5 @@ runcmd yk@$cc_ip "mkdir -p $path"
 putfile yk@$cc_ip $web $path
 
 rm -rf $web
+echo $web
 exit 0

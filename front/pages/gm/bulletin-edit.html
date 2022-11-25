@@ -18,10 +18,17 @@
       <div class="layui-tab layui-tab-brief">
         <ul class="layui-tab-title">
           <li class="layui-this">日语</li>
-          <li>简体中文</li>
+          <li>中文</li>
           <li>英语</li>
+          <li>繁中</li>
+          <li>韩语</li>
+          <li>西班牙语</li>
+          <li>意大利语</li>
+          <li>法语</li>
+          <li>德语</li>
         </ul>
-        <div class="layui-tab-content">
+
+        <div class="layui-tab-content" id="lang_content">
           <div class="layui-tab-item layui-show">
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
@@ -34,10 +41,11 @@
               <label class="layui-form-label">内容</label>
               <div class="layui-input-block">
                 <div id="ja"></div>
-                <textarea id="jaHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+                <textarea id="jaHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
               </div>
             </div>
           </div>
+
           <div class="layui-tab-item">
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
@@ -50,7 +58,7 @@
               <label class="layui-form-label">内容</label>
               <div class="layui-input-block">
                 <div id="zh-CN"></div>
-                <textarea id="zh-CNHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+                <textarea id="zh-CNHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
               </div>
             </div>
           </div>
@@ -58,17 +66,121 @@
             <div class="layui-form-item">
               <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
-                <input type="text" id="enTitle" placeholder="请输入标题" autocomplete="off" class="layui-input" lay-verType="tips">
+                <input type="text" id="enTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
               </div>
             </div>
+
             <div class="layui-form-item">
               <label class="layui-form-label">内容</label>
               <div class="layui-input-block">
                 <div id="en"></div>
-                <textarea id="enHtml" placeholder="请编辑内容" class="layui-textarea"></textarea>
+                <textarea id="enHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
               </div>
             </div>
           </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="zh-TWTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="zh-TW"></div>
+                <textarea id="zh-TWHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="koTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="ko"></div>
+                <textarea id="koHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="es-ESTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="es-ES"></div>
+                <textarea id="es-ESHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="itTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="it"></div>
+                <textarea id="itHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="frTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="fr"></div>
+                <textarea id="frHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="layui-tab-item">
+            <div class="layui-form-item">
+              <label class="layui-form-label">标题</label>
+              <div class="layui-input-block">
+                <input type="text" id="deTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">内容</label>
+              <div class="layui-input-block">
+                <div id="de"></div>
+                <textarea id="deHtml" placeholder="请输入内容" autocomplete="off" class="layui-textarea"></textarea>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -99,9 +211,15 @@
       <div class="layui-form-item">
         <label class="layui-form-label">默认语言</label>
         <div class="layui-input-block">
-          <select name="sDefaultLang">
+          <select id="sDefaultLang" name="sDefaultLang">
             <option value="ja" selected>日语</option>
             <option value="en">英语</option>
+            <option value="zh-TW">繁中</option>
+            <option value="ko">韩语</option>
+            <option value="es-ES">西班牙语</option>
+            <option value="it">意大利语</option>
+            <option value="fr">法语</option>
+            <option value="de">德语</option>
             <option value="zh-CN">中文</option>
           </select>
         </div>
@@ -118,14 +236,26 @@
   <script src="/lib/layui/layui.js"></script>
   <script src="/js/common.js"></script>
   <script>
-    zhCNeditor = getDefaultEditor('#zh-CN');
-    ENeditor = getDefaultEditor('#en');
-    jaeditor = getDefaultEditor('#ja');
+    zh_CNEditor = getDefaultEditor('#zh-CN');
+    enEditor = getDefaultEditor('#en');
+    jaEditor = getDefaultEditor('#ja');
+    zh_TWEditor = getDefaultEditor('#zh-TW');
+    koEditor = getDefaultEditor('#ko');
+    es_ESEditor = getDefaultEditor('#es-ES');
+    itEditor = getDefaultEditor('#it');
+    frEditor = getDefaultEditor('#fr');
+    deEditor = getDefaultEditor('#de');
 
     function getLangEditor(lang) {
-        if (lang == "en") return ENeditor;
-        else if (lang == "ja") return jaeditor;
-        else return zhCNeditor;
+      if (lang == "en") return enEditor;
+      else if (lang == "ja") return jaEditor;
+      else if (lang == "zh-TW") return zh_TWEditor;
+      else if (lang == "ko") return koEditor;
+      else if (lang == "es-ES") return es_ESEditor;
+      else if (lang == "it") return itEditor;
+      else if (lang == "fr") return frEditor;
+      else if (lang == "de") return deEditor;
+      else return zh_CNEditor;
     }
 
     layui.use(['form', 'laydate', 'okLayer', 'okUtils', 'element'], function () {
@@ -138,28 +268,64 @@
       laydate.render({elem: "#iBeginTime", type: "datetime", value: parent.editdata.sBeginTime});
       laydate.render({elem: "#iEndTime", type: "datetime", value: parent.editdata.sEndTime});
 
-      zhCNeditor.config.onchange = function (newHtml) {
-        let jsonData = zhCNeditor.txt.getJSON();
-        let ouputStr = ExecuteJsonData(jsonData);
-        $(zhCNeditor.toolbarSelector+"Html").val(ouputStr);
+      zh_CNEditor.config.onchange = function (newHtml) {
+        let jsonData = zh_CNEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(zh_CNEditor.toolbarSelector+"Html").val(outputStr);
       }
 
-      ENeditor.config.onchange = function (newHtml) {
-        let jsonData = ENeditor.txt.getJSON();
-        let ouputStr = ExecuteJsonData(jsonData);
-        $(ENeditor.toolbarSelector+"Html").val(ouputStr);
+      enEditor.config.onchange = function (newHtml) {
+        let jsonData = enEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(enEditor.toolbarSelector+"Html").val(outputStr);
       }
 
-      jaeditor.config.onchange = function (newHtml) {
-        let jsonData = jaeditor.txt.getJSON();
-        let ouputStr = ExecuteJsonData(jsonData);
-        $(jaeditor.toolbarSelector+"Html").val(ouputStr);
+      jaEditor.config.onchange = function (newHtml) {
+        let jsonData = jaEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(jaEditor.toolbarSelector+"Html").val(outputStr);
+      }
+
+      zh_TWEditor.config.onchange = function (newHtml) {
+        let jsonData = zh_TWEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(zh_TWEditor.toolbarSelector + "Html").val(outputStr);
+      }
+
+      koEditor.config.onchange = function (newHtml) {
+        let jsonData = koEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(koEditor.toolbarSelector + "Html").val(outputStr);
+      }
+
+      es_ESEditor.config.onchange = function (newHtml) {
+        let jsonData = es_ESEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(es_ESEditor.toolbarSelector + "Html").val(outputStr);
+      }
+
+      itEditor.config.onchange = function (newHtml) {
+        let jsonData = itEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(itEditor.toolbarSelector + "Html").val(outputStr);
+      }
+
+      frEditor.config.onchange = function (newHtml) {
+        let jsonData = frEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(frEditor.toolbarSelector + "Html").val(outputStr);
+      }
+
+      deEditor.config.onchange = function (newHtml) {
+        let jsonData = deEditor.txt.getJSON();
+        let outputStr = ExecuteJsonData(jsonData);
+        $(deEditor.toolbarSelector + "Html").val(outputStr);
       }
 
       $("select[name='iDisplay']").val(parent.editdata.iDisplay);
       $("select[name='sDefaultLang']").val(parent.editdata.sDefaultLang);
 
-      let langs = ["en", "zh-CN", "ja"];
+      let langs = ["en", "zh-CN", "ja", "zh-TW", "ko", "es-ES", "it", "fr", "de"];
       for (let i = 0; i < langs.length; ++i) {
         let lang = langs[i];
         let obj = getLangEditor(lang);
@@ -186,7 +352,7 @@
           return false;
         }
 
-        let mlang = {};
+        let mLang = {};
         for (let i=0; i < langs.length; ++i) {
           let lang = langs[i];
           let title = $('#'+lang+'Title').val();
@@ -197,7 +363,7 @@
             data.field.sContent = content;
             data.field.sHtmlContent = htmlContent;
           } else {
-            mlang[lang] = {"sTitle": title, "sContent": content, "sHtmlContent": htmlContent};
+            mLang[lang] = {"sTitle": title, "sContent": content, "sHtmlContent": htmlContent};
           }
         }
 
@@ -206,9 +372,9 @@
           return false;
         }
 
-        if (!checkLang(mlang)) {
+        if (!checkLang(mLang)) {
           okLayer.confirm('除了默认语言还有语言未填,是否继续提交?', function(index) {
-            data.field.sLangContent = okUtils.jsonToString(mlang);
+            data.field.sLangContent = okUtils.jsonToString(mLang);
             okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
               okLayer.greenTickMsg(response.data, function () {
                 parent.layer.close(parent.layer.getFrameIndex(window.name));
@@ -222,7 +388,7 @@
           return false;
         }
 
-        data.field.sLangContent = okUtils.jsonToString(mlang);
+        data.field.sLangContent = okUtils.jsonToString(mLang);
         okUtils.ajax("/api/gm/bulletin/update", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
             parent.layer.close(parent.layer.getFrameIndex(window.name));
