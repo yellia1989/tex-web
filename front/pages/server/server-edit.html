@@ -78,6 +78,20 @@
       </div>
 
       <div class="layui-form-item">
+        <label class="layui-form-label">备份脚本</label>
+        <div class="layui-input-block">
+          <input type="text" id="backup_script" placeholder="备份脚本" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
+        <label class="layui-form-label">回档脚本</label>
+        <div class="layui-input-block">
+          <input type="text" id="restore_script" placeholder="回档脚本" class="layui-input">
+        </div>
+      </div>
+
+      <div class="layui-form-item">
         <label class="layui-form-label">监控端口</label>
         <div class="layui-input-inline">
           <input type="text" id="prom_port" placeholder="监控端口" class="layui-input">
@@ -202,6 +216,8 @@
         $('#start_script').val(data.start_script);
         $('#monitor_script').val(data.monitor_script);
         $('#stop_script').val(data.stop_script);
+        $('#backup_script').val(data.backup_script);
+        $('#restore_script').val(data.restore_script);
         $('#prom_port').val(data.prom_port);
         form.render();
       }).fail(function (error) {
@@ -232,6 +248,8 @@
           start_script: $('#start_script').val(),
           monitor_script: $('#monitor_script').val(),
           stop_script: $('#stop_script').val(),
+          backup_script: $('#backup_script').val(),
+          restore_script: $('#restore_script').val(),
           prom_port: parseInt($('#prom_port').val())
         }
         okUtils.ajax("/api/server/update", "post", { server: okUtils.jsonToString(req) }, true).done(function (response) {
