@@ -153,13 +153,11 @@ func ZoneAdd(c echo.Context) error {
     zone.MVersion = make(map[string]rpc.ZoneVersion)
     for _, v := range channels {
         sResVersion := ctx.FormValue(fmt.Sprintf("s%sResVersion", v.SChannel))
-        sExeVersion := ctx.FormValue(fmt.Sprintf("s%sExeVersion", v.SChannel))
-        if (sResVersion == "" || sExeVersion == "") {
+        if (sResVersion == "") {
             return ctx.SendError(-1, "渠道版本号不能为空")
         }
         var ver rpc.ZoneVersion
         ver.SRes = sResVersion
-        ver.SExe = sExeVersion
         zone.MVersion[v.SChannel] = ver
     }
 
@@ -225,13 +223,11 @@ func ZoneUpdate(c echo.Context) error {
     zone.MVersion = make(map[string]rpc.ZoneVersion)
     for _, v := range channels {
         sResVersion := ctx.FormValue(fmt.Sprintf("s%sResVersion", v.SChannel))
-        sExeVersion := ctx.FormValue(fmt.Sprintf("s%sExeVersion", v.SChannel))
-        if (sResVersion == "" || sExeVersion == "") {
+        if (sResVersion == "") {
             return ctx.SendError(-1, "渠道版本号不能为空")
         }
         var ver rpc.ZoneVersion
         ver.SRes = sResVersion
-        ver.SExe = sExeVersion
         zone.MVersion[v.SChannel] = ver
     }
 
@@ -268,13 +264,11 @@ func ZoneUpdateVersion(c echo.Context) error {
     MVersion := make(map[string]rpc.ZoneVersion)
     for _, v := range channels {
         sResVersion := ctx.FormValue(fmt.Sprintf("s%sResVersion", v.SChannel))
-        sExeVersion := ctx.FormValue(fmt.Sprintf("s%sExeVersion", v.SChannel))
-        if (sResVersion == "" || sExeVersion == "") {
+        if (sResVersion == "") {
             return ctx.SendError(-1, "渠道版本号不能为空")
         }
         var ver rpc.ZoneVersion
         ver.SRes = sResVersion
-        ver.SExe = sExeVersion
         MVersion[v.SChannel] = ver
     }
 
