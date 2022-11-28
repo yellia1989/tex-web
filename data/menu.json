@@ -9,7 +9,7 @@
     "checked": false,
     "children": [
       {
-        "id": 201,
+        "id": 101,
         "title": "GM管理",
         "href": "",
         "fontFamily": "ok-icon",
@@ -18,7 +18,7 @@
         "checked": false,
         "children": [
           {
-            "id": 20101,
+            "id": 10101,
             "title": "GM命令1",
             "href": "gm/gm.html",
             "fontFamily": "ok-icon",
@@ -28,7 +28,7 @@
             "children": null
           },
           {
-            "id": 20102,
+            "id": 10102,
             "title": "GM命令2",
             "href": "gm/gm.html",
             "fontFamily": "ok-icon",
@@ -38,7 +38,7 @@
             "children": null
           },
           {
-            "id": 20103,
+            "id": 10103,
             "title": "GM命令3",
             "href": "gm/gm.html",
             "fontFamily": "ok-icon",
@@ -50,7 +50,7 @@
         ]
       },
       {
-        "id": 202,
+        "id": 102,
         "title": "区服管理",
         "href": "gm/dir.html",
         "fontFamily": "ok-icon",
@@ -60,7 +60,7 @@
         "children": null
       },
       {
-        "id": 206,
+        "id": 106,
         "title": "公告管理",
         "href": "gm/bulletin.html",
         "fontFamily": "ok-icon",
@@ -70,7 +70,7 @@
         "children": null
       },
       {
-        "id": 203,
+        "id": 103,
         "title": "渠道管理",
         "href": "gm/channel.html",
         "fontFamily": "ok-icon",
@@ -80,7 +80,7 @@
         "children": null
       },
       {
-        "id": 205,
+        "id": 105,
         "title": "邮件管理",
         "href": "gm/mail.html",
         "fontFamily": "ok-icon",
@@ -90,7 +90,7 @@
         "children": null
       },
       {
-        "id": 207,
+        "id": 107,
         "title": "跑马灯",
         "href": "gm/notice.html",
         "fontFamily": "ok-icon",
@@ -100,7 +100,7 @@
         "children": null
       },
       {
-        "id": 209,
+        "id": 109,
         "title": "CDK管理",
         "href": "gm/cdk.html",
         "fontFamily": "ok-icon",
@@ -110,7 +110,7 @@
         "children": null
       },
       {
-        "id": 208,
+        "id": 108,
         "title": "白名单管理",
         "href": "gm/whitelist.html",
         "fontFamily": "ok-icon",
@@ -120,7 +120,7 @@
         "children": null
       },
       {
-        "id": 212,
+        "id": 112,
         "title": "屏蔽字测试",
         "href": "gm/dirty.html",
         "fontFamily": "ok-icon",
@@ -130,7 +130,7 @@
         "children": null
       },
       {
-        "id": 213,
+        "id": 113,
         "title": "数据库管理",
         "href": "gm/db.html",
         "fontFamily": "ok-icon",
@@ -140,7 +140,7 @@
         "children": null
       },
       {
-        "id": 214,
+        "id": 114,
         "title": "推送管理",
         "href": "gm/push.html",
         "fontFamily": "ok-icon",
@@ -150,7 +150,7 @@
         "children": null
       },
       {
-        "id": 215,
+        "id": 115,
         "title": "福利管理",
         "href": "",
         "fontFamily": "ok-icon",
@@ -159,7 +159,7 @@
         "checked": false,
         "children": [
           {
-            "id": 21501,
+            "id": 11501,
             "title": "任务管理",
             "href": "gm/welfare.html",
             "fontFamily": "ok-icon",
@@ -169,7 +169,7 @@
             "children": null
           },
           {
-            "id": 21502,
+            "id": 11502,
             "title": "玩家福利记录",
             "href": "gm/welfare-role.html",
             "fontFamily": "ok-icon",
@@ -192,7 +192,7 @@
     "checked": false,
     "children": [
       {
-        "id": 105,
+        "id": 205,
         "title": "付费总数据",
         "href": "stat/recharge.html",
         "fontFamily": "ok-icon",
@@ -202,7 +202,7 @@
         "children": null
       },
       {
-        "id": 106,
+        "id": 206,
         "title": "付费跟踪",
         "href": "stat/recharge-track.html",
         "fontFamily": "ok-icon",
@@ -212,7 +212,7 @@
         "children": null
       },
       {
-        "id": 101,
+        "id": 201,
         "title": "注册数据",
         "href": "stat/newadd.html",
         "fontFamily": "ok-icon",
@@ -222,7 +222,7 @@
         "children": null
       },
       {
-        "id": 102,
+        "id": 202,
         "title": "新增留存数据",
         "href": "stat/remain.html",
         "fontFamily": "ok-icon",
@@ -232,7 +232,7 @@
         "children": null
       },
       {
-        "id": 103,
+        "id": 203,
         "title": "新增留存(全服去重)",
         "href": "stat/remain2.html",
         "fontFamily": "ok-icon",
@@ -242,7 +242,7 @@
         "children": null
       },
       {
-        "id": 104,
+        "id": 204,
         "title": "玩家流失数据",
         "href": "stat/loss.html",
         "fontFamily": "ok-icon",
