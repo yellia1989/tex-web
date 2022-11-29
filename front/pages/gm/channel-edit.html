@@ -19,13 +19,6 @@
         </div>
       </div>
 
-	    <div class="layui-form-item">
-		    <label class="layui-form-label">exe更新地址</label>
-		    <div class="layui-input-block">
-		    	<input type="text" name="sAddress" placeholder="请输入exe更新地址" autocomplete="off" class="layui-input" lay-verify="url|required" lay-verType="tips">
-		    </div>
-		</div>
-
 	  <div class="layui-form-item">
 		    <label class="layui-form-label">res更新地址</label>
 		    <div class="layui-input-block">
@@ -34,9 +27,9 @@
 		</div>
 
 	    <div class="layui-form-item">
-		    <label class="layui-form-label">商店版本号</label>
+		    <label class="layui-form-label">版本号</label>
 		    <div class="layui-input-block">
-		    	<input type="text" name="sShopVer" placeholder="请输入商店版本号" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		    	<input type="text" name="sShopVer" placeholder="请输入版本号" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
 		    </div>
 		  </div>
 
@@ -56,7 +49,6 @@
       let $ = layui.jquery;
 
       $("input[name='sChannel']").val(parent.editdata.sChannel);
-      $("input[name='sAddress']").val(parent.editdata.sAddress);
       $("input[name='sRes']").val(parent.editdata.sRes);
       $("input[name='sShopVer']").val(parent.editdata.sShopVer);
 

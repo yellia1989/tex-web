@@ -45,7 +45,7 @@
       let ret = '';
       for (let k in mVersion) {
         let v = mVersion[k]; 
-        ret += '<span class="layui-btn layui-btn-sm '+versionMap.chooseColour(v.sRes+v.sExe)+'">'+k+':'+v.sRes+'('+v.sExe+')'+'</span>';
+        ret += '<span class="layui-btn layui-btn-sm '+versionMap.chooseColour(v.sRes+v.sExe)+'">'+k+':'+v.sRes+'</span>';
       }
       return ret;
     }
@@ -79,7 +79,6 @@
                 case 1: ret = '正常'; break;
                 case 2: ret = '新区'; break;
                 case 3: ret = '<span class="layui-btn layui-btn-danger layui-btn-xs">关闭</span>'; break;
-                case 4: ret = '审核'; break;
                 default:
                   ret = '未知状态';
               }

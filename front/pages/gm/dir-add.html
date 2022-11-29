@@ -43,7 +43,6 @@
               <option value="1" selected>正常</option>
               <option value="2">新区</option>
               <option value="3">关闭</option>
-              <option value="4">审核</option>
             </select>
 			    </div>
         </div>
@@ -123,7 +122,7 @@
         let channelHtml = '';
         for (i = 0; i < response.data.length; ++i) {
           let channel = response.data[i];
-          channelHtml += '<fieldset class="layui-elem-field"><legend>'+channel.sChannel+'</legend><div class="layui-field-box"><div class="layui-form-item"><div class="layui-inline"><label class="layui-form-label">资源</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ResVersion" placeholder="请输入5位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips"></div></div><div class="layui-inline"><label class="layui-form-label">exe</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ExeVersion" placeholder="请输入3位版本号" autocomplete="off" class="layui-input" lay-verify="required|version" lay-verType="tips"></div></div></div></div></fieldset>';
+          channelHtml += '<fieldset class="layui-elem-field"><legend>'+channel.sChannel+'</legend><div class="layui-field-box"><div class="layui-form-item"><div class="layui-inline"><label class="layui-form-label">资源</label><div class="layui-input-inline"><input type="text" name="s'+channel.sChannel+'ResVersion" placeholder="请输入资源版本号" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips"></div></div></div></div></fieldset>';
         }
         if (channelHtml != '') {
           $("#versionFlag").before(channelHtml);
@@ -132,20 +131,6 @@
 		  }).fail(function (error) {
 			  console.log(error)
 		  });
-
-      //数据校验
-      form.verify({
-        version: function(value, item) {
-          let v = value.split('.');
-          let l = 5;
-          if (item.name.indexOf('Exe') != -1) {
-              l = 3;
-          }
-          if (v.length != l) {
-              return '版本号格式不对';
-          }
-        }
-      });
 
       //监听提交
       form.on('submit(add)', function(data){

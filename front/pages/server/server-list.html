@@ -161,6 +161,12 @@
         });
       }
 
+      function clearServer(data) {
+        editData = data;
+        okLayer.open("清档", "./clearServer.html", "50%", "50%", null, function () {
+        });
+      }
+
       //触发行双击事件
       table.on('rowDouble(tableFilter)', function(obj){
           edit(obj.data);
@@ -198,7 +204,20 @@
               {
                 title: '复制'
                 , id: 'copy'
-              }]
+              },
+              {
+		            title: '清档'
+                , id: 'clear_server'
+              },
+              {
+		            title: '备份'
+                , id: 'backup_server'
+              },
+              {
+		            title: '回档'
+                , id: 'restore_server'
+              },
+              ]
               , click: function (data2, othis) {
                 if (data2.id == 'copy') {
                   copyData(data);
@@ -206,6 +225,12 @@
                   setLogLevel(data);
                 } else if (data2.id == 'close_heartbeat') {
                   closeHeartbeat(data);
+                } else if (data2.id == 'clear_server') {
+                  clearServer(data);
+                } else if (data2.id == 'backup_server') {
+                  serverOperator(data, 'backup');
+                } else if (data2.id == 'restore_server') {
+                  serverOperator(data, 'restore');
                 }
               }
               ,align: 'right' //右对齐弹出（v2.6.8 新增）
