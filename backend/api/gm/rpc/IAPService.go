@@ -5,7 +5,6 @@ package rpc
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"github.com/yellia1989/tex-go/sdp/protocol"
 	"github.com/yellia1989/tex-go/service/model"
 	"github.com/yellia1989/tex-go/tools/log"
@@ -13,6 +12,7 @@ import (
 	"github.com/yellia1989/tex-go/tools/sdp/codec"
 	"github.com/yellia1989/tex-go/tools/sdp/util"
 	"time"
+    "fmt"
 )
 
 type IAPReceiptType int32
@@ -24,6 +24,7 @@ const (
 	IAPReceiptType_HeePay   = 4
 	IAPReceiptType_HeePayH5 = 5
 	IAPReceiptType_GameHub  = 6
+	IAPReceiptType_G123     = 7
 )
 
 func (en IAPReceiptType) String() string {
@@ -41,6 +42,8 @@ func (en IAPReceiptType) String() string {
 		ret = "IAPReceiptType_HeePayH5"
 	case IAPReceiptType_GameHub:
 		ret = "IAPReceiptType_GameHub"
+	case IAPReceiptType_G123:
+		ret = "IAPReceiptType_G123"
 	}
 	return ret
 }
@@ -82,6 +85,7 @@ type IAPStatus struct {
 	IAddTime        uint32 `json:"iAddTime" form:"iAddTime"`
 	IVerifyTime     uint32 `json:"iVerifyTime" form:"iVerifyTime"`
 	IDeliverTime    uint32 `json:"iDeliverTime" form:"iDeliverTime"`
+	INotifyTime     uint32 `json:"iNotifyTime" form:"iNotifyTime"`
 	IRetryNum       uint32 `json:"iRetryNum" form:"iRetryNum"`
 	INextTryTime    uint32 `json:"iNextTryTime" form:"iNextTryTime"`
 	SFailReason     string `json:"sFailReason" form:"sFailReason"`
@@ -103,6 +107,7 @@ func (st *IAPStatus) Copy() *IAPStatus {
 	ret.IAddTime = st.IAddTime
 	ret.IVerifyTime = st.IVerifyTime
 	ret.IDeliverTime = st.IDeliverTime
+	ret.INotifyTime = st.INotifyTime
 	ret.IRetryNum = st.IRetryNum
 	ret.INextTryTime = st.INextTryTime
 	ret.SFailReason = st.SFailReason
@@ -126,6 +131,7 @@ func (st *IAPStatus) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iAddTime")+fmt.Sprintf("%v\n", st.IAddTime))
 	util.Tab(buff, t+1, util.Fieldname("iVerifyTime")+fmt.Sprintf("%v\n", st.IVerifyTime))
 	util.Tab(buff, t+1, util.Fieldname("iDeliverTime")+fmt.Sprintf("%v\n", st.IDeliverTime))
+	util.Tab(buff, t+1, util.Fieldname("iNotifyTime")+fmt.Sprintf("%v\n", st.INotifyTime))
 	util.Tab(buff, t+1, util.Fieldname("iRetryNum")+fmt.Sprintf("%v\n", st.IRetryNum))
 	util.Tab(buff, t+1, util.Fieldname("iNextTryTime")+fmt.Sprintf("%v\n", st.INextTryTime))
 	util.Tab(buff, t+1, util.Fieldname("sFailReason")+fmt.Sprintf("%v\n", st.SFailReason))
@@ -175,27 +181,31 @@ func (st *IAPStatus) ReadStruct(up *codec.UnPacker) error {
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.IRetryNum, 9, false)
+	err = up.ReadUint32(&st.INotifyTime, 9, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadUint32(&st.INextTryTime, 10, false)
+	err = up.ReadUint32(&st.IRetryNum, 10, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SFailReason, 11, false)
+	err = up.ReadUint32(&st.INextTryTime, 11, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SDeliverItem, 12, false)
+	err = up.ReadString(&st.SFailReason, 12, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.STraceProductId, 13, false)
+	err = up.ReadString(&st.SDeliverItem, 13, false)
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.STraceFlowId, 14, false)
+	err = up.ReadString(&st.STraceProductId, 14, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STraceFlowId, 15, false)
 	if err != nil {
 		return err
 	}
@@ -290,38 +300,44 @@ func (st *IAPStatus) WriteStruct(p *codec.Packer) error {
 			return err
 		}
 	}
+	if false || st.INotifyTime != 0 {
+		err = p.WriteUint32(9, st.INotifyTime)
+		if err != nil {
+			return err
+		}
+	}
 	if false || st.IRetryNum != 0 {
-		err = p.WriteUint32(9, st.IRetryNum)
+		err = p.WriteUint32(10, st.IRetryNum)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.INextTryTime != 0 {
-		err = p.WriteUint32(10, st.INextTryTime)
+		err = p.WriteUint32(11, st.INextTryTime)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.SFailReason != "" {
-		err = p.WriteString(11, st.SFailReason)
+		err = p.WriteString(12, st.SFailReason)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.SDeliverItem != "" {
-		err = p.WriteString(12, st.SDeliverItem)
+		err = p.WriteString(13, st.SDeliverItem)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.STraceProductId != "" {
-		err = p.WriteString(13, st.STraceProductId)
+		err = p.WriteString(14, st.STraceProductId)
 		if err != nil {
 			return err
 		}
 	}
 	if false || st.STraceFlowId != "" {
-		err = p.WriteString(14, st.STraceFlowId)
+		err = p.WriteString(15, st.STraceFlowId)
 		if err != nil {
 			return err
 		}
@@ -3088,36 +3104,515 @@ func (st *GameHubReceipt) WriteStructFromTag(p *codec.Packer, tag uint32, requir
 	return nil
 }
 
+type G123Purchase struct {
+	SOrderNo string `json:"sOrderNo" form:"sOrderNo"`
+	IConnId  uint32 `json:"iConnId" form:"iConnId"`
+	SChannel string `json:"sChannel" form:"sChannel"`
+}
+
+func (st *G123Purchase) resetDefault() {
+}
+func (st *G123Purchase) Copy() *G123Purchase {
+	ret := NewG123Purchase()
+	ret.SOrderNo = st.SOrderNo
+	ret.IConnId = st.IConnId
+	ret.SChannel = st.SChannel
+	return ret
+}
+func NewG123Purchase() *G123Purchase {
+	ret := &G123Purchase{}
+	ret.resetDefault()
+	return ret
+}
+func (st *G123Purchase) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sOrderNo")+fmt.Sprintf("%v\n", st.SOrderNo))
+	util.Tab(buff, t+1, util.Fieldname("iConnId")+fmt.Sprintf("%v\n", st.IConnId))
+	util.Tab(buff, t+1, util.Fieldname("sChannel")+fmt.Sprintf("%v\n", st.SChannel))
+}
+func (st *G123Purchase) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SOrderNo, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IConnId, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SChannel, 3, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *G123Purchase) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *G123Purchase) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SOrderNo != "" {
+		err = p.WriteString(0, st.SOrderNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IConnId != 0 {
+		err = p.WriteUint32(2, st.IConnId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SChannel != "" {
+		err = p.WriteString(3, st.SChannel)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *G123Purchase) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+type G123Receipt struct {
+	SOrderNo       string `json:"sOrderNo" form:"sOrderNo"`
+	SAppCode       string `json:"sAppCode" form:"sAppCode"`
+	SStatus        string `json:"sStatus" form:"sStatus"`
+	SUserId        string `json:"sUserId" form:"sUserId"`
+	SPaymentCode   string `json:"sPaymentCode" form:"sPaymentCode"`
+	IRetryCount    uint32 `json:"iRetryCount" form:"iRetryCount"`
+	SCustom        string `json:"sCustom" form:"sCustom"`
+	SError         string `json:"sError" form:"sError"`
+	SCreatedAt     string `json:"sCreatedAt" form:"sCreatedAt"`
+	SUpdatedAt     string `json:"sUpdatedAt" form:"sUpdatedAt"`
+	SItemCode      string `json:"sItemCode" form:"sItemCode"`
+	SItemName      string `json:"sItemName" form:"sItemName"`
+	SItemDesc      string `json:"sItemDesc" form:"sItemDesc"`
+	IItemAmt       uint32 `json:"iItemAmt" form:"iItemAmt"`
+	IItemQty       uint32 `json:"iItemQty" form:"iItemQty"`
+	IItemTaxamt    uint32 `json:"iItemTaxamt" form:"iItemTaxamt"`
+	SItemUrl       string `json:"sItemUrl" form:"sItemUrl"`
+	SItemCreatedAt string `json:"sItemCreatedAt" form:"sItemCreatedAt"`
+	SItemUpdatedAt string `json:"sItemUpdatedAt" form:"sItemUpdatedAt"`
+}
+
+func (st *G123Receipt) resetDefault() {
+}
+func (st *G123Receipt) Copy() *G123Receipt {
+	ret := NewG123Receipt()
+	ret.SOrderNo = st.SOrderNo
+	ret.SAppCode = st.SAppCode
+	ret.SStatus = st.SStatus
+	ret.SUserId = st.SUserId
+	ret.SPaymentCode = st.SPaymentCode
+	ret.IRetryCount = st.IRetryCount
+	ret.SCustom = st.SCustom
+	ret.SError = st.SError
+	ret.SCreatedAt = st.SCreatedAt
+	ret.SUpdatedAt = st.SUpdatedAt
+	ret.SItemCode = st.SItemCode
+	ret.SItemName = st.SItemName
+	ret.SItemDesc = st.SItemDesc
+	ret.IItemAmt = st.IItemAmt
+	ret.IItemQty = st.IItemQty
+	ret.IItemTaxamt = st.IItemTaxamt
+	ret.SItemUrl = st.SItemUrl
+	ret.SItemCreatedAt = st.SItemCreatedAt
+	ret.SItemUpdatedAt = st.SItemUpdatedAt
+	return ret
+}
+func NewG123Receipt() *G123Receipt {
+	ret := &G123Receipt{}
+	ret.resetDefault()
+	return ret
+}
+func (st *G123Receipt) Visit(buff *bytes.Buffer, t int) {
+	util.Tab(buff, t+1, util.Fieldname("sOrderNo")+fmt.Sprintf("%v\n", st.SOrderNo))
+	util.Tab(buff, t+1, util.Fieldname("sAppCode")+fmt.Sprintf("%v\n", st.SAppCode))
+	util.Tab(buff, t+1, util.Fieldname("sStatus")+fmt.Sprintf("%v\n", st.SStatus))
+	util.Tab(buff, t+1, util.Fieldname("sUserId")+fmt.Sprintf("%v\n", st.SUserId))
+	util.Tab(buff, t+1, util.Fieldname("sPaymentCode")+fmt.Sprintf("%v\n", st.SPaymentCode))
+	util.Tab(buff, t+1, util.Fieldname("iRetryCount")+fmt.Sprintf("%v\n", st.IRetryCount))
+	util.Tab(buff, t+1, util.Fieldname("sCustom")+fmt.Sprintf("%v\n", st.SCustom))
+	util.Tab(buff, t+1, util.Fieldname("sError")+fmt.Sprintf("%v\n", st.SError))
+	util.Tab(buff, t+1, util.Fieldname("sCreatedAt")+fmt.Sprintf("%v\n", st.SCreatedAt))
+	util.Tab(buff, t+1, util.Fieldname("sUpdatedAt")+fmt.Sprintf("%v\n", st.SUpdatedAt))
+	util.Tab(buff, t+1, util.Fieldname("sItemCode")+fmt.Sprintf("%v\n", st.SItemCode))
+	util.Tab(buff, t+1, util.Fieldname("sItemName")+fmt.Sprintf("%v\n", st.SItemName))
+	util.Tab(buff, t+1, util.Fieldname("sItemDesc")+fmt.Sprintf("%v\n", st.SItemDesc))
+	util.Tab(buff, t+1, util.Fieldname("iItemAmt")+fmt.Sprintf("%v\n", st.IItemAmt))
+	util.Tab(buff, t+1, util.Fieldname("iItemQty")+fmt.Sprintf("%v\n", st.IItemQty))
+	util.Tab(buff, t+1, util.Fieldname("iItemTaxamt")+fmt.Sprintf("%v\n", st.IItemTaxamt))
+	util.Tab(buff, t+1, util.Fieldname("sItemUrl")+fmt.Sprintf("%v\n", st.SItemUrl))
+	util.Tab(buff, t+1, util.Fieldname("sItemCreatedAt")+fmt.Sprintf("%v\n", st.SItemCreatedAt))
+	util.Tab(buff, t+1, util.Fieldname("sItemUpdatedAt")+fmt.Sprintf("%v\n", st.SItemUpdatedAt))
+}
+func (st *G123Receipt) ReadStruct(up *codec.UnPacker) error {
+	var err error
+	var length uint32
+	var has bool
+	var ty uint32
+	st.resetDefault()
+	err = up.ReadString(&st.SOrderNo, 0, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SAppCode, 1, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SStatus, 2, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SUserId, 3, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SPaymentCode, 4, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IRetryCount, 5, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SCustom, 6, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SError, 7, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SCreatedAt, 8, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SUpdatedAt, 9, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SItemCode, 10, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SItemName, 11, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SItemDesc, 12, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IItemAmt, 13, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IItemQty, 14, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadUint32(&st.IItemTaxamt, 15, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SItemUrl, 16, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SItemCreatedAt, 17, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SItemUpdatedAt, 18, false)
+	if err != nil {
+		return err
+	}
+
+	_ = length
+	_ = has
+	_ = ty
+
+	return err
+}
+func (st *G123Receipt) ReadStructFromTag(up *codec.UnPacker, tag uint32, require bool) error {
+	var err error
+	var has bool
+	var ty uint32
+
+	has, ty, err = up.SkipToTag(tag, require)
+	if !has || err != nil {
+		return err
+	}
+
+	if ty != codec.SdpType_StructBegin {
+		return fmt.Errorf("tag:%d got wrong type %d", tag, ty)
+	}
+
+	err = st.ReadStruct(up)
+	if err != nil {
+		return err
+	}
+	err = up.SkipStruct()
+	if err != nil {
+		return err
+	}
+
+	_ = has
+	_ = ty
+	return nil
+}
+func (st *G123Receipt) WriteStruct(p *codec.Packer) error {
+	var err error
+	var length uint32
+	if false || st.SOrderNo != "" {
+		err = p.WriteString(0, st.SOrderNo)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SAppCode != "" {
+		err = p.WriteString(1, st.SAppCode)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SStatus != "" {
+		err = p.WriteString(2, st.SStatus)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SUserId != "" {
+		err = p.WriteString(3, st.SUserId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SPaymentCode != "" {
+		err = p.WriteString(4, st.SPaymentCode)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IRetryCount != 0 {
+		err = p.WriteUint32(5, st.IRetryCount)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SCustom != "" {
+		err = p.WriteString(6, st.SCustom)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SError != "" {
+		err = p.WriteString(7, st.SError)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SCreatedAt != "" {
+		err = p.WriteString(8, st.SCreatedAt)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SUpdatedAt != "" {
+		err = p.WriteString(9, st.SUpdatedAt)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SItemCode != "" {
+		err = p.WriteString(10, st.SItemCode)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SItemName != "" {
+		err = p.WriteString(11, st.SItemName)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SItemDesc != "" {
+		err = p.WriteString(12, st.SItemDesc)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IItemAmt != 0 {
+		err = p.WriteUint32(13, st.IItemAmt)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IItemQty != 0 {
+		err = p.WriteUint32(14, st.IItemQty)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IItemTaxamt != 0 {
+		err = p.WriteUint32(15, st.IItemTaxamt)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SItemUrl != "" {
+		err = p.WriteString(16, st.SItemUrl)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SItemCreatedAt != "" {
+		err = p.WriteString(17, st.SItemCreatedAt)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SItemUpdatedAt != "" {
+		err = p.WriteString(18, st.SItemUpdatedAt)
+		if err != nil {
+			return err
+		}
+	}
+
+	_ = length
+	return err
+}
+func (st *G123Receipt) WriteStructFromTag(p *codec.Packer, tag uint32, require bool) error {
+	var err error
+
+	if require {
+		err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+		if err != nil {
+			return err
+		}
+		err = st.WriteStruct(p)
+		if err != nil {
+			return err
+		}
+		err = p.WriteHeader(0, codec.SdpType_StructEnd)
+		if err != nil {
+			return err
+		}
+	} else {
+		p2 := codec.NewPacker()
+		err = st.WriteStruct(p2)
+		if err != nil {
+			return err
+		}
+		if p2.Len() != 0 {
+			err = p.WriteHeader(tag, codec.SdpType_StructBegin)
+			if err != nil {
+				return err
+			}
+			err = p.WriteData(p2.ToBytes())
+			if err != nil {
+				return err
+			}
+			err = p.WriteHeader(0, codec.SdpType_StructEnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 type IAPReceiptInAll struct {
-	IReceiptType      uint32          `json:"iReceiptType" form:"iReceiptType"`
-	StStatus          IAPStatus       `json:"stStatus" form:"stStatus"`
-	StAppleReceipt    AppleReceipt    `json:"stAppleReceipt" form:"stAppleReceipt"`
-	StGoogleReceipt   GoogleReceipt   `json:"stGoogleReceipt" form:"stGoogleReceipt"`
-	StFyReceipt       FyReceipt       `json:"stFyReceipt" form:"stFyReceipt"`
-	StHeePayReceipt   HeePayReceipt   `json:"stHeePayReceipt" form:"stHeePayReceipt"`
-	StHeePayH5Receipt HeePayH5Receipt `json:"stHeePayH5Receipt" form:"stHeePayH5Receipt"`
-	StGameHubReceipt  GameHubReceipt  `json:"stGameHubReceipt" form:"stGameHubReceipt"`
+	IReceiptType  uint32      `json:"iReceiptType" form:"iReceiptType"`
+	StStatus      IAPStatus   `json:"stStatus" form:"stStatus"`
+	StG123Receipt G123Receipt `json:"stG123Receipt" form:"stG123Receipt"`
 }
 
 func (st *IAPReceiptInAll) resetDefault() {
 	st.StStatus.resetDefault()
-	st.StAppleReceipt.resetDefault()
-	st.StGoogleReceipt.resetDefault()
-	st.StFyReceipt.resetDefault()
-	st.StHeePayReceipt.resetDefault()
-	st.StHeePayH5Receipt.resetDefault()
-	st.StGameHubReceipt.resetDefault()
+	st.StG123Receipt.resetDefault()
 }
 func (st *IAPReceiptInAll) Copy() *IAPReceiptInAll {
 	ret := NewIAPReceiptInAll()
 	ret.IReceiptType = st.IReceiptType
 	ret.StStatus = *(st.StStatus.Copy())
-	ret.StAppleReceipt = *(st.StAppleReceipt.Copy())
-	ret.StGoogleReceipt = *(st.StGoogleReceipt.Copy())
-	ret.StFyReceipt = *(st.StFyReceipt.Copy())
-	ret.StHeePayReceipt = *(st.StHeePayReceipt.Copy())
-	ret.StHeePayH5Receipt = *(st.StHeePayH5Receipt.Copy())
-	ret.StGameHubReceipt = *(st.StGameHubReceipt.Copy())
+	ret.StG123Receipt = *(st.StG123Receipt.Copy())
 	return ret
 }
 func NewIAPReceiptInAll() *IAPReceiptInAll {
@@ -3130,23 +3625,8 @@ func (st *IAPReceiptInAll) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("stStatus")+"{\n")
 	st.StStatus.Visit(buff, t+1+1)
 	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stAppleReceipt")+"{\n")
-	st.StAppleReceipt.Visit(buff, t+1+1)
-	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stGoogleReceipt")+"{\n")
-	st.StGoogleReceipt.Visit(buff, t+1+1)
-	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stFyReceipt")+"{\n")
-	st.StFyReceipt.Visit(buff, t+1+1)
-	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stHeePayReceipt")+"{\n")
-	st.StHeePayReceipt.Visit(buff, t+1+1)
-	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stHeePayH5Receipt")+"{\n")
-	st.StHeePayH5Receipt.Visit(buff, t+1+1)
-	util.Tab(buff, t+1, "}\n")
-	util.Tab(buff, t+1, util.Fieldname("stGameHubReceipt")+"{\n")
-	st.StGameHubReceipt.Visit(buff, t+1+1)
+	util.Tab(buff, t+1, util.Fieldname("stG123Receipt")+"{\n")
+	st.StG123Receipt.Visit(buff, t+1+1)
 	util.Tab(buff, t+1, "}\n")
 }
 func (st *IAPReceiptInAll) ReadStruct(up *codec.UnPacker) error {
@@ -3163,27 +3643,7 @@ func (st *IAPReceiptInAll) ReadStruct(up *codec.UnPacker) error {
 	if err != nil {
 		return err
 	}
-	err = st.StAppleReceipt.ReadStructFromTag(up, 2, false)
-	if err != nil {
-		return err
-	}
-	err = st.StGoogleReceipt.ReadStructFromTag(up, 3, false)
-	if err != nil {
-		return err
-	}
-	err = st.StFyReceipt.ReadStructFromTag(up, 4, false)
-	if err != nil {
-		return err
-	}
-	err = st.StHeePayReceipt.ReadStructFromTag(up, 5, false)
-	if err != nil {
-		return err
-	}
-	err = st.StHeePayH5Receipt.ReadStructFromTag(up, 6, false)
-	if err != nil {
-		return err
-	}
-	err = st.StGameHubReceipt.ReadStructFromTag(up, 7, false)
+	err = st.StG123Receipt.ReadStructFromTag(up, 8, false)
 	if err != nil {
 		return err
 	}
@@ -3234,27 +3694,7 @@ func (st *IAPReceiptInAll) WriteStruct(p *codec.Packer) error {
 	if err != nil {
 		return err
 	}
-	err = st.StAppleReceipt.WriteStructFromTag(p, 2, false)
-	if err != nil {
-		return err
-	}
-	err = st.StGoogleReceipt.WriteStructFromTag(p, 3, false)
-	if err != nil {
-		return err
-	}
-	err = st.StFyReceipt.WriteStructFromTag(p, 4, false)
-	if err != nil {
-		return err
-	}
-	err = st.StHeePayReceipt.WriteStructFromTag(p, 5, false)
-	if err != nil {
-		return err
-	}
-	err = st.StHeePayH5Receipt.WriteStructFromTag(p, 6, false)
-	if err != nil {
-		return err
-	}
-	err = st.StGameHubReceipt.WriteStructFromTag(p, 7, false)
+	err = st.StG123Receipt.WriteStructFromTag(p, 8, false)
 	if err != nil {
 		return err
 	}
@@ -3969,6 +4409,32 @@ func (s *IAPService) DeliverGameHubReceipt(iRoleId uint64, iZoneId uint32, stPur
 	_ = length
 	return ret, nil
 }
+func (s *IAPService) DeliverG123Receipt(stPurchase G123Purchase) (int32, error) {
+	p := codec.NewPacker()
+	var ret int32
+	var err error
+	var has bool
+	var ty uint32
+	var length uint32
+	err = stPurchase.WriteStructFromTag(p, 1, true)
+	if err != nil {
+		return ret, err
+	}
+	var rsp *protocol.ResponsePacket
+	err = s.proxy.Invoke("deliverG123Receipt", p.ToBytes(), &rsp)
+	if err != nil {
+		return ret, err
+	}
+	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
+	err = up.ReadInt32(&ret, 0, true)
+	if err != nil {
+		return ret, err
+	}
+	_ = has
+	_ = ty
+	_ = length
+	return ret, nil
+}
 func (s *IAPService) GetReceiptStatusByFlow(sFlowId string, stIAPReceiptInAll *IAPReceiptInAll) (int32, error) {
 	p := codec.NewPacker()
 	var ret int32
@@ -3995,54 +4461,6 @@ func (s *IAPService) GetReceiptStatusByFlow(sFlowId string, stIAPReceiptInAll *I
 	err = (*stIAPReceiptInAll).ReadStructFromTag(up, 2, true)
 	if err != nil {
 		return ret, err
-	}
-	_ = has
-	_ = ty
-	_ = length
-	return ret, nil
-}
-func (s *IAPService) GetReceiptStatusList(stQueryParam ReceiptQueryParam, vIAPReceiptInAll *[]IAPReceiptInAll) (int32, error) {
-	p := codec.NewPacker()
-	var ret int32
-	var err error
-	var has bool
-	var ty uint32
-	var length uint32
-	err = stQueryParam.WriteStructFromTag(p, 1, true)
-	if err != nil {
-		return ret, err
-	}
-	var rsp *protocol.ResponsePacket
-	err = s.proxy.Invoke("getReceiptStatusList", p.ToBytes(), &rsp)
-	if err != nil {
-		return ret, err
-	}
-	up := codec.NewUnPacker([]byte(rsp.SRspPayload))
-	err = up.ReadInt32(&ret, 0, true)
-	if err != nil {
-		return ret, err
-	}
-
-	has, ty, err = up.SkipToTag(2, true)
-	if err != nil {
-		return ret, err
-	}
-	if has {
-		if ty != codec.SdpType_Vector {
-			return ret, fmt.Errorf("tag:%d got wrong type %d", 2, ty)
-		}
-
-		_, length, err = up.ReadNumber32()
-		if err != nil {
-			return ret, err
-		}
-		(*vIAPReceiptInAll) = make([]IAPReceiptInAll, length, length)
-		for i := uint32(0); i < length; i++ {
-			err = (*vIAPReceiptInAll)[i].ReadStructFromTag(up, 0, true)
-			if err != nil {
-				return ret, err
-			}
-		}
 	}
 	_ = has
 	_ = ty
@@ -4124,8 +4542,8 @@ type _IAPServiceImpl interface {
 	DeliverHeePayReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase HeePayPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
 	DeliverHeePayH5Receipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase HeePayH5Purchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
 	DeliverGameHubReceipt(ctx context.Context, iRoleId uint64, iZoneId uint32, stPurchase GameHubPurchase, iProxyRoleId uint64, iProxyZoneId uint32) (int32, error)
+	DeliverG123Receipt(ctx context.Context, stPurchase G123Purchase) (int32, error)
 	GetReceiptStatusByFlow(ctx context.Context, sFlowId string, stIAPReceiptInAll *IAPReceiptInAll) (int32, error)
-	GetReceiptStatusList(ctx context.Context, stQueryParam ReceiptQueryParam, vIAPReceiptInAll *[]IAPReceiptInAll) (int32, error)
 	CreateOrder(ctx context.Context, iReceiptType uint32, sFlowId string, iProductId uint32, iRoleId uint64, iZoneId uint32, sPayload string, stOrder *IAPTmpOrder) (int32, error)
 }
 
@@ -4600,6 +5018,33 @@ func _IAPServiceDeliverGameHubReceiptImpl(ctx context.Context, serviceImpl inter
 	_ = has
 	return nil
 }
+func _IAPServiceDeliverG123ReceiptImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
+	var err error
+	var length uint32
+	var ty uint32
+	var has bool
+	impl := serviceImpl.(_IAPServiceImpl)
+	var p1 G123Purchase
+	err = p1.ReadStructFromTag(up, 1, true)
+	if err != nil {
+		return err
+	}
+	var ret int32
+	ret, err = impl.DeliverG123Receipt(ctx, p1)
+	if err != nil {
+		return err
+	}
+	if true || ret != 0 {
+		err = p.WriteInt32(0, ret)
+		if err != nil {
+			return err
+		}
+	}
+	_ = length
+	_ = ty
+	_ = has
+	return nil
+}
 func _IAPServiceGetReceiptStatusByFlowImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
 	var err error
 	var length uint32
@@ -4626,52 +5071,6 @@ func _IAPServiceGetReceiptStatusByFlowImpl(ctx context.Context, serviceImpl inte
 	err = p2.WriteStructFromTag(p, 2, true)
 	if err != nil {
 		return err
-	}
-	_ = length
-	_ = ty
-	_ = has
-	return nil
-}
-func _IAPServiceGetReceiptStatusListImpl(ctx context.Context, serviceImpl interface{}, up *codec.UnPacker, p *codec.Packer) error {
-	var err error
-	var length uint32
-	var ty uint32
-	var has bool
-	impl := serviceImpl.(_IAPServiceImpl)
-	var p1 ReceiptQueryParam
-	err = p1.ReadStructFromTag(up, 1, true)
-	if err != nil {
-		return err
-	}
-	var p2 []IAPReceiptInAll
-	var ret int32
-	ret, err = impl.GetReceiptStatusList(ctx, p1, &p2)
-	if err != nil {
-		return err
-	}
-	if true || ret != 0 {
-		err = p.WriteInt32(0, ret)
-		if err != nil {
-			return err
-		}
-	}
-
-	length = uint32(len(p2))
-	if true || length != 0 {
-		err = p.WriteHeader(2, codec.SdpType_Vector)
-		if err != nil {
-			return err
-		}
-		err = p.WriteNumber32(length)
-		if err != nil {
-			return err
-		}
-		for _, v := range p2 {
-			err = v.WriteStructFromTag(p, 0, true)
-			if err != nil {
-				return err
-			}
-		}
 	}
 	_ = length
 	_ = ty
@@ -4813,14 +5212,14 @@ func (s *IAPService) Dispatch(ctx context.Context, serviceImpl interface{}, req 
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
-	case "getReceiptStatusByFlow":
-		err = _IAPServiceGetReceiptStatusByFlowImpl(ctx, serviceImpl, up, p)
+	case "deliverG123Receipt":
+		err = _IAPServiceDeliverG123ReceiptImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}
 		texret = protocol.SDPSERVERSUCCESS
-	case "getReceiptStatusList":
-		err = _IAPServiceGetReceiptStatusListImpl(ctx, serviceImpl, up, p)
+	case "getReceiptStatusByFlow":
+		err = _IAPServiceGetReceiptStatusByFlowImpl(ctx, serviceImpl, up, p)
 		if err != nil {
 			break
 		}

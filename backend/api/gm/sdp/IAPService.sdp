@@ -3,40 +3,42 @@ module rpc
 
 enum IAPReceiptType
 {
-	IAPReceiptType_Apple				= 1,
-	IAPReceiptType_Google				= 2,
-	IAPReceiptType_Fy				    = 3,
+    IAPReceiptType_Apple                = 1,
+    IAPReceiptType_Google                = 2,
+    IAPReceiptType_Fy                    = 3,
     IAPReceiptType_HeePay               = 4,
     IAPReceiptType_HeePayH5             = 5,
     IAPReceiptType_GameHub              = 6,
+    IAPReceiptType_G123                 = 7,
 };
 
 enum IAPReceiptStatus
 {
-	IAPReceiptStatus_Pending			= 1,
-	IAPReceiptStatus_Verify_Fail		= 2,
-	IAPReceiptStatus_Delivering			= 3,
-	IAPReceiptStatus_Deliver_Success	= 4,
-	IAPReceiptStatus_Deliver_Fail		= 5,
+    IAPReceiptStatus_Pending            = 1,
+    IAPReceiptStatus_Verify_Fail        = 2,
+    IAPReceiptStatus_Delivering            = 3,
+    IAPReceiptStatus_Deliver_Success    = 4,
+    IAPReceiptStatus_Deliver_Fail        = 5,
 };
 
 struct IAPStatus
 {
-	0	optional	unsigned int		iReceiptId;
-	1	optional	unsigned int		iReceiptStatus;
-	2	optional	unsigned long		iDeliverRoleId;
-	3	optional	unsigned int		iDeliverZoneId;
-	4	optional	unsigned long		iProxyRoleId;
-	5	optional	unsigned int		iProxyZoneId;
-	6	optional	unsigned int		iAddTime;
-	7	optional 	unsigned int		iVerifyTime;
-	8	optional 	unsigned int		iDeliverTime;
-	9	optional 	unsigned int		iRetryNum;
-	10	optional 	unsigned int		iNextTryTime;
-	11	optional	string				sFailReason;
-	12	optional	string				sDeliverItem;
-	13	optional	string				sTraceProductId;
-	14	optional	string				sTraceFlowId;
+    0    optional    unsigned int        iReceiptId;
+    1    optional    unsigned int        iReceiptStatus;
+    2    optional    unsigned long        iDeliverRoleId;
+    3    optional    unsigned int        iDeliverZoneId;
+    4    optional    unsigned long        iProxyRoleId;
+    5    optional    unsigned int        iProxyZoneId;
+    6    optional    unsigned int        iAddTime;
+    7    optional     unsigned int        iVerifyTime;
+    8    optional     unsigned int        iDeliverTime;
+    9    optional     unsigned int        iNotifyTime;
+    10    optional     unsigned int        iRetryNum;
+    11    optional     unsigned int        iNextTryTime;
+    12    optional    string                sFailReason;
+    13    optional    string                sDeliverItem;
+    14    optional    string                sTraceProductId;
+    15    optional    string                sTraceFlowId;
 };
 
 struct IAPTmpOrder
@@ -52,62 +54,62 @@ struct IAPTmpOrder
 
 struct ApplePurchase
 {
-	0	optional	string				sReceiptData;
-	
-	10	optional string					sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
-	11	optional string					sTraceFlowId;
+    0    optional    string                sReceiptData;
+    
+    10    optional string                    sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
+    11    optional string                    sTraceFlowId;
 };
 
 struct AppleReceipt
 {
-	0 	optional	unsigned int		iQuantity;				//购买数量
-	1	optional 	string				sProductId;				//商品id
-	2	optional 	string				sTransactionId;			//交易id
-	3	optional 	unsigned int		iPurchaseDate;			//购买日期
-	4	optional 	string				sBId;					//app的bundle id
-	5	optional	string				sBVrs;					//app的版本号
-	6 	optional	string				sOriTransactionId;		//原始交易id，用于恢复以前的交易
-	7	optional	unsigned int		iOriPurchaseDate;		//原始购买日期，用于恢复以前的交易
-	8	optional	string				sAppItemId;				//app交易唯一标识，用于支持多个app，sandbox没有
-	9	optional	string				sVersionExternalId;		//app修订唯一标识，sandbox没有
+    0     optional    unsigned int        iQuantity;                //购买数量
+    1    optional     string                sProductId;                //商品id
+    2    optional     string                sTransactionId;            //交易id
+    3    optional     unsigned int        iPurchaseDate;            //购买日期
+    4    optional     string                sBId;                    //app的bundle id
+    5    optional    string                sBVrs;                    //app的版本号
+    6     optional    string                sOriTransactionId;        //原始交易id，用于恢复以前的交易
+    7    optional    unsigned int        iOriPurchaseDate;        //原始购买日期，用于恢复以前的交易
+    8    optional    string                sAppItemId;                //app交易唯一标识，用于支持多个app，sandbox没有
+    9    optional    string                sVersionExternalId;        //app修订唯一标识，sandbox没有
 };
 
 struct GooglePurchase
 {
-	0	optional	int					iResponseCode;
-	1	optional	string				sPurchaseData;
-	2	optional	string				sSignature;
-	
-	10	optional string					sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
-	11	optional string					sTraceFlowId;
+    0    optional    int                    iResponseCode;
+    1    optional    string                sPurchaseData;
+    2    optional    string                sSignature;
+    
+    10    optional string                    sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
+    11    optional string                    sTraceFlowId;
 };
 
 struct GoogleReceipt
 {
-	0	optional	string				sOrderId;
-	1	optional	string				sProductId;
-	2	optional	string				sPackageName;
-	3	optional	unsigned int		iPurchaseTime;
-	4	optional	unsigned int		iPurchaseState;
-	5	optional	string				sDeveloperPayload;
-	6	optional	string				sPurchaseToken;
-	7	optional	bool				bAutoRenewing;
+    0    optional    string                sOrderId;
+    1    optional    string                sProductId;
+    2    optional    string                sPackageName;
+    3    optional    unsigned int        iPurchaseTime;
+    4    optional    unsigned int        iPurchaseState;
+    5    optional    string                sDeveloperPayload;
+    6    optional    string                sPurchaseToken;
+    7    optional    bool                bAutoRenewing;
 };
 
 struct FyPurchase
 {
-	1	optional	string				sPurchaseData;
-	2	optional	string				sSignature;
+    1    optional    string                sPurchaseData;
+    2    optional    string                sSignature;
     3   optional    unsigned int        iConnId;
     4   optional    string              sChannel;
-	
-	10	optional string					sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
-	11	optional string					sTraceFlowId;
+    
+    10    optional string                    sTraceProductId; // 仅用于跟踪交易，不会作为发货依据
+    11    optional string                    sTraceFlowId;
 };
 
 struct FyReceipt
 {
-	0	optional	string				sOrderId;
+    0    optional    string                sOrderId;
     1   optional    string              sUuid;
     2   optional    string              sAppCallbackExt;
     3   optional    unsigned int        iPayAmount;         
@@ -202,47 +204,72 @@ struct GameHubReceipt
     10  optional    unsigned int iIsTest;
 };
 
+struct G123Purchase
+{
+    0   optional    string sOrderNo;
+    2   optional    unsigned int    iConnId;
+    3   optional    string sChannel;
+};
+
+struct G123Receipt
+{
+    0   optional    string sOrderNo;
+    1   optional    string sAppCode;
+    2   optional    string sStatus;
+    3   optional    string sUserId;
+    4   optional    string sPaymentCode;
+    5   optional    unsigned int iRetryCount;
+    6   optional    string sCustom;
+    7   optional    string sError;
+    8   optional    string sCreatedAt;
+    9   optional    string sUpdatedAt;
+    10  optional    string sItemCode;
+    11  optional    string sItemName;
+    12  optional    string sItemDesc;
+    13  optional    unsigned int iItemAmt;
+    14  optional    unsigned int iItemQty;
+    15  optional    unsigned int iItemTaxamt;
+    16  optional    string sItemUrl;
+    17  optional    string sItemCreatedAt;
+    18  optional    string sItemUpdatedAt;
+};
+
 struct IAPReceiptInAll
 {
-	0	optional	unsigned int		iReceiptType;
-	1	optional	IAPStatus			stStatus;
-	2	optional	AppleReceipt		stAppleReceipt;
-	3	optional	GoogleReceipt		stGoogleReceipt;
-	4	optional	FyReceipt		    stFyReceipt;
-    5   optional    HeePayReceipt       stHeePayReceipt;
-    6   optional    HeePayH5Receipt     stHeePayH5Receipt;
-    7   optional    GameHubReceipt      stGameHubReceipt;
+    0    optional    unsigned int        iReceiptType;
+    1    optional    IAPStatus            stStatus;
+    8   optional    G123Receipt         stG123Receipt;
 };
 
 struct ReceiptQueryParam
 {
-	0	optional	unsigned int		iDeliverZoneId;
-	1	optional	unsigned long		iDeliverRoleId;
-	2	optional	unsigned int		iReceiptType;
-	3	optional	unsigned int		iReceiptStatus;
-	4	optional	unsigned int		iAddTimeBegin;
-	5	optional	unsigned int		iAddTimeEnd;
+    0    optional    unsigned int        iDeliverZoneId;
+    1    optional    unsigned long        iDeliverRoleId;
+    2    optional    unsigned int        iReceiptType;
+    3    optional    unsigned int        iReceiptStatus;
+    4    optional    unsigned int        iAddTimeBegin;
+    5    optional    unsigned int        iAddTimeEnd;
 };
 
 interface IAPService
 {
-	int verifyAppleReceipt(ApplePurchase stPurchase, out AppleReceipt stReceipt, out string sErrorInfo);
-	int deliverAppleReceipt(unsigned long iRoleId, unsigned int iZoneId, ApplePurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
-	int getAppleReceiptStatus(ApplePurchase stPurchase, out AppleReceipt stReceipt, out IAPStatus stStatus);
-	int getTransactionStatus(string sTransactionId, out AppleReceipt stReceipt, out IAPStatus stStatus);
-	
-	int verifyGoogleReceipt(GooglePurchase stPurchase, out GoogleReceipt stReceipt, out string sErrorInfo);
-	int deliverGoogleReceipt(unsigned long iRoleId, unsigned int iZoneId, GooglePurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
-	int getGoogleReceiptStatus(string sOrderId, out GoogleReceipt stReceipt, out IAPStatus stStatus);
+    int verifyAppleReceipt(ApplePurchase stPurchase, out AppleReceipt stReceipt, out string sErrorInfo);
+    int deliverAppleReceipt(unsigned long iRoleId, unsigned int iZoneId, ApplePurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+    int getAppleReceiptStatus(ApplePurchase stPurchase, out AppleReceipt stReceipt, out IAPStatus stStatus);
+    int getTransactionStatus(string sTransactionId, out AppleReceipt stReceipt, out IAPStatus stStatus);
+    
+    int verifyGoogleReceipt(GooglePurchase stPurchase, out GoogleReceipt stReceipt, out string sErrorInfo);
+    int deliverGoogleReceipt(unsigned long iRoleId, unsigned int iZoneId, GooglePurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+    int getGoogleReceiptStatus(string sOrderId, out GoogleReceipt stReceipt, out IAPStatus stStatus);
 
-	int deliverFyReceipt(unsigned long iRoleId, unsigned int iZoneId, FyPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+    int deliverFyReceipt(unsigned long iRoleId, unsigned int iZoneId, FyPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
     int deliverHeePayReceipt(unsigned long iRoleId, unsigned int iZoneId, HeePayPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
     int deliverHeePayH5Receipt(unsigned long iRoleId, unsigned int iZoneId, HeePayH5Purchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
     int deliverGameHubReceipt(unsigned long iRoleId, unsigned int iZoneId, GameHubPurchase stPurchase, unsigned long iProxyRoleId, unsigned int iProxyZoneId);
+    int deliverG123Receipt(G123Purchase stPurchase);
 
-	int getReceiptStatusByFlow(string sFlowId, out IAPReceiptInAll stIAPReceiptInAll);
-	int getReceiptStatusList(ReceiptQueryParam stQueryParam, out vector<IAPReceiptInAll> vIAPReceiptInAll);
-	int createOrder(unsigned int iReceiptType, string sFlowId, unsigned int iProductId, unsigned long iRoleId, unsigned int iZoneId, string sPayload, out IAPTmpOrder stOrder);
+    int getReceiptStatusByFlow(string sFlowId, out IAPReceiptInAll stIAPReceiptInAll);
+    int createOrder(unsigned int iReceiptType, string sFlowId, unsigned int iProductId, unsigned long iRoleId, unsigned int iZoneId, string sPayload, out IAPTmpOrder stOrder);
 };
 
 };
