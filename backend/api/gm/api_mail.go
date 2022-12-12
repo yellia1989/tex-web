@@ -1,6 +1,7 @@
 package gm
 
 import (
+    "fmt"
     "sort"
     "time"
     "strings"
@@ -280,8 +281,14 @@ func MailSend2(c echo.Context) error {
             // 格式错误直接忽略
             continue
         }
-        zoneid,_ := strconv.Atoi(tmp[0])
-        roleid,_ := strconv.ParseUint(tmp[1], 10, 64)
+        zoneid := 0
+        if zoneid,err = strconv.Atoi(tmp[0]); err != nil {
+            return fmt.Errorf("非法的分区id")
+        }
+        roleid := uint64(0)
+        if roleid,err = strconv.ParseUint(tmp[1], 10, 64); err != nil {
+            return fmt.Errorf("非法的角色id")
+        }
         item1 := strings.Split(tmp[2], ";")
         m.VItems = m.VItems[:0]
         for _,v := range item1 {
@@ -291,8 +298,10 @@ func MailSend2(c echo.Context) error {
             m.VItems = append(m.VItems, rpc.CmdIDNum{IId:uint32(id), INum: uint32(num)})
         }
 
-        m.VSendZoneIds = []uint32{uint32(zoneid)}
-        m.VToUser = []uint64{roleid}
+        m.VSendZoneIds = m.VSendZoneIds[:0]
+        m.VSendZoneIds = append(m.VSendZoneIds, uint32(zoneid))
+        m.VToUser = m.VToUser[:0]
+        m.VToUser = append(m.VToUser, uint64(roleid))
 
         ret, err := mailPrx.AddMail(*m.Copy())
         if err := checkRet(ret, err); err != nil {
