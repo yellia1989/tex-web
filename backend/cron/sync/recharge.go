@@ -42,7 +42,7 @@ func (t *recharge) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk ui
         }
     }
 
-    rows, err := from.QueryContext(ctx, "SELECT _rid,roleid,time,usercreatetime,productid,price,moneytotal FROM iap_recharge WHERE _rid > ? order by _rid limit 10000", t.rid)
+    rows, err := from.QueryContext(ctx, "SELECT _rid,roleid,time,usercreatetime,product_id,price,moneytotal FROM iap_recharge WHERE _rid > ? order by _rid limit 10000", t.rid)
     if err != nil {
         return fmt.Errorf("cron [sync][recharge] query err: %s, zoneid: %d", err.Error(), zoneid)
     }
