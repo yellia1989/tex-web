@@ -48,6 +48,9 @@ var LogDbPwd string
 // 游戏全局数据库
 var GameGlobalDb *sql.DB
 
+// 服务器全局数据库
+var ServerGlobalDb *sql.DB
+
 // 统计数据库
 var StatDb *sql.DB
 
@@ -134,6 +137,15 @@ func ParseCfg(file string) (err error) {
     GameGlobalDb, err = sql.Open("mysql", gameglobaldb)
     if err != nil {
         panic(fmt.Sprintf("create game global db err: %s", err.Error()))
+    }
+
+    serverglobaldb := cfg.GetCfg("serverglobaldb", "")
+    if len(serverglobaldb) == 0 {
+        panic("serverglobaldb required")
+    }
+    ServerGlobalDb, err = sql.Open("mysql", serverglobaldb)
+    if err != nil {
+        panic(fmt.Sprintf("create server global db err: %s", err.Error()))
     }
 
     statdb := cfg.GetCfg("statdb", "")

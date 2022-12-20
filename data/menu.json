@@ -250,6 +250,16 @@
             "children": null
           }
         ]
+      },
+      {
+        "id": 216,
+        "title": "自动开服管理",
+        "href": "gm/auto-open-server.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": true,
+        "children": null
       }
     ]
   },
