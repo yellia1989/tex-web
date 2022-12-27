@@ -5,6 +5,7 @@ import (
     "github.com/labstack/echo/v4"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-web/backend/cfg"
+    "strings"
 )
 
 type AutoOpenServer struct {
@@ -98,15 +99,21 @@ func AutoOpenServerDel(c echo.Context) error {
 		return ctx.SendError(-1, "参数非法")
     }
 
+  zoneids := strings.Split(zoneid, ",")
+
 	db := cfg.ServerGlobalDb
 	if db == nil {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-    _, err := db.Exec("DELETE FROM t_kaifu WHERE zoneid IN (?)", zoneid)
-	if err != nil {
-		return err
-	}
+  for _, zone := range zoneids {
+      _, err := db.Exec("DELETE FROM t_kaifu WHERE zoneid IN (?)", zone)
+	  if err != nil {
+	  	return err
+	  }
+  }
+
+
 
     return ctx.SendResponse("删除服务器成功")
 }
