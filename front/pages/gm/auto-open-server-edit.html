@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>编辑自动开服</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <label class="layui-form-label">分区ID</label>
+          <div class="layui-input-inline">
+            <input type="text" name="iZoneId" placeholder="请输入分区ID" autocomplete="off" class="layui-input"
+              lay-verify="required|integer" lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">分区节点</label>
+          <div class="layui-input-inline">
+            <input type="text" name="sNode" placeholder="请输入节点" autocomplete="off" class="layui-input" lay-verify="required"
+              lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">数据库信息</label>
+          <div class="layui-input-inline">
+            <input type="text" name="sDBInfo" class="layui-input" lay-verify="required" lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">服务器地址</label>
+          <div class="layui-input-inline">
+            <input type="text" name="sConnaddr" class="layui-input" lay-verify="required" lay-verType="tips">
+          </div>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <label class="layui-form-label">最大创角</label>
+          <div class="layui-input-inline">
+            <input type="text" name="iMaxNum" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
+              lay-verify="required|number" lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">最大在线</label>
+          <div class="layui-input-inline">
+            <input type="text" name="iMaxOnline" placeholder="请输入最大人数" autocomplete="off" class="layui-input"
+              lay-verify="required|number" lay-verType="tips">
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">自动开服人数</label>
+          <div class="layui-input-inline">
+            <input type="text" name="iOpenServerNum" placeholder="请输入满多少人自动开启下一个服务器" autocomplete="off" class="layui-input"
+              lay-verify="required|number" lay-verType="tips">
+          </div>
+        </div>
+      </div>
+      <div class="layui-form-item" id="versionFlag">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="add">更新</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    // https://www.layui.com/doc/modules/form.html
+    layui.use(['form', 'laydate', 'okUtils', 'okLayer'], function () {
+      let form = layui.form;
+      let laydate = layui.laydate;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      $("input[name='iZoneId']").val(parent.zonedata.iZoneId);
+      $("input[name='sNode']").val(parent.zonedata.sNode);
+      $("input[name='sDBInfo']").val(parent.zonedata.sDBInfo);
+      $("input[name='sConnaddr']").val(parent.zonedata.sConnaddr);
+      $("input[name='iMaxNum']").val(parent.zonedata.iMaxNum);
+      $("input[name='iMaxOnline']").val(parent.zonedata.iMaxOnline);
+      $("input[name='iOpenServerNum']").val(parent.zonedata.iOpenServerNum);
+      form.render('select');
+
+      //监听提交
+      form.on('submit(add)', function (data) {
+        okUtils.ajax("/api/gm/autoOpenServer/update", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>
