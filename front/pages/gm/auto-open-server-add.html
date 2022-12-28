@@ -77,7 +77,7 @@
       form.on('submit(add)', function(data){
         okUtils.ajax("/api/gm/autoOpenServer/add", "post", data.field, true).done(function (response) {
           okLayer.greenTickMsg(response.data, function () {
-			  		parent.layer.close(parent.layer.getFrameIndex(window.name));
+			  		//parent.layer.close(parent.layer.getFrameIndex(window.name));
 			  	});
 		    }).fail(function (error) {
             console.log(error);
