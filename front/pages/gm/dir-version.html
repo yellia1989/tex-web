@@ -12,6 +12,7 @@
       padding-left: 10px;
       overflow: hidden;
     }
+
   </style>
 </head>
 
@@ -26,9 +27,44 @@
           </div>
         </div>
       </div>
+
+      <div class="layui-form-item">
+        <div class="layui-inline">
+          <label class="layui-form-label">分区标识</label>
+          <div class="layui-input-inline">
+            <select name="iZoneFlag">
+              <option value="1">正常</option>
+              <option value="2">新区</option>
+              <option value="3">关闭</option>
+              <option value="4">审核</option>
+            </select>
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">是否手动</label>
+          <div class="layui-input-inline">
+            <select name="iIsManual">
+              <option value="0">否</option>
+              <option value="1">是</option>
+            </select>
+          </div>
+        </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">手动状态</label>
+          <div class="layui-input-inline">
+            <select name="iManualZoneStatus">
+              <option value="1">流畅</option>
+              <option value="2">忙碌</option>
+              <option value="3">爆满</option>
+              <option value="4">维护</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="layui-form-item" id="versionFlag">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="add">更新版本号</button>
+          <button class="layui-btn" lay-submit lay-filter="add">更新信息</button>
         </div>
       </div>
     </form>
@@ -88,7 +124,7 @@
         }
       });
 
-      okUtils.ajax("/api/gm/zone/simplelist", "get", {game: true}, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", { game: true }, false).done(function (response) {
         zoneSelect.update({
           data: response.data["game"],
           initValue: parent.zoneids.split(","),
@@ -102,7 +138,7 @@
         console.log(error);
       });
 
-		  okUtils.ajax("/api/gm/channel/list", "get", {page:1, limit: 1000}, false).done(function (response) {
+      okUtils.ajax("/api/gm/channel/list", "get", { page: 1, limit: 1000 }, false).done(function (response) {
         let channelHtml = '';
         for (i = 0; i < response.data.length; ++i) {
           let channel = response.data[i];
@@ -112,9 +148,9 @@
           $("#versionFlag").before(channelHtml);
           form.render();
         }
-		  }).fail(function (error) {
-			  console.log(error)
-		  });
+      }).fail(function (error) {
+        console.log(error)
+      });
 
       //监听提交
       form.on('submit(add)', function (data) {

@@ -58,26 +58,26 @@ func (l *login) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint3
             return fmt.Errorf("cron [sync][login] scan err: %s, zoneid: %d", err.Error(), zoneid)
         }
         t := common.ParseTimeInLocal("2006-01-02 15:04:05", st)
-        regt := common.ParseTimeInLocal("2006-01-02 15:04:05", regst)
+        //regt := common.ParseTimeInLocal("2006-01-02 15:04:05", regst)
         d := date.Get(t)
         if d == nil {
             return nil
         }
         account := acc.Get(roleid)
         if account == nil {
-            if isAccountMissed(regt) {
+            //if isAccountMissed(regt) {
                 log.Errorf("cron [sync][login] can't find account, accountid: %d", roleid)
                 continue
-            }
-            return nil
+            //}
+            //return nil
         }
         r := rrole.Get(zoneidFk, account.Id)
         if r == nil {
-            if isRoleMissed(regt) {
+            //if isRoleMissed(regt) {
                 log.Errorf("cron [sync][login] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
                 continue
-            }
-            return nil
+            //}
+            //return nil
         }
         if d.Id < r.RegDateFk {
             // 日志不对

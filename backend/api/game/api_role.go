@@ -17,6 +17,7 @@ import (
 
 type role struct {
     AccountName string `json:"id"`
+    Actorid uint32`json:"actorid"`
     Name string `json:"name"`
     VipLevel uint32 `json:"vip_level"`
     LastLoginTime string `json:"last_login_time"`
@@ -55,7 +56,7 @@ func RoleList(c echo.Context) error {
         return err
     }
 
-    sql := "SELECT accountid,actorname,vip_level,lastonlinetime2,createtime FROM actors"
+    sql := "SELECT accountid,actorid,actorname,vip_level,lastonlinetime2,createtime FROM actors"
     if name != "" {
         accountid, err := strconv.Atoi(name)
         if err == nil && accountid != 0 {
@@ -79,7 +80,7 @@ func RoleList(c echo.Context) error {
     for rows.Next() {
         var r role
         var tmp int64
-        if err := rows.Scan(&r.AccountName, &r.Name, &r.VipLevel, &tmp, &r.RegTime); err != nil {
+        if err := rows.Scan(&r.AccountName, &r.Actorid, &r.Name, &r.VipLevel, &tmp, &r.RegTime); err != nil {
             return err
         }
         r.LastLoginTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(tmp,0))

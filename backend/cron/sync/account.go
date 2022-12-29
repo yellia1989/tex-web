@@ -39,7 +39,7 @@ func (a *account) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uin
         }
     }
     
-    rows, err := from.QueryContext(ctx, "SELECT _rid,time,accountid,ip,ostype FROM account_create WHERE _rid > ? limit 10000", a.rid)
+    rows, err := from.QueryContext(ctx, "SELECT _rid,time,accountid,ip,ostype FROM account_create WHERE _rid > ? order by _rid limit 10000", a.rid)
     if err != nil {
         return fmt.Errorf("cron [sync][account] account_create query err: %s", err.Error())
     }
