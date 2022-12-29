@@ -68,7 +68,7 @@ func (t *recharge) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk ui
             first = 0
         }
         t := common.ParseTimeInLocal("2006-01-02 15:04:05", st)
-        regt := common.ParseTimeInLocal("2006-01-02 15:04:05", regst)
+        //regt := common.ParseTimeInLocal("2006-01-02 15:04:05", regst)
         d := date.Get(t)
         if d == nil {
             // 日期还没准备好
@@ -76,19 +76,19 @@ func (t *recharge) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk ui
         }
         account := acc.Get(roleid)
         if account == nil {
-            if isAccountMissed(regt) {
+            //if isAccountMissed(regt) {
                 log.Errorf("cron [sync][recharge] can't find account, accountid: %d", roleid)
                 continue
-            }
-            return nil
+            //}
+            //return nil
         }
         r := rrole.Get(zoneidFk, account.Id)
         if r == nil {
-            if isRoleMissed(regt) {
+            //if isRoleMissed(regt) {
                 log.Errorf("cron [sync][recharge] can't find role, roleid: %d, reg time: %s, zoneid: %d", roleid, regst, zoneid)
                 continue
-            }
-            return nil
+            //}
+            //return nil
         }
         if d.Id < r.RegDateFk {
             // 日志不对
