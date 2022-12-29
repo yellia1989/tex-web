@@ -41,7 +41,7 @@ func (t *role) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32
         }
     }
     
-    rows, err := from.QueryContext(ctx, "SELECT _rid,zoneid,roleid,time,`first` FROM account_newrole WHERE _rid > ? limit 10000", t.rid)
+    rows, err := from.QueryContext(ctx, "SELECT _rid,zoneid,roleid,time,`first` FROM account_newrole WHERE _rid > ? order by _rid limit 10000", t.rid)
     if err != nil {
         return fmt.Errorf("cron [sync][role] query err: %s", err.Error())
     }
@@ -72,11 +72,11 @@ func (t *role) sync(from *dsql.DB, to *dsql.Conn, zoneid uint32, zoneidFk uint32
         }
         account := acc.Get(roleid)
         if account == nil {
-            if isAccountMissed(t) {
+            //if isAccountMissed(t) {
                 log.Errorf("cron [sync][role] can't find account, accountid: %d", roleid)
                 continue
-            }
-            return nil
+            //}
+            //return nil
         }
         z := zzone.Get(rzoneid)
         if z == nil {
