@@ -12,7 +12,6 @@ import (
     "github.com/yellia1989/tex-web/backend/cron/date"
     "github.com/yellia1989/tex-web/backend/cron/zone"
     "github.com/yellia1989/tex-web/backend/cron/sync"
-    "github.com/yellia1989/tex-web/backend/cron/stat"
     "github.com/yellia1989/tex-web/backend/cron/chat"
 )
 
@@ -110,10 +109,10 @@ func Start() {
     startCron("zone", zone.Cron, time.Second * 5)
 
     // 开启日志
-    startLogSync(time.Second * 5)
+    //startLogSync(time.Second * 5)
 
     // 玩家登陆和充值
-    startCron("stat", stat.Cron, cfg.LogStatInterval)
+    //startCron("stat", stat.Cron, cfg.LogStatInterval)
 
     log.Debug("all cron start")
 }
