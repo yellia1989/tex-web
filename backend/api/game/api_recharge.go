@@ -43,7 +43,7 @@ func RechargeTrace(c echo.Context) error {
 
     flowid := ""
     if orderno != "" {
-        sqltmp := "SELECT flowid FROM iap_recharge WHERE extern_order_id='"+orderno+"' or flowid='" +orderno+ "'"
+        sqltmp := "SELECT flowid FROM iap_trace_buy WHERE extern_order_id='"+orderno+"' or flowid='" +orderno+ "'"
         if db.QueryRow(sqltmp).Scan(&flowid) != nil {
             return ctx.SendError(-1, "没有对应订单")
         }
@@ -113,7 +113,7 @@ func RechargeTrace(c echo.Context) error {
         flowids2 = strconv.AppendUint(flowids2, v, 10)
     }
 
-    sql = "SELECT flowid,time,status FROM iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY time"
+    sql = "SELECT flowid,time,status,extern_order_id FROM iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY time"
 
     rows2, err := db.Query(sql)
     if err != nil {
@@ -123,34 +123,17 @@ func RechargeTrace(c echo.Context) error {
     for rows2.Next() {
         var f uint64
         var r steptrace
-        if err := rows2.Scan(&f, &r.Time, &r.Status); err != nil {
+        var orderno string
+        if err := rows2.Scan(&f, &r.Time, &r.Status, &orderno); err != nil {
             return err
         }
         l := flows[f]
         l.Steps = append(l.Steps, r)
+        if orderno != "" {
+            l.ExternOrderId = orderno
+        }
     }
     if err := rows2.Err(); err != nil {
-        return err
-    }
-
-    sql = "SELECT flowid,extern_order_id FROM iap_recharge WHERE flowid in("+string(flowids2)+")"
-
-    log.Infof("sql: %s", sql)
-
-    rows3, err := db.Query(sql)
-    if err != nil {
-        return err
-    }
-    defer rows3.Close()
-    for rows3.Next() {
-        var f uint64
-        var orderid string
-        if err := rows3.Scan(&f, &orderid); err != nil {
-            return err
-        }
-        flows[f].ExternOrderId = orderid
-    }
-    if err := rows3.Err(); err != nil {
         return err
     }
 
