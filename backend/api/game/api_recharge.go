@@ -28,8 +28,9 @@ func RechargeTrace(c echo.Context) error {
     limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
     startTime := ctx.QueryParam("startTime")
     endTime := ctx.QueryParam("endTime")
+    orderno := ctx.QueryParam("orderno")
 
-    if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
+    if zoneid == "" || startTime == "" || endTime == "" || (roleid == "" && orderno == ""){
         return ctx.SendError(-1, "参数非法")
     }
 
@@ -40,8 +41,22 @@ func RechargeTrace(c echo.Context) error {
     }
     defer db.Close()
 
+    flowid := ""
+    if orderno != "" {
+        sqltmp := "SELECT flowid FROM iap_trace_buy WHERE extern_order_id='"+orderno+"' or flowid='" +orderno+ "'"
+        if db.QueryRow(sqltmp).Scan(&flowid) != nil {
+            return ctx.SendError(-1, "没有对应订单")
+        }
+    }
+
     sqlcount := "SELECT count(DISTINCT flowid) as total FROM iap_trace_buy"
-    sqlcount += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sqlcount += " WHERE time between '"+startTime+"' AND '"+endTime+"'" 
+    if roleid != "" {
+        sqlcount += " AND roleid=" + roleid 
+    }
+    if flowid != "" {
+        sqlcount += " AND flowid='" + flowid + "'"
+    }
 
     var total int
     db.QueryRow(sqlcount).Scan(&total)
@@ -54,7 +69,14 @@ func RechargeTrace(c echo.Context) error {
     limitstart := strconv.Itoa((page-1)*limit)
     limitrow := strconv.Itoa(limit)
     sql := "SELECT flowid,product_id,min(time) as start_time FROM iap_trace_buy"
-    sql += " WHERE roleid="+roleid+" AND time between '"+startTime+"' AND '"+endTime+"'" 
+    sql += " WHERE time between '"+startTime+"' AND '"+endTime+"'" 
+    if roleid != "" {
+        sql += " AND roleid=" + roleid 
+    }
+    if flowid != "" {
+        sql += " AND flowid='" + flowid + "'"
+    }
+
     sql += " GROUP by flowid"
     sql += " ORDER by min(time) desc"
     sql += " LIMIT "+limitstart+","+limitrow
@@ -91,7 +113,7 @@ func RechargeTrace(c echo.Context) error {
         flowids2 = strconv.AppendUint(flowids2, v, 10)
     }
 
-    sql = "SELECT flowid,time,status FROM iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY time"
+    sql = "SELECT flowid,time,status,extern_order_id FROM iap_trace_buy WHERE flowid in("+string(flowids2)+") ORDER BY time"
 
     rows2, err := db.Query(sql)
     if err != nil {
@@ -101,34 +123,17 @@ func RechargeTrace(c echo.Context) error {
     for rows2.Next() {
         var f uint64
         var r steptrace
-        if err := rows2.Scan(&f, &r.Time, &r.Status); err != nil {
+        var orderno string
+        if err := rows2.Scan(&f, &r.Time, &r.Status, &orderno); err != nil {
             return err
         }
         l := flows[f]
         l.Steps = append(l.Steps, r)
+        if orderno != "" {
+            l.ExternOrderId = orderno
+        }
     }
     if err := rows2.Err(); err != nil {
-        return err
-    }
-
-    sql = "SELECT flowid,extern_order_id FROM iap_recharge WHERE flowid in("+string(flowids2)+")"
-
-    log.Infof("sql: %s", sql)
-
-    rows3, err := db.Query(sql)
-    if err != nil {
-        return err
-    }
-    defer rows3.Close()
-    for rows3.Next() {
-        var f uint64
-        var orderid string
-        if err := rows3.Scan(&f, &orderid); err != nil {
-            return err
-        }
-        flows[f].ExternOrderId = orderid
-    }
-    if err := rows3.Err(); err != nil {
         return err
     }
 

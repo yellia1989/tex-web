@@ -25,7 +25,7 @@ type _zoneInfo struct {
 func ZoneMap() map[uint32]rpc.ZoneInfo {
     mzone := make(map[uint32]rpc.ZoneInfo)
 
-    tmp := updateZoneList(false)
+    tmp := updateZoneList(true)
     for _, v := range tmp {
         mzone[v.IZoneId] = *(v.Copy())
     }
