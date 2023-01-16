@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 上传包到cc机器
-env_helper="env (d/101.132.101.177 u/47.74.10.61)"
+env_helper="env (d/101.132.101.177 u/auo01.stg.g123-cpp.com)"
 if [ $# -ne 1 ] ;then
 	echo "Usage: $0 $env_helper"
 	exit 100
@@ -15,7 +15,7 @@ case "$env" in
     cc_ip=101.132.101.177
     ;;
     u)
-    cc_ip=47.74.10.61
+    cc_ip=auo01.stg.g123-cpp.com
     ;;
     *)
     echo "invalid env, $env_helper"
