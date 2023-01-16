@@ -3,6 +3,7 @@ package game
 import (
     "fmt"
     "strconv"
+    sql1 "database/sql"
     "github.com/labstack/echo/v4"
     mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-go/tools/log"
@@ -123,14 +124,14 @@ func RechargeTrace(c echo.Context) error {
     for rows2.Next() {
         var f uint64
         var r steptrace
-        var orderno string
-        if err := rows2.Scan(&f, &r.Time, &r.Status, &orderno); err != nil {
+        var orderno2 sql1.NullString
+        if err := rows2.Scan(&f, &r.Time, &r.Status, &orderno2); err != nil {
             return err
         }
         l := flows[f]
         l.Steps = append(l.Steps, r)
-        if orderno != "" {
-            l.ExternOrderId = orderno
+        if orderno2.Valid {
+            l.ExternOrderId = orderno2.String
         }
     }
     if err := rows2.Err(); err != nil {
