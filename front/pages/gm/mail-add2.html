@@ -264,7 +264,7 @@
           }
         }
       });
-      okUtils.ajax("/api/gm/zone/simplelist", "get", null, false).done(function (response) {
+      okUtils.ajax("/api/gm/zone/simplelist", "get", false).done(function (response) {
         zoneSelect1.update({
           data: response.data["game"],
         });
