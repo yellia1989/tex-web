@@ -272,8 +272,6 @@ func ZoneUpdateVersion(c echo.Context) error {
         MVersion[v.SChannel] = ver
     }
 
-    iZoneFlag , _ := strconv.ParseUint(ctx.FormValue("iZoneFlag"),10,32)
-    iIsManual , _ := strconv.ParseUint(ctx.FormValue("iIsManual"),10,32)
     iManualZoneStatus , _ := strconv.ParseUint(ctx.FormValue("iManualZoneStatus"),10,32)
 
     dirPrx := new(rpc.DirService)
@@ -288,8 +286,6 @@ func ZoneUpdateVersion(c echo.Context) error {
         }
         zone.MVersion = MVersion
         tempZone := *zone.Copy()
-        tempZone.IZoneFlag = uint32(iZoneFlag)
-        tempZone.IIsManual = uint32(iIsManual)
         tempZone.IManualZoneStatus = uint32(iManualZoneStatus)
 
         ret, err = dirPrx.ModifyZone(tempZone, rpc.ZoneModifyInfo{})
