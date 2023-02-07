@@ -102,9 +102,10 @@ func ZoneList(c echo.Context) error {
     zones2 := make([]_zoneInfo, len(tmp))
     for k,v := range tmp {
         zones2[k].IZoneId = v.IZoneId
+        zones2[k].IMergeToZoneId = v.IMergeToZoneId
         zones2[k].SZoneName = v.SZoneName
         zones2[k].SConnServer = v.SConnServer
-        zones2[k].SGameServer = v.SGameServer
+        zones2[k].SNode = v.SNode
         zones2[k].IZoneFlag = v.IZoneFlag
         zones2[k].IIsManual = v.IIsManual
         zones2[k].IManualZoneStatus = v.IManualZoneStatus

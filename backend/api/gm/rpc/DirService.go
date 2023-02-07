@@ -198,7 +198,7 @@ type ZoneInfo struct {
 	IZoneId           uint32                 `json:"iZoneId" form:"iZoneId"`
 	SZoneName         string                 `json:"sZoneName" form:"sZoneName"`
 	SConnServer       string                 `json:"sConnServer" form:"sConnServer"`
-	SGameServer       string                 `json:"sGameServer" form:"sGameServer"`
+	SNode             string                 `json:"sNode" form:"sNode"`
 	IZoneFlag         uint32                 `json:"iZoneFlag" form:"iZoneFlag"`
 	IIsManual         uint32                 `json:"iIsManual" form:"iIsManual"`
 	IManualZoneStatus uint32                 `json:"iManualZoneStatus" form:"iManualZoneStatus"`
@@ -211,6 +211,7 @@ type ZoneInfo struct {
 	ILastReportTime   uint32                 `json:"iLastReportTime" form:"iLastReportTime"`
 	ICurZoneStatus    uint32                 `json:"iCurZoneStatus" form:"iCurZoneStatus"`
 	ICurOnline        uint32                 `json:"iCurOnline" form:"iCurOnline"`
+	IMergeToZoneId    uint32                 `json:"iMergeToZoneId" form:"iMergeToZoneId"`
 }
 
 func (st *ZoneInfo) resetDefault() {
@@ -220,7 +221,7 @@ func (st *ZoneInfo) Copy() *ZoneInfo {
 	ret.IZoneId = st.IZoneId
 	ret.SZoneName = st.SZoneName
 	ret.SConnServer = st.SConnServer
-	ret.SGameServer = st.SGameServer
+	ret.SNode = st.SNode
 	ret.IZoneFlag = st.IZoneFlag
 	ret.IIsManual = st.IIsManual
 	ret.IManualZoneStatus = st.IManualZoneStatus
@@ -236,6 +237,7 @@ func (st *ZoneInfo) Copy() *ZoneInfo {
 	ret.ILastReportTime = st.ILastReportTime
 	ret.ICurZoneStatus = st.ICurZoneStatus
 	ret.ICurOnline = st.ICurOnline
+	ret.IMergeToZoneId = st.IMergeToZoneId
 	return ret
 }
 func NewZoneInfo() *ZoneInfo {
@@ -247,7 +249,7 @@ func (st *ZoneInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iZoneId")+fmt.Sprintf("%v\n", st.IZoneId))
 	util.Tab(buff, t+1, util.Fieldname("sZoneName")+fmt.Sprintf("%v\n", st.SZoneName))
 	util.Tab(buff, t+1, util.Fieldname("sConnServer")+fmt.Sprintf("%v\n", st.SConnServer))
-	util.Tab(buff, t+1, util.Fieldname("sGameServer")+fmt.Sprintf("%v\n", st.SGameServer))
+	util.Tab(buff, t+1, util.Fieldname("sNode")+fmt.Sprintf("%v\n", st.SNode))
 	util.Tab(buff, t+1, util.Fieldname("iZoneFlag")+fmt.Sprintf("%v\n", st.IZoneFlag))
 	util.Tab(buff, t+1, util.Fieldname("iIsManual")+fmt.Sprintf("%v\n", st.IIsManual))
 	util.Tab(buff, t+1, util.Fieldname("iManualZoneStatus")+fmt.Sprintf("%v\n", st.IManualZoneStatus))
@@ -276,6 +278,7 @@ func (st *ZoneInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iLastReportTime")+fmt.Sprintf("%v\n", st.ILastReportTime))
 	util.Tab(buff, t+1, util.Fieldname("iCurZoneStatus")+fmt.Sprintf("%v\n", st.ICurZoneStatus))
 	util.Tab(buff, t+1, util.Fieldname("iCurOnline")+fmt.Sprintf("%v\n", st.ICurOnline))
+	util.Tab(buff, t+1, util.Fieldname("iMergeToZoneId")+fmt.Sprintf("%v\n", st.IMergeToZoneId))
 }
 func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -295,7 +298,7 @@ func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 	if err != nil {
 		return err
 	}
-	err = up.ReadString(&st.SGameServer, 3, false)
+	err = up.ReadString(&st.SNode, 3, false)
 	if err != nil {
 		return err
 	}
@@ -372,6 +375,10 @@ func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 	if err != nil {
 		return err
 	}
+	err = up.ReadUint32(&st.IMergeToZoneId, 24, false)
+	if err != nil {
+		return err
+	}
 
 	_ = length
 	_ = has
@@ -427,8 +434,8 @@ func (st *ZoneInfo) WriteStruct(p *codec.Packer) error {
 			return err
 		}
 	}
-	if false || st.SGameServer != "" {
-		err = p.WriteString(3, st.SGameServer)
+	if false || st.SNode != "" {
+		err = p.WriteString(3, st.SNode)
 		if err != nil {
 			return err
 		}
@@ -519,6 +526,12 @@ func (st *ZoneInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.ICurOnline != 0 {
 		err = p.WriteUint32(23, st.ICurOnline)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.IMergeToZoneId != 0 {
+		err = p.WriteUint32(24, st.IMergeToZoneId)
 		if err != nil {
 			return err
 		}
