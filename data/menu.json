@@ -260,6 +260,16 @@
         "spread": false,
         "checked": true,
         "children": null
+      },
+      {
+        "id": 218,
+        "title": "自动合服管理",
+        "href": "gm/auto-hefu-server.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": true,
+        "children": null
       }
     ]
   },
