@@ -24,9 +24,16 @@
 		</div>
 
 		<div class="layui-form-item">
-			<label class="layui-form-label">合服时间</label>
+			<label class="layui-form-label">合服展示时间</label>
 			<div class="layui-input-block">
-				<input type="text" class="layui-input" lay-verify="required|datetime" lay-verType="tips" placeholder="合服日期" autocomplete="off" id="sHefuTime" name="sHefuTime">
+				<input type="text" class="layui-input" lay-verify="required|datetime" lay-verType="tips" placeholder="合服展示日期" autocomplete="off" id="sPrepareTime" name="sPrepareTime">
+			</div>
+		</div>
+
+		<div class="layui-form-item">
+			<label class="layui-form-label">合服开始时间</label>
+			<div class="layui-input-block">
+				<input type="text" class="layui-input" lay-verify="required|datetime" lay-verType="tips" placeholder="合服开始日期" autocomplete="off" id="sHefuTime" name="sHefuTime">
 			</div>
 		</div>
 
@@ -45,6 +52,7 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
+	  laydate.render({elem: "#sPrepareTime", type: "datetime"});
 	  laydate.render({elem: "#sHefuTime", type: "datetime"});
 
       //监听提交
