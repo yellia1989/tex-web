@@ -133,6 +133,8 @@
               return formatVersionColumn(d.mVersion);
             }
           },
+          { field: "sNode", title: "Node" },
+          { field: "iMergeToZoneId", title: "合服id" },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {

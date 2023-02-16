@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>编辑合服计划</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+</head>
+
+<body>
+  <div class="ok-body">
+    <form class="layui-form layui-form-pane ok-form">
+		    <div class="layui-form-item">
+		    	<label class="layui-form-label">合服分区id</label>
+		    	<div class="layui-input-block">
+            <input type="hidden" name="iId">
+		    		<input type="text" name="sSrcZoneIds" placeholder="合服分区id(逗号分隔)" autocomplete="off" class="layui-input" lay-verify="required" lay-verType="tips">
+		    	</div>
+		    </div>
+
+	      <div class="layui-form-item">
+			    <label class="layui-form-label">目标分区id</label>
+			    <div class="layui-input-block">
+				    <input type="text" name="iToZoneId" placeholder="目标分区id" class="layui-input" lay-verify="required|number" lay-verType="tips">
+			    </div>
+		    </div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">合服展示时间</label>
+					<div class="layui-input-block">
+            <input type="text" class="layui-input" lay-verify="required|datetime" lay-verType="tips" placeholder="合服展示日期" autocomplete="off" id="sPrepareTime" name="sPrepareTime">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">合服时间</label>
+					<div class="layui-input-block">
+            <input type="text" class="layui-input" lay-verify="required|datetime" lay-verType="tips" placeholder="合服开始日期" autocomplete="off" id="sHefuTime" name="sHefuTime">
+					</div>
+				</div>
+
+			  <div class="layui-input-block">
+				  <button class="layui-btn" lay-submit lay-filter="add">更新</button>
+			  </div>
+    </form>
+  </div>
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    // https://www.layui.com/doc/modules/form.html
+    layui.use(['form', 'laydate', 'okUtils', 'okLayer'], function () {
+      let form = layui.form;
+      let laydate = layui.laydate;
+      let okUtils = layui.okUtils;
+      let okLayer = layui.okLayer;
+      let $ = layui.jquery;
+
+      laydate.render({ elem: "#sPrepareTime", type: "datetime" });
+      laydate.render({ elem: "#sHefuTime", type: "datetime" });
+
+      $("input[name='iId']").val(parent.zonedata.iId);
+      $("input[name='sSrcZoneIds']").val(parent.zonedata.sSrcZoneIds);
+      $("input[name='iToZoneId']").val(parent.zonedata.iMergeToZoneId);
+      $("input[name='sPrepareTime']").val(parent.zonedata.sPrepareTime);
+      $("input[name='sHefuTime']").val(parent.zonedata.sHefuTime);
+
+      //监听提交
+      form.on('submit(add)', function (data) {
+        okUtils.ajax("/api/gm/autoHefuServer/update", "post", data.field, true).done(function (response) {
+          okLayer.greenTickMsg(response.data, function () {
+            parent.layer.close(parent.layer.getFrameIndex(window.name));
+          });
+        }).fail(function (error) {
+          console.log(error);
+        });
+        return false;
+      });
+    });
+  </script>
+</body>
+
+</html>

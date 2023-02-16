@@ -43,6 +43,11 @@ func RegisterHandler(group *echo.Group) {
     group.POST("/gm/autoOpenServer/del", gm.AutoOpenServerDel)               // 删除自动开服服务器
     group.POST("/gm/autoOpenServer/update", gm.AutoOpenServerUpdate)         // 更新自动开服服务器
 
+    group.GET("/gm/autoHefuServer/list", gm.AutoHefuServerList)              // 获取自动合服列表
+    group.POST("/gm/autoHefuServer/add", gm.AutoHefuServerAdd)               // 增加新的自动合服服务器
+    group.POST("/gm/autoHefuServer/del", gm.AutoHefuServerDel)               // 删除自动合服服务器
+    group.POST("/gm/autoHefuServer/update", gm.AutoHefuServerUpdate)         // 更新自动合服服务器
+
     group.GET("/gm/channel/list", gm.ChannelList)      // 获取渠道列表
     group.POST("/gm/channel/add", gm.ChannelAdd)       // 增加新渠道
     group.POST("/gm/channel/del", gm.ChannelDel)       // 删除渠道
