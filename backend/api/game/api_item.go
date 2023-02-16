@@ -3,6 +3,7 @@ package game
 import (
     "fmt"
 	"strconv"
+    sq "database/sql"
 	"github.com/labstack/echo/v4"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
     "github.com/yellia1989/tex-go/tools/log"
@@ -121,9 +122,11 @@ func ItemSubLog(c echo.Context) error {
 	logs := make([]itemlog, 0)
 	for rows.Next() {
 		var r itemlog
-		if err := rows.Scan(&r.Id, &r.Time, &r.BaseId, &r.AddNum, &r.CurNum, &r.Action); err != nil {
+        var subNum sq.NullInt32
+		if err := rows.Scan(&r.Id, &r.Time, &r.BaseId, &subNum, &r.CurNum, &r.Action); err != nil {
 			return err
 		}
+        r.AddNum = (uint32)(subNum.Int32)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {
