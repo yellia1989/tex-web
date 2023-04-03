@@ -88,6 +88,12 @@ func GameCmd(c echo.Context) error {
 
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     u := ctx.GetUser()
+
+    zoneid2 := getZoneId(common.Atou32(zoneid)) 
+    if zoneid2 == 0 {
+        return fmt.Errorf("can't find merge zoneid: %s", zoneid)
+    }
+
     return Cmd(u.UserName, zoneid, "0", cmd, result)
 }
 
@@ -125,7 +131,7 @@ func IAPRecharge(c echo.Context) error {
     zoneid := ctx.FormValue("zoneid")
     roleid := ctx.FormValue("roleid")
     productid := ctx.FormValue("productid")
-    scmd := "recharge " + roleid + " " + productid
+    scmd := "recharge " + roleid + "," + zoneid + " " + productid
 
     if zoneid == "" || roleid == "" || productid == "" {
         return ctx.SendError(-1, "参数非法")
