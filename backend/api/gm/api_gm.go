@@ -94,7 +94,7 @@ func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
         return fmt.Errorf("can't find merge zoneid: %s", zoneid)
     }
 
-    return Cmd(u.UserName, zoneid, "0", cmd, result)
+    return Cmd(u.UserName, common.U32toa(zoneid2), "0", cmd, result)
 }
 
 func Cmd(userName string, zoneid string, mapid string, cmd string, result *string) error {
