@@ -249,7 +249,7 @@ func TmpWhiteList(c echo.Context) error {
 func WhiteAddTmp(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	input := ctx.FormValue("input")
+	input := ctx.FormValue("tmpinput")
 
 	if input == "" {
 		return ctx.SendError(-1, "参数非法")
@@ -298,7 +298,7 @@ func WhiteAddTmp(c echo.Context) error {
 func WhiteDelTmp(c echo.Context) error {
 	ctx := c.(*mid.Context)
 
-	input := ctx.FormValue("input")
+	input := ctx.FormValue("tmpinput")
 
 	if input == "" {
 		return ctx.SendError(-1, "参数非法")

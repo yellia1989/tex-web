@@ -83,6 +83,7 @@
       page: true,
       cols: [[
         {field: "id", title: "角色ID"},
+        {field: "zoneid", title: "分区ID"},
         {field: "actorid", title: "actorid"},
         {field: "name", title: "角色名称"},
         {field: "vip_level", title: "vip等级", sort: true},
@@ -107,7 +108,7 @@
 
     table.on("tool(tableFilter)", function (obj) {
       roleid = obj.data.id;
-      zoneid = zoneSelect.getValue('valueStr');
+      zoneid = obj.data.zoneid;
       switch (obj.event) {
         case "recharge":
           recharge();
