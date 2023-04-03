@@ -22,6 +22,20 @@ type _zoneInfo struct {
     SPublishTime string `json:"sPublishTime"`
 }
 
+func getZoneId(zoneid uint32) uint32 {
+    zonemap := ZoneMap()
+
+    z, ok := zonemap[zoneid]
+    if !ok {
+        return 0
+    }
+
+    if z.IMergeToZoneId != 0 { 
+        return z.IMergeToZoneId
+    }
+    return zoneid
+}
+
 func ZoneMap() map[uint32]rpc.ZoneInfo {
     mzone := make(map[uint32]rpc.ZoneInfo)
 
