@@ -22,7 +22,7 @@ type _zoneInfo struct {
     SPublishTime string `json:"sPublishTime"`
 }
 
-func getZoneId(zoneid uint32) uint32 {
+func GetZoneId(zoneid uint32) uint32 {
     zonemap := ZoneMap()
 
     z, ok := zonemap[zoneid]

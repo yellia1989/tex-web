@@ -89,7 +89,7 @@ func GameCmd(c echo.Context) error {
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     u := ctx.GetUser()
 
-    zoneid2 := getZoneId(common.Atou32(zoneid)) 
+    zoneid2 := GetZoneId(common.Atou32(zoneid)) 
     if zoneid2 == 0 {
         return fmt.Errorf("can't find merge zoneid: %s", zoneid)
     }
