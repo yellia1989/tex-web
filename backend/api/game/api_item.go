@@ -39,7 +39,7 @@ func ItemAddLog(c echo.Context) error {
     defer db.Close()
 
 	sqlcount := "SELECT count(*) as total FROM add_item"
-	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sqlcount += " WHERE roleid=" + roleid + " AND zoneid="+zoneid+" AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
 	err = db.QueryRow(sqlcount).Scan(&total)
 	if err != nil {
@@ -49,7 +49,7 @@ func ItemAddLog(c echo.Context) error {
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid,time,id,add_num,cur_num,action FROM add_item"
-	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sql += " WHERE roleid=" + roleid + " AND zoneid="+zoneid+" AND time between '" + startTime + "' AND '" + endTime + "'"
     sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -97,7 +97,7 @@ func ItemSubLog(c echo.Context) error {
     defer db.Close()
 
 	sqlcount := "SELECT count(*) as total FROM sub_item"
-	sqlcount += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sqlcount += " WHERE roleid=" + roleid + " AND zoneid="+zoneid+" AND time between '" + startTime + "' AND '" + endTime + "'"
 	var total int
 	err = db.QueryRow(sqlcount).Scan(&total)
 	if err != nil {
@@ -107,7 +107,7 @@ func ItemSubLog(c echo.Context) error {
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid,time,id,sub_num,cur_num,action FROM sub_item"
-	sql += " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sql += " WHERE roleid=" + roleid + " AND zoneid="+zoneid+" AND time between '" + startTime + "' AND '" + endTime + "'"
     sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
