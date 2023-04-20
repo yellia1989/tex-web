@@ -74,7 +74,7 @@
 
 		okUtils.ajax("/api/gm/autoOpenServer/list?page=1&limit=1", "get", {} , true).done(function (response) {
 			let data = response.data
-			if (data.length() > 0) {
+			if (data.length > 0) {
 				let zonedata = data[0]
 				$("input[name='iZoneId']").val(zonedata.iZoneId);
 				$("input[name='sNode']").val(zonedata.sNode);
