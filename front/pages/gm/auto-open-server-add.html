@@ -73,6 +73,22 @@
       let okLayer = layui.okLayer;
       let $ = layui.jquery;
 
+		okUtils.ajax("/api/gm/autoOpenServer/list?page=1&limit=1", "get", {} , true).done(function (response) {
+			let data = response.data
+			if (data.length() > 0) {
+				let zonedata = data[0]
+				$("input[name='iZoneId']").val(zonedata.iZoneId);
+				$("input[name='sNode']").val(zonedata.sNode);
+				$("input[name='sDBInfo']").val(zonedata.sDBInfo);
+				$("input[name='sConnaddr']").val(zonedata.sConnaddr);
+				$("input[name='iMaxNum']").val(zonedata.iMaxNum);
+				$("input[name='iMaxOnline']").val(zonedata.iMaxOnline);
+				$("input[name='iOpenServerNum']").val(zonedata.iOpenServerNum);
+			}
+		}).fail(function (error) {
+			console.log(error);
+		});
+
       //监听提交
       form.on('submit(add)', function(data){
         okUtils.ajax("/api/gm/autoOpenServer/add", "post", data.field, true).done(function (response) {
