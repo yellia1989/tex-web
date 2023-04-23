@@ -404,6 +404,7 @@ CREATE TABLE `zone` (
   `zonename` varchar(255) NOT NULL COMMENT '分区名字',
   `openday_fk` int(10) unsigned NOT NULL COMMENT '开服日期',
   `logdbhost` varchar(15) NOT NULL DEFAULT '' COMMENT '日志数据库地址',
+  `is_merge` int(10) unsigned DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
