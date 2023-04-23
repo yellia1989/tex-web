@@ -144,11 +144,7 @@ func Cron(now time.Time) {
                 if !first {
                     sql += ","
                 }
-                is_merge := uint32(0)
-                if new.IMergeToZoneId != 0 {
-                    is_merge = 1
-                }
-                sql += "is_merge="+common.U32toa(is_merge)
+                sql += "is_merge="+common.U32toa(new.IMergeToZoneId)
                 first = false
                 log.Debugf("cron [zone] update zone: %d, is_merge: %d->%d", zoneid, old.IsMerge, new.IMergeToZoneId)
             }
