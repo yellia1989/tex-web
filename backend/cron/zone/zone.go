@@ -20,6 +20,7 @@ type Zone struct {
     Name string
     OpenDay uint32
     DbHost string
+    IsMerge uint32
 }
 
 var mu sync.Mutex
@@ -61,7 +62,7 @@ func init() {
             }
 
             z := Zone{}
-            if err := conn.QueryRowContext(ctx, "SELECT zone.id,zoneid,zonename,openday_fk,logdbhost FROM zone WHERE zoneid=?", key).Scan(&z.Id, &z.ZoneId, &z.Name, &z.OpenDay, &z.DbHost); err != nil {
+            if err := conn.QueryRowContext(ctx, "SELECT zone.id,zoneid,zonename,openday_fk,logdbhost,is_merge FROM zone WHERE zoneid=?", key).Scan(&z.Id, &z.ZoneId, &z.Name, &z.OpenDay, &z.DbHost, &z.IsMerge); err != nil {
                 return nil, err
             }
             return &z,nil
@@ -114,7 +115,7 @@ func Cron(now time.Time) {
         }
 
         old := zone.(*Zone)
-        if old.Name != new.SZoneName || old.OpenDay != d.Id || old.DbHost != ip {
+        if old.Name != new.SZoneName || old.OpenDay != d.Id || old.DbHost != ip || old.IsMerge != new.IMergeToZoneId {
             // 更改了分区信息,更新数据库
             sql := "UPDATE zone SET "
             first := true
@@ -138,6 +139,18 @@ func Cron(now time.Time) {
                 sql += "logdbhost='"+ip+"'"
                 first = false
                 log.Debugf("cron [zone] update zone: %d, dbhost: %s->%s", zoneid, old.DbHost, ip)
+            }
+            if old.IsMerge != new.IMergeToZoneId {
+                if !first {
+                    sql += ","
+                }
+                is_merge := uint32(0)
+                if new.IMergeToZoneId != 0 {
+                    is_merge = 1
+                }
+                sql += "is_merge="+common.U32toa(is_merge)
+                first = false
+                log.Debugf("cron [zone] update zone: %d, is_merge: %d->%d", zoneid, old.IsMerge, new.IMergeToZoneId)
             }
             sql += " WHERE id="+common.U32toa(old.Id)
 
