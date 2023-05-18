@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 上传包到cc机器
-env_helper="env (d/101.132.101.177 u/goblinslayer01.stg.g123-cpp.com r/47.91.18.249)"
+env_helper="env (d/101.132.101.177 u/139.159.110.66 r/47.91.18.249)"
 if [ $# -ne 1 ] ;then
 	echo "Usage: $0 $env_helper"
 	exit 100
@@ -15,7 +15,7 @@ case "$env" in
     cc_ip=101.132.101.177
     ;;
     u)
-    cc_ip=goblinslayer01.stg.g123-cpp.com
+    cc_ip=139.159.110.66
     ;;
     r)
     cc_ip=47.91.18.249
