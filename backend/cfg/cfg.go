@@ -82,6 +82,9 @@ var ServerID string
 
 var UploadPatchPrefix string
 
+// logdbhost
+var LogDbHost string
+
 func ParseCfg(file string) (err error) {
     if Config == nil {
         Config = util.NewConfig()
@@ -190,6 +193,8 @@ func ParseCfg(file string) (err error) {
     ServerID = cfg.GetCfg("server", "")
 
     UploadPatchPrefix = cfg.GetCfg("upload-patch-prefix","")
+
+    LogDbHost = cfg.GetCfg("logdbhost", "")
 
     return
 }
