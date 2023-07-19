@@ -31,7 +31,7 @@
       let serverTable = table.render({
         elem: "#tableId",
         url: "/api/server/list",
-        where: {"app":editServer.app,"server":editServer.server},
+        where: {"app":editServer.app,"server":editServer.server,"patch":"1"},
         text: {
           none: '暂无相关数据',
         },
