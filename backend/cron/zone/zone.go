@@ -82,9 +82,12 @@ func Cron(now time.Time) {
     mzoneip, _ := server.RegistryIp()
     mzone := gm.ZoneMap()
     for zoneid, new := range mzone {
-        ip, ok := mzoneip[zoneid]
+        logdbhost, ok := mzoneip[zoneid]
         if !ok {
             continue
+        }
+        if cfg.LogDbHost != "" {
+            logdbhost = cfg.LogDbHost
         }
         openDayTime := time.Unix(int64(new.IPublishTime),0)
         d := date.Get(openDayTime)
@@ -100,7 +103,7 @@ func Cron(now time.Time) {
                 mu.Lock()
 
                 sql := "INSERT INTO zone(zoneid,zonename,openday_fk,logdbhost) VALUES(?,?,?,?)"
-                if _,err := conn.ExecContext(ctx, sql, zoneid, new.SZoneName, d.Id, ip); err != nil {
+                if _,err := conn.ExecContext(ctx, sql, zoneid, new.SZoneName, d.Id, logdbhost); err != nil {
                     mu.Unlock()
                     log.Errorf("cron [zone] add new zone err: %s, zoneid: %d", err.Error(), zoneid)
                     continue
@@ -115,7 +118,7 @@ func Cron(now time.Time) {
         }
 
         old := zone.(*Zone)
-        if old.Name != new.SZoneName || old.OpenDay != d.Id || old.DbHost != ip || old.IsMerge != new.IMergeToZoneId {
+        if old.Name != new.SZoneName || old.OpenDay != d.Id || old.DbHost != logdbhost || old.IsMerge != new.IMergeToZoneId {
             // 更改了分区信息,更新数据库
             sql := "UPDATE zone SET "
             first := true
@@ -132,13 +135,13 @@ func Cron(now time.Time) {
                 first = false
                 log.Debugf("cron [zone] update zone: %d, openDay: %d->%d", zoneid, old.OpenDay, d.Id)
             }
-            if old.DbHost != ip {
+            if old.DbHost != logdbhost {
                 if !first {
                     sql += ","
                 }
-                sql += "logdbhost='"+ip+"'"
+                sql += "logdbhost='"+logdbhost+"'"
                 first = false
-                log.Debugf("cron [zone] update zone: %d, dbhost: %s->%s", zoneid, old.DbHost, ip)
+                log.Debugf("cron [zone] update zone: %d, dbhost: %s->%s", zoneid, old.DbHost, logdbhost)
             }
             if old.IsMerge != new.IMergeToZoneId {
                 if !first {

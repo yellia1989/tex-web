@@ -19,12 +19,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
+	frpc "github.com/yellia1989/tex-go/sdp/rpc"
 	tex "github.com/yellia1989/tex-go/service"
 	"github.com/yellia1989/tex-web/backend/api/gm/rpc"
 	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
-    frpc "github.com/yellia1989/tex-go/sdp/rpc"
 )
 
 type nodeData struct {
@@ -42,7 +42,7 @@ type ServerData struct {
 	Division            string `json:"division"`
 	Node                string `json:"node"`
 	CurStat             int    `json:"cur_stat"`
-	AutoStart     int     `json:"auto_start"`
+	AutoStart           int    `json:"auto_start"`
 	ProfileConfTemplate string `json:"profile_conf_template"`
 	TemplateName        string `json:"template_name"`
 	Pid                 int    `json:"pid"`
@@ -50,12 +50,12 @@ type ServerData struct {
 	PublishUserName     string `json:"publish_username"`
 	PublishTime         string `json:"publish_time"`
 	PromPort            int    `json:"prom_port"`
-	ManualStop    int     `json:"manual_stop"`
-    MfwServer   int `json:"mfw_server"`
-    StartScript string `json:"start_script"`
-    MonitorScript string `json:"monitor_script"`
-    StopScript string `json:"stop_script"`
-    StartTime   int `json:"start_time"`
+	ManualStop          int    `json:"manual_stop"`
+	MfwServer           int    `json:"mfw_server"`
+	StartScript         string `json:"start_script"`
+	MonitorScript       string `json:"monitor_script"`
+	StopScript          string `json:"stop_script"`
+	StartTime           int    `json:"start_time"`
 }
 
 type ServiceData struct {
@@ -67,7 +67,7 @@ type ServiceData struct {
 	MaxConn      int    `json:"max_conn"`
 	QueueCap     int    `json:"queue_cap"`
 	QueueTimeout int    `json:"queue_timeout"`
-    Timeout      int    `json:"timeout"`
+	Timeout      int    `json:"timeout"`
 }
 
 type ServerDetailData struct {
@@ -264,6 +264,7 @@ func ServerList(c echo.Context) error {
 	server := strings.TrimSpace(ctx.QueryParam("server"))
 	division := strings.TrimSpace(ctx.QueryParam("division"))
 	node := strings.TrimSpace(ctx.QueryParam("node"))
+	patch := strings.TrimSpace(ctx.QueryParam("patch"))
 
 	db := cfg.TexDb
 	if db == nil {
@@ -290,6 +291,10 @@ func ServerList(c echo.Context) error {
 		where += " AND node = ?"
 		vParam = append(vParam, node)
 	}
+	if patch == "1" {
+		where += " AND publish_time IS NOT NULL"
+	}
+
 	sql += where
 
 	var total int
@@ -464,7 +469,7 @@ func ServerDetail(c echo.Context) error {
 		}
 		r.Port = endpoint.Port
 		r.PortType = endpoint.Proto
-        r.Timeout = int(endpoint.Idletimeout.Milliseconds())
+		r.Timeout = int(endpoint.Idletimeout.Milliseconds())
 		data.Services = append(data.Services, r)
 	}
 
@@ -765,7 +770,7 @@ func PatchList(c echo.Context) error {
 		vParam = append(vParam, server)
 	}
 	sql += where
-    sql += " order by upload_time desc"
+	sql += " order by upload_time desc"
 	var total int
 	err := db.QueryRow("select count(id) from t_patch where 1=1"+where, vParam...).Scan(&total)
 	if err != nil {
@@ -804,44 +809,44 @@ func PatchList(c echo.Context) error {
 	return ctx.SendArray(logs, total)
 }
 
-func RegistryIp() (map[uint32]string,error) {
-    comm := cfg.Comm
+func RegistryIp() (map[uint32]string, error) {
+	comm := cfg.Comm
 
-    queryPrx := new(frpc.Query)
-    comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
+	queryPrx := new(frpc.Query)
+	comm.StringToProxy("tex.mfwregistry.QueryObj", queryPrx)
 
-    var vObj []frpc.ObjEndpoint
-    ret, err := queryPrx.GetAllEndpoints(&vObj)
-    if ret != 0 || err != nil {
-        return nil, fmt.Errorf("ret: %d, err: %s", ret, err.Error())
-    }
+	var vObj []frpc.ObjEndpoint
+	ret, err := queryPrx.GetAllEndpoints(&vObj)
+	if ret != 0 || err != nil {
+		return nil, fmt.Errorf("ret: %d, err: %s", ret, err.Error())
+	}
 
-    m := make(map[uint32]string)
-    for _, o := range vObj {
-        if len(o.SDivision) == 0 {
-            continue
-        }
-        vzone := strings.Split(o.SDivision, ".")
-        if len(vzone) != 3 || vzone[1] != "zone" {
-            continue
-        }
-        vep := strings.Split(o.SEp, " ")
-        if len(vep) != 7 {
-            continue
-        }
-        m[common.Atou32(vzone[2])] = vep[2]
-    }
+	m := make(map[uint32]string)
+	for _, o := range vObj {
+		if len(o.SDivision) == 0 {
+			continue
+		}
+		vzone := strings.Split(o.SDivision, ".")
+		if len(vzone) != 3 || vzone[1] != "zone" {
+			continue
+		}
+		vep := strings.Split(o.SEp, " ")
+		if len(vep) != 7 {
+			continue
+		}
+		m[common.Atou32(vzone[2])] = vep[2]
+	}
 
-    return m, nil
+	return m, nil
 }
 
 func AllocPromPort(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	node := ctx.QueryParam("node")
 
-    if node == "" {
-        return ctx.SendError(-1, "参数非法");
-    }
+	if node == "" {
+		return ctx.SendError(-1, "参数非法")
+	}
 
 	db := cfg.TexDb
 	if db == nil {
@@ -854,22 +859,22 @@ func AllocPromPort(c echo.Context) error {
 	}
 	defer rows.Close()
 
-    ports := make(map[int]bool)
+	ports := make(map[int]bool)
 	for rows.Next() {
-        tmp := 0
-        if err := rows.Scan(&tmp); err != nil {
-            return err
-        }
-        ports[tmp] = true
-    }
+		tmp := 0
+		if err := rows.Scan(&tmp); err != nil {
+			return err
+		}
+		ports[tmp] = true
+	}
 
-    // 15001 ~ 16000
-    prom_port := 15001
-    for prom_port < 16000 {
-        if ok,_ := ports[prom_port]; !ok {
-            break;
-        }
-        prom_port += 1;
-    }
-    return ctx.SendResponse(prom_port)
+	// 15001 ~ 16000
+	prom_port := 15001
+	for prom_port < 16000 {
+		if ok, _ := ports[prom_port]; !ok {
+			break
+		}
+		prom_port += 1
+	}
+	return ctx.SendResponse(prom_port)
 }

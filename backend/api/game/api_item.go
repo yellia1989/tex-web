@@ -1,12 +1,12 @@
 package game
 
 import (
-	sq "database/sql"
-	"fmt"
-	"github.com/labstack/echo/v4"
-	"github.com/yellia1989/tex-go/tools/log"
-	mid "github.com/yellia1989/tex-web/backend/middleware"
+    "fmt"
 	"strconv"
+    sq "database/sql"
+	"github.com/labstack/echo/v4"
+	mid "github.com/yellia1989/tex-web/backend/middleware"
+    "github.com/yellia1989/tex-go/tools/log"
 )
 
 type itemlog struct {
@@ -26,20 +26,28 @@ func ItemAddLog(c echo.Context) error {
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 	startTime := ctx.QueryParam("startTime")
 	endTime := ctx.QueryParam("endTime")
+	itemid := ctx.QueryParam("itemid")
+	turnMerge := ctx.QueryParam("turnMergeZone")
 
 	if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db, err := zoneLogDb(zoneid)
+	db, err := zoneLogDbWithOptions(zoneid, ZoneLogOptions{trunMerge: turnMerge == "on"})
 
-	if err != nil {
-		return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
+    if err != nil {
+        return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
+    }
+    defer db.Close()
+
+	whereStr := " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+
+	if itemid != "" {
+		whereStr += " AND id=" + itemid
 	}
-	defer db.Close()
 
 	sqlcount := "SELECT count(*) as total FROM add_item"
-	sqlcount += " WHERE roleid=" + roleid + " AND zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sqlcount += whereStr
 	var total int
 	err = db.QueryRow(sqlcount).Scan(&total)
 	if err != nil {
@@ -49,7 +57,7 @@ func ItemAddLog(c echo.Context) error {
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid,time,id,add_num,cur_num,action FROM add_item"
-	sql += " WHERE roleid=" + roleid + " AND zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sql += whereStr
 	sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -84,12 +92,20 @@ func ItemSubLog(c echo.Context) error {
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 	startTime := ctx.QueryParam("startTime")
 	endTime := ctx.QueryParam("endTime")
+	itemid := ctx.QueryParam("itemid")
+	turnMerge := ctx.QueryParam("turnMergeZone")
 
 	if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
 		return ctx.SendError(-1, "参数非法")
 	}
 
-	db, err := zoneLogDb(zoneid)
+	db, err := zoneLogDbWithOptions(zoneid, ZoneLogOptions{trunMerge: turnMerge == "on"})
+
+	whereStr := " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+
+	if itemid != "" {
+		whereStr += " AND id=" + itemid
+	}
 
 	if err != nil {
 		return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
@@ -97,7 +113,7 @@ func ItemSubLog(c echo.Context) error {
 	defer db.Close()
 
 	sqlcount := "SELECT count(*) as total FROM sub_item"
-	sqlcount += " WHERE roleid=" + roleid + " AND zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sqlcount += whereStr
 	var total int
 	err = db.QueryRow(sqlcount).Scan(&total)
 	if err != nil {
@@ -107,7 +123,7 @@ func ItemSubLog(c echo.Context) error {
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
 	sql := "SELECT _rid,time,id,add_num,cur_num,action FROM sub_item"
-	sql += " WHERE roleid=" + roleid + " AND zoneid=" + zoneid + " AND time between '" + startTime + "' AND '" + endTime + "'"
+	sql += whereStr
 	sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
 
@@ -122,11 +138,11 @@ func ItemSubLog(c echo.Context) error {
 	logs := make([]itemlog, 0)
 	for rows.Next() {
 		var r itemlog
-		var subNum sq.NullInt32
+        var subNum sq.NullInt32
 		if err := rows.Scan(&r.Id, &r.Time, &r.BaseId, &subNum, &r.CurNum, &r.Action); err != nil {
 			return err
 		}
-		r.AddNum = (uint32)(subNum.Int32)
+        r.AddNum = (uint32)(subNum.Int32)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {
