@@ -18,7 +18,7 @@ case "$env" in
     cc_ip=139.159.110.66
     ;;
     r)
-    cc_ip=47.91.18.249
+    cc_ip=139.159.110.69
     ;;
     *)
     echo "invalid env, $env_helper"
