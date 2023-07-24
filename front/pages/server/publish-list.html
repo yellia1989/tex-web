@@ -11,6 +11,9 @@
 
 <body>
   <div class="ok-body">
+      <div class="layui-form">
+          <input type="checkbox" name="turnMergeZone" lay-skin="tag" title="隐藏未发布服务" lay-filter="turnMergeZone-filter" checked>
+      </div>
     <table id="tableId" lay-filter="tableFilter"></table>
   </div>
 
@@ -19,6 +22,9 @@
   <script>
       var editServer
       var selectNode
+
+      var whereObj = { }
+
     layui.use(["element", "table", "form", "layer", "okUtils","upload"], function () {
       let table = layui.table;
       let layer = layui.layer;
@@ -27,11 +33,14 @@
       let upload = layui.upload;
       okLoading.close();
       editServer = parent.editServer;
+      whereObj.app = editServer.app
+      whereObj.server = editServer.server
+      whereObj.patch = "1"
 
       let serverTable = table.render({
         elem: "#tableId",
         url: "/api/server/list",
-        where: {"app":editServer.app,"server":editServer.server,"patch":"1"},
+        where: whereObj,
         text: {
           none: '暂无相关数据',
         },
@@ -67,6 +76,18 @@
           { field: "publish_time", title: "发布时间", align: "center" },
         ]]
       });
+
+        form.on('checkbox(turnMergeZone-filter)', function(data){
+            var elem = data.elem;
+            var checked = elem.checked; // 获得 checkbox 选中状态
+            if (checked) {
+                whereObj.patch = "1"
+            } else {
+                whereObj.patch = "0"
+            }
+
+            serverTable.reload()
+        });
 
         function openDetail() {
             let checkStatus = table.checkStatus("tableId");
