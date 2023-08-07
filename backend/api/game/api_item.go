@@ -1,12 +1,12 @@
 package game
 
 import (
-    "fmt"
-	"strconv"
-    sq "database/sql"
+	sq "database/sql"
+	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/yellia1989/tex-go/tools/log"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-go/tools/log"
+	"strconv"
 )
 
 type itemlog struct {
@@ -35,10 +35,10 @@ func ItemAddLog(c echo.Context) error {
 
 	db, err := zoneLogDbWithOptions(zoneid, ZoneLogOptions{trunMerge: turnMerge == "on"})
 
-    if err != nil {
-        return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
-    }
-    defer db.Close()
+	if err != nil {
+		return ctx.SendError(-1, fmt.Sprintf("连接数据库失败: %s", err.Error()))
+	}
+	defer db.Close()
 
 	whereStr := " WHERE roleid=" + roleid + " AND time between '" + startTime + "' AND '" + endTime + "'"
 
@@ -122,7 +122,7 @@ func ItemSubLog(c echo.Context) error {
 
 	limitstart := strconv.Itoa((page - 1) * limit)
 	limitrow := strconv.Itoa(limit)
-	sql := "SELECT _rid,time,id,add_num,cur_num,action FROM sub_item"
+	sql := "SELECT _rid,time,id,sub_num,cur_num,action FROM sub_item"
 	sql += whereStr
 	sql += " ORDER BY time desc, _rid desc"
 	sql += " LIMIT " + limitstart + "," + limitrow
@@ -138,11 +138,11 @@ func ItemSubLog(c echo.Context) error {
 	logs := make([]itemlog, 0)
 	for rows.Next() {
 		var r itemlog
-        var subNum sq.NullInt32
+		var subNum sq.NullInt32
 		if err := rows.Scan(&r.Id, &r.Time, &r.BaseId, &subNum, &r.CurNum, &r.Action); err != nil {
 			return err
 		}
-        r.AddNum = (uint32)(subNum.Int32)
+		r.AddNum = (uint32)(subNum.Int32)
 		logs = append(logs, r)
 	}
 	if err := rows.Err(); err != nil {
