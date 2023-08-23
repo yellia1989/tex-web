@@ -270,6 +270,16 @@
         "spread": false,
         "checked": true,
         "children": null
+      },
+      {
+        "id": 219,
+        "title": "清理流失用户管理",
+        "href": "gm/clear-loss-server.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": true,
+        "children": null
       }
     ]
   },
