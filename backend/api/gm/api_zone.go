@@ -30,7 +30,7 @@ func GetZoneId(zoneid uint32) uint32 {
         return 0
     }
 
-    if z.IMergeToZoneId != 0 { 
+    if z.IMergeToZoneId != 0 {
         return z.IMergeToZoneId
     }
     return zoneid
@@ -74,12 +74,26 @@ func updateZoneList(bUpdate bool) ([]rpc.ZoneInfo) {
     return zones
 }
 
+func IsGame(zoneid uint32) bool {
+    tmp := updateZoneList(false)
+
+    for _, v := range tmp {
+        if v.IZoneId == zoneid {
+            return true
+        }
+    }
+    return false
+}
+
 func ZoneSimpleList(c echo.Context) error {
     ctx := c.(*mid.Context)
     game := ctx.QueryParam("game")
+    cross := ctx.QueryParam("cross")
+
     all := ctx.QueryParam("all")
 
     bgame := game != ""
+    bcross := cross != ""
     ball := all != ""
 
     if game == "" && all == "" {
@@ -87,6 +101,8 @@ func ZoneSimpleList(c echo.Context) error {
     }
 
     var zones []rpc.ZoneInfo
+    var crossZones []rpc.ZoneInfo
+
     if ball {
         zones = append(zones, rpc.ZoneInfo{IZoneId: 99999, SZoneName: "全服"})
     }
@@ -101,8 +117,32 @@ func ZoneSimpleList(c echo.Context) error {
         zones = append(zones, zones2...)
     }
 
+     if bcross {
+        db := cfg.ServerGlobalDb
+        if db != nil {
+            rows, err := db.Query("select mapid from t_maplist")
+            if err == nil {
+                defer rows.Close()
+                for rows.Next() {
+                    var r rpc.ZoneInfo
+
+                    if err := rows.Scan(&r.IZoneId); err != nil {
+                        continue
+                    }
+
+                    r.SZoneName = fmt.Sprintf("跨服(%d)", r.IZoneId)
+
+                    crossZones = append(crossZones, r)
+                }
+
+	        }
+        }
+
+    }
+
     data := make(map[string][]rpc.ZoneInfo,0)
     data["game"] = zones
+    data["cross"] = crossZones
 
     return ctx.SendResponse(data)
 }

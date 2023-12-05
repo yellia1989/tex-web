@@ -53,8 +53,14 @@ func GameCmd(c echo.Context) error {
     for _,zoneid := range zoneids {
         izoneid := common.Atou32(zoneid)
         gamePrx := new(rpc.GameService)
+        crossPrx := new(rpc.GameCrossService)
+
         if izoneid != 0 {
-            comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+            if !IsGame(izoneid) {
+                comm.StringToProxy(app+".GameCrossServer.GameCrossServiceObj%"+app+".cross."+zoneid, crossPrx)
+            } else {
+                comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneid, gamePrx)
+            }
         }
 
         cmds := strings.Split(scmd, "\n")
@@ -68,7 +74,12 @@ func GameCmd(c echo.Context) error {
             buff.WriteString("zone["+zoneid + "] > " + cmd + "\n")
 
             if izoneid != 0 {
-                ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+                if IsGame(izoneid) {
+                    ret, err = gamePrx.DoGmCmd(u.UserName, cmd, &result)
+                } else {
+                    ret, err = crossPrx.DoGmCmd(u.UserName, cmd, &result)
+                }
+
             }
             if ret != 0 || err != nil {
                 serr := ""
@@ -89,7 +100,7 @@ func GameCmd(c echo.Context) error {
 func cmd(ctx *mid.Context, zoneid string, cmd string, result *string) error {
     u := ctx.GetUser()
 
-    zoneid2 := GetZoneId(common.Atou32(zoneid)) 
+    zoneid2 := GetZoneId(common.Atou32(zoneid))
     if zoneid2 == 0 {
         return fmt.Errorf("can't find merge zoneid: %s", zoneid)
     }

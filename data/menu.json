@@ -280,6 +280,16 @@
         "spread": false,
         "checked": true,
         "children": null
+      },
+      {
+        "id": 220,
+        "title": "跨服管理",
+        "href": "gm/cross-server.html",
+        "fontFamily": "ok-icon",
+        "icon": "\u0026#xe654;",
+        "spread": false,
+        "checked": true,
+        "children": null
       }
     ]
   },

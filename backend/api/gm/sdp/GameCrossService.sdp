@@ -1,0 +1,9 @@
+module rpc
+{
+
+interface GameCrossService
+{
+	int doGmCmd(string sOperatorName, string sReqCmd, out string sResp);
+};
+
+};

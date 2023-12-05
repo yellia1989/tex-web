@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>跨服管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/css/oksub.css">
+  <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+  <style>
+    .layui-table-cell {
+        font-size:14px;
+        padding:0 5px;
+        height:auto;
+        overflow:visible;
+        text-overflow:inherit;
+        white-space:normal;
+        word-break: break-all;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ok-body">
+    <table id="tableId" lay-filter="tableFilter"></table>
+  </div>
+  <!--js逻辑-->
+  <script src="/lib/layui/layui.js"></script>
+  <script>
+    var zonedata;
+    var zoneids;
+    layui.use(["element", "table", "okLayer", "okUtils"], function () {
+      let table = layui.table;
+      let okLayer = layui.okLayer;
+      let okUtils = layui.okUtils;
+      okLoading.close();
+
+      let dirTable = table.render({
+        elem: "#tableId",
+        url: "/api/gm/crossServer/list",
+        text: {
+          none: '暂无相关数据',
+        },
+        limit: 30,
+        page: true,
+        toolbar: "#toolbarTpl",
+        cols: [[
+          { type: "checkbox", title: "序号"},
+          { field: "iId", title: "ID", width: 80},
+          { field: "sNode", title: "node", width: 150 },
+          { field: "sDBInfo", title: "数据库信息" },
+          { field: "sZoneIds", title: "游服列表", width: 250},
+          { field: "status", title: "状态", width: 80, templet: function (d) {
+              let ret = '';
+              switch (d.status) {
+                case 0: ret = '未开始'; break;
+                case 1: ret = '已开服'; break;
+                default:
+                  ret = '未知状态';
+              }
+              return ret;
+            }
+          },
+          { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
+        ]],
+        parseData: function (res) {
+          for (i = 0; i < res.data.length; ++i) {
+            res.data[i].id = res.data[i].iId;
+          }
+          return res;
+        }
+      });
+
+      table.on("toolbar(tableFilter)", function (obj) {
+        switch (obj.event) {
+          case "add":
+            add();
+            break;
+          case "batchDel":
+            batchDel();
+            break;
+        }
+      });
+
+      table.on("tool(tableFilter)", function (obj) {
+        let data = obj.data;
+        switch (obj.event) {
+          case "edit":
+            zonedata = data;
+            edit(data.id);
+            break;
+          case "del":
+            del(data.id);
+            break;
+        }
+      });
+
+      function add() {
+        okLayer.open("添加跨服", "cross-server-add.html", "90%", "90%", null, function () {
+          dirTable.reload();
+        })
+      }
+
+      function batchDel() {
+        okLayer.confirm("确定要批量删除吗？", function (index) {
+          layer.close(index);
+          let idsStr = okUtils.tableBatchCheck(table);
+          if (idsStr) {
+            okUtils.ajax("/api/gm/crossServer/del", "post", { idsStr: idsStr }, true).done(function (response) {
+              okUtils.tableSuccessMsg(response.data);
+            }).fail(function (error) {
+              console.log(error)
+            });
+          }
+        });
+      }
+
+      function edit(id) {
+        okLayer.open("编辑服务器", "cross-server-edit.html", "90%", "90%", null, function () {
+          dirTable.reload();
+        })
+      }
+
+      function del(id) {
+        okLayer.confirm("确定要删除吗？", function () {
+          okUtils.ajax("/api/gm/crossServer/del", "post", { idsStr: id }, true).done(function (response) {
+            okUtils.tableSuccessMsg(response.data);
+          }).fail(function (error) {
+            console.log(error)
+          });
+        })
+      }
+    })
+  </script>
+  <!-- 头工具栏模板 -->
+<script type="text/html" id="toolbarTpl">
+  <div class="layui-btn-container">
+    <div class="layui-inline" lay-event="add"><i class="layui-icon layui-icon-add-1"></i></div>
+    <div class="layui-inline" lay-event="batchDel"><i class="layui-icon layui-icon-delete"></i></div>
+  </div>
+</script>
+<script type="text/html" id="operationTpl">
+  <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+  <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+</body>
+
+</html>

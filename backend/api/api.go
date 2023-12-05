@@ -52,6 +52,11 @@ func RegisterHandler(group *echo.Group) {
 	group.POST("/gm/clearLossServer/add", gm.ClearLossServerAdd)       // 增加新的自动清除服务器
 	group.POST("/gm/clearLossServer/update", gm.ClearLossServerUpdate) // 更新自动清除
 
+	group.GET("/gm/crossServer/list", gm.CrossServerList)      // 获取跨服列表
+	group.POST("/gm/crossServer/add", gm.CrossServerAdd)       // 增加新的跨服服务器
+	group.POST("/gm/crossServer/del", gm.CrossServerDel)       // 删除跨服服务器
+	group.POST("/gm/crossServer/update", gm.CrossServerUpdate) // 更新跨服服务器
+
 	group.GET("/gm/channel/list", gm.ChannelList)      // 获取渠道列表
 	group.POST("/gm/channel/add", gm.ChannelAdd)       // 增加新渠道
 	group.POST("/gm/channel/del", gm.ChannelDel)       // 删除渠道
