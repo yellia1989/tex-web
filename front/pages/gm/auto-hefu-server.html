@@ -69,6 +69,11 @@
           { field: "sStartTime", title: "开始时间", width: 150},
           { field: "sEndTime", title: "结束时间", width: 150},
           { field: "sResult", title: "合服日志"},
+          {
+            field: "bClearCross", title: "重置跨服", width: 90, templet: function (d) {
+              return d.bClearCross == 1 ? '是' : '否';
+            }
+          },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {

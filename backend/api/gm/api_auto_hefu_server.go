@@ -22,6 +22,7 @@ type AutoHefuServer struct {
     SStartTime string `json:"sStartTime"`
     SEndTime string `json:"sEndTime"`
     SResult string `json:"sResult"`
+    IClearCross int `json:"bClearCross"`
 }
 
 func formatTime(t int64) string {
@@ -42,7 +43,7 @@ func AutoHefuServerList(c echo.Context) error {
 		return ctx.SendError(-1, "连接数据库失败")
 	}
 
-	sql := "SELECT id,status,src_zoneids,to_zoneid,create_time,prepare_time,hefu_time,start_time,end_time,result FROM t_hefu"
+	sql := "SELECT id,status,src_zoneids,to_zoneid,create_time,prepare_time,hefu_time,start_time,end_time,result,clearCross FROM t_hefu"
     sql += " ORDER BY id desc"
     var total int
     err := db.QueryRow("SELECT count(*) as total FROM ("+sql+") a").Scan(&total)
@@ -72,7 +73,7 @@ func AutoHefuServerList(c echo.Context) error {
         var sPrepareTime sq.NullString
         var sStartTime sq.NullString
         var sEndTime sq.NullString
-		if err := rows.Scan(&r.IId, &r.IStatus, &sSrcZoneIds, &r.IMergeToZoneId, &sCreateTime, &sPrepareTime, &sHefuTime, &sStartTime, &sEndTime, &sResult); err != nil {
+		if err := rows.Scan(&r.IId, &r.IStatus, &sSrcZoneIds, &r.IMergeToZoneId, &sCreateTime, &sPrepareTime, &sHefuTime, &sStartTime, &sEndTime, &sResult,&r.IClearCross); err != nil {
 			return err
 		}
         r.SSrcZoneIds = sSrcZoneIds.String
@@ -98,6 +99,7 @@ func AutoHefuServerAdd(c echo.Context) error {
     sMergeToZoneId := ctx.FormValue("iToZoneId")
     sHefuTime := ctx.FormValue("sHefuTime")
     sPrepareTime := ctx.FormValue("sPrepareTime")
+    bClearCross,_ := strconv.Atoi(ctx.FormValue("bClearCross"))
 
     if sSrcZoneIds == "" || sMergeToZoneId == "" ||  sHefuTime == "" || sPrepareTime == "" {
         return ctx.SendError(-1, "参数非法")
@@ -116,7 +118,7 @@ func AutoHefuServerAdd(c echo.Context) error {
 
     iMergeToZoneId := common.Atoi(sMergeToZoneId)
     now := time.Now().Unix()
-    _, err := db.Exec("INSERT INTO t_hefu(src_zoneids, to_zoneid, prepare_time, hefu_time, create_time) VALUES(?,?,?,?,?)", sSrcZoneIds, iMergeToZoneId, formatTime(iPrepareTime), formatTime(iHefuTime), formatTime(now))
+    _, err := db.Exec("INSERT INTO t_hefu(src_zoneids, to_zoneid, prepare_time, hefu_time, create_time, clearCross) VALUES(?,?,?,?,?,?)", sSrcZoneIds, iMergeToZoneId, formatTime(iPrepareTime), formatTime(iHefuTime), formatTime(now),bClearCross)
 	if err != nil {
 		return err
 	}
@@ -157,6 +159,7 @@ func AutoHefuServerUpdate(c echo.Context) error {
     sMergeToZoneId := ctx.FormValue("iToZoneId")
     sHefuTime := ctx.FormValue("sHefuTime")
     sPrepareTime := ctx.FormValue("sPrepareTime")
+    bClearCross,_ := strconv.Atoi(ctx.FormValue("bClearCross"))
 
     if sSrcZoneIds == "" || sMergeToZoneId == "" || sHefuTime == "" {
         return ctx.SendError(-1, "参数非法")
@@ -185,7 +188,7 @@ func AutoHefuServerUpdate(c echo.Context) error {
     }
 
     iMergeToZoneId := common.Atoi(sMergeToZoneId)
-    _, err = db.Exec("UPDATE t_hefu SET src_zoneids=?,to_zoneid=?,prepare_time=?,hefu_time=? WHERE id=?", sSrcZoneIds, iMergeToZoneId, formatTime(iPrepareTime), formatTime(iHefuTime), id)
+    _, err = db.Exec("UPDATE t_hefu SET src_zoneids=?,to_zoneid=?,prepare_time=?,hefu_time=?,clearCross=? WHERE id=?", sSrcZoneIds, iMergeToZoneId, formatTime(iPrepareTime), formatTime(iHefuTime),bClearCross, id)
 	if err != nil {
 		return err
 	}

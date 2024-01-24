@@ -172,6 +172,7 @@ func ZoneList(c echo.Context) error {
         zones2[k].ILastReportTime = v.ILastReportTime
         zones2[k].ICurZoneStatus = v.ICurZoneStatus
         zones2[k].ICurOnline = v.ICurOnline
+        zones2[k].STag = v.STag
     }
 
     vPage := common.GetPage(zones2, page, limit)

@@ -40,6 +40,16 @@
 					</div>
 				</div>
 
+        <div class="layui-form-item">
+          <label class="layui-form-label">重置跨服</label>
+          <div class="layui-input-inline">
+            <select name="bClearCross">
+              <option value="0" selected>否</option>
+              <option value="1">是</option>
+            </select>
+          </div>
+        </div>
+
 			  <div class="layui-input-block">
 				  <button class="layui-btn" lay-submit lay-filter="add">更新</button>
 			  </div>
@@ -63,6 +73,7 @@
       $("input[name='iToZoneId']").val(parent.zonedata.iMergeToZoneId);
       $("input[name='sPrepareTime']").val(parent.zonedata.sPrepareTime);
       $("input[name='sHefuTime']").val(parent.zonedata.sHefuTime);
+      $("select[name='bClearCross']").val(parent.zonedata.bClearCross);
 
       //监听提交
       form.on('submit(add)', function (data) {

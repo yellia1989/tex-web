@@ -44,7 +44,7 @@
     function formatVersionColumn(mVersion) {
       let ret = '';
       for (let k in mVersion) {
-        let v = mVersion[k]; 
+        let v = mVersion[k];
         ret += '<span class="layui-btn layui-btn-sm '+versionMap.chooseColour(v.sRes+v.sExe)+'">'+k+':'+v.sRes+'</span>';
       }
       return ret;
@@ -135,6 +135,7 @@
           },
           { field: "sNode", title: "Node" },
           { field: "iMergeToZoneId", title: "合服id" },
+          { field: "sTag", title: "标签" },
           { title: "操作", width: 80, align: "center", templet: "#operationTpl", width: 70, fixed: 'right' }
         ]],
         parseData: function (res) {

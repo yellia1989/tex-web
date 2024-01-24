@@ -95,6 +95,12 @@
             </select>
           </div>
         </div>
+        <div class="layui-inline">
+          <label class="layui-form-label">标签</label>
+          <div class="layui-input-inline">
+            <input type="text" name="sTag" placeholder="请输入标签" autocomplete="off" class="layui-input" lay-verType="tips">
+          </div>
+        </div>
       </div>
       <div class="layui-form-item" id="versionFlag">
         <div class="layui-input-block">
@@ -143,6 +149,8 @@
       $("input[name='iMaxNum']").val(parent.zonedata.iMaxNum);
       $("input[name='iMaxOnline']").val(parent.zonedata.iMaxOnline);
       $("select[name='iIsKick']").val(parent.zonedata.iIsKick);
+      $("input[name='sTag']").val(parent.zonedata.sTag);
+
       form.render('select');
 
       //监听提交

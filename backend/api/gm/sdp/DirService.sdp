@@ -45,6 +45,7 @@ struct ZoneInfo
     23 optional unsigned int    iCurOnline;
 
     24 optional unsigned int iMergeToZoneId;
+    25 optional string  sTag;
 };
 
 struct ZoneModifyInfo

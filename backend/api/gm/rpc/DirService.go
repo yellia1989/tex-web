@@ -212,6 +212,7 @@ type ZoneInfo struct {
 	ICurZoneStatus    uint32                 `json:"iCurZoneStatus" form:"iCurZoneStatus"`
 	ICurOnline        uint32                 `json:"iCurOnline" form:"iCurOnline"`
 	IMergeToZoneId    uint32                 `json:"iMergeToZoneId" form:"iMergeToZoneId"`
+	STag              string                 `json:"sTag" form:"sTag"`
 }
 
 func (st *ZoneInfo) resetDefault() {
@@ -238,6 +239,7 @@ func (st *ZoneInfo) Copy() *ZoneInfo {
 	ret.ICurZoneStatus = st.ICurZoneStatus
 	ret.ICurOnline = st.ICurOnline
 	ret.IMergeToZoneId = st.IMergeToZoneId
+	ret.STag = st.STag
 	return ret
 }
 func NewZoneInfo() *ZoneInfo {
@@ -279,6 +281,7 @@ func (st *ZoneInfo) Visit(buff *bytes.Buffer, t int) {
 	util.Tab(buff, t+1, util.Fieldname("iCurZoneStatus")+fmt.Sprintf("%v\n", st.ICurZoneStatus))
 	util.Tab(buff, t+1, util.Fieldname("iCurOnline")+fmt.Sprintf("%v\n", st.ICurOnline))
 	util.Tab(buff, t+1, util.Fieldname("iMergeToZoneId")+fmt.Sprintf("%v\n", st.IMergeToZoneId))
+	util.Tab(buff, t+1, util.Fieldname("sTag")+fmt.Sprintf("%v\n", st.STag))
 }
 func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -376,6 +379,10 @@ func (st *ZoneInfo) ReadStruct(up *codec.UnPacker) error {
 		return err
 	}
 	err = up.ReadUint32(&st.IMergeToZoneId, 24, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.STag, 25, false)
 	if err != nil {
 		return err
 	}
@@ -532,6 +539,12 @@ func (st *ZoneInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.IMergeToZoneId != 0 {
 		err = p.WriteUint32(24, st.IMergeToZoneId)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.STag != "" {
+		err = p.WriteString(25, st.STag)
 		if err != nil {
 			return err
 		}
