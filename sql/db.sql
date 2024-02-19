@@ -19,9 +19,9 @@
 -- Current Database: `db_stat`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `db_stat` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `hametsu_db_stat` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
-USE `db_stat`;
+USE `hametsu_db_stat`;
 
 --
 -- Table structure for table `account`

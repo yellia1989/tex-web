@@ -1,15 +1,15 @@
 package cfg
 
 import (
-    "fmt"
-    "time"
-    "strings"
-    "net/url"
-    "database/sql"
-    _ "github.com/go-sql-driver/mysql"
-    "github.com/yellia1989/tex-go/tools/util"
-    tex "github.com/yellia1989/tex-go/service"
-    "github.com/yellia1989/tex-web/backend/common"
+	"database/sql"
+	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	tex "github.com/yellia1989/tex-go/service"
+	"github.com/yellia1989/tex-go/tools/util"
+	"github.com/yellia1989/tex-web/backend/common"
+	"net/url"
+	"strings"
+	"time"
 )
 
 // 配置
@@ -20,6 +20,9 @@ var Debug bool
 
 // 是否开启框架日志
 var FrameworkDebug bool
+
+// 是否云平台内
+var K8s bool
 
 // 监听端口号
 var Listen string
@@ -86,115 +89,117 @@ var UploadPatchPrefix string
 var LogDbHost string
 
 func ParseCfg(file string) (err error) {
-    if Config == nil {
-        Config = util.NewConfig()
-    }
-    Config.ParseFile(file)
-    cfg := Config
+	if Config == nil {
+		Config = util.NewConfig()
+	}
+	Config.ParseFile(file)
+	cfg := Config
 
-    Debug = cfg.GetBool("debug", false)
-    FrameworkDebug = cfg.GetBool("framework-debug", false)
-    Listen = cfg.GetCfg("listen", ":8008")
+	Debug = cfg.GetBool("debug", false)
+	FrameworkDebug = cfg.GetBool("framework-debug", false)
+	K8s = cfg.GetBool("k8s", false)
 
-    locator := cfg.GetCfg("locator", "")
-    if locator == "" {
-        panic("locator required")
-    }
-    Comm = tex.NewCommunicator(locator)
+	Listen = cfg.GetCfg("listen", ":8008")
 
-    App = cfg.GetCfg("app", "")
-    if App == "" {
-        panic("app required")
-    }
+	locator := cfg.GetCfg("locator", "")
+	if locator == "" {
+		panic("locator required")
+	}
+	Comm = tex.NewCommunicator(locator)
 
-    Logo = url.QueryEscape(cfg.GetCfg("logo", ""))
-    if Logo == "" {
-        panic("logo required")
-    }
+	App = cfg.GetCfg("app", "")
+	if App == "" {
+		panic("app required")
+	}
 
-    TimeZone, err = time.LoadLocation(cfg.GetCfg("timezone", "Local"))
-    if err != nil {
-        panic("invalid timezone")
-    }
+	Logo = url.QueryEscape(cfg.GetCfg("logo", ""))
+	if Logo == "" {
+		panic("logo required")
+	}
 
-    logdb := cfg.GetCfg("logdb", "")
-    if len(logdb) == 0 {
-        panic("logdb required")
-    }
-    vtmp := strings.SplitN(logdb, "@", 2)
-    vtmp2 := strings.Split(vtmp[0], ":")
-    if len(vtmp2) != 2 {
-        panic("invalid logdb format")
-    }
-    LogDbUser = vtmp2[0]
-    LogDbPwd = vtmp2[1]
-    LogDb, err = sql.Open("mysql", logdb)
-    if err != nil {
-        panic(fmt.Sprintf("create log db err: %s", err.Error()))
-    }
+	TimeZone, err = time.LoadLocation(cfg.GetCfg("timezone", "Local"))
+	if err != nil {
+		panic("invalid timezone")
+	}
 
-    gameglobaldb := cfg.GetCfg("gameglobaldb", "")
-    if len(gameglobaldb) == 0 {
-        panic("gameglobaldb required")
-    }
-    GameGlobalDb, err = sql.Open("mysql", gameglobaldb)
-    if err != nil {
-        panic(fmt.Sprintf("create game global db err: %s", err.Error()))
-    }
+	logdb := cfg.GetCfg("logdb", "")
+	if len(logdb) == 0 {
+		panic("logdb required")
+	}
+	vtmp := strings.SplitN(logdb, "@", 2)
+	vtmp2 := strings.Split(vtmp[0], ":")
+	if len(vtmp2) != 2 {
+		panic("invalid logdb format")
+	}
+	LogDbUser = vtmp2[0]
+	LogDbPwd = vtmp2[1]
+	LogDb, err = sql.Open("mysql", logdb)
+	if err != nil {
+		panic(fmt.Sprintf("create log db err: %s", err.Error()))
+	}
 
-    serverglobaldb := cfg.GetCfg("serverglobaldb", "")
-    if len(serverglobaldb) == 0 {
-        panic("serverglobaldb required")
-    }
-    ServerGlobalDb, err = sql.Open("mysql", serverglobaldb)
-    if err != nil {
-        panic(fmt.Sprintf("create server global db err: %s", err.Error()))
-    }
+	gameglobaldb := cfg.GetCfg("gameglobaldb", "")
+	if len(gameglobaldb) == 0 {
+		panic("gameglobaldb required")
+	}
+	GameGlobalDb, err = sql.Open("mysql", gameglobaldb)
+	if err != nil {
+		panic(fmt.Sprintf("create game global db err: %s", err.Error()))
+	}
 
-    statdb := cfg.GetCfg("statdb", "")
-    if len(statdb) == 0 {
-        panic("statdb required")
-    }
-    StatDb, err = sql.Open("mysql", statdb)
-    if err != nil {
-        panic(fmt.Sprintf("create stat db err: %s", err.Error()))
-    }
+	serverglobaldb := cfg.GetCfg("serverglobaldb", "")
+	if len(serverglobaldb) == 0 {
+		panic("serverglobaldb required")
+	}
+	ServerGlobalDb, err = sql.Open("mysql", serverglobaldb)
+	if err != nil {
+		panic(fmt.Sprintf("create server global db err: %s", err.Error()))
+	}
 
-    texdb := cfg.GetCfg("texdb", "")
-    if len(texdb) == 0 {
-        panic("texdb required")
-    }
-    TexDb, err = sql.Open("mysql", texdb)
-    if err != nil {
-        panic(fmt.Sprintf("create texdb db err: %s", err.Error()))
-    }
+	statdb := cfg.GetCfg("statdb", "")
+	if len(statdb) == 0 {
+		panic("statdb required")
+	}
+	StatDb, err = sql.Open("mysql", statdb)
+	if err != nil {
+		panic(fmt.Sprintf("create stat db err: %s", err.Error()))
+	}
 
-    GameDbPrefix = cfg.GetCfg("gamedb-prefix", "")
+	texdb := cfg.GetCfg("texdb", "")
+	if len(texdb) == 0 {
+		panic("texdb required")
+	}
+	TexDb, err = sql.Open("mysql", texdb)
+	if err != nil {
+		panic(fmt.Sprintf("create texdb db err: %s", err.Error()))
+	}
 
-    clog := cfg.GetSubCfg("log")
-    if clog == nil {
-        panic("<log> conf required")
-    }
-    LogDateMin = common.ParseTimeInLocal("2006-01-02", clog.GetCfg("dateMin", ""))
-    LogSyncInterval = clog.GetDuration("syncInterval", "5m")
-    LogStatInterval = clog.GetDuration("statInterval", "5m")
+	GameDbPrefix = cfg.GetCfg("gamedb-prefix", "")
 
-    cstat := cfg.GetSubCfg("stat")
-    if cstat == nil {
-        panic("<stat> conf required")
-    }
-    StatRmoney = uint32(cstat.GetInt("rmoney", 500000))
+	clog := cfg.GetSubCfg("log")
+	if clog == nil {
+		panic("<log> conf required")
+	}
+	LogDateMin = common.ParseTimeInLocal("2006-01-02", clog.GetCfg("dateMin", ""))
+	LogSyncInterval = clog.GetDuration("syncInterval", "5m")
+	LogStatInterval = clog.GetDuration("statInterval", "5m")
 
-    tmp := cstat.GetCfg("channel","")
-    StatChannels = strings.Split(tmp, ",")
+	cstat := cfg.GetSubCfg("stat")
+	if cstat == nil {
+		panic("<stat> conf required")
+	}
+	StatRmoney = uint32(cstat.GetInt("rmoney", 500000))
 
-    ChatMaskInterval = cfg.GetDuration("chatMaskInterval","1m")
+	tmp := cstat.GetCfg("channel", "")
+	StatChannels = strings.Split(tmp, ",")
 
-    ServerID = cfg.GetCfg("server", "")
+	ChatMaskInterval = cfg.GetDuration("chatMaskInterval", "1m")
 
-    UploadPatchPrefix = cfg.GetCfg("upload-patch-prefix","")
+	ServerID = cfg.GetCfg("server", "")
 
-    LogDbHost = cfg.GetCfg("logdbhost", "")
+	UploadPatchPrefix = cfg.GetCfg("upload-patch-prefix", "")
 
-    return
+	LogDbHost = cfg.GetCfg("logdbhost", "")
+
+	return
 }

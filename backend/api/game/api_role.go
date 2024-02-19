@@ -10,6 +10,7 @@ import (
 	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
+	"github.com/yellia1989/tex-web/backend/service"
 	"strconv"
 	"strings"
 	"time"
@@ -105,10 +106,9 @@ func RoleDeatil(c echo.Context) error {
 	}
 
 	comm := cfg.Comm
-	app := cfg.App
 
 	gamePrx := new(rpc.GameService)
-	comm.StringToProxy(app+".GameServer.GameServiceObj%"+app+".zone."+zoneId, gamePrx)
+	comm.StringToProxy(service.GetGameServiceName(zoneId), gamePrx)
 
 	result := ""
 	var ret int32
