@@ -194,6 +194,7 @@ type BulletinDataInfo struct {
 	SHtmlContent      string                         `json:"sHtmlContent" form:"sHtmlContent"`
 	MLangContent      map[string]LangContentDataInfo `json:"mLangContent" form:"mLangContent"`
 	SDefaultLang      string                         `json:"sDefaultLang" form:"sDefaultLang"`
+	SVersion          string                         `json:"sVersion" form:"sVersion"`
 }
 
 func (st *BulletinDataInfo) resetDefault() {
@@ -216,6 +217,7 @@ func (st *BulletinDataInfo) Copy() *BulletinDataInfo {
 		ret.MLangContent[k] = *(v.Copy())
 	}
 	ret.SDefaultLang = st.SDefaultLang
+	ret.SVersion = st.SVersion
 	return ret
 }
 func NewBulletinDataInfo() *BulletinDataInfo {
@@ -253,6 +255,7 @@ func (st *BulletinDataInfo) Visit(buff *bytes.Buffer, t int) {
 		util.Tab(buff, t+1, "}\n")
 	}
 	util.Tab(buff, t+1, util.Fieldname("sDefaultLang")+fmt.Sprintf("%v\n", st.SDefaultLang))
+	util.Tab(buff, t+1, util.Fieldname("sVersion")+fmt.Sprintf("%v\n", st.SVersion))
 }
 func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 	var err error
@@ -334,6 +337,10 @@ func (st *BulletinDataInfo) ReadStruct(up *codec.UnPacker) error {
 		}
 	}
 	err = up.ReadString(&st.SDefaultLang, 13, false)
+	if err != nil {
+		return err
+	}
+	err = up.ReadString(&st.SVersion, 14, false)
 	if err != nil {
 		return err
 	}
@@ -466,6 +473,12 @@ func (st *BulletinDataInfo) WriteStruct(p *codec.Packer) error {
 	}
 	if false || st.SDefaultLang != "" {
 		err = p.WriteString(13, st.SDefaultLang)
+		if err != nil {
+			return err
+		}
+	}
+	if false || st.SVersion != "" {
+		err = p.WriteString(14, st.SVersion)
 		if err != nil {
 			return err
 		}
