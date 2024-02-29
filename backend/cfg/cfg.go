@@ -48,6 +48,8 @@ var LogDbUser string
 // 日志数据库连接密码
 var LogDbPwd string
 
+var LogDbInfo string
+
 // 游戏全局数据库
 var GameGlobalDb *sql.DB
 
@@ -133,6 +135,8 @@ func ParseCfg(file string) (err error) {
 	}
 	LogDbUser = vtmp2[0]
 	LogDbPwd = vtmp2[1]
+	LogDbInfo = logdb[:strings.LastIndex(logdb, "/")]
+
 	LogDb, err = sql.Open("mysql", logdb)
 	if err != nil {
 		panic(fmt.Sprintf("create log db err: %s", err.Error()))

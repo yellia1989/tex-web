@@ -17,18 +17,11 @@ type ZoneLogOptions struct {
 }
 
 func zoneLogDbWithOptions(zoneid string, options ZoneLogOptions) (*sql.DB, error) {
-	db := cfg.StatDb
-
 	zoneid2 := zoneid
 
 	if options.trunMerge {
 		zoneid2 = common.U32toa(gm.GetZoneId(common.Atou32(zoneid)))
 	}
 
-	var dbhost sql.NullString
-	if err := db.QueryRow("SELECT logdbhost FROM zone WHERE zoneid = " + zoneid2).Scan(&dbhost); err != nil {
-		return nil, err
-	}
-
-	return sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/log_zone_%s", cfg.LogDbUser, cfg.LogDbPwd, dbhost.String, zoneid2))
+	return sql.Open("mysql", fmt.Sprintf("%s/%slog_zone_%s", cfg.LogDbInfo, cfg.GameDbPrefix, zoneid2))
 }
