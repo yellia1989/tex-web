@@ -20,9 +20,10 @@ func GetBulletServiceName() string {
 
 func GetMailServiceName() string {
 	if cfg.K8s {
-		return cfg.App + ".BulletinServer.BulletinServiceObj@tcp -h interserver -p 3006 -t 600000"
+		return cfg.App + ".MailServer.MailServiceObj@tcp -h interserver -p 3006 -t 600000"
 	} else {
-		return cfg.App + ".BulletinServer.BulletinServiceObj"
+		return cfg.App + ".MailServer.MailServiceObj"
+		c
 	}
 }
 
