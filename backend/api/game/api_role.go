@@ -3,6 +3,10 @@ package game
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-go/tools/log"
 	"github.com/yellia1989/tex-web/backend/api/gm"
@@ -10,9 +14,6 @@ import (
 	"github.com/yellia1989/tex-web/backend/cfg"
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type role struct {
@@ -30,6 +31,7 @@ func RoleList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneid := ctx.QueryParam("zoneid")
 	name := strings.TrimSpace(ctx.QueryParam("name"))
+	guild := strings.TrimSpace(ctx.QueryParam("guild"))
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 	field := ctx.QueryParam("field")
@@ -58,15 +60,23 @@ func RoleList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT accountid,actorid,actorname,vip_level,lastonlinetime2,createtime,serverindex,guildid FROM actors"
+	sql := "SELECT accountid,actorid,actorname,vip_level,lastonlinetime2,createtime,serverindex,guildid FROM actors WHERE 1=1"
 	if name != "" {
 		accountid, err := strconv.Atoi(name)
 		if err == nil && accountid != 0 {
-			sql += fmt.Sprintf(" WHERE accountid = %d or actorid = %d", accountid, accountid)
+			sql += fmt.Sprintf(" and accountid = %d or actorid = %d", accountid, accountid)
 		} else {
-			sql += " WHERE actorname like '%" + name + "%'"
+			sql += " and actorname like '%" + name + "%'"
 		}
 	}
+
+	if guild != "" {
+		guildid, err := strconv.Atoi(guild)
+		if err == nil && guildid != 0 {
+			sql += fmt.Sprintf(" and guildid = %d", guildid)
+		}
+	}
+
 	if field != "" {
 		sql += " ORDER BY " + field + " " + order
 	}
