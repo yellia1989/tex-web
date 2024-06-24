@@ -1,14 +1,15 @@
 package gm
 
 import (
-    "fmt"
-    "strings"
-    "strconv"
-    "github.com/labstack/echo/v4"
-    mid "github.com/yellia1989/tex-web/backend/middleware"
-    "github.com/yellia1989/tex-go/tools/util"
-    "github.com/yellia1989/tex-web/backend/cfg"
-    "github.com/yellia1989/tex-web/backend/common"
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/labstack/echo/v4"
+	"github.com/yellia1989/tex-go/tools/util"
+	"github.com/yellia1989/tex-web/backend/cfg"
+	"github.com/yellia1989/tex-web/backend/common"
+	mid "github.com/yellia1989/tex-web/backend/middleware"
 )
 
 type _dbData struct {
@@ -92,7 +93,7 @@ func DbAdd(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-    
+
     return ctx.SendResponse("添加db成功")
 }
 
@@ -176,7 +177,7 @@ func GameDb(zoneid uint32) (error, string) {
         return err,""
     }
 
-    conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/db_zone_%d", dbUser,dbPwd,dbHost,dbPort,zoneid)
+    conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%sdb_zone_%d", dbUser,dbPwd,dbHost,dbPort,cfg.GameDbPrefix,zoneid)
 
     return nil,conn
 }

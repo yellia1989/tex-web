@@ -3,6 +3,10 @@ package game
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/labstack/echo/v4"
 	"github.com/yellia1989/tex-go/tools/log"
 	"github.com/yellia1989/tex-web/backend/api/gm"
@@ -11,9 +15,6 @@ import (
 	"github.com/yellia1989/tex-web/backend/common"
 	mid "github.com/yellia1989/tex-web/backend/middleware"
 	"github.com/yellia1989/tex-web/backend/service"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type role struct {
@@ -53,7 +54,10 @@ func RoleList(c echo.Context) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("USE " + cfg.GameDbPrefix + "db_zone_" + zoneid)
+	dbName := cfg.GameDbPrefix + "db_zone_" + zoneid
+	fmt.Printf("dbName:%s\n", dbName)
+
+	_, err = tx.Exec("USE " + dbName)
 	if err != nil {
 		return err
 	}

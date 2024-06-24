@@ -3,13 +3,14 @@ package cfg
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
+	"strings"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	tex "github.com/yellia1989/tex-go/service"
 	"github.com/yellia1989/tex-go/tools/util"
 	"github.com/yellia1989/tex-web/backend/common"
-	"net/url"
-	"strings"
-	"time"
 )
 
 // 配置
@@ -89,6 +90,8 @@ var UploadPatchPrefix string
 
 // logdbhost
 var LogDbHost string
+
+var AiGiftToken string
 
 func ParseCfg(file string) (err error) {
 	if Config == nil {
@@ -180,6 +183,8 @@ func ParseCfg(file string) (err error) {
 
 	GameDbPrefix = cfg.GetCfg("gamedb-prefix", "")
 
+	fmt.Printf("GameDbPrefix: %s\n", GameDbPrefix)
+
 	clog := cfg.GetSubCfg("log")
 	if clog == nil {
 		panic("<log> conf required")
@@ -204,6 +209,8 @@ func ParseCfg(file string) (err error) {
 	UploadPatchPrefix = cfg.GetCfg("upload-patch-prefix", "")
 
 	LogDbHost = cfg.GetCfg("logdbhost", "")
+
+	AiGiftToken = cfg.GetCfg("aiGiftToken", "")
 
 	return
 }

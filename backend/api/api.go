@@ -199,4 +199,10 @@ func RegisterHandler(group *echo.Group) {
 	group.GET("/server/downloadPatch", server.DownloadPatch) // 下载发布包
 	group.GET("/server/deletePatch", server.DeletePatch)     // 删除发布包
 	group.GET("/server/patchList", server.PatchList)         // 发布包列表
+
+	group.POST("/server/uploadItemExcel", server.UploadItemExcel) // 上传发布包
+}
+
+func RegisterPublicHandler(group *echo.Group) {
+	group.GET("/server/getItemList", server.GetItemList)
 }

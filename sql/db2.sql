@@ -153,3 +153,9 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2021-12-03 12:13:55
+
+CREATE TABLE `global_variables` (
+                               `key` varchar(255) NOT NULL,
+                               `value` mediumtext,
+                               PRIMARY KEY (`key`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

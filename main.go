@@ -51,6 +51,11 @@ func httpErrorHandler(err error, c echo.Context) {
 					"code": code,
 					"msg":  message,
 				})
+			} else if strings.HasPrefix(path, "/public") {
+				err = c.JSON(http.StatusOK, map[string]interface{}{
+					"code": code,
+					"msg":  message,
+				})
 			} else {
 				// 没有登陆的话重定位到登陆
 				bReLogin := false
@@ -116,9 +121,9 @@ func main() {
 		Format:           "${time_custom}|${remote_ip}|${method}|${path}|${status}|${latency_human}|${error}\n",
 		CustomTimeFormat: "2006-01-02 15:04:05",
 	}))
-	e.Use(middleware.Recover())
 
-	e.Use(mid.NewContext(), mid.RequireLogin(), mid.RequireAuth())
+	e.Use(middleware.Recover())
+	e.Use(mid.NewContext())
 
 	e.Static("/", "front/pages")
 	e.Static("/lib", "front/lib")
@@ -126,7 +131,12 @@ func main() {
 	e.Static("/js", "front/js")
 	e.Static("/images", "front/images")
 
-	api.RegisterHandler(e.Group("/api"))
+	publicGroup := e.Group("/public")
+	api.RegisterPublicHandler(publicGroup)
+
+	apiGroup := e.Group("/api")
+	apiGroup.Use(mid.RequireLogin(), mid.RequireAuth())
+	api.RegisterHandler(apiGroup)
 
 	go func() {
 		log.Debug(http.ListenAndServe(":16060", nil))

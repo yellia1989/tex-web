@@ -4,7 +4,7 @@ import "github.com/yellia1989/tex-web/backend/cfg"
 
 func GetDirServiceName() string {
 	if cfg.K8s {
-		return cfg.App + ".DirServer.DirServiceObj@tcp -h interserver -p 3003 -t 600000"
+		return cfg.App + ".DirServer.DirServiceObj@tcp -h dirserver -p 3001 -t 600000"
 	} else {
 		return cfg.App + ".DirServer.DirServiceObj"
 	}
@@ -12,7 +12,7 @@ func GetDirServiceName() string {
 
 func GetBulletServiceName() string {
 	if cfg.K8s {
-		return cfg.App + ".BulletinServer.BulletinServiceObj@tcp -h interserver -p 3002 -t 600000"
+		return cfg.App + ".BulletinServer.BulletinServiceObj@tcp -h bulletinserver -p 3001 -t 600000"
 	} else {
 		return cfg.App + ".BulletinServer.BulletinServiceObj"
 	}
@@ -20,10 +20,9 @@ func GetBulletServiceName() string {
 
 func GetMailServiceName() string {
 	if cfg.K8s {
-		return cfg.App + ".MailServer.MailServiceObj@tcp -h interserver -p 3006 -t 600000"
+		return cfg.App + ".MailServer.MailServiceObj@tcp -h mailserver -p 3001 -t 600000"
 	} else {
 		return cfg.App + ".MailServer.MailServiceObj"
-		c
 	}
 }
 

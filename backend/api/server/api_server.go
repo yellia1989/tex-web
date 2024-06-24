@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
+	xlsx "github.com/tealeg/xlsx/v3"
 	"golang.org/x/crypto/ssh"
 	_ "golang.org/x/crypto/ssh/terminal"
 
@@ -877,4 +880,178 @@ func AllocPromPort(c echo.Context) error {
 		prom_port += 1
 	}
 	return ctx.SendResponse(prom_port)
+}
+
+type ItemAttributes struct {
+	StoreDisplayPrice int    `json:"storeDisplayPrice"`
+	StoreCategory     string `json:"storeCategory"`
+	SetQuantity       int    `json:"setQuantity"`
+	PurchaseLimit     int    `json:"purchaseLimit"`
+	SellMinCp         int    `json:"sellMinCp"`
+	SellMaxCp         int    `json:"sellMaxCp"`
+	Rarity            string `json:"rarity"`
+}
+
+type ItemData struct {
+	ItemId           string         `json:"itemId"`
+	Name             string         `json:"name"`
+	I18nKey          string         `json:"i18nKey"`
+	DetailI18nKey    string         `json:"detailI18nKey"`
+	IconUrl          string         `json:"iconUrl"`
+	Value            float64        `json:"value"`
+	TypeId           string         `json:"typeId"`
+	TypeName         string         `json:"typeName"`
+	IsStoreSupported bool           `json:"isStoreSupported"`
+	IsAiSupported    bool           `json:"isAiSupported"`
+	Attributes       ItemAttributes `json:"attributes"`
+}
+
+func UploadItemExcel(c echo.Context) error {
+	ctx := c.(*mid.Context)
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		return err
+	}
+
+	//打开用户上传的文件
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// 创建一个临时文件来保存上传的文件
+	dst, err := os.Create(file.Filename)
+	if err != nil {
+		return err
+	}
+
+	defer dst.Close()
+
+	// 将上传的文件内容拷贝到临时文件中
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	// 解析上传的 XLSX 文件
+	xlFile, err := xlsx.OpenFile(file.Filename)
+	if err != nil {
+		return err
+	}
+
+	if len(xlFile.Sheets) <= 0 {
+		return ctx.SendResponse("文件异常")
+	}
+
+	sheet := xlFile.Sheets[0]
+
+	fmt.Println("Max row in sheet:", sheet.MaxRow, sheet.MaxCol)
+
+	keys := make([]string, 0)
+
+	var itemList = []ItemData{}
+
+	firstRow, err := sheet.Row(0)
+	if err != nil {
+		return ctx.SendResponse("Invalid row object")
+	}
+
+	for i := 0; i < sheet.MaxCol; i++ {
+		cell := firstRow.GetCell(i)
+		keys = append(keys, cell.String())
+	}
+
+	for i := 1; i < sheet.MaxRow; i++ {
+		row, err := sheet.Row(i)
+		if err != nil {
+			fmt.Println("Error: Invalid row object")
+			break
+		}
+
+		var item ItemData
+
+		for j := 0; j < len(keys); j++ {
+			cell := row.GetCell(j)
+			field := reflect.ValueOf(&item).Elem().FieldByName(keys[j])
+			if !field.IsValid() {
+				fmt.Print("reflect invalid")
+				break
+			}
+
+			switch field.Kind() {
+			case reflect.String:
+				field.SetString(cell.String())
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				val, _ := strconv.ParseInt(cell.String(), 10, 64)
+				field.SetInt(val)
+			case reflect.Float32, reflect.Float64:
+				val, _ := strconv.ParseFloat(cell.String(), 64)
+				field.SetFloat(val)
+			case reflect.Bool:
+				val, _ := strconv.ParseBool(cell.String())
+				field.SetBool(val)
+			case reflect.Struct:
+				objPtr := reflect.New(field.Type())
+				fmt.Println(cell.String())
+
+				err := json.Unmarshal([]byte(cell.String()), objPtr.Interface())
+				if err != nil {
+					fmt.Print("json struct err ", err)
+					break
+				}
+
+				fmt.Println(objPtr.Elem())
+
+				field.Set(objPtr.Elem())
+			}
+		}
+
+		itemList = append(itemList, item)
+	}
+
+	itemJson, err := json.Marshal(itemList)
+	if err != nil {
+		return err
+	}
+
+	db := cfg.StatDb
+	db.Exec("insert into global_variables(`key`, `value`) VALUES('itemList', ?) on DUPLICATE key UPDATE `value` = ?", string(itemJson), string(itemJson))
+
+	return ctx.SendResponse("上传成功")
+}
+
+func GetItemList(c echo.Context) error {
+	ctx := c.(*mid.Context)
+
+	authHeader := ctx.Request().Header.Get("Authorization")
+
+	parts := strings.SplitN(authHeader, " ", 2)
+
+	if len(parts) != 2 || parts[0] != "Basic" {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid Authorization header format")
+	}
+
+	if parts[1] != cfg.AiGiftToken {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
+	}
+
+	db := cfg.StatDb
+	row := db.QueryRow("select value from global_variables WHERE `key` = 'itemList'")
+	var jsonValue string
+	err := row.Scan(&jsonValue)
+	if err != nil {
+		return err
+	}
+
+	var itemList = []ItemData{}
+
+	if err := json.Unmarshal([]byte(jsonValue), &itemList); err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"status":  0,
+		"message": "查询成功",
+		"data":    itemList,
+	})
 }

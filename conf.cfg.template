@@ -57,3 +57,5 @@ upload-patch-prefix = /data/patch/upload/
 
 # 分区日志统一收集db地址
 logdbhost= TEMPLATE_LOGIP
+
+aiGiftToken = TOKEN
