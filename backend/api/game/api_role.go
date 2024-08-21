@@ -25,12 +25,14 @@ type role struct {
 	LastLoginTime string `json:"last_login_time"`
 	RegTime       string `json:"reg_time"`
 	Zoneid        uint32 `json:"zoneid"`
+	GuildId       uint32 `json:"guild_id"`
 }
 
 func RoleList(c echo.Context) error {
 	ctx := c.(*mid.Context)
 	zoneid := ctx.QueryParam("zoneid")
 	name := strings.TrimSpace(ctx.QueryParam("name"))
+	guild := strings.TrimSpace(ctx.QueryParam("guild"))
 	page, _ := strconv.Atoi(ctx.QueryParam("page"))
 	limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
 	field := ctx.QueryParam("field")
@@ -62,15 +64,23 @@ func RoleList(c echo.Context) error {
 		return err
 	}
 
-	sql := "SELECT accountid,actorid,actorname,vip_level,lastonlinetime2,createtime,serverindex FROM actors"
+	sql := "SELECT accountid,actorid,actorname,vip_level,lastonlinetime2,createtime,serverindex,guildid FROM actors WHERE 1=1"
 	if name != "" {
 		accountid, err := strconv.Atoi(name)
 		if err == nil && accountid != 0 {
-			sql += fmt.Sprintf(" WHERE accountid = %d or actorid = %d", accountid, accountid)
+			sql += fmt.Sprintf(" and accountid = %d or actorid = %d", accountid, accountid)
 		} else {
-			sql += " WHERE actorname like '%" + name + "%'"
+			sql += " and actorname like '%" + name + "%'"
 		}
 	}
+
+	if guild != "" {
+		guildid, err := strconv.Atoi(guild)
+		if err == nil && guildid != 0 {
+			sql += fmt.Sprintf(" and guildid = %d", guildid)
+		}
+	}
+
 	if field != "" {
 		sql += " ORDER BY " + field + " " + order
 	}
@@ -86,7 +96,7 @@ func RoleList(c echo.Context) error {
 	for rows.Next() {
 		var r role
 		var tmp int64
-		if err := rows.Scan(&r.AccountName, &r.Actorid, &r.Name, &r.VipLevel, &tmp, &r.RegTime, &r.Zoneid); err != nil {
+		if err := rows.Scan(&r.AccountName, &r.Actorid, &r.Name, &r.VipLevel, &tmp, &r.RegTime, &r.Zoneid, &r.GuildId); err != nil {
 			return err
 		}
 		r.LastLoginTime = common.FormatTimeInLocal("2006-01-02 15:04:05", time.Unix(tmp, 0))

@@ -27,6 +27,7 @@ func ItemAddLog(c echo.Context) error {
 	startTime := ctx.QueryParam("startTime")
 	endTime := ctx.QueryParam("endTime")
 	itemid := ctx.QueryParam("itemid")
+	origin := ctx.QueryParam("origin")
 	turnMerge := ctx.QueryParam("turnMergeZone")
 
 	if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
@@ -44,6 +45,10 @@ func ItemAddLog(c echo.Context) error {
 
 	if itemid != "" {
 		whereStr += " AND id=" + itemid
+	}
+
+	if origin != "" {
+		whereStr += " AND action like '"+ origin + "%'"
 	}
 
 	sqlcount := "SELECT count(*) as total FROM add_item"
@@ -93,6 +98,7 @@ func ItemSubLog(c echo.Context) error {
 	startTime := ctx.QueryParam("startTime")
 	endTime := ctx.QueryParam("endTime")
 	itemid := ctx.QueryParam("itemid")
+	origin := ctx.QueryParam("origin")
 	turnMerge := ctx.QueryParam("turnMergeZone")
 
 	if zoneid == "" || roleid == "" || startTime == "" || endTime == "" {
@@ -105,6 +111,10 @@ func ItemSubLog(c echo.Context) error {
 
 	if itemid != "" {
 		whereStr += " AND id=" + itemid
+	}
+
+	if origin != "" {
+		whereStr += " AND action like '"+ origin + "%'"
 	}
 
 	if err != nil {

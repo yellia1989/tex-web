@@ -1,4 +1,4 @@
-module rpc
+module Chuanqi
 {
 
 enum BulletinFlag
@@ -30,6 +30,7 @@ struct BulletinDataInfo
     11 optional string          sHtmlContent;  //html内容
     12 optional map<string,LangContentDataInfo> mLangContent;
     13 optional string sDefaultLang;
+    14 optional string sVersion;
 };
 
 struct NoticeDataInfo
